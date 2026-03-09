@@ -1,0 +1,99 @@
+# SPDX-FileCopyrightText: 2026 Mattia Egloff <mattia.egloff@pm.me>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+name: Vauchi
+options:
+  bundleIdPrefix: app.vauchi
+  deploymentTarget:
+    macOS: "14.0"
+  xcodeVersion: "15.0"
+  generateEmptyDirectories: true
+
+settings:
+  SWIFT_VERSION: "5.9"
+  MACOSX_DEPLOYMENT_TARGET: "14.0"
+
+packages:
+  VauchiMobile:
+    url: https://gitlab.com/vauchi/vauchi-mobile-swift.git
+    from: "0.4.1-dev.1"
+
+targets:
+  Vauchi:
+    type: application
+    platform: macOS
+    sources:
+      - path: Vauchi
+        excludes:
+          - "**/*.xcassets"
+          - "Generated"
+          - "Libs"
+          # CoreUI views that depend on MobileOnboardingWorkflow (UniFFI binding)
+          # which isn't in the published VauchiMobile yet. Exclude until bindings update.
+          - "CoreUI/OnboardingViewModel.swift"
+    dependencies:
+      - package: VauchiMobile
+        product: VauchiMobile
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.vauchi.macos
+        MARKETING_VERSION: "0.5.0"
+        CURRENT_PROJECT_VERSION: "1"
+        INFOPLIST_FILE: Vauchi/Info.plist
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_IDENTITY: "-"
+    info:
+      path: Vauchi/Info.plist
+      properties:
+        CFBundleDisplayName: Vauchi
+        CFBundleShortVersionString: "0.5.0"
+        CFBundleVersion: "1"
+        LSApplicationCategoryType: public.app-category.social-networking
+
+  VauchiTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: VauchiTests
+    dependencies:
+      - target: Vauchi
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.vauchi.macos.tests
+        INFOPLIST_GENERATION_MODE: GeneratedFile
+        GENERATE_INFOPLIST_FILE: YES
+
+  VauchiUITests:
+    type: bundle.ui-testing
+    platform: macOS
+    sources:
+      - path: VauchiUITests
+    dependencies:
+      - target: Vauchi
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.vauchi.macos.uitests
+        INFOPLIST_GENERATION_MODE: GeneratedFile
+        GENERATE_INFOPLIST_FILE: YES
+
+schemes:
+  Vauchi:
+    build:
+      targets:
+        Vauchi: all
+        VauchiTests: [test]
+        VauchiUITests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - VauchiTests
+        - VauchiUITests
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
