@@ -131,10 +131,7 @@ build:debug:
     - command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
     - rm -rf Vauchi.xcodeproj .spm-packages
     - xcodegen generate
-    # Ad-hoc sign the VauchiPlatformFFI framework (upstream XCFramework ships unsigned)
-    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -configuration Debug -destination "platform=macOS" -resolvePackageDependencies
-    - find ~/Library/Developer/Xcode/DerivedData -name "VauchiPlatformFFI.framework" -path "*/macOS/*" -exec codesign --force --sign - {} \; 2>/dev/null || true
-    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -configuration Debug -destination "platform=macOS" build
+    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -configuration Debug -destination "platform=macOS" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO build
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == "main"
