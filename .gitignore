@@ -17,10 +17,12 @@ build/
 *.dSYM.zip
 *.dSYM
 
-# UniFFI bindings (provided by vauchi-mobile-swift SPM package;
-# local copies created by `just bindings` for dev builds)
+# UniFFI bindings (local copies created by `just bindings` for dev builds)
 Vauchi/Generated/
-Vauchi/Libs/
+Vauchi/Libs/VauchiMobileFFI.xcframework/
+Vauchi/Libs/VauchiMobileLocal/.build/
+Vauchi/Libs/VauchiMobileLocal/VauchiMobileFFI.xcframework
+Vauchi/Libs/VauchiMobileLocal/Sources/VauchiMobile/vauchi_mobile.swift
 Frameworks/
 
 # Local-bindings workspace (created by `just bindings-local`)
