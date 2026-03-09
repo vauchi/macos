@@ -15,8 +15,8 @@ settings:
   MACOSX_DEPLOYMENT_TARGET: "14.0"
 
 packages:
-  VauchiMobile:
-    url: https://gitlab.com/vauchi/vauchi-mobile-swift.git
+  VauchiPlatform:
+    url: https://gitlab.com/vauchi/vauchi-platform-swift.git
     from: "0.5.0-rc.0"
 
 targets:
@@ -30,8 +30,8 @@ targets:
           - "Libs"
           - "Generated"
     dependencies:
-      - package: VauchiMobile
-        product: VauchiMobile
+      - package: VauchiPlatform
+        product: VauchiPlatform
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: app.vauchi.macos
