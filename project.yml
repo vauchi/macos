@@ -16,8 +16,7 @@ settings:
 
 packages:
   VauchiMobile:
-    url: https://gitlab.com/vauchi/vauchi-mobile-swift.git
-    from: "0.4.1-dev.1"
+    path: Vauchi/Libs/VauchiMobileLocal
 
 targets:
   Vauchi:
@@ -27,11 +26,8 @@ targets:
       - path: Vauchi
         excludes:
           - "**/*.xcassets"
-          - "Generated"
           - "Libs"
-          # CoreUI views that depend on MobileOnboardingWorkflow (UniFFI binding)
-          # which isn't in the published VauchiMobile yet. Exclude until bindings update.
-          - "CoreUI/OnboardingViewModel.swift"
+          - "Generated"
     dependencies:
       - package: VauchiMobile
         product: VauchiMobile
