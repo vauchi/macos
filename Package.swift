@@ -12,7 +12,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://gitlab.com/vauchi/vauchi-platform-swift.git",
-            from: "0.4.1-dev.1"
+            from: "0.1.0"
         ),
     ],
     targets: [

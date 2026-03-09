@@ -44,7 +44,7 @@ targets:
       path: Vauchi/Info.plist
       properties:
         CFBundleDisplayName: Vauchi
-        CFBundleShortVersionString: "0.5.0"
+        CFBundleShortVersionString: "0.1.0"
         CFBundleVersion: "1"
         LSApplicationCategoryType: public.app-category.social-networking
 
