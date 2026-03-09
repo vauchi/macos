@@ -152,7 +152,16 @@ test:unit:
     - rm -rf Vauchi.xcodeproj .spm-packages
     - xcodegen generate
     - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
-    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" test-without-building
+    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -resultBundlePath TestResults test-without-building
+    - command -v xcresultparser >/dev/null 2>&1 || brew install a7ex/homebrew-formulae/xcresultparser
+    - xcresultparser --output-format junit TestResults.xcresult > test-results.xml || true
+  artifacts:
+    when: always
+    paths:
+      - TestResults.xcresult
+    reports:
+      junit: test-results.xml
+    expire_in: 7 days
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == "main"
