@@ -68,7 +68,7 @@ struct ContentView: View {
 /// Placeholder ViewModel until UniFFI MobileOnboardingWorkflow is available.
 ///
 /// Will be replaced by `OnboardingViewModel` (shared with iOS) once the
-/// published VauchiMobile bindings contain MobileOnboardingWorkflow.
+/// published VauchiPlatform bindings contain MobileOnboardingWorkflow.
 class PlaceholderViewModel: ObservableObject {
     @Published var currentScreen: ScreenModel?
 

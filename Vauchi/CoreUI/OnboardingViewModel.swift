@@ -6,13 +6,13 @@
 // Swift wrapper around MobileOnboardingWorkflow (core-driven onboarding)
 //
 // Shared with iOS — this file is identical to ios/Vauchi/CoreUI/OnboardingViewModel.swift.
-// TODO: Extract to vauchi-mobile-swift SPM package to avoid duplication.
+// TODO: Extract to vauchi-platform-swift SPM package to avoid duplication.
 
 import Foundation
 import SwiftUI
 
-#if canImport(VauchiMobile)
-    import VauchiMobile
+#if canImport(VauchiPlatform)
+    import VauchiPlatform
 
     /// ViewModel that wraps the core `MobileOnboardingWorkflow` and drives
     /// a `ScreenRendererView` with decoded `ScreenModel` data.
