@@ -1,0 +1,27 @@
+# SPDX-FileCopyrightText: 2026 Mattia Egloff <mattia.egloff@pm.me>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+stages:
+  - lint
+  - build
+  - test
+
+lint:swiftlint:
+  stage: lint
+  script:
+    - swiftlint lint --strict
+  tags: [macos]
+  allow_failure: true
+
+build:
+  stage: build
+  script:
+    - xcodegen generate
+    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -configuration Release -destination "platform=macOS" build
+  tags: [macos]
+
+test:
+  stage: test
+  script:
+    - xcodebuild -project Vauchi.xcodeproj -scheme VauchiTests -destination "platform=macOS" test
+  tags: [macos]
