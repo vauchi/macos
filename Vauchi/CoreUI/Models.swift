@@ -7,7 +7,7 @@
 // Maps to: vauchi-core/src/ui/screen.rs, component.rs, action.rs
 //
 // Shared with iOS — this file is identical to ios/Vauchi/CoreUI/Models.swift.
-// TODO: Extract to vauchi-mobile-swift SPM package to avoid duplication.
+// TODO: Extract to vauchi-platform-swift SPM package to avoid duplication.
 
 import Foundation
 

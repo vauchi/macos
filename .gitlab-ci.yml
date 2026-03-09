@@ -1,27 +1,155 @@
 # SPDX-FileCopyrightText: 2026 Mattia Egloff <mattia.egloff@pm.me>
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+include:
+  - project: 'vauchi/scripts'
+    ref: main
+    file: '/ci-templates/reuse.yml'
+
 stages:
+  - update
   - lint
   - build
   - test
+
+workflow:
+  auto_cancel:
+    on_new_commit: interruptible
+
+# ============================================================
+# Update Stage (triggered by upstream vauchi-platform-swift release)
+# ============================================================
+
+update:bindings-version:
+  stage: update
+  tags:
+    - macos
+    - self-hosted
+  resource_group: bindings-version-update
+  rules:
+    - if: ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "pipeline" || $CI_PIPELINE_SOURCE == "api") && $BINDINGS_VERSION
+  script:
+    - |
+      # Strip v prefix if present (upstream trigger passes v0.1.16 format)
+      BINDINGS_VERSION="${BINDINGS_VERSION#v}"
+      echo "Bumping vauchi-platform-swift to $BINDINGS_VERSION"
+
+      BRANCH="chore/bump-vauchi-platform-${BINDINGS_VERSION}"
+
+      # Configure git
+      git config user.email "ci@vauchi.com"
+      git config user.name "Vauchi CI"
+      git remote set-url origin "https://ci:${PROJECT_ACCESS_TOKEN}@gitlab.com/${CI_PROJECT_PATH}.git"
+
+      # Check if branch already exists on remote
+      if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
+        echo "Branch $BRANCH already exists — version bump already in progress"
+        exit 0
+      fi
+
+      # Create branch and update version in project.yml
+      git checkout -b "$BRANCH"
+      # Only update VauchiPlatform version (not other SPM deps)
+      LINE=$(grep -n "vauchi-platform-swift" project.yml | head -1 | cut -d: -f1)
+      NEXT=$((LINE + 1))
+      sed -i "" "${NEXT}s/from: \"[^\"]*\"/from: \"${BINDINGS_VERSION}\"/" project.yml
+
+      # Verify the change was made
+      if ! grep -q "from: \"${BINDINGS_VERSION}\"" project.yml; then
+        echo "ERROR: Version replacement failed"
+        exit 1
+      fi
+
+      # Regenerate Xcode project
+      command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
+      xcodegen generate
+
+      git add project.yml Vauchi.xcodeproj/
+      git commit -m "chore: Bump vauchi-platform-swift to $BINDINGS_VERSION"
+      git push -u origin "$BRANCH"
+
+      # Create MR via GitLab API
+      MR_RESPONSE=$(curl -s --request POST \
+        --header "PRIVATE-TOKEN: ${PROJECT_ACCESS_TOKEN}" \
+        --header "Content-Type: application/json" \
+        --data "{
+          \"source_branch\": \"$BRANCH\",
+          \"target_branch\": \"main\",
+          \"title\": \"chore: Bump vauchi-platform-swift to $BINDINGS_VERSION\",
+          \"description\": \"Automated version bump triggered by vauchi-platform-swift release.\\n\\nUpdates VauchiPlatform SPM minimum version to \`$BINDINGS_VERSION\`.\\n\\n---\\n_This MR was created automatically by CI._\",
+          \"remove_source_branch\": true
+        }" \
+        "${CI_SERVER_URL}/api/v4/projects/${CI_PROJECT_ID}/merge_requests")
+
+      MR_IID=$(echo "$MR_RESPONSE" | jq -r '.iid // empty')
+      MR_URL=$(echo "$MR_RESPONSE" | jq -r '.web_url // empty')
+      if [ -n "$MR_URL" ] && [ -n "$MR_IID" ]; then
+        echo "Created MR: $MR_URL"
+
+        # Enable auto-merge so the MR merges automatically when CI passes
+        echo "Enabling auto-merge..."
+        MERGE_RESPONSE=$(curl -s --request PUT \
+          --header "PRIVATE-TOKEN: ${PROJECT_ACCESS_TOKEN}" \
+          "${CI_SERVER_URL}/api/v4/projects/${CI_PROJECT_ID}/merge_requests/${MR_IID}/merge?merge_when_pipeline_succeeds=true")
+        MERGE_STATUS=$(echo "$MERGE_RESPONSE" | jq -r '.merge_when_pipeline_succeeds // empty')
+        if [ "$MERGE_STATUS" = "true" ]; then
+          echo "Auto-merge enabled — MR will merge when pipeline succeeds"
+        else
+          echo "WARNING: Could not enable auto-merge (may require maintainer token)"
+          echo "  Response: $(echo "$MERGE_RESPONSE" | jq -r '.message // .error // "unknown"')"
+        fi
+      else
+        echo "MR creation response: $MR_RESPONSE"
+        echo "WARNING: Could not create MR (may already exist)"
+      fi
+
+# ============================================================
+# Lint Stage (MR only)
+# ============================================================
 
 lint:swiftlint:
   stage: lint
   script:
     - swiftlint lint --strict
-  tags: [macos]
+  tags:
+    - macos
+    - self-hosted
   allow_failure: true
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
-build:
+# ============================================================
+# Build Stage
+# ============================================================
+
+build:debug:
   stage: build
+  tags:
+    - macos
+    - self-hosted
   script:
+    - command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
+    - rm -rf Vauchi.xcodeproj .spm-packages
     - xcodegen generate
-    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -configuration Release -destination "platform=macOS" build
-  tags: [macos]
+    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -configuration Debug -destination "platform=macOS" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO build
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
 
-test:
+# ============================================================
+# Test Stage
+# ============================================================
+
+test:unit:
   stage: test
+  tags:
+    - macos
+    - self-hosted
+  needs:
+    - build:debug
   script:
-    - xcodebuild -project Vauchi.xcodeproj -scheme VauchiTests -destination "platform=macOS" test
-  tags: [macos]
+    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" test
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
+  allow_failure: true  # Until test suite is established

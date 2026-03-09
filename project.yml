@@ -15,9 +15,9 @@ settings:
   MACOSX_DEPLOYMENT_TARGET: "14.0"
 
 packages:
-  VauchiMobile:
-    url: https://gitlab.com/vauchi/vauchi-mobile-swift.git
-    from: "0.4.1-dev.1"
+  VauchiPlatform:
+    url: https://gitlab.com/vauchi/vauchi-platform-swift.git
+    branch: main
 
 targets:
   Vauchi:
@@ -27,18 +27,15 @@ targets:
       - path: Vauchi
         excludes:
           - "**/*.xcassets"
-          - "Generated"
           - "Libs"
-          # CoreUI views that depend on MobileOnboardingWorkflow (UniFFI binding)
-          # which isn't in the published VauchiMobile yet. Exclude until bindings update.
-          - "CoreUI/OnboardingViewModel.swift"
+          - "Generated"
     dependencies:
-      - package: VauchiMobile
-        product: VauchiMobile
+      - package: VauchiPlatform
+        product: VauchiPlatform
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: app.vauchi.macos
-        MARKETING_VERSION: "0.5.0"
+        MARKETING_VERSION: "0.1.0"
         CURRENT_PROJECT_VERSION: "1"
         INFOPLIST_FILE: Vauchi/Info.plist
         CODE_SIGN_STYLE: Automatic
@@ -47,7 +44,7 @@ targets:
       path: Vauchi/Info.plist
       properties:
         CFBundleDisplayName: Vauchi
-        CFBundleShortVersionString: "0.5.0"
+        CFBundleShortVersionString: "0.1.0"
         CFBundleVersion: "1"
         LSApplicationCategoryType: public.app-category.social-networking
 
