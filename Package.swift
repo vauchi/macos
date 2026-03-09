@@ -11,15 +11,15 @@ let package = Package(
     platforms: [.macOS(.v14)],
     dependencies: [
         .package(
-            url: "https://gitlab.com/vauchi/vauchi-mobile-swift.git",
-            from: "0.4.1-dev.1"
+            url: "https://gitlab.com/vauchi/vauchi-platform-swift.git",
+            from: "0.1.0"
         ),
     ],
     targets: [
         .executableTarget(
             name: "Vauchi",
             dependencies: [
-                .product(name: "VauchiMobile", package: "vauchi-mobile-swift"),
+                .product(name: "VauchiPlatform", package: "vauchi-platform-swift"),
             ],
             path: "Vauchi"
         ),
