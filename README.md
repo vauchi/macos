@@ -9,7 +9,7 @@
 
 Native macOS desktop app for Vauchi — privacy-focused contact card exchange.
 
-Built with SwiftUI + AppKit. Uses `vauchi-mobile-swift` SPM package for core bindings (shared with iOS).
+Built with SwiftUI + AppKit. Uses `vauchi-platform-swift` SPM package for core bindings (shared with iOS).
 
 ## Prerequisites
 

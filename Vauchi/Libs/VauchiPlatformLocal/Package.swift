@@ -6,20 +6,20 @@
 import PackageDescription
 
 let package = Package(
-    name: "VauchiMobile",
+    name: "VauchiPlatform",
     platforms: [.macOS(.v14), .iOS(.v16)],
     products: [
-        .library(name: "VauchiMobile", targets: ["VauchiMobile", "VauchiMobileFFI"]),
+        .library(name: "VauchiPlatform", targets: ["VauchiPlatform", "VauchiPlatformFFI"]),
     ],
     targets: [
         .binaryTarget(
-            name: "VauchiMobileFFI",
-            path: "VauchiMobileFFI.xcframework"
+            name: "VauchiPlatformFFI",
+            path: "VauchiPlatformFFI.xcframework"
         ),
         .target(
-            name: "VauchiMobile",
-            dependencies: ["VauchiMobileFFI"],
-            path: "Sources/VauchiMobile"
+            name: "VauchiPlatform",
+            dependencies: ["VauchiPlatformFFI"],
+            path: "Sources/VauchiPlatform"
         ),
     ]
 )

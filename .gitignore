@@ -19,10 +19,10 @@ build/
 
 # UniFFI bindings (local copies created by `just bindings` for dev builds)
 Vauchi/Generated/
-Vauchi/Libs/VauchiMobileFFI.xcframework/
-Vauchi/Libs/VauchiMobileLocal/.build/
-Vauchi/Libs/VauchiMobileLocal/VauchiMobileFFI.xcframework
-Vauchi/Libs/VauchiMobileLocal/Sources/VauchiMobile/vauchi_mobile.swift
+Vauchi/Libs/Vauchi*FFI.xcframework/
+Vauchi/Libs/VauchiPlatformLocal/.build/
+Vauchi/Libs/VauchiPlatformLocal/Vauchi*FFI.xcframework
+Vauchi/Libs/VauchiPlatformLocal/Sources/VauchiPlatform/vauchi_platform.swift
 Frameworks/
 
 # Local-bindings workspace (created by `just bindings-local`)
