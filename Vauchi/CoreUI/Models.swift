@@ -103,53 +103,56 @@ enum Component: Decodable {
 
         // Struct variants: {"VariantName": {...}}
         let container = try decoder.container(keyedBy: VariantKey.self)
+        self = try Self.decodeStructVariant(from: container, codingPath: decoder.codingPath)
+    }
 
+    // swiftlint:disable:next cyclomatic_complexity
+    private static func decodeStructVariant(
+        from container: KeyedDecodingContainer<VariantKey>,
+        codingPath: [CodingKey]
+    ) throws -> Component {
         if container.contains(.text) {
-            self = try .text(container.decode(TextComponent.self, forKey: .text))
+            return try .text(container.decode(TextComponent.self, forKey: .text))
         } else if container.contains(.textInput) {
-            self = try .textInput(container.decode(TextInputComponent.self, forKey: .textInput))
+            return try .textInput(container.decode(TextInputComponent.self, forKey: .textInput))
         } else if container.contains(.toggleList) {
-            self = try .toggleList(container.decode(ToggleListComponent.self, forKey: .toggleList))
+            return try .toggleList(container.decode(ToggleListComponent.self, forKey: .toggleList))
         } else if container.contains(.fieldList) {
-            self = try .fieldList(container.decode(FieldListComponent.self, forKey: .fieldList))
+            return try .fieldList(container.decode(FieldListComponent.self, forKey: .fieldList))
         } else if container.contains(.cardPreview) {
-            self = try .cardPreview(container.decode(CardPreviewComponent.self, forKey: .cardPreview))
+            return try .cardPreview(container.decode(CardPreviewComponent.self, forKey: .cardPreview))
         } else if container.contains(.infoPanel) {
-            self = try .infoPanel(container.decode(InfoPanelComponent.self, forKey: .infoPanel))
+            return try .infoPanel(container.decode(InfoPanelComponent.self, forKey: .infoPanel))
         } else if container.contains(.contactList) {
-            self = try .contactList(container.decode(ContactListComponent.self, forKey: .contactList))
+            return try .contactList(container.decode(ContactListComponent.self, forKey: .contactList))
         } else if container.contains(.settingsGroup) {
-            self = try .settingsGroup(container.decode(SettingsGroupComponent.self, forKey: .settingsGroup))
+            return try .settingsGroup(container.decode(SettingsGroupComponent.self, forKey: .settingsGroup))
         } else if container.contains(.actionList) {
-            self = try .actionList(container.decode(ActionListComponent.self, forKey: .actionList))
+            return try .actionList(container.decode(ActionListComponent.self, forKey: .actionList))
         } else if container.contains(.statusIndicator) {
-            self = try .statusIndicator(container.decode(StatusIndicatorComponent.self, forKey: .statusIndicator))
+            return try .statusIndicator(container.decode(StatusIndicatorComponent.self, forKey: .statusIndicator))
         } else if container.contains(.pinInput) {
-            self = try .pinInput(container.decode(PinInputComponent.self, forKey: .pinInput))
+            return try .pinInput(container.decode(PinInputComponent.self, forKey: .pinInput))
         } else if container.contains(.qrCode) {
-            self = try .qrCode(container.decode(QrCodeComponent.self, forKey: .qrCode))
+            return try .qrCode(container.decode(QrCodeComponent.self, forKey: .qrCode))
         } else if container.contains(.confirmationDialog) {
-            self = try .confirmationDialog(
+            return try .confirmationDialog(
                 container.decode(ConfirmationDialogComponent.self, forKey: .confirmationDialog)
             )
         } else if container.contains(.showToast) {
-            self = try .showToast(container.decode(ShowToastComponent.self, forKey: .showToast))
+            return try .showToast(container.decode(ShowToastComponent.self, forKey: .showToast))
         } else if container.contains(.inlineConfirm) {
-            self = try .inlineConfirm(
+            return try .inlineConfirm(
                 container.decode(InlineConfirmComponent.self, forKey: .inlineConfirm)
             )
         } else if container.contains(.editableText) {
-            self = try .editableText(
+            return try .editableText(
                 container.decode(EditableTextComponent.self, forKey: .editableText)
             )
-        } else {
-            throw DecodingError.dataCorrupted(
-                DecodingError.Context(
-                    codingPath: decoder.codingPath,
-                    debugDescription: "Unknown Component variant"
-                )
-            )
         }
+        throw DecodingError.dataCorrupted(
+            DecodingError.Context(codingPath: codingPath, debugDescription: "Unknown Component variant")
+        )
     }
 
     private enum VariantKey: String, CodingKey {
@@ -634,59 +637,65 @@ enum ActionResult: Decodable {
         if let container = try? decoder.singleValueContainer(),
            let stringValue = try? container.decode(String.self)
         {
-            switch stringValue {
-            case "Complete": self = .complete
-            case "StartDeviceLink": self = .startDeviceLink
-            case "StartBackupImport": self = .startBackupImport
-            case "RequestCamera": self = .requestCamera
-            case "WipeComplete": self = .wipeComplete
-            default:
-                throw DecodingError.dataCorrupted(
-                    DecodingError.Context(
-                        codingPath: decoder.codingPath,
-                        debugDescription: "Unknown ActionResult unit variant: \(stringValue)"
-                    )
-                )
-            }
+            self = try Self.decodeUnitVariant(stringValue, codingPath: decoder.codingPath)
             return
         }
 
         // Struct variants: {"VariantName": {...}}
         let container = try decoder.container(keyedBy: VariantKey.self)
+        self = try Self.decodeStructVariant(from: container, codingPath: decoder.codingPath)
+    }
 
-        if container.contains(.updateScreen) {
-            self = try .updateScreen(container.decode(ScreenModel.self, forKey: .updateScreen))
-        } else if container.contains(.navigateTo) {
-            self = try .navigateTo(container.decode(ScreenModel.self, forKey: .navigateTo))
-        } else if container.contains(.validationError) {
-            let error = try container.decode(ValidationErrorData.self, forKey: .validationError)
-            self = .validationError(componentId: error.componentId, message: error.message)
-        } else if container.contains(.openContact) {
-            let data = try container.decode(OpenContactData.self, forKey: .openContact)
-            self = .openContact(contactId: data.contactId)
-        } else if container.contains(.openUrl) {
-            let data = try container.decode(OpenUrlData.self, forKey: .openUrl)
-            self = .openUrl(url: data.url)
-        } else if container.contains(.editContact) {
-            let data = try container.decode(EditContactData.self, forKey: .editContact)
-            self = .editContact(contactId: data.contactId)
-        } else if container.contains(.showAlert) {
-            let data = try container.decode(ShowAlertData.self, forKey: .showAlert)
-            self = .showAlert(title: data.title, message: data.message)
-        } else if container.contains(.openEntryDetail) {
-            let data = try container.decode(OpenEntryDetailData.self, forKey: .openEntryDetail)
-            self = .openEntryDetail(fieldId: data.fieldId)
-        } else if container.contains(.showToast) {
-            let data = try container.decode(ShowToastData.self, forKey: .showToast)
-            self = .showToast(message: data.message, undoActionId: data.undoActionId)
-        } else {
+    private static func decodeUnitVariant(_ value: String, codingPath: [CodingKey]) throws -> ActionResult {
+        switch value {
+        case "Complete": return .complete
+        case "StartDeviceLink": return .startDeviceLink
+        case "StartBackupImport": return .startBackupImport
+        case "RequestCamera": return .requestCamera
+        case "WipeComplete": return .wipeComplete
+        default:
             throw DecodingError.dataCorrupted(
                 DecodingError.Context(
-                    codingPath: decoder.codingPath,
-                    debugDescription: "Unknown ActionResult variant"
+                    codingPath: codingPath,
+                    debugDescription: "Unknown ActionResult unit variant: \(value)"
                 )
             )
         }
+    }
+
+    private static func decodeStructVariant(
+        from container: KeyedDecodingContainer<VariantKey>,
+        codingPath: [CodingKey]
+    ) throws -> ActionResult {
+        if container.contains(.updateScreen) {
+            return try .updateScreen(container.decode(ScreenModel.self, forKey: .updateScreen))
+        } else if container.contains(.navigateTo) {
+            return try .navigateTo(container.decode(ScreenModel.self, forKey: .navigateTo))
+        } else if container.contains(.validationError) {
+            let error = try container.decode(ValidationErrorData.self, forKey: .validationError)
+            return .validationError(componentId: error.componentId, message: error.message)
+        } else if container.contains(.openContact) {
+            let data = try container.decode(OpenContactData.self, forKey: .openContact)
+            return .openContact(contactId: data.contactId)
+        } else if container.contains(.openUrl) {
+            let data = try container.decode(OpenUrlData.self, forKey: .openUrl)
+            return .openUrl(url: data.url)
+        } else if container.contains(.editContact) {
+            let data = try container.decode(EditContactData.self, forKey: .editContact)
+            return .editContact(contactId: data.contactId)
+        } else if container.contains(.showAlert) {
+            let data = try container.decode(ShowAlertData.self, forKey: .showAlert)
+            return .showAlert(title: data.title, message: data.message)
+        } else if container.contains(.openEntryDetail) {
+            let data = try container.decode(OpenEntryDetailData.self, forKey: .openEntryDetail)
+            return .openEntryDetail(fieldId: data.fieldId)
+        } else if container.contains(.showToast) {
+            let data = try container.decode(ShowToastData.self, forKey: .showToast)
+            return .showToast(message: data.message, undoActionId: data.undoActionId)
+        }
+        throw DecodingError.dataCorrupted(
+            DecodingError.Context(codingPath: codingPath, debugDescription: "Unknown ActionResult variant")
+        )
     }
 
     private enum VariantKey: String, CodingKey {
