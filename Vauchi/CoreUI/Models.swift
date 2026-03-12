@@ -86,6 +86,9 @@ enum Component: Decodable {
     case pinInput(PinInputComponent)
     case qrCode(QrCodeComponent)
     case confirmationDialog(ConfirmationDialogComponent)
+    case showToast(ShowToastComponent)
+    case inlineConfirm(InlineConfirmComponent)
+    case editableText(EditableTextComponent)
     case divider
 
     init(from decoder: Decoder) throws {
@@ -129,6 +132,16 @@ enum Component: Decodable {
             self = try .confirmationDialog(
                 container.decode(ConfirmationDialogComponent.self, forKey: .confirmationDialog)
             )
+        } else if container.contains(.showToast) {
+            self = try .showToast(container.decode(ShowToastComponent.self, forKey: .showToast))
+        } else if container.contains(.inlineConfirm) {
+            self = try .inlineConfirm(
+                container.decode(InlineConfirmComponent.self, forKey: .inlineConfirm)
+            )
+        } else if container.contains(.editableText) {
+            self = try .editableText(
+                container.decode(EditableTextComponent.self, forKey: .editableText)
+            )
         } else {
             throw DecodingError.dataCorrupted(
                 DecodingError.Context(
@@ -153,6 +166,9 @@ enum Component: Decodable {
         case pinInput = "PinInput"
         case qrCode = "QrCode"
         case confirmationDialog = "ConfirmationDialog"
+        case showToast = "ShowToast"
+        case inlineConfirm = "InlineConfirm"
+        case editableText = "EditableText"
     }
 }
 
@@ -430,6 +446,35 @@ struct ConfirmationDialogComponent: Decodable {
     let destructive: Bool
 }
 
+// MARK: - ShowToast Component
+
+struct ShowToastComponent: Decodable {
+    let id: String
+    let message: String
+    let undoActionId: String?
+    let durationMs: UInt32
+}
+
+// MARK: - InlineConfirm Component
+
+struct InlineConfirmComponent: Decodable {
+    let id: String
+    let warning: String
+    let confirmText: String
+    let cancelText: String
+    let destructive: Bool
+}
+
+// MARK: - EditableText Component
+
+struct EditableTextComponent: Decodable {
+    let id: String
+    let label: String
+    let value: String
+    let editing: Bool
+    let validationError: String?
+}
+
 // MARK: - UserAction (Encodable for sending to core)
 
 /// An action the user performed in the UI.
@@ -445,6 +490,7 @@ enum UserAction: Encodable {
     case searchChanged(componentId: String, query: String)
     case listItemSelected(componentId: String, itemId: String)
     case settingsToggled(componentId: String, itemId: String)
+    case undoPressed(actionId: String)
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: VariantKey.self)
@@ -498,6 +544,12 @@ enum UserAction: Encodable {
             )
             try nested.encode(componentId, forKey: .componentId)
             try nested.encode(itemId, forKey: .itemId)
+
+        case let .undoPressed(actionId):
+            var nested = container.nestedContainer(
+                keyedBy: UndoPressedKeys.self, forKey: .undoPressed
+            )
+            try nested.encode(actionId, forKey: .actionId)
         }
     }
 
@@ -510,6 +562,7 @@ enum UserAction: Encodable {
         case searchChanged = "SearchChanged"
         case listItemSelected = "ListItemSelected"
         case settingsToggled = "SettingsToggled"
+        case undoPressed = "UndoPressed"
     }
 
     private enum TextChangedKeys: String, CodingKey {
@@ -550,6 +603,10 @@ enum UserAction: Encodable {
         case componentId = "component_id"
         case itemId = "item_id"
     }
+
+    private enum UndoPressedKeys: String, CodingKey {
+        case actionId = "action_id"
+    }
 }
 
 // MARK: - ActionResult
@@ -564,9 +621,12 @@ enum ActionResult: Decodable {
     case startDeviceLink
     case startBackupImport
     case openContact(contactId: String)
+    case editContact(contactId: String)
     case openUrl(url: String)
     case showAlert(title: String, message: String)
     case requestCamera
+    case openEntryDetail(fieldId: String)
+    case showToast(message: String, undoActionId: String?)
     case wipeComplete
 
     init(from decoder: Decoder) throws {
@@ -607,9 +667,18 @@ enum ActionResult: Decodable {
         } else if container.contains(.openUrl) {
             let data = try container.decode(OpenUrlData.self, forKey: .openUrl)
             self = .openUrl(url: data.url)
+        } else if container.contains(.editContact) {
+            let data = try container.decode(EditContactData.self, forKey: .editContact)
+            self = .editContact(contactId: data.contactId)
         } else if container.contains(.showAlert) {
             let data = try container.decode(ShowAlertData.self, forKey: .showAlert)
             self = .showAlert(title: data.title, message: data.message)
+        } else if container.contains(.openEntryDetail) {
+            let data = try container.decode(OpenEntryDetailData.self, forKey: .openEntryDetail)
+            self = .openEntryDetail(fieldId: data.fieldId)
+        } else if container.contains(.showToast) {
+            let data = try container.decode(ShowToastData.self, forKey: .showToast)
+            self = .showToast(message: data.message, undoActionId: data.undoActionId)
         } else {
             throw DecodingError.dataCorrupted(
                 DecodingError.Context(
@@ -625,8 +694,11 @@ enum ActionResult: Decodable {
         case navigateTo = "NavigateTo"
         case validationError = "ValidationError"
         case openContact = "OpenContact"
+        case editContact = "EditContact"
         case openUrl = "OpenUrl"
         case showAlert = "ShowAlert"
+        case openEntryDetail = "OpenEntryDetail"
+        case showToast = "ShowToast"
     }
 
     private struct ValidationErrorData: Decodable {
@@ -642,8 +714,21 @@ enum ActionResult: Decodable {
         let url: String
     }
 
+    private struct EditContactData: Decodable {
+        let contactId: String
+    }
+
     private struct ShowAlertData: Decodable {
         let title: String
         let message: String
+    }
+
+    private struct OpenEntryDetailData: Decodable {
+        let fieldId: String
+    }
+
+    private struct ShowToastData: Decodable {
+        let message: String
+        let undoActionId: String?
     }
 }
