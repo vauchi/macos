@@ -53,6 +53,19 @@ struct ComponentView: View {
         case let .confirmationDialog(dialogComponent):
             ConfirmationDialogComponentView(component: dialogComponent, onAction: onAction)
 
+        case let .showToast(toastComponent):
+            // Toast rendering is handled at the screen level, not inline
+            EmptyView()
+                .onAppear {
+                    print("ComponentView: ShowToast should be handled at screen level: \(toastComponent.message)")
+                }
+
+        case let .inlineConfirm(confirmComponent):
+            InlineConfirmComponentView(component: confirmComponent, onAction: onAction)
+
+        case let .editableText(editableComponent):
+            EditableTextComponentView(component: editableComponent, onAction: onAction)
+
         case .divider:
             DividerComponentView()
         }
