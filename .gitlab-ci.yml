@@ -5,6 +5,9 @@ include:
   - project: 'vauchi/scripts'
     ref: main
     file: '/ci-templates/reuse.yml'
+  - project: 'vauchi/scripts'
+    ref: main
+    file: '/ci-templates/design-drift.yml'
 
 stages:
   - update
@@ -165,3 +168,15 @@ test:unit:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == "main"
+
+# ============================================================
+# Design Drift Check
+# ============================================================
+
+# Design drift: verify all design-spec components are implemented
+check:design-drift:
+  extends: .design-drift-job
+  variables:
+    DESIGN_DRIFT_COMPONENT_DIR: "Vauchi/CoreUI/Components"
+    DESIGN_DRIFT_FILE_EXT: ".swift"
+    DESIGN_DRIFT_CASE: "pascal"
