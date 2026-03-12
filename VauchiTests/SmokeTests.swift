@@ -10,9 +10,21 @@ import XCTest
 
 final class SmokeTests: XCTestCase {
     #if canImport(VauchiPlatform)
-        func testOnboardingViewModelInitialState() {
-            let viewModel = OnboardingViewModel()
-            XCTAssertNotNil(viewModel.currentScreen, "OnboardingViewModel should load initial screen from core")
+        @MainActor
+        func testAppStateInitializes() {
+            let appState = AppState()
+            XCTAssertNotNil(appState.viewModel, "AppState should create AppViewModel from PlatformAppEngine")
+            XCTAssertNil(appState.error, "AppState should not have an error on fresh init")
+        }
+
+        @MainActor
+        func testAppViewModelLoadsInitialScreen() {
+            let appState = AppState()
+            guard let viewModel = appState.viewModel else {
+                XCTFail("AppState should create AppViewModel")
+                return
+            }
+            XCTAssertNotNil(viewModel.currentScreen, "AppViewModel should load initial screen from core")
         }
     #else
         func testPlaceholderViewModelInitialState() {

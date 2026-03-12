@@ -1,0 +1,99 @@
+// SPDX-FileCopyrightText: 2026 Mattia Egloff <mattia.egloff@pm.me>
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+// VauchiRepository.swift
+// Owns VauchiPlatform + PlatformAppEngine with shared storage key
+
+import Foundation
+
+#if canImport(VauchiPlatform)
+    import VauchiPlatform
+
+    enum VauchiRepositoryError: Error, LocalizedError {
+        case storageKeyGeneration(String)
+        case initialization(String)
+        case deviceLocked
+
+        var errorDescription: String? {
+            switch self {
+            case let .storageKeyGeneration(reason):
+                "Failed to generate storage key: \(reason)"
+            case let .initialization(reason):
+                "Failed to initialize Vauchi: \(reason)"
+            case .deviceLocked:
+                "Device is locked — unlock to access secure storage"
+            }
+        }
+    }
+
+    class VauchiRepository: ObservableObject {
+        let vauchi: VauchiPlatform
+        let appEngine: PlatformAppEngine
+
+        init(dataDir: String? = nil, relayUrl: String = "wss://relay.vauchi.app") throws {
+            let dir = dataDir ?? VauchiRepository.defaultDataDir()
+
+            try FileManager.default.createDirectory(
+                atPath: dir,
+                withIntermediateDirectories: true
+            )
+
+            let storageKeyData: Data
+            do {
+                storageKeyData = try VauchiRepository.getOrCreateStorageKey()
+            } catch let error as KeychainError {
+                if case .deviceLocked = error {
+                    throw VauchiRepositoryError.deviceLocked
+                }
+                throw VauchiRepositoryError.storageKeyGeneration("\(error)")
+            }
+
+            do {
+                vauchi = try VauchiPlatform.newWithSecureKey(
+                    dataDir: dir,
+                    relayUrl: relayUrl,
+                    storageKeyBytes: storageKeyData
+                )
+                appEngine = try PlatformAppEngine(
+                    dataDir: dir,
+                    relayUrl: relayUrl,
+                    storageKeyBytes: storageKeyData
+                )
+            } catch {
+                throw VauchiRepositoryError.initialization("\(error)")
+            }
+        }
+
+        // MARK: - Storage Key Management
+
+        static func getOrCreateStorageKey() throws -> Data {
+            do {
+                return try KeychainService.shared.loadStorageKey()
+            } catch KeychainError.notFound {
+                // Generate new 32-byte key
+                var bytes = [UInt8](repeating: 0, count: 32)
+                let status = SecRandomCopyBytes(kSecRandomDefault, 32, &bytes)
+                guard status == errSecSuccess else {
+                    throw KeychainError.unknown(status)
+                }
+                let data = Data(bytes)
+                try KeychainService.shared.saveStorageKey(data)
+                return data
+            }
+        }
+
+        // MARK: - Data Directory
+
+        static func defaultDataDir() -> String {
+            let appSupport = FileManager.default.urls(
+                for: .applicationSupportDirectory,
+                in: .userDomainMask
+            ).first!
+            return appSupport
+                .appendingPathComponent("Vauchi")
+                .appendingPathComponent("data")
+                .path
+        }
+    }
+#endif
