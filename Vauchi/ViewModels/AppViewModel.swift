@@ -103,82 +103,47 @@ import SwiftUI
 
         // MARK: - Private
 
+        private func navigateToScreen(_ screenObject: [String: Any]) {
+            do {
+                let payload = try JSONSerialization.data(withJSONObject: screenObject)
+                if let screenJson = String(data: payload, encoding: .utf8) {
+                    navigateTo(screenJson: screenJson)
+                }
+            } catch {
+                print("AppViewModel: failed to encode screen navigation: \(error)")
+            }
+        }
+
         private func applyResult(_ result: ActionResult) {
             switch result {
             case let .updateScreen(screen):
                 currentScreen = screen
                 validationErrors = [:]
-
             case let .navigateTo(screen):
                 currentScreen = screen
                 validationErrors = [:]
-
             case let .validationError(componentId, message):
                 validationErrors[componentId] = message
-
-            case .complete:
-                // Onboarding complete or form submitted — reload screen
+            case .complete, .wipeComplete:
                 loadScreen()
-
             case let .openUrl(url):
-                if let nsUrl = URL(string: url) {
-                    NSWorkspace.shared.open(nsUrl)
-                }
-
+                if let nsUrl = URL(string: url) { NSWorkspace.shared.open(nsUrl) }
             case let .showAlert(title, message):
                 alertMessage = AlertMessage(title: title, message: message)
-
             case let .openContact(contactId):
-                do {
-                    let payload = try JSONSerialization.data(
-                        withJSONObject: ["ContactDetail": ["contact_id": contactId]]
-                    )
-                    if let screenJson = String(data: payload, encoding: .utf8) {
-                        navigateTo(screenJson: screenJson)
-                    }
-                } catch {
-                    print("AppViewModel: failed to encode ContactDetail: \(error)")
-                }
-
+                navigateToScreen(["ContactDetail": ["contact_id": contactId]])
             case let .editContact(contactId):
-                do {
-                    let payload = try JSONSerialization.data(
-                        withJSONObject: ["ContactEdit": ["contact_id": contactId]]
-                    )
-                    if let screenJson = String(data: payload, encoding: .utf8) {
-                        navigateTo(screenJson: screenJson)
-                    }
-                } catch {
-                    print("AppViewModel: failed to encode ContactEdit: \(error)")
-                }
-
+                navigateToScreen(["ContactEdit": ["contact_id": contactId]])
             case let .openEntryDetail(fieldId):
-                do {
-                    let payload = try JSONSerialization.data(
-                        withJSONObject: ["EntryDetail": ["field_id": fieldId]]
-                    )
-                    if let screenJson = String(data: payload, encoding: .utf8) {
-                        navigateTo(screenJson: screenJson)
-                    }
-                } catch {
-                    print("AppViewModel: failed to encode EntryDetail: \(error)")
-                }
-
+                navigateToScreen(["EntryDetail": ["field_id": fieldId]])
             case let .showToast(message, _):
-                // TODO: Implement proper toast UI; for now show as alert
                 alertMessage = AlertMessage(title: "", message: message)
-
-            case .wipeComplete:
-                loadScreen()
-
             case .requestCamera:
                 alertMessage = AlertMessage(
                     title: "Camera Not Available",
                     message: "QR scanning is not available on macOS. Use another device to scan."
                 )
-
             case .startDeviceLink, .startBackupImport:
-                // These require platform-specific flows — handled by VauchiRepository
                 break
             }
         }
