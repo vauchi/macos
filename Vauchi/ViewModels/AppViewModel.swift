@@ -129,8 +129,44 @@ import SwiftUI
                 alertMessage = AlertMessage(title: title, message: message)
 
             case let .openContact(contactId):
-                let screenJson = "{\"ContactDetail\":{\"contact_id\":\"\(contactId)\"}}"
-                navigateTo(screenJson: screenJson)
+                do {
+                    let payload = try JSONSerialization.data(
+                        withJSONObject: ["ContactDetail": ["contact_id": contactId]]
+                    )
+                    if let screenJson = String(data: payload, encoding: .utf8) {
+                        navigateTo(screenJson: screenJson)
+                    }
+                } catch {
+                    print("AppViewModel: failed to encode ContactDetail: \(error)")
+                }
+
+            case let .editContact(contactId):
+                do {
+                    let payload = try JSONSerialization.data(
+                        withJSONObject: ["ContactEdit": ["contact_id": contactId]]
+                    )
+                    if let screenJson = String(data: payload, encoding: .utf8) {
+                        navigateTo(screenJson: screenJson)
+                    }
+                } catch {
+                    print("AppViewModel: failed to encode ContactEdit: \(error)")
+                }
+
+            case let .openEntryDetail(fieldId):
+                do {
+                    let payload = try JSONSerialization.data(
+                        withJSONObject: ["EntryDetail": ["field_id": fieldId]]
+                    )
+                    if let screenJson = String(data: payload, encoding: .utf8) {
+                        navigateTo(screenJson: screenJson)
+                    }
+                } catch {
+                    print("AppViewModel: failed to encode EntryDetail: \(error)")
+                }
+
+            case let .showToast(message, _):
+                // TODO: Implement proper toast UI; for now show as alert
+                alertMessage = AlertMessage(title: "", message: message)
 
             case .wipeComplete:
                 loadScreen()

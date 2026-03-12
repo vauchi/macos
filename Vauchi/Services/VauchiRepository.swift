@@ -75,9 +75,17 @@ import Foundation
                 var bytes = [UInt8](repeating: 0, count: 32)
                 let status = SecRandomCopyBytes(kSecRandomDefault, 32, &bytes)
                 guard status == errSecSuccess else {
+                    // Zeroize before throwing
+                    bytes.withUnsafeMutableBufferPointer { ptr in
+                        memset_s(ptr.baseAddress!, ptr.count, 0, ptr.count)
+                    }
                     throw KeychainError.unknown(status)
                 }
                 let data = Data(bytes)
+                // Zeroize the mutable byte array now that Data holds a copy
+                bytes.withUnsafeMutableBufferPointer { ptr in
+                    memset_s(ptr.baseAddress!, ptr.count, 0, ptr.count)
+                }
                 try KeychainService.shared.saveStorageKey(data)
                 return data
             }
