@@ -39,8 +39,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 }
 
 struct ContentView: View {
-    // TODO: Replace with actual OnboardingViewModel when UniFFI bindings are available
-    @StateObject private var viewModel = PlaceholderViewModel()
+    #if canImport(VauchiPlatform)
+        @StateObject private var viewModel = OnboardingViewModel()
+    #else
+        @StateObject private var viewModel = PlaceholderViewModel()
+    #endif
 
     var body: some View {
         if let screen = viewModel.currentScreen {
@@ -65,14 +68,14 @@ struct ContentView: View {
     }
 }
 
-/// Placeholder ViewModel until UniFFI MobileOnboardingWorkflow is available.
-///
-/// Will be replaced by `OnboardingViewModel` (shared with iOS) once the
-/// published VauchiPlatform bindings contain MobileOnboardingWorkflow.
-class PlaceholderViewModel: ObservableObject {
-    @Published var currentScreen: ScreenModel?
+#if !canImport(VauchiPlatform)
+    /// Placeholder ViewModel until VauchiPlatform SPM bindings are available.
+    /// Once available, OnboardingViewModel (shared with iOS) takes over.
+    class PlaceholderViewModel: ObservableObject {
+        @Published var currentScreen: ScreenModel?
 
-    func handleAction(_: UserAction) {
-        // TODO: Forward to WorkflowEngine via UniFFI
+        func handleAction(_: UserAction) {
+            // No-op: requires VauchiPlatform bindings
+        }
     }
-}
+#endif
