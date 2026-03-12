@@ -9,10 +9,17 @@
 import XCTest
 
 final class SmokeTests: XCTestCase {
-    func testPlaceholderViewModelInitialState() {
-        let viewModel = PlaceholderViewModel()
-        XCTAssertNil(viewModel.currentScreen, "Initial screen should be nil before UniFFI connection")
-    }
+    #if canImport(VauchiPlatform)
+        func testOnboardingViewModelInitialState() {
+            let viewModel = OnboardingViewModel()
+            XCTAssertNotNil(viewModel.currentScreen, "OnboardingViewModel should load initial screen from core")
+        }
+    #else
+        func testPlaceholderViewModelInitialState() {
+            let viewModel = PlaceholderViewModel()
+            XCTAssertNil(viewModel.currentScreen, "Initial screen should be nil before UniFFI connection")
+        }
+    #endif
 
     func testActionStyleDecoding() throws {
         let json = """
