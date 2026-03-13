@@ -1,0 +1,673 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		09004B0A2E938952E9D267FC /* SettingsGroupComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19E25AFE32D45CA1C95DA590 /* SettingsGroupComponentView.swift */; };
+		1ACE579015129CE4204CAFA8 /* ConfirmationDialogComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC15FD6D223D1A6700601767 /* ConfirmationDialogComponentView.swift */; };
+		223E748C35520305B8EB1AE1 /* TextComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63AE253E0DF71B38AAE856FB /* TextComponentView.swift */; };
+		23D1EC2E1C8E3AB20680980F /* ContactListComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 851548F35E600FDD0D408A1D /* ContactListComponentView.swift */; };
+		2F5E5E0A77045722958E6979 /* PinInputComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649B37B5A7280D282E65BC3F /* PinInputComponentView.swift */; };
+		2F7D817E60BDE6223F5E0484 /* VauchiApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71E5FB136BF29B1F9D9B7F04 /* VauchiApp.swift */; };
+		3AB3684BA26BB47BF80BB933 /* SmokeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA16E627E566CF0467CBDC18 /* SmokeTests.swift */; };
+		406258333C40C48F3E43D569 /* ActionListComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 517370E68C1DA4C66CD5E3BA /* ActionListComponentView.swift */; };
+		5F8D2981766D6B43B9B09287 /* CardPreviewComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B524783275A3955F7CBEE76 /* CardPreviewComponentView.swift */; };
+		6B88FFA2E0ED30C5C6BD724E /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D65C152771F552C641B6A1 /* Models.swift */; };
+		8C9B49C0AE5BED8FEC8384AB /* ToggleListComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8776D2F72715F9C93486FE18 /* ToggleListComponentView.swift */; };
+		8CD4D48FC7E49B0DA82AD497 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B31DFE6F23CEA01F0437957B /* KeychainService.swift */; };
+		8F1D5438434B846475597477 /* ComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA272578E81247FB65A5C145 /* ComponentView.swift */; };
+		9BA83E0C812D194A0C94FC64 /* KeyboardShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80D01B0C0C941965F3F4DEDB /* KeyboardShortcuts.swift */; };
+		9C2069849249523C53C667F3 /* InfoPanelComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74CD83060E72D770CBCEB21 /* InfoPanelComponentView.swift */; };
+		9F92EEBB337032A28D7F5C8C /* StatusIndicatorComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9075FCC3ED0182090E406725 /* StatusIndicatorComponentView.swift */; };
+		A3E49F296BDC037ED703393A /* TextInputComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22ABDAF6DF202F4F33D5CE19 /* TextInputComponentView.swift */; };
+		ADB778BBA40707BAD3F8B21A /* AppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554291CB7224022A54BC954F /* AppViewModel.swift */; };
+		AE6ED32C72587A0283C520D2 /* VauchiRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95373D9E6440FED4B532EBDD /* VauchiRepository.swift */; };
+		B7538752D99FA9DB91BC9FF9 /* FieldListComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8193F0DBE26DA2026C2A4D5E /* FieldListComponentView.swift */; };
+		B7FF1459323990242EB469DC /* EditableTextComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98DF34CD2C6C3C8226D07C0B /* EditableTextComponentView.swift */; };
+		C1698574A9244D5FB1EC8EB9 /* DividerComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9764FE7904C8B94F71A1858D /* DividerComponentView.swift */; };
+		C2AA1DC7FD7FA22C155F70BD /* ScreenRendererView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BCD1112BEA2A776E27B15C3 /* ScreenRendererView.swift */; };
+		C2BF1FC510A65D73DD722C95 /* VauchiPlatform in Frameworks */ = {isa = PBXBuildFile; productRef = BE415B866BE8E26F05791810 /* VauchiPlatform */; };
+		C48401965743DD70C01F2F95 /* SystemTrayManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5438036805D34A0588FAE1C3 /* SystemTrayManager.swift */; };
+		C7EC0C6E4ABED52AB382351A /* InlineConfirmComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 442BA1AE531958F5AE130DEC /* InlineConfirmComponentView.swift */; };
+		E522CA915372F8B514733D6B /* QrCodeComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EEEBB6EBF77701342433324 /* QrCodeComponentView.swift */; };
+		EE6F9277C97E114DFE2D66F1 /* MenuBarManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452C42124CBE27154FCB283D /* MenuBarManager.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		B189A09CEE8B482E9DD411F6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1DC8B7A8F6AB7F95DD20F80F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8205328B6D921F4914B03739;
+			remoteInfo = Vauchi;
+		};
+		C82D14E740F6977817082681 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1DC8B7A8F6AB7F95DD20F80F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8205328B6D921F4914B03739;
+			remoteInfo = Vauchi;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0D3497B12DDDF10370069F86 /* Vauchi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Vauchi.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		19E25AFE32D45CA1C95DA590 /* SettingsGroupComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsGroupComponentView.swift; sourceTree = "<group>"; };
+		22ABDAF6DF202F4F33D5CE19 /* TextInputComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextInputComponentView.swift; sourceTree = "<group>"; };
+		2B524783275A3955F7CBEE76 /* CardPreviewComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardPreviewComponentView.swift; sourceTree = "<group>"; };
+		2BCD1112BEA2A776E27B15C3 /* ScreenRendererView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenRendererView.swift; sourceTree = "<group>"; };
+		3741052F03E3274B5C209EF6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		37598499D80665F9F25CF97D /* VauchiPlatformLocal */ = {isa = PBXFileReference; lastKnownFileType = folder; name = VauchiPlatformLocal; path = Vauchi/Libs/VauchiPlatformLocal; sourceTree = SOURCE_ROOT; };
+		442BA1AE531958F5AE130DEC /* InlineConfirmComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineConfirmComponentView.swift; sourceTree = "<group>"; };
+		452C42124CBE27154FCB283D /* MenuBarManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarManager.swift; sourceTree = "<group>"; };
+		517370E68C1DA4C66CD5E3BA /* ActionListComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionListComponentView.swift; sourceTree = "<group>"; };
+		52D65C152771F552C641B6A1 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		5438036805D34A0588FAE1C3 /* SystemTrayManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemTrayManager.swift; sourceTree = "<group>"; };
+		554291CB7224022A54BC954F /* AppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewModel.swift; sourceTree = "<group>"; };
+		63AE253E0DF71B38AAE856FB /* TextComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextComponentView.swift; sourceTree = "<group>"; };
+		649B37B5A7280D282E65BC3F /* PinInputComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinInputComponentView.swift; sourceTree = "<group>"; };
+		6EEEBB6EBF77701342433324 /* QrCodeComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QrCodeComponentView.swift; sourceTree = "<group>"; };
+		71E5FB136BF29B1F9D9B7F04 /* VauchiApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VauchiApp.swift; sourceTree = "<group>"; };
+		7ECC96545C3966B83B1D1AC7 /* VauchiTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VauchiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		80D01B0C0C941965F3F4DEDB /* KeyboardShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardShortcuts.swift; sourceTree = "<group>"; };
+		8193F0DBE26DA2026C2A4D5E /* FieldListComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldListComponentView.swift; sourceTree = "<group>"; };
+		851548F35E600FDD0D408A1D /* ContactListComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactListComponentView.swift; sourceTree = "<group>"; };
+		8776D2F72715F9C93486FE18 /* ToggleListComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleListComponentView.swift; sourceTree = "<group>"; };
+		8FDE9009AE079A27B82E5CB6 /* VauchiUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VauchiUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		9075FCC3ED0182090E406725 /* StatusIndicatorComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusIndicatorComponentView.swift; sourceTree = "<group>"; };
+		95373D9E6440FED4B532EBDD /* VauchiRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VauchiRepository.swift; sourceTree = "<group>"; };
+		9764FE7904C8B94F71A1858D /* DividerComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DividerComponentView.swift; sourceTree = "<group>"; };
+		98DF34CD2C6C3C8226D07C0B /* EditableTextComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditableTextComponentView.swift; sourceTree = "<group>"; };
+		A4B5B56C522906EEA1ED29AD /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
+		AA16E627E566CF0467CBDC18 /* SmokeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmokeTests.swift; sourceTree = "<group>"; };
+		AC15FD6D223D1A6700601767 /* ConfirmationDialogComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmationDialogComponentView.swift; sourceTree = "<group>"; };
+		B31DFE6F23CEA01F0437957B /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
+		EA272578E81247FB65A5C145 /* ComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentView.swift; sourceTree = "<group>"; };
+		F74CD83060E72D770CBCEB21 /* InfoPanelComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoPanelComponentView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		6F80E44C1C2EFE8789449827 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C2BF1FC510A65D73DD722C95 /* VauchiPlatform in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		01344AB2D3CDD59B4D0E3149 = {
+			isa = PBXGroup;
+			children = (
+				D969E888C287758A8083FF87 /* Packages */,
+				CE3F5B89773435D1670DD40B /* Vauchi */,
+				5B9EAC8491A990983095623D /* VauchiTests */,
+				C9DFA1127C049CB0C36BDF57 /* VauchiUITests */,
+				6044B0E63DE2F73C5FDC8885 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		1ECAE840736F23F69563D30C /* Platform */ = {
+			isa = PBXGroup;
+			children = (
+				80D01B0C0C941965F3F4DEDB /* KeyboardShortcuts.swift */,
+				452C42124CBE27154FCB283D /* MenuBarManager.swift */,
+				5438036805D34A0588FAE1C3 /* SystemTrayManager.swift */,
+			);
+			path = Platform;
+			sourceTree = "<group>";
+		};
+		5B9EAC8491A990983095623D /* VauchiTests */ = {
+			isa = PBXGroup;
+			children = (
+				AA16E627E566CF0467CBDC18 /* SmokeTests.swift */,
+			);
+			path = VauchiTests;
+			sourceTree = "<group>";
+		};
+		6044B0E63DE2F73C5FDC8885 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0D3497B12DDDF10370069F86 /* Vauchi.app */,
+				7ECC96545C3966B83B1D1AC7 /* VauchiTests.xctest */,
+				8FDE9009AE079A27B82E5CB6 /* VauchiUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A9A5EC2572980F7E8930C6E3 /* CoreUI */ = {
+			isa = PBXGroup;
+			children = (
+				52D65C152771F552C641B6A1 /* Models.swift */,
+				2BCD1112BEA2A776E27B15C3 /* ScreenRendererView.swift */,
+				CE42D30F93ED2ECE0C78FB70 /* Components */,
+			);
+			path = CoreUI;
+			sourceTree = "<group>";
+		};
+		C9DFA1127C049CB0C36BDF57 /* VauchiUITests */ = {
+			isa = PBXGroup;
+			children = (
+				A4B5B56C522906EEA1ED29AD /* .gitkeep */,
+			);
+			path = VauchiUITests;
+			sourceTree = "<group>";
+		};
+		CE3F5B89773435D1670DD40B /* Vauchi */ = {
+			isa = PBXGroup;
+			children = (
+				3741052F03E3274B5C209EF6 /* Info.plist */,
+				71E5FB136BF29B1F9D9B7F04 /* VauchiApp.swift */,
+				A9A5EC2572980F7E8930C6E3 /* CoreUI */,
+				1ECAE840736F23F69563D30C /* Platform */,
+				F9FC793A89B3CAD3083ACA25 /* Services */,
+				DE4003224F0F48BD0A224CE5 /* ViewModels */,
+			);
+			path = Vauchi;
+			sourceTree = "<group>";
+		};
+		CE42D30F93ED2ECE0C78FB70 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				517370E68C1DA4C66CD5E3BA /* ActionListComponentView.swift */,
+				2B524783275A3955F7CBEE76 /* CardPreviewComponentView.swift */,
+				EA272578E81247FB65A5C145 /* ComponentView.swift */,
+				AC15FD6D223D1A6700601767 /* ConfirmationDialogComponentView.swift */,
+				851548F35E600FDD0D408A1D /* ContactListComponentView.swift */,
+				9764FE7904C8B94F71A1858D /* DividerComponentView.swift */,
+				98DF34CD2C6C3C8226D07C0B /* EditableTextComponentView.swift */,
+				8193F0DBE26DA2026C2A4D5E /* FieldListComponentView.swift */,
+				F74CD83060E72D770CBCEB21 /* InfoPanelComponentView.swift */,
+				442BA1AE531958F5AE130DEC /* InlineConfirmComponentView.swift */,
+				649B37B5A7280D282E65BC3F /* PinInputComponentView.swift */,
+				6EEEBB6EBF77701342433324 /* QrCodeComponentView.swift */,
+				19E25AFE32D45CA1C95DA590 /* SettingsGroupComponentView.swift */,
+				9075FCC3ED0182090E406725 /* StatusIndicatorComponentView.swift */,
+				63AE253E0DF71B38AAE856FB /* TextComponentView.swift */,
+				22ABDAF6DF202F4F33D5CE19 /* TextInputComponentView.swift */,
+				8776D2F72715F9C93486FE18 /* ToggleListComponentView.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		D969E888C287758A8083FF87 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				37598499D80665F9F25CF97D /* VauchiPlatformLocal */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		DE4003224F0F48BD0A224CE5 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				554291CB7224022A54BC954F /* AppViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		F9FC793A89B3CAD3083ACA25 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				B31DFE6F23CEA01F0437957B /* KeychainService.swift */,
+				95373D9E6440FED4B532EBDD /* VauchiRepository.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		4E3A6E4270EA7198C4E93FDA /* VauchiUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6C73353964F3ADDBC6B3FDE6 /* Build configuration list for PBXNativeTarget "VauchiUITests" */;
+			buildPhases = (
+				BFEA978D33F0414D539E37BD /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				13445D470E061541BC7A2E78 /* PBXTargetDependency */,
+			);
+			name = VauchiUITests;
+			packageProductDependencies = (
+			);
+			productName = VauchiUITests;
+			productReference = 8FDE9009AE079A27B82E5CB6 /* VauchiUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		8205328B6D921F4914B03739 /* Vauchi */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3B3830A9525A77F2518613CC /* Build configuration list for PBXNativeTarget "Vauchi" */;
+			buildPhases = (
+				DE5AA344301B2E541CD5D0C2 /* Sources */,
+				6F80E44C1C2EFE8789449827 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Vauchi;
+			packageProductDependencies = (
+				BE415B866BE8E26F05791810 /* VauchiPlatform */,
+			);
+			productName = Vauchi;
+			productReference = 0D3497B12DDDF10370069F86 /* Vauchi.app */;
+			productType = "com.apple.product-type.application";
+		};
+		E9D120DDA95653CDD66564FF /* VauchiTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BCE5DB128EA3C8AD7DC194AE /* Build configuration list for PBXNativeTarget "VauchiTests" */;
+			buildPhases = (
+				2D236A0B9A67BAB3A7ADBA9B /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				48FE5B771C3291933CFB4AA3 /* PBXTargetDependency */,
+			);
+			name = VauchiTests;
+			packageProductDependencies = (
+			);
+			productName = VauchiTests;
+			productReference = 7ECC96545C3966B83B1D1AC7 /* VauchiTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		1DC8B7A8F6AB7F95DD20F80F /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					4E3A6E4270EA7198C4E93FDA = {
+						TestTargetID = 8205328B6D921F4914B03739;
+					};
+					8205328B6D921F4914B03739 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = BAFFDC71FBCC5FC569766377 /* Build configuration list for PBXProject "Vauchi" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 01344AB2D3CDD59B4D0E3149;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				7438BD58091D404421785A9A /* XCLocalSwiftPackageReference "Vauchi/Libs/VauchiPlatformLocal" */,
+			);
+			preferredProjectObjectVersion = 77;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8205328B6D921F4914B03739 /* Vauchi */,
+				E9D120DDA95653CDD66564FF /* VauchiTests */,
+				4E3A6E4270EA7198C4E93FDA /* VauchiUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		2D236A0B9A67BAB3A7ADBA9B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3AB3684BA26BB47BF80BB933 /* SmokeTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BFEA978D33F0414D539E37BD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DE5AA344301B2E541CD5D0C2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				406258333C40C48F3E43D569 /* ActionListComponentView.swift in Sources */,
+				ADB778BBA40707BAD3F8B21A /* AppViewModel.swift in Sources */,
+				5F8D2981766D6B43B9B09287 /* CardPreviewComponentView.swift in Sources */,
+				8F1D5438434B846475597477 /* ComponentView.swift in Sources */,
+				1ACE579015129CE4204CAFA8 /* ConfirmationDialogComponentView.swift in Sources */,
+				23D1EC2E1C8E3AB20680980F /* ContactListComponentView.swift in Sources */,
+				C1698574A9244D5FB1EC8EB9 /* DividerComponentView.swift in Sources */,
+				B7FF1459323990242EB469DC /* EditableTextComponentView.swift in Sources */,
+				B7538752D99FA9DB91BC9FF9 /* FieldListComponentView.swift in Sources */,
+				9C2069849249523C53C667F3 /* InfoPanelComponentView.swift in Sources */,
+				C7EC0C6E4ABED52AB382351A /* InlineConfirmComponentView.swift in Sources */,
+				9BA83E0C812D194A0C94FC64 /* KeyboardShortcuts.swift in Sources */,
+				8CD4D48FC7E49B0DA82AD497 /* KeychainService.swift in Sources */,
+				EE6F9277C97E114DFE2D66F1 /* MenuBarManager.swift in Sources */,
+				6B88FFA2E0ED30C5C6BD724E /* Models.swift in Sources */,
+				2F5E5E0A77045722958E6979 /* PinInputComponentView.swift in Sources */,
+				E522CA915372F8B514733D6B /* QrCodeComponentView.swift in Sources */,
+				C2AA1DC7FD7FA22C155F70BD /* ScreenRendererView.swift in Sources */,
+				09004B0A2E938952E9D267FC /* SettingsGroupComponentView.swift in Sources */,
+				9F92EEBB337032A28D7F5C8C /* StatusIndicatorComponentView.swift in Sources */,
+				C48401965743DD70C01F2F95 /* SystemTrayManager.swift in Sources */,
+				223E748C35520305B8EB1AE1 /* TextComponentView.swift in Sources */,
+				A3E49F296BDC037ED703393A /* TextInputComponentView.swift in Sources */,
+				8C9B49C0AE5BED8FEC8384AB /* ToggleListComponentView.swift in Sources */,
+				2F7D817E60BDE6223F5E0484 /* VauchiApp.swift in Sources */,
+				AE6ED32C72587A0283C520D2 /* VauchiRepository.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		13445D470E061541BC7A2E78 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8205328B6D921F4914B03739 /* Vauchi */;
+			targetProxy = B189A09CEE8B482E9DD411F6 /* PBXContainerItemProxy */;
+		};
+		48FE5B771C3291933CFB4AA3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8205328B6D921F4914B03739 /* Vauchi */;
+			targetProxy = C82D14E740F6977817082681 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0259B283DB235EB6162B5E62 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_GENERATION_MODE = GeneratedFile;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.vauchi.macos.uitests;
+				SDKROOT = macosx;
+				TEST_TARGET_NAME = Vauchi;
+			};
+			name = Debug;
+		};
+		15ED4C6667981071BBF55CA8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_GENERATION_MODE = GeneratedFile;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.vauchi.macos.tests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Vauchi.app/Contents/MacOS/Vauchi";
+			};
+			name = Release;
+		};
+		45177652FE809B88CF35C229 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_GENERATION_MODE = GeneratedFile;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.vauchi.macos.tests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Vauchi.app/Contents/MacOS/Vauchi";
+			};
+			name = Debug;
+		};
+		4D019389906FF004414D604D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_GENERATION_MODE = GeneratedFile;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.vauchi.macos.uitests;
+				SDKROOT = macosx;
+				TEST_TARGET_NAME = Vauchi;
+			};
+			name = Release;
+		};
+		6947FE1DCAFA1DD3469AB700 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				INFOPLIST_FILE = Vauchi/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.vauchi.macos;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		85301E320FF88FA8FBAF8E74 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				INFOPLIST_FILE = Vauchi/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.vauchi.macos;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		932FBC3566C01637CA1FCCBE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+		EFFAD80EFBBA6580DC1CAD5E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3B3830A9525A77F2518613CC /* Build configuration list for PBXNativeTarget "Vauchi" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				85301E320FF88FA8FBAF8E74 /* Debug */,
+				6947FE1DCAFA1DD3469AB700 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		6C73353964F3ADDBC6B3FDE6 /* Build configuration list for PBXNativeTarget "VauchiUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0259B283DB235EB6162B5E62 /* Debug */,
+				4D019389906FF004414D604D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		BAFFDC71FBCC5FC569766377 /* Build configuration list for PBXProject "Vauchi" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EFFAD80EFBBA6580DC1CAD5E /* Debug */,
+				932FBC3566C01637CA1FCCBE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		BCE5DB128EA3C8AD7DC194AE /* Build configuration list for PBXNativeTarget "VauchiTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				45177652FE809B88CF35C229 /* Debug */,
+				15ED4C6667981071BBF55CA8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		7438BD58091D404421785A9A /* XCLocalSwiftPackageReference "Vauchi/Libs/VauchiPlatformLocal" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Vauchi/Libs/VauchiPlatformLocal;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		BE415B866BE8E26F05791810 /* VauchiPlatform */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = VauchiPlatform;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 1DC8B7A8F6AB7F95DD20F80F /* Project object */;
+}

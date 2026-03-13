@@ -133,7 +133,42 @@ build:debug:
   script:
     - command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
     - rm -rf Vauchi.xcodeproj .spm-packages
+    - rm -rf ~/Library/Developer/Xcode/DerivedData/Vauchi-*
     - xcodegen generate
+    # Resolve SPM dependencies first, then fix macOS framework symlinks.
+    # The published XCFramework zip was built without -y, so macOS versioned
+    # bundle symlinks (Versions/Current → A) are stored as directories.
+    # Xcode can't resolve them and fails with "Couldn't resolve framework symlink".
+    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -resolvePackageDependencies
+    - |
+      # Find and fix broken macOS framework symlinks in SPM artifacts
+      DD=$(ls -d ~/Library/Developer/Xcode/DerivedData/Vauchi-* 2>/dev/null | head -1)
+      if [ -n "$DD" ]; then
+        find "$DD/SourcePackages/artifacts" -path "*/macos-*/VauchiPlatformFFI.framework/Versions/Current" -type d 2>/dev/null | while read -r dir; do
+          echo "Fixing broken symlink: $dir"
+          rm -rf "$dir"
+          (cd "$(dirname "$dir")" && ln -sf A Current)
+        done
+        # Also fix top-level symlinks that may have been stored as directories
+        find "$DD/SourcePackages/artifacts" -path "*/macos-*/VauchiPlatformFFI.framework/Headers" -type d ! -path "*/Versions/*" 2>/dev/null | while read -r dir; do
+          echo "Fixing top-level symlink: $dir"
+          rm -rf "$dir"
+          (cd "$(dirname "$dir")" && ln -sf Versions/Current/Headers Headers)
+        done
+        find "$DD/SourcePackages/artifacts" -path "*/macos-*/VauchiPlatformFFI.framework/Modules" -type d ! -path "*/Versions/*" 2>/dev/null | while read -r dir; do
+          rm -rf "$dir"
+          (cd "$(dirname "$dir")" && ln -sf Versions/Current/Modules Modules)
+        done
+        find "$DD/SourcePackages/artifacts" -path "*/macos-*/VauchiPlatformFFI.framework/Resources" -type d ! -path "*/Versions/*" 2>/dev/null | while read -r dir; do
+          rm -rf "$dir"
+          (cd "$(dirname "$dir")" && ln -sf Versions/Current/Resources Resources)
+        done
+        # Fix the binary symlink
+        find "$DD/SourcePackages/artifacts" -path "*/macos-*/VauchiPlatformFFI.framework/VauchiPlatformFFI" -type f ! -path "*/Versions/*" 2>/dev/null | while read -r file; do
+          rm -f "$file"
+          (cd "$(dirname "$file")" && ln -sf Versions/Current/VauchiPlatformFFI VauchiPlatformFFI)
+        done
+      fi
     - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -configuration Debug -destination "platform=macOS" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO build
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
@@ -154,6 +189,23 @@ test:unit:
     - command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
     - rm -rf Vauchi.xcodeproj .spm-packages
     - xcodegen generate
+    # Resolve + fix symlinks (same workaround as build:debug — jobs don't share DerivedData)
+    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -resolvePackageDependencies
+    - |
+      DD=$(ls -d ~/Library/Developer/Xcode/DerivedData/Vauchi-* 2>/dev/null | head -1)
+      if [ -n "$DD" ]; then
+        find "$DD/SourcePackages/artifacts" -path "*/macos-*/VauchiPlatformFFI.framework/Versions/Current" -type d 2>/dev/null | while read -r dir; do
+          rm -rf "$dir" && (cd "$(dirname "$dir")" && ln -sf A Current)
+        done
+        for link in Headers Modules Resources; do
+          find "$DD/SourcePackages/artifacts" -path "*/macos-*/VauchiPlatformFFI.framework/$link" -type d ! -path "*/Versions/*" 2>/dev/null | while read -r dir; do
+            rm -rf "$dir" && (cd "$(dirname "$dir")" && ln -sf "Versions/Current/$link" "$link")
+          done
+        done
+        find "$DD/SourcePackages/artifacts" -path "*/macos-*/VauchiPlatformFFI.framework/VauchiPlatformFFI" -type f ! -path "*/Versions/*" 2>/dev/null | while read -r file; do
+          rm -f "$file" && (cd "$(dirname "$file")" && ln -sf Versions/Current/VauchiPlatformFFI VauchiPlatformFFI)
+        done
+      fi
     - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
     - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -only-testing:VauchiTests -resultBundlePath TestResults test-without-building
     - command -v xcresultparser >/dev/null 2>&1 || brew install a7ex/homebrew-formulae/xcresultparser
