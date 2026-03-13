@@ -4,16 +4,17 @@
 include:
   - project: 'vauchi/scripts'
     ref: main
-    file: '/ci-templates/reuse.yml'
-  - project: 'vauchi/scripts'
-    ref: main
-    file: '/ci-templates/design-drift.yml'
+    file:
+      - '/ci-templates/reuse.yml'
+      - '/ci-templates/design-drift.yml'
+      - '/ci-templates/badges.yml'
 
 stages:
   - update
   - lint
   - build
   - test
+  - deploy
 
 workflow:
   auto_cancel:
@@ -188,3 +189,10 @@ check:design-drift:
     DESIGN_DRIFT_COMPONENT_DIR: "Vauchi/CoreUI/Components"
     DESIGN_DRIFT_FILE_EXT: ".swift"
     DESIGN_DRIFT_CASE: "pascal"
+
+# ============================================================
+# Deploy Stage — Badge Pages
+# ============================================================
+
+pages:
+  extends: .badges-pages
