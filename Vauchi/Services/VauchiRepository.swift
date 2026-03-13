@@ -76,7 +76,7 @@ import Foundation
                 let status = SecRandomCopyBytes(kSecRandomDefault, 32, &bytes)
                 guard status == errSecSuccess else {
                     // Zeroize before throwing
-                    bytes.withUnsafeMutableBufferPointer { ptr in
+                    _ = bytes.withUnsafeMutableBufferPointer { ptr in
                         memset_s(ptr.baseAddress!, ptr.count, 0, ptr.count)
                     }
                     throw KeychainError.unknown(status)
