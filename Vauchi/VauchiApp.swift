@@ -65,9 +65,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             do {
                 let repo = try VauchiRepository()
                 repository = repo
-                let vm = AppViewModel(appEngine: repo.appEngine)
-                vm.vauchi = repo.vauchi
-                viewModel = vm
+                let appViewModel = AppViewModel(appEngine: repo.appEngine)
+                appViewModel.vauchi = repo.vauchi
+                viewModel = appViewModel
             } catch {
                 self.error = error.localizedDescription
                 print("VauchiApp: failed to initialize: \(error)")
