@@ -17,7 +17,7 @@ import SwiftUI
         @Published var validationErrors: [String: String] = [:]
         @Published var alertMessage: AlertMessage?
 
-        private let appEngine: PlatformAppEngine
+        let appEngine: PlatformAppEngine
 
         struct AlertMessage: Identifiable {
             let id = UUID()

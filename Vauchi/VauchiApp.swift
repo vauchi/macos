@@ -26,10 +26,11 @@ struct VauchiApp: App {
         }
         .defaultSize(width: 400, height: 700)
 
-        #if os(macOS)
+        #if os(macOS) && canImport(VauchiPlatform)
             Settings {
-                Text("Settings placeholder")
-                    .frame(width: 300, height: 200)
+                SettingsWindowView()
+                    .environmentObject(appState)
+                    .frame(minWidth: 400, minHeight: 500)
             }
         #endif
     }
