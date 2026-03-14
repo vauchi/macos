@@ -22,5 +22,7 @@
 	<string>1</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.social-networking</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Vauchi uses the camera to scan QR codes during contact exchange.</string>
 </dict>
 </plist>
