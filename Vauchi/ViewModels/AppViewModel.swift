@@ -188,9 +188,9 @@ import SwiftUI
 
                 // Replace the public_id QR data with the real exchange QR
                 let updatedComponents = screen.components.map { component -> Component in
-                    if case let .qrCode(qr) = component, qr.mode == .display {
+                    if case let .qrCode(qrComponent) = component, qrComponent.mode == .display {
                         return .qrCode(QrCodeComponent(
-                            id: qr.id, data: qrData, mode: qr.mode, label: qr.label
+                            id: qrComponent.id, data: qrData, mode: qrComponent.mode, label: qrComponent.label
                         ))
                     }
                     return component
