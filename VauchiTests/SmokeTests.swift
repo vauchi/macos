@@ -66,6 +66,29 @@ final class SmokeTests: XCTestCase {
         }
     }
 
+    func testActionResultExchangeCommands() throws {
+        let json = Data("""
+        {"ExchangeCommands": {"commands": ["QrRequestScan", {"QrDisplay": {"data": "test-qr"}}]}}
+        """.utf8)
+
+        let result = try coreJSONDecoder.decode(ActionResult.self, from: json)
+
+        guard case let .exchangeCommands(commands) = result else {
+            XCTFail("Expected .exchangeCommands, got \(result)")
+            return
+        }
+        XCTAssertEqual(commands.count, 2)
+        guard case .qrRequestScan = commands[0] else {
+            XCTFail("Expected .qrRequestScan, got \(commands[0])")
+            return
+        }
+        guard case let .qrDisplay(data) = commands[1] else {
+            XCTFail("Expected .qrDisplay, got \(commands[1])")
+            return
+        }
+        XCTAssertEqual(data, "test-qr")
+    }
+
     func testUserActionEncoding() throws {
         let action = UserAction.textChanged(componentId: "name", value: "Alice")
         let data = try coreJSONEncoder.encode(action)
