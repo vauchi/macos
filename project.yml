@@ -18,6 +18,9 @@ packages:
   VauchiPlatform:
     url: https://gitlab.com/vauchi/vauchi-platform-swift.git
     branch: main
+  SnapshotTesting:
+    url: https://github.com/pointfreeco/swift-snapshot-testing
+    from: "1.17.0"
 
 targets:
   Vauchi:
@@ -61,6 +64,20 @@ targets:
         INFOPLIST_GENERATION_MODE: GeneratedFile
         GENERATE_INFOPLIST_FILE: YES
 
+  VauchiSnapshotTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: VauchiSnapshotTests
+    dependencies:
+      - target: Vauchi
+      - package: SnapshotTesting
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.vauchi.macos.snapshottests
+        INFOPLIST_GENERATION_MODE: GeneratedFile
+        GENERATE_INFOPLIST_FILE: YES
+
   VauchiUITests:
     type: bundle.ui-testing
     platform: macOS
@@ -80,6 +97,7 @@ schemes:
       targets:
         Vauchi: all
         VauchiTests: [test]
+        VauchiSnapshotTests: [test]
         VauchiUITests: [test]
     run:
       config: Debug
@@ -87,6 +105,7 @@ schemes:
       config: Debug
       targets:
         - VauchiTests
+        - VauchiSnapshotTests
         - VauchiUITests
     profile:
       config: Release

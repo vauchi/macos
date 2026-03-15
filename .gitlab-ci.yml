@@ -164,7 +164,7 @@ test:unit:
     # TEMPORARY: same workaround as build:debug — jobs don't share DerivedData
     - ./scripts/fix-xcframework-symlinks.sh
     - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
-    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -only-testing:VauchiTests -resultBundlePath TestResults test-without-building
+    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -only-testing:VauchiTests -only-testing:VauchiSnapshotTests -resultBundlePath TestResults test-without-building
     - command -v xcresultparser >/dev/null 2>&1 || brew install a7ex/homebrew-formulae/xcresultparser
     - xcresultparser --output-format junit TestResults > test-results.xml || true
   artifacts:
