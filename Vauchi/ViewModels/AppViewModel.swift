@@ -160,6 +160,9 @@ import SwiftUI
                 loadScreen()
             case .startDeviceLink, .startBackupImport:
                 break
+            case .exchangeCommands:
+                // ADR-031: hardware exchange commands handled by exchange session
+                break
             }
         }
 
