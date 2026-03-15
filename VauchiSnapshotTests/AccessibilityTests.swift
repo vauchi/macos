@@ -71,8 +71,16 @@ final class AccessibilityTests: XCTestCase {
             icon: "lock",
             title: "End-to-End Encryption",
             items: [
-                InfoItem(icon: "key", title: "Your Keys", detail: "Keys are generated on your device and never leave it."),
-                InfoItem(icon: "shield", title: "Zero Knowledge", detail: "The relay server cannot read your contact data."),
+                InfoItem(
+                    icon: "key",
+                    title: "Your Keys",
+                    detail: "Keys are generated on your device and never leave it."
+                ),
+                InfoItem(
+                    icon: "shield",
+                    title: "Zero Knowledge",
+                    detail: "The relay server cannot read your contact data."
+                ),
             ]
         )
         let view = InfoPanelComponentView(component: component)

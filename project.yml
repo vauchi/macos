@@ -50,6 +50,8 @@ targets:
         CFBundleShortVersionString: "0.1.0"
         CFBundleVersion: "1"
         LSApplicationCategoryType: public.app-category.social-networking
+        NSCameraUsageDescription: Vauchi uses the camera to scan QR codes during contact exchange.
+        NSMicrophoneUsageDescription: Vauchi uses the microphone for ultrasonic proximity verification during contact exchange.
 
   VauchiTests:
     type: bundle.unit-test

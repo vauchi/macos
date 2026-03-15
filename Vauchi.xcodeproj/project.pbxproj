@@ -9,17 +9,24 @@
 /* Begin PBXBuildFile section */
 		09004B0A2E938952E9D267FC /* SettingsGroupComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19E25AFE32D45CA1C95DA590 /* SettingsGroupComponentView.swift */; };
 		1ACE579015129CE4204CAFA8 /* ConfirmationDialogComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC15FD6D223D1A6700601767 /* ConfirmationDialogComponentView.swift */; };
+		1BDCB504628325339F237DBB /* CoreUIComponentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273DE3DDCB1F1D595DEF1B92 /* CoreUIComponentTests.swift */; };
 		223E748C35520305B8EB1AE1 /* TextComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63AE253E0DF71B38AAE856FB /* TextComponentView.swift */; };
 		23D1EC2E1C8E3AB20680980F /* ContactListComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 851548F35E600FDD0D408A1D /* ContactListComponentView.swift */; };
 		2F5E5E0A77045722958E6979 /* PinInputComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649B37B5A7280D282E65BC3F /* PinInputComponentView.swift */; };
 		2F7D817E60BDE6223F5E0484 /* VauchiApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71E5FB136BF29B1F9D9B7F04 /* VauchiApp.swift */; };
+		38F82A294C5A587AB23E77A2 /* AccessibilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07586629234DE4E7F2551F5E /* AccessibilityTests.swift */; };
 		3AB3684BA26BB47BF80BB933 /* SmokeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA16E627E566CF0467CBDC18 /* SmokeTests.swift */; };
 		406258333C40C48F3E43D569 /* ActionListComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 517370E68C1DA4C66CD5E3BA /* ActionListComponentView.swift */; };
 		5F8D2981766D6B43B9B09287 /* CardPreviewComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B524783275A3955F7CBEE76 /* CardPreviewComponentView.swift */; };
 		6B88FFA2E0ED30C5C6BD724E /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D65C152771F552C641B6A1 /* Models.swift */; };
+		719AC91DB0FAB238A99B310A /* SettingsWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB9707EE0B0A13EB3B25D347 /* SettingsWindowView.swift */; };
+		7A78CA48664C6480438C549C /* ScreenSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10D759CE5B9B4F9B022F081A /* ScreenSnapshotTests.swift */; };
+		8233D17C24CBA0A46042C2BF /* SnapshotHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93EEF8A8901309034B87F6CB /* SnapshotHelpers.swift */; };
 		8C9B49C0AE5BED8FEC8384AB /* ToggleListComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8776D2F72715F9C93486FE18 /* ToggleListComponentView.swift */; };
 		8CD4D48FC7E49B0DA82AD497 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B31DFE6F23CEA01F0437957B /* KeychainService.swift */; };
 		8F1D5438434B846475597477 /* ComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA272578E81247FB65A5C145 /* ComponentView.swift */; };
+		99E3A24800996D3A2B9A389E /* AudioProximityHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F1E7300CDA5ED177DEF3E2 /* AudioProximityHandler.swift */; };
+		9B12926FA62EF78944BBD659 /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 584E70B43E05BAC9ADA1DC81 /* SnapshotTesting */; };
 		9BA83E0C812D194A0C94FC64 /* KeyboardShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80D01B0C0C941965F3F4DEDB /* KeyboardShortcuts.swift */; };
 		9C2069849249523C53C667F3 /* InfoPanelComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74CD83060E72D770CBCEB21 /* InfoPanelComponentView.swift */; };
 		9F92EEBB337032A28D7F5C8C /* StatusIndicatorComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9075FCC3ED0182090E406725 /* StatusIndicatorComponentView.swift */; };
@@ -33,12 +40,21 @@
 		C2BF1FC510A65D73DD722C95 /* VauchiPlatform in Frameworks */ = {isa = PBXBuildFile; productRef = BE415B866BE8E26F05791810 /* VauchiPlatform */; };
 		C48401965743DD70C01F2F95 /* SystemTrayManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5438036805D34A0588FAE1C3 /* SystemTrayManager.swift */; };
 		C7EC0C6E4ABED52AB382351A /* InlineConfirmComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 442BA1AE531958F5AE130DEC /* InlineConfirmComponentView.swift */; };
+		D65905F3E8A6B191F4611470 /* AudioProximityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49509AE0DF70B880F977B015 /* AudioProximityService.swift */; };
+		DA673F09635BBBF9871092A8 /* VauchiUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773C796EDEEFF9B928C04229 /* VauchiUITests.swift */; };
 		E522CA915372F8B514733D6B /* QrCodeComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EEEBB6EBF77701342433324 /* QrCodeComponentView.swift */; };
 		EE6F9277C97E114DFE2D66F1 /* MenuBarManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452C42124CBE27154FCB283D /* MenuBarManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
 		B189A09CEE8B482E9DD411F6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1DC8B7A8F6AB7F95DD20F80F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8205328B6D921F4914B03739;
+			remoteInfo = Vauchi;
+		};
+		B95F19EBE98537A08B8D1E85 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1DC8B7A8F6AB7F95DD20F80F /* Project object */;
 			proxyType = 1;
@@ -55,15 +71,19 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		07586629234DE4E7F2551F5E /* AccessibilityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityTests.swift; sourceTree = "<group>"; };
 		0D3497B12DDDF10370069F86 /* Vauchi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Vauchi.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		10D759CE5B9B4F9B022F081A /* ScreenSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenSnapshotTests.swift; sourceTree = "<group>"; };
 		19E25AFE32D45CA1C95DA590 /* SettingsGroupComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsGroupComponentView.swift; sourceTree = "<group>"; };
 		22ABDAF6DF202F4F33D5CE19 /* TextInputComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextInputComponentView.swift; sourceTree = "<group>"; };
+		273DE3DDCB1F1D595DEF1B92 /* CoreUIComponentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreUIComponentTests.swift; sourceTree = "<group>"; };
 		2B524783275A3955F7CBEE76 /* CardPreviewComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardPreviewComponentView.swift; sourceTree = "<group>"; };
 		2BCD1112BEA2A776E27B15C3 /* ScreenRendererView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenRendererView.swift; sourceTree = "<group>"; };
 		3741052F03E3274B5C209EF6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		37598499D80665F9F25CF97D /* VauchiPlatformLocal */ = {isa = PBXFileReference; lastKnownFileType = folder; name = VauchiPlatformLocal; path = Vauchi/Libs/VauchiPlatformLocal; sourceTree = SOURCE_ROOT; };
 		442BA1AE531958F5AE130DEC /* InlineConfirmComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineConfirmComponentView.swift; sourceTree = "<group>"; };
 		452C42124CBE27154FCB283D /* MenuBarManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarManager.swift; sourceTree = "<group>"; };
+		47F1E7300CDA5ED177DEF3E2 /* AudioProximityHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioProximityHandler.swift; sourceTree = "<group>"; };
+		49509AE0DF70B880F977B015 /* AudioProximityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioProximityService.swift; sourceTree = "<group>"; };
 		517370E68C1DA4C66CD5E3BA /* ActionListComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionListComponentView.swift; sourceTree = "<group>"; };
 		52D65C152771F552C641B6A1 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		5438036805D34A0588FAE1C3 /* SystemTrayManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemTrayManager.swift; sourceTree = "<group>"; };
@@ -72,6 +92,8 @@
 		649B37B5A7280D282E65BC3F /* PinInputComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinInputComponentView.swift; sourceTree = "<group>"; };
 		6EEEBB6EBF77701342433324 /* QrCodeComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QrCodeComponentView.swift; sourceTree = "<group>"; };
 		71E5FB136BF29B1F9D9B7F04 /* VauchiApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VauchiApp.swift; sourceTree = "<group>"; };
+		773C796EDEEFF9B928C04229 /* VauchiUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VauchiUITests.swift; sourceTree = "<group>"; };
+		7D255A687EB281C01D297ED7 /* VauchiSnapshotTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VauchiSnapshotTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7ECC96545C3966B83B1D1AC7 /* VauchiTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VauchiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		80D01B0C0C941965F3F4DEDB /* KeyboardShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardShortcuts.swift; sourceTree = "<group>"; };
 		8193F0DBE26DA2026C2A4D5E /* FieldListComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldListComponentView.swift; sourceTree = "<group>"; };
@@ -79,13 +101,14 @@
 		8776D2F72715F9C93486FE18 /* ToggleListComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleListComponentView.swift; sourceTree = "<group>"; };
 		8FDE9009AE079A27B82E5CB6 /* VauchiUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VauchiUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9075FCC3ED0182090E406725 /* StatusIndicatorComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusIndicatorComponentView.swift; sourceTree = "<group>"; };
+		93EEF8A8901309034B87F6CB /* SnapshotHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotHelpers.swift; sourceTree = "<group>"; };
 		95373D9E6440FED4B532EBDD /* VauchiRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VauchiRepository.swift; sourceTree = "<group>"; };
 		9764FE7904C8B94F71A1858D /* DividerComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DividerComponentView.swift; sourceTree = "<group>"; };
 		98DF34CD2C6C3C8226D07C0B /* EditableTextComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditableTextComponentView.swift; sourceTree = "<group>"; };
-		A4B5B56C522906EEA1ED29AD /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
 		AA16E627E566CF0467CBDC18 /* SmokeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmokeTests.swift; sourceTree = "<group>"; };
 		AC15FD6D223D1A6700601767 /* ConfirmationDialogComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmationDialogComponentView.swift; sourceTree = "<group>"; };
 		B31DFE6F23CEA01F0437957B /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
+		DB9707EE0B0A13EB3B25D347 /* SettingsWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindowView.swift; sourceTree = "<group>"; };
 		EA272578E81247FB65A5C145 /* ComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentView.swift; sourceTree = "<group>"; };
 		F74CD83060E72D770CBCEB21 /* InfoPanelComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoPanelComponentView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -99,14 +122,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C9ED3424B80F19D8EDEDC790 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9B12926FA62EF78944BBD659 /* SnapshotTesting in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		01344AB2D3CDD59B4D0E3149 = {
 			isa = PBXGroup;
 			children = (
-				D969E888C287758A8083FF87 /* Packages */,
 				CE3F5B89773435D1670DD40B /* Vauchi */,
+				B703A0DE1FDBFC69D604E07F /* VauchiSnapshotTests */,
 				5B9EAC8491A990983095623D /* VauchiTests */,
 				C9DFA1127C049CB0C36BDF57 /* VauchiUITests */,
 				6044B0E63DE2F73C5FDC8885 /* Products */,
@@ -135,6 +166,7 @@
 			isa = PBXGroup;
 			children = (
 				0D3497B12DDDF10370069F86 /* Vauchi.app */,
+				7D255A687EB281C01D297ED7 /* VauchiSnapshotTests.xctest */,
 				7ECC96545C3966B83B1D1AC7 /* VauchiTests.xctest */,
 				8FDE9009AE079A27B82E5CB6 /* VauchiUITests.xctest */,
 			);
@@ -146,15 +178,27 @@
 			children = (
 				52D65C152771F552C641B6A1 /* Models.swift */,
 				2BCD1112BEA2A776E27B15C3 /* ScreenRendererView.swift */,
+				DB9707EE0B0A13EB3B25D347 /* SettingsWindowView.swift */,
 				CE42D30F93ED2ECE0C78FB70 /* Components */,
 			);
 			path = CoreUI;
 			sourceTree = "<group>";
 		};
+		B703A0DE1FDBFC69D604E07F /* VauchiSnapshotTests */ = {
+			isa = PBXGroup;
+			children = (
+				07586629234DE4E7F2551F5E /* AccessibilityTests.swift */,
+				273DE3DDCB1F1D595DEF1B92 /* CoreUIComponentTests.swift */,
+				10D759CE5B9B4F9B022F081A /* ScreenSnapshotTests.swift */,
+				93EEF8A8901309034B87F6CB /* SnapshotHelpers.swift */,
+			);
+			path = VauchiSnapshotTests;
+			sourceTree = "<group>";
+		};
 		C9DFA1127C049CB0C36BDF57 /* VauchiUITests */ = {
 			isa = PBXGroup;
 			children = (
-				A4B5B56C522906EEA1ED29AD /* .gitkeep */,
+				773C796EDEEFF9B928C04229 /* VauchiUITests.swift */,
 			);
 			path = VauchiUITests;
 			sourceTree = "<group>";
@@ -196,14 +240,6 @@
 			path = Components;
 			sourceTree = "<group>";
 		};
-		D969E888C287758A8083FF87 /* Packages */ = {
-			isa = PBXGroup;
-			children = (
-				37598499D80665F9F25CF97D /* VauchiPlatformLocal */,
-			);
-			name = Packages;
-			sourceTree = "<group>";
-		};
 		DE4003224F0F48BD0A224CE5 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
@@ -215,6 +251,8 @@
 		F9FC793A89B3CAD3083ACA25 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				47F1E7300CDA5ED177DEF3E2 /* AudioProximityHandler.swift */,
+				49509AE0DF70B880F977B015 /* AudioProximityService.swift */,
 				B31DFE6F23CEA01F0437957B /* KeychainService.swift */,
 				95373D9E6440FED4B532EBDD /* VauchiRepository.swift */,
 			);
@@ -260,6 +298,26 @@
 			productName = Vauchi;
 			productReference = 0D3497B12DDDF10370069F86 /* Vauchi.app */;
 			productType = "com.apple.product-type.application";
+		};
+		C288D45F00B14D12ACFAD0BC /* VauchiSnapshotTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 572C838FA86B126CA380BA94 /* Build configuration list for PBXNativeTarget "VauchiSnapshotTests" */;
+			buildPhases = (
+				9E0AD1E18A293EA54C5115CE /* Sources */,
+				C9ED3424B80F19D8EDEDC790 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A57E2F8BA092042B66E5E4CC /* PBXTargetDependency */,
+			);
+			name = VauchiSnapshotTests;
+			packageProductDependencies = (
+				584E70B43E05BAC9ADA1DC81 /* SnapshotTesting */,
+			);
+			productName = VauchiSnapshotTests;
+			productReference = 7D255A687EB281C01D297ED7 /* VauchiSnapshotTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		E9D120DDA95653CDD66564FF /* VauchiTests */ = {
 			isa = PBXNativeTarget;
@@ -307,13 +365,15 @@
 			mainGroup = 01344AB2D3CDD59B4D0E3149;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				7438BD58091D404421785A9A /* XCLocalSwiftPackageReference "Vauchi/Libs/VauchiPlatformLocal" */,
+				40CC95CA915CE0C8360D71CD /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */,
+				8B834B486889A4518835FD33 /* XCRemoteSwiftPackageReference "vauchi-platform-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				8205328B6D921F4914B03739 /* Vauchi */,
+				C288D45F00B14D12ACFAD0BC /* VauchiSnapshotTests */,
 				E9D120DDA95653CDD66564FF /* VauchiTests */,
 				4E3A6E4270EA7198C4E93FDA /* VauchiUITests */,
 			);
@@ -329,10 +389,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		9E0AD1E18A293EA54C5115CE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				38F82A294C5A587AB23E77A2 /* AccessibilityTests.swift in Sources */,
+				1BDCB504628325339F237DBB /* CoreUIComponentTests.swift in Sources */,
+				7A78CA48664C6480438C549C /* ScreenSnapshotTests.swift in Sources */,
+				8233D17C24CBA0A46042C2BF /* SnapshotHelpers.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BFEA978D33F0414D539E37BD /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DA673F09635BBBF9871092A8 /* VauchiUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -342,6 +414,8 @@
 			files = (
 				406258333C40C48F3E43D569 /* ActionListComponentView.swift in Sources */,
 				ADB778BBA40707BAD3F8B21A /* AppViewModel.swift in Sources */,
+				99E3A24800996D3A2B9A389E /* AudioProximityHandler.swift in Sources */,
+				D65905F3E8A6B191F4611470 /* AudioProximityService.swift in Sources */,
 				5F8D2981766D6B43B9B09287 /* CardPreviewComponentView.swift in Sources */,
 				8F1D5438434B846475597477 /* ComponentView.swift in Sources */,
 				1ACE579015129CE4204CAFA8 /* ConfirmationDialogComponentView.swift in Sources */,
@@ -359,6 +433,7 @@
 				E522CA915372F8B514733D6B /* QrCodeComponentView.swift in Sources */,
 				C2AA1DC7FD7FA22C155F70BD /* ScreenRendererView.swift in Sources */,
 				09004B0A2E938952E9D267FC /* SettingsGroupComponentView.swift in Sources */,
+				719AC91DB0FAB238A99B310A /* SettingsWindowView.swift in Sources */,
 				9F92EEBB337032A28D7F5C8C /* StatusIndicatorComponentView.swift in Sources */,
 				C48401965743DD70C01F2F95 /* SystemTrayManager.swift in Sources */,
 				223E748C35520305B8EB1AE1 /* TextComponentView.swift in Sources */,
@@ -381,6 +456,11 @@
 			isa = PBXTargetDependency;
 			target = 8205328B6D921F4914B03739 /* Vauchi */;
 			targetProxy = C82D14E740F6977817082681 /* PBXContainerItemProxy */;
+		};
+		A57E2F8BA092042B66E5E4CC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8205328B6D921F4914B03739 /* Vauchi */;
+			targetProxy = B95F19EBE98537A08B8D1E85 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -456,6 +536,24 @@
 				TEST_TARGET_NAME = Vauchi;
 			};
 			name = Release;
+		};
+		52CC2E1889B183BAA1DDA0D8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_GENERATION_MODE = GeneratedFile;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.vauchi.macos.snapshottests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Vauchi.app/Contents/MacOS/Vauchi";
+			};
+			name = Debug;
 		};
 		6947FE1DCAFA1DD3469AB700 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -551,6 +649,24 @@
 			};
 			name = Release;
 		};
+		D15DEF3CBD3B4C2DC43627D7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_GENERATION_MODE = GeneratedFile;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.vauchi.macos.snapshottests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Vauchi.app/Contents/MacOS/Vauchi";
+			};
+			name = Release;
+		};
 		EFFAD80EFBBA6580DC1CAD5E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -626,6 +742,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
+		572C838FA86B126CA380BA94 /* Build configuration list for PBXNativeTarget "VauchiSnapshotTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				52CC2E1889B183BAA1DDA0D8 /* Debug */,
+				D15DEF3CBD3B4C2DC43627D7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		6C73353964F3ADDBC6B3FDE6 /* Build configuration list for PBXNativeTarget "VauchiUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -655,16 +780,34 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCLocalSwiftPackageReference section */
-		7438BD58091D404421785A9A /* XCLocalSwiftPackageReference "Vauchi/Libs/VauchiPlatformLocal" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = Vauchi/Libs/VauchiPlatformLocal;
+/* Begin XCRemoteSwiftPackageReference section */
+		40CC95CA915CE0C8360D71CD /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-snapshot-testing";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.17.0;
+			};
 		};
-/* End XCLocalSwiftPackageReference section */
+		8B834B486889A4518835FD33 /* XCRemoteSwiftPackageReference "vauchi-platform-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://gitlab.com/vauchi/vauchi-platform-swift.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		584E70B43E05BAC9ADA1DC81 /* SnapshotTesting */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 40CC95CA915CE0C8360D71CD /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */;
+			productName = SnapshotTesting;
+		};
 		BE415B866BE8E26F05791810 /* VauchiPlatform */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 8B834B486889A4518835FD33 /* XCRemoteSwiftPackageReference "vauchi-platform-swift" */;
 			productName = VauchiPlatform;
 		};
 /* End XCSwiftPackageProductDependency section */

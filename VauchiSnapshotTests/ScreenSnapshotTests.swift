@@ -40,9 +40,21 @@ final class ScreenSnapshotTests: XCTestCase {
                     icon: nil,
                     title: "How It Works",
                     items: [
-                        InfoItem(icon: "qrcode", title: "Exchange In Person", detail: "Scan QR codes face-to-face to share contact info."),
-                        InfoItem(icon: "lock.shield", title: "End-to-End Encrypted", detail: "Only you and your contacts can read your data."),
-                        InfoItem(icon: "arrow.triangle.2.circlepath", title: "Auto-Update", detail: "Changes are delivered automatically to all contacts."),
+                        InfoItem(
+                            icon: "qrcode",
+                            title: "Exchange In Person",
+                            detail: "Scan QR codes face-to-face to share contact info."
+                        ),
+                        InfoItem(
+                            icon: "lock.shield",
+                            title: "End-to-End Encrypted",
+                            detail: "Only you and your contacts can read your data."
+                        ),
+                        InfoItem(
+                            icon: "arrow.triangle.2.circlepath",
+                            title: "Auto-Update",
+                            detail: "Changes are delivered automatically to all contacts."
+                        ),
                     ]
                 )),
             ],
@@ -145,9 +157,27 @@ final class ScreenSnapshotTests: XCTestCase {
                 .cardPreview(CardPreviewComponent(
                     name: "Alice",
                     fields: [
-                        FieldDisplay(id: "f1", fieldType: "email", label: "Personal Email", value: "alice@example.com", visibility: .shown),
-                        FieldDisplay(id: "f2", fieldType: "phone", label: "Mobile", value: "+41 79 123 45 67", visibility: .shown),
-                        FieldDisplay(id: "f3", fieldType: "website", label: "Website", value: "https://alice.example.com", visibility: .shown),
+                        FieldDisplay(
+                            id: "f1",
+                            fieldType: "email",
+                            label: "Personal Email",
+                            value: "alice@example.com",
+                            visibility: .shown
+                        ),
+                        FieldDisplay(
+                            id: "f2",
+                            fieldType: "phone",
+                            label: "Mobile",
+                            value: "+41 79 123 45 67",
+                            visibility: .shown
+                        ),
+                        FieldDisplay(
+                            id: "f3",
+                            fieldType: "website",
+                            label: "Website",
+                            value: "https://alice.example.com",
+                            visibility: .shown
+                        ),
                     ],
                     groupViews: [],
                     selectedGroup: nil
@@ -187,9 +217,27 @@ final class ScreenSnapshotTests: XCTestCase {
                 .contactList(ContactListComponent(
                     id: "contact_list",
                     contacts: [
-                        ContactItem(id: "c1", name: "Bob", subtitle: "Last updated 2h ago", avatarInitials: "B", status: nil),
-                        ContactItem(id: "c2", name: "Charlie", subtitle: "3 fields shared", avatarInitials: "C", status: nil),
-                        ContactItem(id: "c3", name: "Diana", subtitle: "Pending verification", avatarInitials: "D", status: "pending"),
+                        ContactItem(
+                            id: "c1",
+                            name: "Bob",
+                            subtitle: "Last updated 2h ago",
+                            avatarInitials: "B",
+                            status: nil
+                        ),
+                        ContactItem(
+                            id: "c2",
+                            name: "Charlie",
+                            subtitle: "3 fields shared",
+                            avatarInitials: "C",
+                            status: nil
+                        ),
+                        ContactItem(
+                            id: "c3",
+                            name: "Diana",
+                            subtitle: "Pending verification",
+                            avatarInitials: "D",
+                            status: "pending"
+                        ),
                     ],
                     searchable: true
                 )),
@@ -325,7 +373,11 @@ final class ScreenSnapshotTests: XCTestCase {
                     items: [
                         InfoItem(icon: "qrcode", title: "Exchange In Person", detail: "Scan QR codes face-to-face."),
                         InfoItem(icon: "lock.shield", title: "End-to-End Encrypted", detail: "Your data is private."),
-                        InfoItem(icon: "arrow.triangle.2.circlepath", title: "Auto-Update", detail: "Changes delivered automatically."),
+                        InfoItem(
+                            icon: "arrow.triangle.2.circlepath",
+                            title: "Auto-Update",
+                            detail: "Changes delivered automatically."
+                        ),
                     ]
                 )),
             ],
@@ -346,8 +398,20 @@ final class ScreenSnapshotTests: XCTestCase {
                 .cardPreview(CardPreviewComponent(
                     name: "Alice",
                     fields: [
-                        FieldDisplay(id: "f1", fieldType: "email", label: "Email", value: "alice@example.com", visibility: .shown),
-                        FieldDisplay(id: "f2", fieldType: "phone", label: "Mobile", value: "+41 79 123 45 67", visibility: .shown),
+                        FieldDisplay(
+                            id: "f1",
+                            fieldType: "email",
+                            label: "Email",
+                            value: "alice@example.com",
+                            visibility: .shown
+                        ),
+                        FieldDisplay(
+                            id: "f2",
+                            fieldType: "phone",
+                            label: "Mobile",
+                            value: "+41 79 123 45 67",
+                            visibility: .shown
+                        ),
                     ],
                     groupViews: [],
                     selectedGroup: nil
@@ -368,7 +432,13 @@ final class ScreenSnapshotTests: XCTestCase {
                 .contactList(ContactListComponent(
                     id: "contact_list",
                     contacts: [
-                        ContactItem(id: "c1", name: "Bob", subtitle: "Last updated 2h ago", avatarInitials: "B", status: nil),
+                        ContactItem(
+                            id: "c1",
+                            name: "Bob",
+                            subtitle: "Last updated 2h ago",
+                            avatarInitials: "B",
+                            status: nil
+                        ),
                         ContactItem(id: "c2", name: "Charlie", subtitle: nil, avatarInitials: "C", status: nil),
                     ],
                     searchable: true
