@@ -125,7 +125,9 @@ struct QrScannerView: View {
             }
         }
         .onAppear {
-            cameraAvailable = AVCaptureDevice.default(for: .video) != nil
+            let hasDevice = AVCaptureDevice.default(for: .video) != nil
+            let authStatus = AVCaptureDevice.authorizationStatus(for: .video)
+            cameraAvailable = hasDevice && authStatus != .denied && authStatus != .restricted
             if !cameraAvailable {
                 showPasteField = true
             }
