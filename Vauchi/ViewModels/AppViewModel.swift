@@ -175,6 +175,12 @@ import SwiftUI
             }
         }
 
+        /// Create the exchange session via core.
+        /// Extracted so callers can swap manual vs proximity-verified creation.
+        func createSession(vauchi: VauchiPlatform) throws -> MobileExchangeSession {
+            try vauchi.createQrExchangeManual()
+        }
+
         /// Create exchange session and replace QR data with real exchange QR.
         private func startExchangeSession(screen: ScreenModel) {
             guard let vauchi else {
@@ -184,7 +190,7 @@ import SwiftUI
             }
 
             do {
-                let session = try vauchi.createQrExchangeManual()
+                let session = try createSession(vauchi: vauchi)
                 let qrData = try session.generateQr()
                 exchangeSession = session
 
