@@ -144,8 +144,20 @@ final class CoreUIComponentTests: XCTestCase {
         let component = FieldListComponent(
             id: "fields",
             fields: [
-                FieldDisplay(id: "f1", fieldType: "email", label: "Email", value: "alice@example.com", visibility: .shown),
-                FieldDisplay(id: "f2", fieldType: "phone", label: "Mobile", value: "+41 79 123 45 67", visibility: .hidden),
+                FieldDisplay(
+                    id: "f1",
+                    fieldType: "email",
+                    label: "Email",
+                    value: "alice@example.com",
+                    visibility: .shown
+                ),
+                FieldDisplay(
+                    id: "f2",
+                    fieldType: "phone",
+                    label: "Mobile",
+                    value: "+41 79 123 45 67",
+                    visibility: .hidden
+                ),
             ],
             visibilityMode: .showHide,
             availableGroups: []
@@ -158,8 +170,20 @@ final class CoreUIComponentTests: XCTestCase {
         let component = FieldListComponent(
             id: "fields",
             fields: [
-                FieldDisplay(id: "f1", fieldType: "email", label: "Email", value: "alice@example.com", visibility: .groups(["Family", "Friends"])),
-                FieldDisplay(id: "f2", fieldType: "phone", label: "Mobile", value: "+41 79 123 45 67", visibility: .groups(["Family"])),
+                FieldDisplay(
+                    id: "f1",
+                    fieldType: "email",
+                    label: "Email",
+                    value: "alice@example.com",
+                    visibility: .groups(["Family", "Friends"])
+                ),
+                FieldDisplay(
+                    id: "f2",
+                    fieldType: "phone",
+                    label: "Mobile",
+                    value: "+41 79 123 45 67",
+                    visibility: .groups(["Family"])
+                ),
             ],
             visibilityMode: .perGroup,
             availableGroups: ["Family", "Friends", "Coworkers"]
@@ -185,8 +209,20 @@ final class CoreUIComponentTests: XCTestCase {
         let component = CardPreviewComponent(
             name: "Alice",
             fields: [
-                FieldDisplay(id: "f1", fieldType: "email", label: "Email", value: "alice@example.com", visibility: .shown),
-                FieldDisplay(id: "f2", fieldType: "phone", label: "Mobile", value: "+41 79 123 45 67", visibility: .shown),
+                FieldDisplay(
+                    id: "f1",
+                    fieldType: "email",
+                    label: "Email",
+                    value: "alice@example.com",
+                    visibility: .shown
+                ),
+                FieldDisplay(
+                    id: "f2",
+                    fieldType: "phone",
+                    label: "Mobile",
+                    value: "+41 79 123 45 67",
+                    visibility: .shown
+                ),
             ],
             groupViews: [],
             selectedGroup: nil
@@ -199,21 +235,39 @@ final class CoreUIComponentTests: XCTestCase {
         let component = CardPreviewComponent(
             name: "Alice",
             fields: [
-                FieldDisplay(id: "f1", fieldType: "email", label: "Email", value: "alice@example.com", visibility: .groups(["Family", "Friends"])),
+                FieldDisplay(
+                    id: "f1",
+                    fieldType: "email",
+                    label: "Email",
+                    value: "alice@example.com",
+                    visibility: .groups(["Family", "Friends"])
+                ),
             ],
             groupViews: [
                 GroupCardView(
                     groupName: "Family",
                     displayName: "Alice",
                     visibleFields: [
-                        FieldDisplay(id: "f1", fieldType: "email", label: "Email", value: "alice@example.com", visibility: .shown),
+                        FieldDisplay(
+                            id: "f1",
+                            fieldType: "email",
+                            label: "Email",
+                            value: "alice@example.com",
+                            visibility: .shown
+                        ),
                     ]
                 ),
                 GroupCardView(
                     groupName: "Friends",
                     displayName: "Ali",
                     visibleFields: [
-                        FieldDisplay(id: "f1", fieldType: "email", label: "Email", value: "alice@example.com", visibility: .shown),
+                        FieldDisplay(
+                            id: "f1",
+                            fieldType: "email",
+                            label: "Email",
+                            value: "alice@example.com",
+                            visibility: .shown
+                        ),
                     ]
                 ),
             ],
@@ -231,8 +285,16 @@ final class CoreUIComponentTests: XCTestCase {
             icon: "lock",
             title: "End-to-End Encryption",
             items: [
-                InfoItem(icon: "key", title: "Your Keys", detail: "Keys are generated on your device and never leave it."),
-                InfoItem(icon: "shield", title: "Zero Knowledge", detail: "The relay server cannot read your contact data."),
+                InfoItem(
+                    icon: "key",
+                    title: "Your Keys",
+                    detail: "Keys are generated on your device and never leave it."
+                ),
+                InfoItem(
+                    icon: "shield",
+                    title: "Zero Knowledge",
+                    detail: "The relay server cannot read your contact data."
+                ),
             ]
         )
         let view = InfoPanelComponentView(component: component)
@@ -269,6 +331,7 @@ final class CoreUIComponentTests: XCTestCase {
     func testTextComponentBody() {
         let component = TextComponent(
             id: "t3",
+            // swiftlint:disable:next line_length
             content: "Vauchi lets you share contact information securely. Updates are end-to-end encrypted and delivered automatically.",
             style: .body
         )
@@ -434,8 +497,18 @@ final class CoreUIComponentTests: XCTestCase {
             id: "actions",
             items: [
                 ActionListItem(id: "share", label: "Share Card", icon: "square.and.arrow.up", detail: nil),
-                ActionListItem(id: "export", label: "Export Backup", icon: "arrow.down.doc", detail: "Last backup: Today"),
-                ActionListItem(id: "devices", label: "Linked Devices", icon: "laptopcomputer.and.iphone", detail: "2 devices"),
+                ActionListItem(
+                    id: "export",
+                    label: "Export Backup",
+                    icon: "arrow.down.doc",
+                    detail: "Last backup: Today"
+                ),
+                ActionListItem(
+                    id: "devices",
+                    label: "Linked Devices",
+                    icon: "laptopcomputer.and.iphone",
+                    detail: "2 devices"
+                ),
             ]
         )
         let view = ActionListComponentView(component: component, onAction: noOp)
@@ -461,7 +534,10 @@ final class CoreUIComponentTests: XCTestCase {
             validationError: nil,
             inputType: .text
         )
-        assertDarkComponentSnapshot(of: TextInputComponentView(component: component, onAction: noOp), record: isRecording)
+        assertDarkComponentSnapshot(
+            of: TextInputComponentView(component: component, onAction: noOp),
+            record: isRecording
+        )
     }
 
     func testToggleListDark() {
@@ -484,8 +560,20 @@ final class CoreUIComponentTests: XCTestCase {
         let component = CardPreviewComponent(
             name: "Alice",
             fields: [
-                FieldDisplay(id: "f1", fieldType: "email", label: "Email", value: "alice@example.com", visibility: .shown),
-                FieldDisplay(id: "f2", fieldType: "phone", label: "Mobile", value: "+41 79 123 45 67", visibility: .shown),
+                FieldDisplay(
+                    id: "f1",
+                    fieldType: "email",
+                    label: "Email",
+                    value: "alice@example.com",
+                    visibility: .shown
+                ),
+                FieldDisplay(
+                    id: "f2",
+                    fieldType: "phone",
+                    label: "Mobile",
+                    value: "+41 79 123 45 67",
+                    visibility: .shown
+                ),
             ],
             groupViews: [],
             selectedGroup: nil
@@ -503,8 +591,16 @@ final class CoreUIComponentTests: XCTestCase {
             icon: "lock",
             title: "End-to-End Encryption",
             items: [
-                InfoItem(icon: "key", title: "Your Keys", detail: "Keys are generated on your device and never leave it."),
-                InfoItem(icon: "shield", title: "Zero Knowledge", detail: "The relay server cannot read your contact data."),
+                InfoItem(
+                    icon: "key",
+                    title: "Your Keys",
+                    detail: "Keys are generated on your device and never leave it."
+                ),
+                InfoItem(
+                    icon: "shield",
+                    title: "Zero Knowledge",
+                    detail: "The relay server cannot read your contact data."
+                ),
             ]
         )
         assertDarkComponentSnapshot(
