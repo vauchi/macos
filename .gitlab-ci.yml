@@ -178,6 +178,31 @@ test:unit:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == "main"
 
+test:snapshot:
+  stage: test
+  tags:
+    - macos
+    - self-hosted
+  needs:
+    - build:debug
+  allow_failure: true
+  script:
+    - command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
+    - rm -rf Vauchi.xcodeproj .spm-packages
+    - xcodegen generate
+    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -resolvePackageDependencies
+    - ./scripts/fix-xcframework-symlinks.sh
+    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
+    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -only-testing:VauchiSnapshotTests -resultBundlePath SnapshotTestResults test-without-building
+  artifacts:
+    when: always
+    paths:
+      - SnapshotTestResults
+    expire_in: 7 days
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
+
 # ============================================================
 # Design Drift Check
 # ============================================================
