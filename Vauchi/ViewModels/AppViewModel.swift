@@ -175,10 +175,19 @@ import SwiftUI
             }
         }
 
+        /// Audio proximity service for ultrasonic verification.
+        private let audioService = AudioProximityService.shared
+
         /// Create the exchange session via core.
-        /// Extracted so callers can swap manual vs proximity-verified creation.
+        /// Uses proximity-verified exchange when audio hardware is available,
+        /// falls back to manual confirmation otherwise.
         func createSession(vauchi: VauchiPlatform) throws -> MobileExchangeSession {
-            try vauchi.createQrExchangeManual()
+            let capability = audioService.checkCapability()
+            if capability == "full" || capability == "emit_only" {
+                let handler = AudioProximityHandler(audioService: audioService)
+                return try vauchi.createQrExchange(proximity: handler)
+            }
+            return try vauchi.createQrExchangeManual()
         }
 
         /// Create exchange session and replace QR data with real exchange QR.
