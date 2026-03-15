@@ -6,16 +6,32 @@
 // Test helpers for macOS snapshot tests
 //
 // macOS adaptation of ios/VauchiSnapshotTests/SnapshotHelpers.swift.
-// Uses NSImage-based snapshots instead of UIImage (no UIKit on macOS).
+// Uses NSHostingController + NSImage-based snapshots (no UIKit on macOS).
 
+import AppKit
 import SnapshotTesting
 import SwiftUI
 @testable import Vauchi
 
+// MARK: - NSHostingController Wrapper
+
+/// Wraps a SwiftUI view in an NSHostingController for macOS snapshot testing.
+/// swift-snapshot-testing requires NSViewController (not bare SwiftUI views) on macOS.
+@MainActor
+private func hostingController(
+    for view: some View,
+    width: CGFloat,
+    height: CGFloat
+) -> NSViewController {
+    let controller = NSHostingController(rootView: view)
+    controller.view.frame = CGRect(x: 0, y: 0, width: width, height: height)
+    return controller
+}
+
 // MARK: - Component Snapshot Helper
 
 /// Asserts a snapshot of a SwiftUI view at a fixed size.
-/// macOS uses NSImage-based snapshots (no UITraitCollection).
+/// macOS uses NSHostingController + NSImage-based snapshots.
 @MainActor
 func assertComponentSnapshot(
     of view: some View,
@@ -26,8 +42,13 @@ func assertComponentSnapshot(
     testName: String = #function,
     line: UInt = #line
 ) {
+    let host = hostingController(
+        for: view.padding(),
+        width: width,
+        height: height
+    )
     assertSnapshot(
-        of: view.padding().frame(width: width, height: height),
+        of: host,
         as: .image,
         record: isRecording,
         file: file,
@@ -47,10 +68,15 @@ func assertDarkComponentSnapshot(
     testName: String = #function,
     line: UInt = #line
 ) {
-    assertSnapshot(
-        of: view.padding()
-            .frame(width: width, height: height)
+    let host = hostingController(
+        for: view.padding()
             .environment(\.colorScheme, .dark),
+        width: width,
+        height: height
+    )
+    host.view.appearance = NSAppearance(named: .darkAqua)
+    assertSnapshot(
+        of: host,
         as: .image,
         record: isRecording,
         file: file,
@@ -74,10 +100,9 @@ func assertScreenSnapshot(
     line: UInt = #line
 ) {
     let view = ScreenRendererView(screen: screen, onAction: { _ in })
-        .frame(width: width, height: height)
-
+    let host = hostingController(for: view, width: width, height: height)
     assertSnapshot(
-        of: view,
+        of: host,
         as: .image,
         record: isRecording,
         file: file,
@@ -98,11 +123,11 @@ func assertDarkScreenSnapshot(
     line: UInt = #line
 ) {
     let view = ScreenRendererView(screen: screen, onAction: { _ in })
-        .frame(width: width, height: height)
         .environment(\.colorScheme, .dark)
-
+    let host = hostingController(for: view, width: width, height: height)
+    host.view.appearance = NSAppearance(named: .darkAqua)
     assertSnapshot(
-        of: view,
+        of: host,
         as: .image,
         record: isRecording,
         file: file,
@@ -113,8 +138,8 @@ func assertDarkScreenSnapshot(
 
 // MARK: - Accessibility Snapshot Helper
 
-/// Asserts an accessibility audit of a SwiftUI view.
-/// Captures the accessibility tree as text for regression testing.
+/// Asserts an accessibility snapshot of a SwiftUI view using the
+/// recursive description of the accessibility hierarchy as text.
 @MainActor
 func assertAccessibilitySnapshot(
     of view: some View,
@@ -125,9 +150,10 @@ func assertAccessibilitySnapshot(
     testName: String = #function,
     line: UInt = #line
 ) {
+    let host = hostingController(for: view, width: width, height: height)
     assertSnapshot(
-        of: view.frame(width: width, height: height),
-        as: .accessibilityImage,
+        of: host,
+        as: .recursiveDescription,
         record: isRecording,
         file: file,
         testName: testName,
@@ -149,7 +175,7 @@ func makeScreen(
     subtitle: String? = nil,
     components: [Component] = [],
     actions: [ScreenAction] = [],
-    progress: Progress? = nil
+    progress: Vauchi.Progress? = nil
 ) -> ScreenModel {
     ScreenModel(
         screenId: screenId,
