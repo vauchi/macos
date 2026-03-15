@@ -85,6 +85,7 @@ import SwiftUI
 
         /// Navigate to a specific screen.
         func navigateTo(screenJson: String) {
+            exchangeSession = nil
             do {
                 let json = try appEngine.navigateToJson(screenJson: screenJson)
                 guard let data = json.data(using: .utf8) else { return }
@@ -97,6 +98,7 @@ import SwiftUI
 
         /// Navigate back in the history stack.
         func navigateBack() {
+            exchangeSession = nil
             do {
                 let json = try appEngine.navigateBackJson()
                 guard let data = json.data(using: .utf8) else { return }
@@ -206,6 +208,10 @@ import SwiftUI
                 validationErrors = [:]
             } catch {
                 print("AppViewModel: failed to create exchange session: \(error)")
+                alertMessage = AlertMessage(
+                    title: "Exchange Error",
+                    message: "Could not start exchange session. Please try again."
+                )
                 currentScreen = screen
                 validationErrors = [:]
             }
