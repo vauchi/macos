@@ -200,8 +200,8 @@ class AudioProximityService: PlatformAudioHandler {
         let frameCount = Int(buffer.frameLength)
         var samples = [Float](repeating: 0, count: frameCount)
 
-        for i in 0 ..< frameCount {
-            samples[i] = channelData[0][i]
+        for idx in 0 ..< frameCount {
+            samples[idx] = channelData[0][idx]
         }
 
         return samples
@@ -214,15 +214,15 @@ class AudioProximityService: PlatformAudioHandler {
         let newCount = Int(Float(samples.count) * ratio)
         var result = [Float](repeating: 0, count: newCount)
 
-        for i in 0 ..< newCount {
-            let srcIndex = Float(i) / ratio
+        for idx in 0 ..< newCount {
+            let srcIndex = Float(idx) / ratio
             let srcIndexInt = Int(srcIndex)
             let fraction = srcIndex - Float(srcIndexInt)
 
             if srcIndexInt + 1 < samples.count {
-                result[i] = samples[srcIndexInt] * (1 - fraction) + samples[srcIndexInt + 1] * fraction
+                result[idx] = samples[srcIndexInt] * (1 - fraction) + samples[srcIndexInt + 1] * fraction
             } else if srcIndexInt < samples.count {
-                result[i] = samples[srcIndexInt]
+                result[idx] = samples[srcIndexInt]
             }
         }
 
