@@ -160,7 +160,7 @@ final class AccessibilityTests: XCTestCase {
                 ScreenAction(id: "continue", label: "Continue", style: .primary, enabled: false),
                 ScreenAction(id: "back", label: "Back", style: .secondary, enabled: true),
             ],
-            progress: Progress(currentStep: 1, totalSteps: 4, label: "Step 1 of 4")
+            progress: Vauchi.Progress(currentStep: 1, totalSteps: 4, label: "Step 1 of 4")
         )
         let view = ScreenRendererView(screen: screen, onAction: noOp)
         assertAccessibilitySnapshot(of: view, height: 700, record: isRecording)
