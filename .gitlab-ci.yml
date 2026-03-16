@@ -2,18 +2,27 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 include:
+  - template: Security/SAST.gitlab-ci.yml
+  - template: Security/Secret-Detection.gitlab-ci.yml
   - project: 'vauchi/scripts'
     ref: main
     file:
+      - '/ci-templates/timeouts.yml'
       - '/ci-templates/reuse.yml'
       - '/ci-templates/design-drift.yml'
       - '/ci-templates/badges.yml'
+
+variables:
+  SAST_EXCLUDED_PATHS: "build/, DerivedData/, .spm-packages/"
+  SECRET_DETECTION_EXCLUDED_PATHS: "build/, DerivedData/, .spm-packages/"
+  SAST_ANALYZER_IMAGE_TAG: "5"
 
 stages:
   - update
   - lint
   - build
   - test
+  - security
   - deploy
 
 workflow:
@@ -202,6 +211,69 @@ test:snapshot:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == "main"
+
+# ============================================================
+# Security Stage
+# ============================================================
+
+semgrep-sast:
+  tags: [docker]
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        compare_to: refs/heads/$CI_DEFAULT_BRANCH
+        paths:
+          - "**/*.swift"
+          - ".gitlab-ci.yml"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+
+secret_detection:
+  tags: [docker]
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+# Swift-specific security analysis (mirrors ios/ security:swift-analysis)
+security:swift-analysis:
+  extends: .timeout-quick
+  stage: security
+  tags:
+    - macos
+    - self-hosted
+  script:
+    - 'grep -r "NSAllowsArbitraryLoads" . && echo "WARNING: App Transport Security disabled" || true'
+    - 'grep -r "allowsBackup.*true" . && echo "WARNING: Backup enabled" || true'
+    - 'grep -r "NSCameraUsageDescription\|NSPhotoLibraryUsageDescription\|NSLocationWhenInUseUsageDescription" Info.plist || echo "INFO: No privacy permissions declared"'
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        compare_to: refs/heads/main
+        paths:
+          - "**/*.plist"
+          - ".gitlab-ci.yml"
+
+# Dependency check for SPM (runs on dependency changes)
+security:dependencies:
+  extends: .timeout-quick
+  stage: security
+  tags:
+    - macos
+    - self-hosted
+  script:
+    - |
+      if [ -f "Package.resolved" ]; then
+        echo "Checking Swift Package dependencies..."
+        swift package show-dependencies || true
+      fi
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        compare_to: refs/heads/main
+        paths:
+          - "project.yml"
+          - "Package.resolved"
+          - ".gitlab-ci.yml"
 
 # ============================================================
 # Design Drift Check
