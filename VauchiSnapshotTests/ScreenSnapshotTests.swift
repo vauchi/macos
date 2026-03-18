@@ -24,7 +24,7 @@ import XCTest
 final class ScreenSnapshotTests: XCTestCase {
     /// Whether to record new baselines. Always false in CI.
     private var isRecording: Bool {
-        false
+        ProcessInfo.processInfo.environment["SNAPSHOT_TESTING_RECORD"] == "all"
     }
 
     // MARK: - Onboarding Screens
