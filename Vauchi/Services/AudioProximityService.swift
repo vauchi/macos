@@ -80,7 +80,8 @@ class AudioProximityService: PlatformAudioHandler {
             guard let format = AVAudioFormat(standardFormatWithSampleRate: Double(sampleRate), channels: 1) else {
                 return "Failed to create audio format for sample rate \(sampleRate)"
             }
-            guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: AVAudioFrameCount(samples.count)) else {
+            let capacity = AVAudioFrameCount(samples.count)
+            guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: capacity) else {
                 return "Failed to create PCM buffer with capacity \(samples.count)"
             }
             buffer.frameLength = AVAudioFrameCount(samples.count)

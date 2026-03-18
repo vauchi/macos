@@ -94,14 +94,13 @@ final class ExchangeCommandHandler {
     // MARK: - Audio
 
     private func emitAudioChallenge(data _: Data) {
-        // Audio proximity is not yet wired to the command/event protocol.
-        // AudioProximityService uses a different API (sine wave generation).
-        // TODO: Wire when AudioProximityService supports raw sample emission.
+        // Audio proximity uses MobileProximityVerifier path, not command protocol.
+        reportUnavailable(transport: "audio-command")
     }
 
     private func listenForAudioResponse(timeoutMs _: UInt64) {
-        // Audio proximity is not yet wired to the command/event protocol.
-        // TODO: Wire when AudioProximityService supports raw sample reception.
+        // Audio proximity uses MobileProximityVerifier path, not command protocol.
+        reportUnavailable(transport: "audio-command")
     }
 
     // MARK: - Feedback
