@@ -253,7 +253,7 @@ test:snapshot:
     - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
     - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -only-testing:VauchiSnapshotTests -resultBundlePath SnapshotTestResults test-without-building
   artifacts:
-    when: always
+    when: on_failure
     paths:
       - SnapshotTestResults
     expire_in: 7 days
