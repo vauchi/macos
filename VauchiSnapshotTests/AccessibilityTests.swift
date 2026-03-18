@@ -19,7 +19,7 @@ import XCTest
 @MainActor
 final class AccessibilityTests: XCTestCase {
     private var isRecording: Bool {
-        false
+        ProcessInfo.processInfo.environment["SNAPSHOT_TESTING_RECORD"] == "all"
     }
 
     // MARK: - Component Accessibility

@@ -139,6 +139,23 @@ lint:swiftlint:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
+check:snapshot-recording:
+  stage: lint
+  tags:
+    - macos
+    - self-hosted
+  script:
+    - |
+      if grep -rn 'isRecording.*{' VauchiSnapshotTests/*.swift | grep -v 'ProcessInfo\|environment\|SNAPSHOT_TESTING_RECORD'; then
+        echo "ERROR: isRecording must read from SNAPSHOT_TESTING_RECORD env var"
+        exit 1
+      fi
+    - echo "OK: isRecording uses environment variable"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - "VauchiSnapshotTests/**"
+
 # ============================================================
 # Build Stage
 # ============================================================
@@ -202,8 +219,26 @@ test:snapshot:
     - self-hosted
   needs:
     - build:debug
-  allow_failure: true
+  allow_failure: false
   script:
+    - |
+      BASELINE_COUNT=$(find VauchiSnapshotTests/__Snapshots__ -name '*.png' 2>/dev/null | wc -l | tr -d ' ')
+      echo "Snapshot baselines found: ${BASELINE_COUNT}"
+      if [ "${BASELINE_COUNT}" -eq 0 ]; then
+        echo ""
+        echo "=========================================="
+        echo "  BASELINES MISSING — advisory skip"
+        echo "=========================================="
+        echo "No committed PNG baselines in VauchiSnapshotTests/__Snapshots__/"
+        echo ""
+        echo "To generate baselines locally:"
+        echo "  1. Set env: export SNAPSHOT_TESTING_RECORD=all"
+        echo "  2. Run snapshot tests in Xcode or via xcodebuild"
+        echo "  3. Commit the generated PNGs"
+        echo ""
+        echo "Once baselines are committed, this job will run in strict mode."
+        exit 0
+      fi
     - command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
     - rm -rf Vauchi.xcodeproj .spm-packages
     - xcodegen generate
