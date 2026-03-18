@@ -20,9 +20,14 @@ import XCTest
 /// to verify visual rendering without full-screen context.
 @MainActor
 final class CoreUIComponentTests: XCTestCase {
-    /// Whether to record new baselines. Always false in CI.
+    /// Whether to record new baselines.
+    /// CI record job passes SNAPSHOT_RECORD via SWIFT_ACTIVE_COMPILATION_CONDITIONS.
     private var isRecording: Bool {
-        ProcessInfo.processInfo.environment["SNAPSHOT_TESTING_RECORD"] == "all"
+        #if SNAPSHOT_RECORD
+            return true
+        #else
+            return ProcessInfo.processInfo.environment["SNAPSHOT_TESTING_RECORD"] == "all"
+        #endif
     }
 
     // MARK: - TextInputComponentView
