@@ -150,7 +150,7 @@ check:snapshot-recording:
         echo "ERROR: isRecording must read from SNAPSHOT_TESTING_RECORD env var"
         exit 1
       fi
-    - echo "OK: isRecording uses environment variable"
+      echo "OK: isRecording uses environment variable"
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       changes:
