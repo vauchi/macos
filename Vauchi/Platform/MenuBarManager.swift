@@ -50,14 +50,6 @@ class MenuBarManager {
         viewMenu.addItem(contactsItem)
         contactsMenuItem = contactsItem
 
-        let groupsItem = NSMenuItem(
-            title: "Groups",
-            action: nil,
-            keyEquivalent: "2"
-        )
-        groupsItem.keyEquivalentModifierMask = .command
-        viewMenu.addItem(groupsItem)
-
         viewMenu.addItem(NSMenuItem.separator())
 
         let settingsItem = NSMenuItem(
@@ -87,6 +79,10 @@ class MenuBarManager {
 
     // MARK: - Actions
 
+    // Note: Exchange/Contacts post notifications — AppContentView must observe
+    // .vauchiMenuExchange / .vauchiMenuContacts and call viewModel.navigateTo().
+    // Until wired, these actions only bring the window to front.
+
     @objc private func exchangeAction(_: Any?) {
         NSApp.activate(ignoringOtherApps: true)
         NotificationCenter.default.post(name: .vauchiMenuExchange, object: nil)
@@ -99,6 +95,7 @@ class MenuBarManager {
 
     @objc private func settingsAction(_: Any?) {
         NSApp.activate(ignoringOtherApps: true)
+        // showSettingsWindow: is AppKit's internal selector for SwiftUI Settings scenes (macOS 13+)
         NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
     }
 }

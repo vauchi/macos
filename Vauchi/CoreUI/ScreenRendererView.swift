@@ -97,6 +97,9 @@ struct ScreenRendererView: View {
                 .zIndex(100)
             }
         }
+        .onChange(of: screen.screenId) { _ in
+            checkForToastComponent()
+        }
         .onChange(of: screen.components.count) { _ in
             checkForToastComponent()
         }
@@ -108,15 +111,19 @@ struct ScreenRendererView: View {
     private func checkForToastComponent() {
         for component in screen.components {
             if case let .showToast(toast) = component {
+                let message = toast.message
                 withAnimation {
-                    toastMessage = toast.message
+                    toastMessage = message
                     toastUndoActionId = toast.undoActionId
                 }
                 let dismissDelay = Double(toast.durationMs) / 1000.0
                 DispatchQueue.main.asyncAfter(deadline: .now() + dismissDelay) {
-                    withAnimation {
-                        toastMessage = nil
-                        toastUndoActionId = nil
+                    // Only dismiss if this is still the same toast
+                    if self.toastMessage == message {
+                        withAnimation {
+                            self.toastMessage = nil
+                            self.toastUndoActionId = nil
+                        }
                     }
                 }
                 break
