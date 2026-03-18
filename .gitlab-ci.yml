@@ -228,7 +228,10 @@ test:snapshot:
   allow_failure: false
   script:
     - |
-      BASELINE_COUNT=$(find VauchiSnapshotTests/__Snapshots__ -name '*.png' 2>/dev/null | wc -l | tr -d ' ')
+      BASELINE_COUNT=0
+      if [ -d VauchiSnapshotTests/__Snapshots__ ]; then
+        BASELINE_COUNT=$(find VauchiSnapshotTests/__Snapshots__ -name '*.png' | wc -l | tr -d ' ')
+      fi
       echo "Snapshot baselines found: ${BASELINE_COUNT}"
       if [ "${BASELINE_COUNT}" -eq 0 ]; then
         echo ""
