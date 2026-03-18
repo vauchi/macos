@@ -56,8 +56,15 @@ class SystemTrayManager {
     }
 
     func bringAppToFront() {
-        NSApp.activate(ignoringOtherApps: true)
-        if let window = NSApp.windows.first(where: { $0.canBecomeMain }) {
+        if #available(macOS 14, *) {
+            NSApp.activate()
+        } else {
+            NSApp.activate(ignoringOtherApps: true)
+        }
+        // Find the main app window (not Settings or panels)
+        if let window = NSApp.windows.first(where: {
+            $0.canBecomeMain && $0.className.contains("NSWindow")
+        }) {
             window.makeKeyAndOrderFront(nil)
         }
     }
