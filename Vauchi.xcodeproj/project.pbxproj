@@ -802,7 +802,7 @@
 			repositoryURL = "https://gitlab.com/vauchi/vauchi-platform-swift.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = "0.7.0-dev.3";
+				minimumVersion = "0.7.0-dev.4";
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
