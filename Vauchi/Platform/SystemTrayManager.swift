@@ -13,23 +13,33 @@ import AppKit
 /// - Quick access to exchange contact cards
 /// - Notification indicators for pending exchanges
 /// - Background sync status
-///
-/// TODO: Implement status bar item when core sync engine is connected.
 class SystemTrayManager {
     private var statusItem: NSStatusItem?
 
     /// Creates and configures the status bar item.
     func setup() {
-        // TODO: Create NSStatusItem with vauchi icon
-        // - Click: open/focus main window
-        // - Right-click: context menu (Exchange, Quit)
-        // - Badge: pending exchange count
+        let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
+
+        if let button = item.button {
+            button.image = NSImage(
+                systemSymbolName: "person.crop.circle",
+                accessibilityDescription: "Vauchi"
+            )
+            button.action = #selector(statusItemClicked(_:))
+            button.target = self
+        }
+
+        statusItem = item
     }
 
     /// Updates the status bar icon badge.
     func updateBadge(count: Int) {
-        // TODO: Show notification badge on status bar icon
-        _ = count
+        guard let button = statusItem?.button else { return }
+        if count > 0 {
+            button.title = "\(count)"
+        } else {
+            button.title = ""
+        }
     }
 
     /// Removes the status bar item.
@@ -37,6 +47,18 @@ class SystemTrayManager {
         if let item = statusItem {
             NSStatusBar.system.removeStatusItem(item)
             statusItem = nil
+        }
+    }
+
+    /// Brings the app window to front and activates it.
+    @objc private func statusItemClicked(_: Any?) {
+        bringAppToFront()
+    }
+
+    func bringAppToFront() {
+        NSApp.activate(ignoringOtherApps: true)
+        if let window = NSApp.windows.first(where: { $0.canBecomeMain }) {
+            window.makeKeyAndOrderFront(nil)
         }
     }
 }
