@@ -146,11 +146,17 @@ check:snapshot-recording:
     - self-hosted
   script:
     - |
-      if grep -rn 'isRecording.*{' VauchiSnapshotTests/*.swift | grep -v 'ProcessInfo\|environment\|SNAPSHOT_TESTING_RECORD'; then
-        echo "ERROR: isRecording must read from SNAPSHOT_TESTING_RECORD env var"
+      MISSING=""
+      for f in VauchiSnapshotTests/*.swift; do
+        if grep -q 'isRecording' "$f" && ! grep -q 'SNAPSHOT_TESTING_RECORD' "$f"; then
+          MISSING="$MISSING $f"
+        fi
+      done
+      if [ -n "$MISSING" ]; then
+        echo "ERROR: isRecording must use SNAPSHOT_TESTING_RECORD env var in:$MISSING"
         exit 1
       fi
-      echo "OK: isRecording uses environment variable"
+      echo "OK: all snapshot test files use SNAPSHOT_TESTING_RECORD env var"
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       changes:
