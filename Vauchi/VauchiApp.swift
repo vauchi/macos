@@ -38,13 +38,21 @@ struct VauchiApp: App {
 
 /// App delegate for macOS-specific lifecycle hooks (menu bar, system tray).
 class AppDelegate: NSObject, NSApplicationDelegate {
+    let systemTrayManager = SystemTrayManager()
+    let menuBarManager = MenuBarManager()
+
     func applicationDidFinishLaunching(_: Notification) {
-        // TODO: Initialize MenuBarManager, SystemTrayManager
+        systemTrayManager.setup()
+        menuBarManager.setupMenuBar()
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_: NSApplication) -> Bool {
         // Keep running in menu bar when window is closed
         false
+    }
+
+    func applicationWillTerminate(_: Notification) {
+        systemTrayManager.teardown()
     }
 }
 
