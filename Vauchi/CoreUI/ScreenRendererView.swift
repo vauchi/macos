@@ -17,66 +17,146 @@ import SwiftUI
 /// - Title and subtitle
 /// - All components via `ComponentView`
 /// - Action buttons at the bottom
+/// - Toast overlay for `ShowToast` components
 ///
 /// User interactions are forwarded via `onAction`.
 struct ScreenRendererView: View {
     let screen: ScreenModel
     let onAction: (UserAction) -> Void
 
+    @State private var toastMessage: String?
+    @State private var toastUndoActionId: String?
+
     var body: some View {
-        VStack(spacing: 0) {
-            // Progress bar
-            if let progress = screen.progress {
-                ProgressView(
-                    value: Double(progress.currentStep),
-                    total: Double(progress.totalSteps)
-                )
-                .tint(.cyan)
-                .padding(.horizontal)
-                .padding(.top, 8)
-                .accessibilityLabel("Step \(progress.currentStep) of \(progress.totalSteps)")
-                .accessibilityValue(progress.label ?? "\(progress.currentStep) of \(progress.totalSteps)")
-            }
+        ZStack(alignment: .top) {
+            VStack(spacing: 0) {
+                // Progress bar
+                if let progress = screen.progress {
+                    ProgressView(
+                        value: Double(progress.currentStep),
+                        total: Double(progress.totalSteps)
+                    )
+                    .tint(.cyan)
+                    .padding(.horizontal)
+                    .padding(.top, 8)
+                    .accessibilityLabel("Step \(progress.currentStep) of \(progress.totalSteps)")
+                    .accessibilityValue(progress.label ?? "\(progress.currentStep) of \(progress.totalSteps)")
+                }
 
-            ScrollView {
-                VStack(spacing: 24) {
-                    // Header
-                    VStack(spacing: 8) {
-                        Text(screen.title)
-                            .font(.title2.bold())
-                            .multilineTextAlignment(.center)
-                            .accessibilityAddTraits(.isHeader)
-
-                        if let subtitle = screen.subtitle {
-                            Text(subtitle)
-                                .font(.body)
-                                .foregroundColor(.secondary)
+                ScrollView {
+                    VStack(spacing: 24) {
+                        // Header
+                        VStack(spacing: 8) {
+                            Text(screen.title)
+                                .font(.title2.bold())
                                 .multilineTextAlignment(.center)
+                                .accessibilityAddTraits(.isHeader)
+
+                            if let subtitle = screen.subtitle {
+                                Text(subtitle)
+                                    .font(.body)
+                                    .foregroundColor(.secondary)
+                                    .multilineTextAlignment(.center)
+                            }
+                        }
+                        .padding(.top, 24)
+
+                        // Components
+                        ForEach(Array(screen.components.enumerated()), id: \.offset) { _, component in
+                            ComponentView(component: component, onAction: onAction)
                         }
                     }
-                    .padding(.top, 24)
+                    .padding(.horizontal, 24)
+                }
 
-                    // Components
-                    ForEach(Array(screen.components.enumerated()), id: \.offset) { _, component in
-                        ComponentView(component: component, onAction: onAction)
+                Spacer()
+
+                // Action buttons
+                VStack(spacing: 12) {
+                    ForEach(screen.actions) { action in
+                        ActionButton(action: action) {
+                            onAction(.actionPressed(actionId: action.id))
+                        }
                     }
                 }
                 .padding(.horizontal, 24)
+                .padding(.bottom, 24)
             }
 
-            Spacer()
-
-            // Action buttons
-            VStack(spacing: 12) {
-                ForEach(screen.actions) { action in
-                    ActionButton(action: action) {
-                        onAction(.actionPressed(actionId: action.id))
+            // Toast overlay
+            if let message = toastMessage {
+                ToastOverlayView(message: message, undoActionId: toastUndoActionId, onAction: onAction) {
+                    withAnimation {
+                        toastMessage = nil
+                        toastUndoActionId = nil
                     }
                 }
+                .transition(.move(edge: .top).combined(with: .opacity))
+                .padding(.top, 8)
+                .padding(.horizontal, 24)
+                .zIndex(100)
             }
-            .padding(.horizontal, 24)
-            .padding(.bottom, 24)
         }
+        .onChange(of: screen.components.count) { _ in
+            checkForToastComponent()
+        }
+        .onAppear {
+            checkForToastComponent()
+        }
+    }
+
+    private func checkForToastComponent() {
+        for component in screen.components {
+            if case let .showToast(toast) = component {
+                withAnimation {
+                    toastMessage = toast.message
+                    toastUndoActionId = toast.undoActionId
+                }
+                let dismissDelay = Double(toast.durationMs) / 1000.0
+                DispatchQueue.main.asyncAfter(deadline: .now() + dismissDelay) {
+                    withAnimation {
+                        toastMessage = nil
+                        toastUndoActionId = nil
+                    }
+                }
+                break
+            }
+        }
+    }
+}
+
+/// Toast overlay view shown at the top of the screen.
+struct ToastOverlayView: View {
+    let message: String
+    let undoActionId: String?
+    let onAction: (UserAction) -> Void
+    let onDismiss: () -> Void
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Text(message)
+                .font(.subheadline)
+                .foregroundColor(.white)
+                .lineLimit(2)
+
+            if let undoId = undoActionId {
+                Button("Undo") {
+                    onAction(.undoPressed(actionId: undoId))
+                    onDismiss()
+                }
+                .font(.subheadline.bold())
+                .foregroundColor(.cyan)
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(
+            RoundedRectangle(cornerRadius: 10)
+                .fill(Color.black.opacity(0.85))
+        )
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Toast: \(message)")
     }
 }
 
