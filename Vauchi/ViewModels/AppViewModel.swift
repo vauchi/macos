@@ -153,8 +153,10 @@ import SwiftUI
                 navigateToScreen(["ContactEdit": ["contact_id": contactId]])
             case let .openEntryDetail(fieldId):
                 navigateToScreen(["EntryDetail": ["field_id": fieldId]])
-            case let .showToast(message, _):
-                alertMessage = AlertMessage(title: "", message: message)
+            case .showToast:
+                // Toast rendering is handled by ScreenRendererView's toast overlay.
+                // The showToast component in the screen's component list drives the UI.
+                break
             case .requestCamera:
                 // Load the scan screen — it has camera QR scanning with paste fallback
                 loadScreen()
