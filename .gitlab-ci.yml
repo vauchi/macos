@@ -272,8 +272,6 @@ test:snapshot:record:
       artifacts: false  # record job does its own full build
   when: manual
   allow_failure: true
-  variables:
-    SNAPSHOT_TESTING_RECORD: "all"
   script:
     - echo "📸 Recording snapshot baselines..."
     - command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
@@ -281,12 +279,13 @@ test:snapshot:record:
     - xcodegen generate
     - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -resolvePackageDependencies
     - ./scripts/fix-xcframework-symlinks.sh
-    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
+    # SNAPSHOT_RECORD compilation condition forces isRecording=true in test binary.
     - >
       xcodebuild -project Vauchi.xcodeproj -scheme Vauchi
       -destination "platform=macOS"
-      -only-testing:VauchiSnapshotTests
-      test-without-building
+      CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO
+      SWIFT_ACTIVE_COMPILATION_CONDITIONS='$(inherited) SNAPSHOT_RECORD'
+      test -only-testing:VauchiSnapshotTests
       || true
     # Preserve recorded snapshots across git checkout
     - cp -r VauchiSnapshotTests/__Snapshots__/ /tmp/__Snapshots__/
