@@ -240,12 +240,8 @@ test:snapshot:
         echo "=========================================="
         echo "No committed PNG baselines in VauchiSnapshotTests/__Snapshots__/"
         echo ""
-        echo "To generate baselines locally:"
-        echo "  1. Set env: export SNAPSHOT_TESTING_RECORD=all"
-        echo "  2. Run snapshot tests in Xcode or via xcodebuild"
-        echo "  3. Commit the generated PNGs"
-        echo ""
-        echo "Once baselines are committed, this job will run in strict mode."
+        echo "Use the 'Record baselines' manual job in this pipeline to generate them."
+        echo "CI is the single source of truth — do not record locally."
         exit 0
       fi
     - command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
@@ -260,6 +256,59 @@ test:snapshot:
     paths:
       - SnapshotTestResults
     expire_in: 7 days
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
+
+# Manual job: record snapshot baselines on CI and commit them to the branch.
+# CI is the single source of truth for baselines — never record locally.
+test:snapshot:record:
+  stage: test
+  tags:
+    - macos
+    - self-hosted
+  needs:
+    - job: build:debug
+      artifacts: false  # record job does its own full build
+  when: manual
+  allow_failure: true
+  variables:
+    SNAPSHOT_TESTING_RECORD: "all"
+  script:
+    - echo "📸 Recording snapshot baselines..."
+    - command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
+    - rm -rf Vauchi.xcodeproj .spm-packages
+    - xcodegen generate
+    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -resolvePackageDependencies
+    - ./scripts/fix-xcframework-symlinks.sh
+    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
+    - >
+      xcodebuild -project Vauchi.xcodeproj -scheme Vauchi
+      -destination "platform=macOS"
+      -only-testing:VauchiSnapshotTests
+      test-without-building
+      || true
+    # Configure git for push
+    - git config user.name "vauchi-ci-bot"
+    - git config user.email "ci@vauchi.app"
+    - git remote set-url origin "https://vauchi-gitlab-runner:${PROJECT_ACCESS_TOKEN}@gitlab.com/${CI_PROJECT_PATH}.git"
+    - git fetch origin "${CI_COMMIT_REF_NAME}"
+    - git checkout "${CI_COMMIT_REF_NAME}"
+    # Commit and push baselines (skip if unchanged)
+    - |
+      git add VauchiSnapshotTests/__Snapshots__/
+      if git diff --cached --quiet; then
+        echo "✅ No baseline changes — nothing to commit"
+        exit 0
+      fi
+      CHANGED=$(git diff --cached --stat | tail -1)
+      git commit -m "chore: record snapshot baselines [ci]
+
+      ${CHANGED}
+
+      Co-Authored-By: vauchi-ci-bot <ci@vauchi.app>"
+      git push origin HEAD:${CI_COMMIT_REF_NAME}
+      echo "✅ Baselines committed and pushed — validation pipeline will trigger"
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == "main"
