@@ -79,9 +79,8 @@ class MenuBarManager {
 
     // MARK: - Actions
 
-    // Note: Exchange/Contacts post notifications — AppContentView must observe
-    // .vauchiMenuExchange / .vauchiMenuContacts and call viewModel.navigateTo().
-    // Until wired, these actions only bring the window to front.
+    // Exchange/Contacts post notifications observed by AppContentView's .onReceive
+    // handlers, which call viewModel.navigateTo() for navigation.
 
     @objc private func exchangeAction(_: Any?) {
         NSApp.activate(ignoringOtherApps: true)
@@ -105,4 +104,6 @@ class MenuBarManager {
 extension Notification.Name {
     static let vauchiMenuExchange = Notification.Name("vauchiMenuExchange")
     static let vauchiMenuContacts = Notification.Name("vauchiMenuContacts")
+    static let vauchiMenuGroups = Notification.Name("vauchiMenuGroups")
+    static let vauchiMenuMyCard = Notification.Name("vauchiMenuMyCard")
 }
