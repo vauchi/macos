@@ -11,20 +11,23 @@ import SwiftUI
 ///
 /// Provides desktop-native keyboard shortcuts that don't exist on iOS:
 /// - Cmd+E: Start exchange
-/// - Cmd+1/2/3: Navigate tabs
+/// - Cmd+1/2/3/4: Navigate sidebar tabs (My Card, Contacts, Groups, More)
 /// - Cmd+,: Settings (handled by SwiftUI Settings scene)
 enum VauchiShortcuts {
     /// Start a new contact exchange.
     static let exchange = KeyboardShortcut("e", modifiers: .command)
 
+    /// Navigate to My Card.
+    static let myCard = KeyboardShortcut("1", modifiers: .command)
+
     /// Navigate to contacts tab.
-    static let contacts = KeyboardShortcut("1", modifiers: .command)
+    static let contacts = KeyboardShortcut("2", modifiers: .command)
 
     /// Navigate to groups tab.
-    static let groups = KeyboardShortcut("2", modifiers: .command)
+    static let groups = KeyboardShortcut("3", modifiers: .command)
 
-    /// Navigate to card editor.
-    static let editCard = KeyboardShortcut("3", modifiers: .command)
+    /// Navigate to More screen.
+    static let more = KeyboardShortcut("4", modifiers: .command)
 
     /// Search contacts.
     static let search = KeyboardShortcut("f", modifiers: .command)
@@ -41,6 +44,11 @@ struct VauchiMenuCommands: Commands {
         }
 
         CommandGroup(replacing: .toolbar) {
+            Button("My Card") {
+                NotificationCenter.default.post(name: .vauchiMenuMyCard, object: nil)
+            }
+            .keyboardShortcut(VauchiShortcuts.myCard)
+
             Button("Contacts") {
                 NotificationCenter.default.post(name: .vauchiMenuContacts, object: nil)
             }
@@ -51,10 +59,10 @@ struct VauchiMenuCommands: Commands {
             }
             .keyboardShortcut(VauchiShortcuts.groups)
 
-            Button("My Card") {
-                NotificationCenter.default.post(name: .vauchiMenuMyCard, object: nil)
+            Button("More") {
+                NotificationCenter.default.post(name: .vauchiMenuMore, object: nil)
             }
-            .keyboardShortcut(VauchiShortcuts.editCard)
+            .keyboardShortcut(VauchiShortcuts.more)
         }
     }
 }
