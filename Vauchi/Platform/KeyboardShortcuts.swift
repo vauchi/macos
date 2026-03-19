@@ -11,11 +11,8 @@ import SwiftUI
 ///
 /// Provides desktop-native keyboard shortcuts that don't exist on iOS:
 /// - Cmd+E: Start exchange
-/// - Cmd+N: New contact card
 /// - Cmd+1/2/3: Navigate tabs
 /// - Cmd+,: Settings (handled by SwiftUI Settings scene)
-///
-/// TODO: Wire shortcuts to core navigation actions.
 enum VauchiShortcuts {
     /// Start a new contact exchange.
     static let exchange = KeyboardShortcut("e", modifiers: .command)
@@ -31,4 +28,33 @@ enum VauchiShortcuts {
 
     /// Search contacts.
     static let search = KeyboardShortcut("f", modifiers: .command)
+}
+
+/// SwiftUI Commands that wire VauchiShortcuts to navigation via NotificationCenter.
+struct VauchiMenuCommands: Commands {
+    var body: some Commands {
+        CommandGroup(after: .newItem) {
+            Button("Exchange Contact Card") {
+                NotificationCenter.default.post(name: .vauchiMenuExchange, object: nil)
+            }
+            .keyboardShortcut(VauchiShortcuts.exchange)
+        }
+
+        CommandGroup(replacing: .toolbar) {
+            Button("Contacts") {
+                NotificationCenter.default.post(name: .vauchiMenuContacts, object: nil)
+            }
+            .keyboardShortcut(VauchiShortcuts.contacts)
+
+            Button("Groups") {
+                NotificationCenter.default.post(name: .vauchiMenuGroups, object: nil)
+            }
+            .keyboardShortcut(VauchiShortcuts.groups)
+
+            Button("My Card") {
+                NotificationCenter.default.post(name: .vauchiMenuMyCard, object: nil)
+            }
+            .keyboardShortcut(VauchiShortcuts.editCard)
+        }
+    }
 }

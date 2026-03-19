@@ -25,6 +25,9 @@ struct VauchiApp: App {
             #endif
         }
         .defaultSize(width: 400, height: 700)
+        .commands {
+            VauchiMenuCommands()
+        }
 
         #if os(macOS) && canImport(VauchiPlatform)
             Settings {
@@ -113,6 +116,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                         message: Text(alert.message),
                         dismissButton: .default(Text("OK"))
                     )
+                }
+                .onReceive(NotificationCenter.default.publisher(for: .vauchiMenuExchange)) { _ in
+                    viewModel.navigateTo(screenJson: "\"Exchange\"")
+                }
+                .onReceive(NotificationCenter.default.publisher(for: .vauchiMenuContacts)) { _ in
+                    viewModel.navigateTo(screenJson: "\"Contacts\"")
+                }
+                .onReceive(NotificationCenter.default.publisher(for: .vauchiMenuGroups)) { _ in
+                    viewModel.navigateTo(screenJson: "\"Groups\"")
+                }
+                .onReceive(NotificationCenter.default.publisher(for: .vauchiMenuMyCard)) { _ in
+                    viewModel.navigateTo(screenJson: "\"MyInfo\"")
                 }
             } else {
                 LoadingView()
