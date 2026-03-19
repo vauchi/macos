@@ -80,6 +80,12 @@ import SwiftUI
                 loadSettingsScreen()
             case .startBackupImport:
                 appState.viewModel?.showImportBackupSheet = true
+            case .startDeviceLink:
+                // Delegate to the main view model to show the sheet
+                if let viewModel = appState.viewModel {
+                    viewModel.showDeviceLinkSheet = true
+                    viewModel.startDeviceLink()
+                }
             default:
                 // Other results (alerts, urls, etc.) — reload settings
                 loadSettingsScreen()
