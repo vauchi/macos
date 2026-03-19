@@ -17,11 +17,31 @@ import SwiftUI
         @Published var validationErrors: [String: String] = [:]
         @Published var alertMessage: AlertMessage?
         @Published var showImportBackupSheet = false
+        @Published var showDeviceLinkSheet = false
+        @Published var deviceLinkState: DeviceLinkState = .idle
         let appEngine: PlatformAppEngine
         var vauchi: VauchiPlatform?
 
         /// Active exchange session (created when user enters Exchange screen).
         private var exchangeSession: MobileExchangeSession?
+
+        /// Active device link initiator (holds session state for confirmation).
+        private var currentInitiator: MobileDeviceLinkInitiator?
+        private var currentSenderToken: String?
+
+        // MARK: - Device Link State
+
+        enum DeviceLinkState {
+            case idle
+            case generatingQR
+            case waitingForRequest(qrData: String)
+            case confirmingDevice(
+                name: String, code: String, challenge: Data
+            )
+            case completing
+            case success
+            case failed(String)
+        }
 
         struct AlertMessage: Identifiable {
             let id = UUID()
@@ -162,13 +182,105 @@ import SwiftUI
                 // Load the scan screen — it has camera QR scanning with paste fallback
                 loadScreen()
             case .startDeviceLink:
-                break
+                showDeviceLinkSheet = true
+                startDeviceLink()
             case .startBackupImport:
                 showImportBackupSheet = true
             case .exchangeCommands:
                 // ADR-031: hardware exchange commands handled by exchange session
                 break
             }
+        }
+
+        // MARK: - Device Link
+
+        /// Start the device link initiator flow.
+        func startDeviceLink() {
+            guard let vauchi else {
+                deviceLinkState = .failed("App not initialized")
+                return
+            }
+
+            deviceLinkState = .generatingQR
+            Task {
+                do {
+                    let initiator = try vauchi.startDeviceLink()
+                    currentInitiator = initiator
+                    let qrData = initiator.qrData()
+                    deviceLinkState = .waitingForRequest(
+                        qrData: qrData
+                    )
+                    try await listenForDeviceLinkRequest()
+                } catch {
+                    deviceLinkState = .failed("\(error)")
+                }
+            }
+        }
+
+        /// Listen for a device link request (blocking relay call).
+        private func listenForDeviceLinkRequest() async throws {
+            guard let vauchi,
+                  let initiator = currentInitiator
+            else { return }
+
+            let request = try vauchi.listenForDeviceLinkRequest(
+                timeoutSecs: 300
+            )
+            currentSenderToken = request.senderToken
+            let confirmation = try initiator.prepareConfirmation(
+                encryptedRequest: request.encryptedPayload
+            )
+            let challenge = initiator.proximityChallenge()
+
+            deviceLinkState = .confirmingDevice(
+                name: confirmation.deviceName,
+                code: confirmation.confirmationCode,
+                challenge: challenge
+            )
+        }
+
+        /// Approve the device link with manual confirmation.
+        func approveDeviceLink() {
+            guard let vauchi,
+                  let initiator = currentInitiator,
+                  let senderToken = currentSenderToken
+            else {
+                deviceLinkState = .failed("No active link session")
+                return
+            }
+
+            guard case let .confirmingDevice(_, code, _) = deviceLinkState
+            else { return }
+
+            deviceLinkState = .completing
+            Task {
+                do {
+                    let now = UInt64(Date().timeIntervalSince1970)
+                    let result = try initiator.confirmLinkManual(
+                        confirmationCode: code,
+                        confirmedAt: now
+                    )
+                    if let response = result.encryptedResponse {
+                        try vauchi.sendDeviceLinkResponse(
+                            senderToken: senderToken,
+                            encryptedResponse: response
+                        )
+                    }
+                    deviceLinkState = .success
+                    currentInitiator = nil
+                    currentSenderToken = nil
+                } catch {
+                    deviceLinkState = .failed("\(error)")
+                }
+            }
+        }
+
+        /// Cancel the device link flow and reset state.
+        func cancelDeviceLink() {
+            deviceLinkState = .idle
+            currentInitiator = nil
+            currentSenderToken = nil
+            showDeviceLinkSheet = false
         }
 
         // MARK: - Exchange Session Management

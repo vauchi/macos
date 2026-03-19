@@ -117,6 +117,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                         dismissButton: .default(Text("OK"))
                     )
                 }
+                .sheet(isPresented: $viewModel.showDeviceLinkSheet) {
+                    DeviceLinkSheet(viewModel: viewModel)
+                }
                 .onReceive(NotificationCenter.default.publisher(for: .vauchiMenuExchange)) { _ in
                     viewModel.navigateTo(screenJson: "\"Exchange\"")
                 }
