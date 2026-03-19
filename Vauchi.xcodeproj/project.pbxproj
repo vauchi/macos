@@ -46,6 +46,7 @@
 		E522CA915372F8B514733D6B /* QrCodeComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EEEBB6EBF77701342433324 /* QrCodeComponentView.swift */; };
 		EC30F92B5A66058CF9972C27 /* BleExchangeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418F950D6541F912A27DA57D /* BleExchangeService.swift */; };
 		EE6F9277C97E114DFE2D66F1 /* MenuBarManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452C42124CBE27154FCB283D /* MenuBarManager.swift */; };
+		F1A2B3C4D5E6F7081920A1B2 /* ImportBackupSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B5C /* ImportBackupSheet.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -115,6 +116,7 @@
 		DB9707EE0B0A13EB3B25D347 /* SettingsWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindowView.swift; sourceTree = "<group>"; };
 		EA272578E81247FB65A5C145 /* ComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentView.swift; sourceTree = "<group>"; };
 		F74CD83060E72D770CBCEB21 /* InfoPanelComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoPanelComponentView.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718293A4B5C /* ImportBackupSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportBackupSheet.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -216,6 +218,7 @@
 				1ECAE840736F23F69563D30C /* Platform */,
 				F9FC793A89B3CAD3083ACA25 /* Services */,
 				DE4003224F0F48BD0A224CE5 /* ViewModels */,
+				B2C3D4E5F60718293A4B5C6D /* Views */,
 			);
 			path = Vauchi;
 			sourceTree = "<group>";
@@ -242,6 +245,14 @@
 				8776D2F72715F9C93486FE18 /* ToggleListComponentView.swift */,
 			);
 			path = Components;
+			sourceTree = "<group>";
+		};
+		B2C3D4E5F60718293A4B5C6D /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A1B2C3D4E5F60718293A4B5C /* ImportBackupSheet.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 		DE4003224F0F48BD0A224CE5 /* ViewModels */ = {
@@ -430,6 +441,7 @@
 				C1698574A9244D5FB1EC8EB9 /* DividerComponentView.swift in Sources */,
 				B7FF1459323990242EB469DC /* EditableTextComponentView.swift in Sources */,
 				51B03694B5149D7722B73BCC /* ExchangeCommandHandler.swift in Sources */,
+				F1A2B3C4D5E6F7081920A1B2 /* ImportBackupSheet.swift in Sources */,
 				B7538752D99FA9DB91BC9FF9 /* FieldListComponentView.swift in Sources */,
 				9C2069849249523C53C667F3 /* InfoPanelComponentView.swift in Sources */,
 				C7EC0C6E4ABED52AB382351A /* InlineConfirmComponentView.swift in Sources */,

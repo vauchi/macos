@@ -78,6 +78,8 @@ import SwiftUI
             case .complete:
                 // Setting changed — reload to reflect new state
                 loadSettingsScreen()
+            case .startBackupImport:
+                appState.viewModel?.showImportBackupSheet = true
             default:
                 // Other results (alerts, urls, etc.) — reload settings
                 loadSettingsScreen()
