@@ -129,6 +129,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 .onReceive(NotificationCenter.default.publisher(for: .vauchiMenuMyCard)) { _ in
                     viewModel.navigateTo(screenJson: "\"MyInfo\"")
                 }
+                .sheet(isPresented: $viewModel.showImportBackupSheet) {
+                    ImportBackupSheet()
+                        .environmentObject(viewModel)
+                }
             } else {
                 LoadingView()
             }

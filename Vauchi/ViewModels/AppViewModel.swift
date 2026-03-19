@@ -16,6 +16,7 @@ import SwiftUI
         @Published var currentScreen: ScreenModel?
         @Published var validationErrors: [String: String] = [:]
         @Published var alertMessage: AlertMessage?
+        @Published var showImportBackupSheet = false
         let appEngine: PlatformAppEngine
         var vauchi: VauchiPlatform?
 
@@ -160,8 +161,10 @@ import SwiftUI
             case .requestCamera:
                 // Load the scan screen — it has camera QR scanning with paste fallback
                 loadScreen()
-            case .startDeviceLink, .startBackupImport:
+            case .startDeviceLink:
                 break
+            case .startBackupImport:
+                showImportBackupSheet = true
             case .exchangeCommands:
                 // ADR-031: hardware exchange commands handled by exchange session
                 break
