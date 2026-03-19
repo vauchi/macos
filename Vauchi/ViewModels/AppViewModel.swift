@@ -19,6 +19,8 @@ import SwiftUI
         @Published var showImportBackupSheet = false
         @Published var showDeviceLinkSheet = false
         @Published var deviceLinkState: DeviceLinkState = .idle
+        @Published var availableScreens: [String] = []
+        @Published var selectedScreen: String?
         let appEngine: PlatformAppEngine
         var vauchi: VauchiPlatform?
 
@@ -51,7 +53,19 @@ import SwiftUI
 
         init(appEngine: PlatformAppEngine) {
             self.appEngine = appEngine
+            loadAvailableScreens()
             loadScreen()
+        }
+
+        /// Loads available navigation screens from core.
+        func loadAvailableScreens() {
+            do {
+                let json = try appEngine.availableScreensJson()
+                guard let data = json.data(using: .utf8) else { return }
+                availableScreens = try JSONDecoder().decode([String].self, from: data)
+            } catch {
+                print("AppViewModel: failed to load available screens: \(error)")
+            }
         }
 
         /// Loads the current screen from the core engine.
@@ -64,6 +78,7 @@ import SwiftUI
                 }
                 currentScreen = try coreJSONDecoder.decode(ScreenModel.self, from: data)
                 validationErrors = [:]
+                updateSelectedScreen()
             } catch {
                 print("AppViewModel: failed to load screen: \(error)")
             }
@@ -112,6 +127,8 @@ import SwiftUI
                 guard let data = json.data(using: .utf8) else { return }
                 currentScreen = try coreJSONDecoder.decode(ScreenModel.self, from: data)
                 validationErrors = [:]
+                loadAvailableScreens()
+                updateSelectedScreen()
             } catch {
                 print("AppViewModel: failed to navigate: \(error)")
             }
@@ -134,9 +151,30 @@ import SwiftUI
         func invalidateAll() {
             do {
                 try appEngine.invalidateAll()
+                loadAvailableScreens()
                 loadScreen()
             } catch {
                 print("AppViewModel: failed to invalidate: \(error)")
+            }
+        }
+
+        /// Maps core screen_id prefixes to their AppScreen navigation name.
+        /// Screen IDs like "exchange_show_qr" map to "Exchange" via prefix match.
+        private static let screenIdPrefixToAppScreen: [(prefix: String, appScreen: String)] = [
+            ("my_info", "MyInfo"),
+            ("contact", "Contacts"),
+            ("exchange", "Exchange"),
+            ("groups", "Groups"),
+            ("group_detail", "Groups"),
+            ("more", "More"),
+        ]
+
+        /// Syncs `selectedScreen` from the core's current screen ID.
+        private func updateSelectedScreen() {
+            guard let screenId = currentScreen?.screenId else { return }
+            for mapping in Self.screenIdPrefixToAppScreen where screenId.hasPrefix(mapping.prefix) {
+                selectedScreen = mapping.appScreen
+                return
             }
         }
 

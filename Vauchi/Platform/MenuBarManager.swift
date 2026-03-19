@@ -15,71 +15,68 @@ import AppKit
 /// - Dynamic menu updates based on app state
 class MenuBarManager {
     private var exchangeMenuItem: NSMenuItem?
+    private var myCardMenuItem: NSMenuItem?
     private var contactsMenuItem: NSMenuItem?
+    private var groupsMenuItem: NSMenuItem?
+    private var moreMenuItem: NSMenuItem?
     private var settingsMenuItem: NSMenuItem?
 
     /// Sets up the application menu bar.
     func setupMenuBar() {
         guard let mainMenu = NSApp.mainMenu else { return }
-
-        // File menu — Exchange
-        let fileMenu = NSMenu(title: "File")
-        let exchangeItem = NSMenuItem(
-            title: "Exchange Contact Card",
-            action: #selector(exchangeAction(_:)),
-            keyEquivalent: "e"
-        )
-        exchangeItem.keyEquivalentModifierMask = .command
-        exchangeItem.target = self
-        fileMenu.addItem(exchangeItem)
-        exchangeMenuItem = exchangeItem
-
-        let fileMenuItem = NSMenuItem(title: "File", action: nil, keyEquivalent: "")
-        fileMenuItem.submenu = fileMenu
-
-        // View menu — Navigation
-        let viewMenu = NSMenu(title: "View")
-
-        let contactsItem = NSMenuItem(
-            title: "Contacts",
-            action: #selector(contactsAction(_:)),
-            keyEquivalent: "1"
-        )
-        contactsItem.keyEquivalentModifierMask = .command
-        contactsItem.target = self
-        viewMenu.addItem(contactsItem)
-        contactsMenuItem = contactsItem
-
-        viewMenu.addItem(NSMenuItem.separator())
-
-        let settingsItem = NSMenuItem(
-            title: "Settings...",
-            action: #selector(settingsAction(_:)),
-            keyEquivalent: ","
-        )
-        settingsItem.keyEquivalentModifierMask = .command
-        settingsItem.target = self
-        viewMenu.addItem(settingsItem)
-        settingsMenuItem = settingsItem
-
-        let viewMenuItem = NSMenuItem(title: "View", action: nil, keyEquivalent: "")
-        viewMenuItem.submenu = viewMenu
-
-        // Insert after the app menu (index 1)
+        let fileMenuItem = buildFileMenu()
+        let viewMenuItem = buildViewMenu()
         let insertIndex = min(1, mainMenu.items.count)
         mainMenu.insertItem(fileMenuItem, at: insertIndex)
         mainMenu.insertItem(viewMenuItem, at: insertIndex + 1)
     }
 
+    private func buildFileMenu() -> NSMenuItem {
+        let menu = NSMenu(title: "File")
+        let item = addMenuItem(
+            to: menu, title: "Exchange Contact Card",
+            action: #selector(exchangeAction(_:)), key: "e"
+        )
+        exchangeMenuItem = item
+        let menuItem = NSMenuItem(title: "File", action: nil, keyEquivalent: "")
+        menuItem.submenu = menu
+        return menuItem
+    }
+
+    private func buildViewMenu() -> NSMenuItem {
+        let menu = NSMenu(title: "View")
+        myCardMenuItem = addMenuItem(to: menu, title: "My Card", action: #selector(myCardAction(_:)), key: "1")
+        contactsMenuItem = addMenuItem(to: menu, title: "Contacts", action: #selector(contactsAction(_:)), key: "2")
+        groupsMenuItem = addMenuItem(to: menu, title: "Groups", action: #selector(groupsAction(_:)), key: "3")
+        moreMenuItem = addMenuItem(to: menu, title: "More", action: #selector(moreAction(_:)), key: "4")
+        menu.addItem(NSMenuItem.separator())
+        settingsMenuItem = addMenuItem(to: menu, title: "Settings...", action: #selector(settingsAction(_:)), key: ",")
+        let menuItem = NSMenuItem(title: "View", action: nil, keyEquivalent: "")
+        menuItem.submenu = menu
+        return menuItem
+    }
+
+    @discardableResult
+    private func addMenuItem(to menu: NSMenu, title: String, action: Selector, key: String) -> NSMenuItem {
+        let item = NSMenuItem(title: title, action: action, keyEquivalent: key)
+        item.keyEquivalentModifierMask = .command
+        item.target = self
+        menu.addItem(item)
+        return item
+    }
+
     /// Updates menu item states based on current app state.
     func updateMenuState(hasIdentity: Bool) {
         exchangeMenuItem?.isEnabled = hasIdentity
+        myCardMenuItem?.isEnabled = hasIdentity
         contactsMenuItem?.isEnabled = hasIdentity
+        groupsMenuItem?.isEnabled = hasIdentity
+        moreMenuItem?.isEnabled = hasIdentity
     }
 
     // MARK: - Actions
 
-    // Exchange/Contacts post notifications observed by AppContentView's .onReceive
+    // Menu actions post notifications observed by AppContentView's .onReceive
     // handlers, which call viewModel.navigateTo() for navigation.
 
     @objc private func exchangeAction(_: Any?) {
@@ -87,9 +84,24 @@ class MenuBarManager {
         NotificationCenter.default.post(name: .vauchiMenuExchange, object: nil)
     }
 
+    @objc private func myCardAction(_: Any?) {
+        NSApp.activate(ignoringOtherApps: true)
+        NotificationCenter.default.post(name: .vauchiMenuMyCard, object: nil)
+    }
+
     @objc private func contactsAction(_: Any?) {
         NSApp.activate(ignoringOtherApps: true)
         NotificationCenter.default.post(name: .vauchiMenuContacts, object: nil)
+    }
+
+    @objc private func groupsAction(_: Any?) {
+        NSApp.activate(ignoringOtherApps: true)
+        NotificationCenter.default.post(name: .vauchiMenuGroups, object: nil)
+    }
+
+    @objc private func moreAction(_: Any?) {
+        NSApp.activate(ignoringOtherApps: true)
+        NotificationCenter.default.post(name: .vauchiMenuMore, object: nil)
     }
 
     @objc private func settingsAction(_: Any?) {
@@ -106,4 +118,5 @@ extension Notification.Name {
     static let vauchiMenuContacts = Notification.Name("vauchiMenuContacts")
     static let vauchiMenuGroups = Notification.Name("vauchiMenuGroups")
     static let vauchiMenuMyCard = Notification.Name("vauchiMenuMyCard")
+    static let vauchiMenuMore = Notification.Name("vauchiMenuMore")
 }

@@ -106,38 +106,97 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         @ObservedObject var viewModel: AppViewModel
 
         var body: some View {
-            if let screen = viewModel.currentScreen {
-                ScreenRendererView(screen: screen, onAction: { action in
-                    viewModel.handleAction(action)
-                })
-                .alert(item: $viewModel.alertMessage) { alert in
-                    Alert(
-                        title: Text(alert.title),
-                        message: Text(alert.message),
-                        dismissButton: .default(Text("OK"))
-                    )
+            NavigationSplitView {
+                SidebarView(viewModel: viewModel)
+            } detail: {
+                if let screen = viewModel.currentScreen {
+                    ScreenRendererView(screen: screen, onAction: { action in
+                        viewModel.handleAction(action)
+                    })
+                } else {
+                    LoadingView()
                 }
-                .sheet(isPresented: $viewModel.showDeviceLinkSheet) {
-                    DeviceLinkSheet(viewModel: viewModel)
+            }
+            .alert(item: $viewModel.alertMessage) { alert in
+                Alert(
+                    title: Text(alert.title),
+                    message: Text(alert.message),
+                    dismissButton: .default(Text("OK"))
+                )
+            }
+            .sheet(isPresented: $viewModel.showDeviceLinkSheet) {
+                DeviceLinkSheet(viewModel: viewModel)
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .vauchiMenuExchange)) { _ in
+                viewModel.navigateTo(screenJson: "\"Exchange\"")
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .vauchiMenuContacts)) { _ in
+                viewModel.navigateTo(screenJson: "\"Contacts\"")
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .vauchiMenuGroups)) { _ in
+                viewModel.navigateTo(screenJson: "\"Groups\"")
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .vauchiMenuMyCard)) { _ in
+                viewModel.navigateTo(screenJson: "\"MyInfo\"")
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .vauchiMenuMore)) { _ in
+                viewModel.navigateTo(screenJson: "\"More\"")
+            }
+            .sheet(isPresented: $viewModel.showImportBackupSheet) {
+                ImportBackupSheet()
+                    .environmentObject(viewModel)
+            }
+        }
+    }
+
+    /// Sidebar listing available navigation screens from core.
+    struct SidebarView: View {
+        @ObservedObject var viewModel: AppViewModel
+        @State private var sidebarSelection: String?
+
+        var body: some View {
+            List(selection: $sidebarSelection) {
+                ForEach(viewModel.availableScreens, id: \.self) { screen in
+                    Label(displayName(for: screen), systemImage: icon(for: screen))
+                        .tag(screen)
                 }
-                .onReceive(NotificationCenter.default.publisher(for: .vauchiMenuExchange)) { _ in
-                    viewModel.navigateTo(screenJson: "\"Exchange\"")
-                }
-                .onReceive(NotificationCenter.default.publisher(for: .vauchiMenuContacts)) { _ in
-                    viewModel.navigateTo(screenJson: "\"Contacts\"")
-                }
-                .onReceive(NotificationCenter.default.publisher(for: .vauchiMenuGroups)) { _ in
-                    viewModel.navigateTo(screenJson: "\"Groups\"")
-                }
-                .onReceive(NotificationCenter.default.publisher(for: .vauchiMenuMyCard)) { _ in
-                    viewModel.navigateTo(screenJson: "\"MyInfo\"")
-                }
-                .sheet(isPresented: $viewModel.showImportBackupSheet) {
-                    ImportBackupSheet()
-                        .environmentObject(viewModel)
-                }
-            } else {
-                LoadingView()
+            }
+            .navigationTitle("Vauchi")
+            .onChange(of: sidebarSelection) { newValue in
+                guard let screen = newValue,
+                      screen != viewModel.selectedScreen
+                else { return }
+                viewModel.navigateTo(screenJson: "\"\(screen)\"")
+            }
+            .onChange(of: viewModel.selectedScreen) { newValue in
+                sidebarSelection = newValue
+            }
+            .onAppear {
+                sidebarSelection = viewModel.selectedScreen
+            }
+        }
+
+        private func displayName(for screen: String) -> String {
+            switch screen {
+            case "MyInfo": "My Card"
+            case "Contacts": "Contacts"
+            case "Exchange": "Exchange"
+            case "Groups": "Groups"
+            case "More": "More"
+            case "Onboarding": "Setup"
+            default: screen
+            }
+        }
+
+        private func icon(for screen: String) -> String {
+            switch screen {
+            case "MyInfo": "person.crop.rectangle.fill"
+            case "Contacts": "person.2.fill"
+            case "Exchange": "qrcode"
+            case "Groups": "rectangle.3.group.fill"
+            case "More": "ellipsis.circle.fill"
+            case "Onboarding": "wand.and.stars"
+            default: "square"
             }
         }
     }
