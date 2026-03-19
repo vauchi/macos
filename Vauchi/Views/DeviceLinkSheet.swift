@@ -23,7 +23,8 @@ import SwiftUI
                 sheetActions()
             }
             .padding(24)
-            .frame(width: 400, minHeight: 450)
+            .frame(width: 400)
+            .frame(minHeight: 450)
         }
 
         // MARK: - Header
