@@ -11,6 +11,7 @@ include:
       - '/ci-templates/reuse.yml'
       - '/ci-templates/design-drift.yml'
       - '/ci-templates/badges.yml'
+      - '/ci-templates/token-lint.yml'
 
 variables:
   SAST_EXCLUDED_PATHS: "build/, DerivedData/, .spm-packages/"
@@ -405,6 +406,12 @@ check:design-drift:
 # ============================================================
 # Deploy Stage — Badge Pages
 # ============================================================
+
+check:design-tokens:
+  extends: .token-lint-job
+  variables:
+    TOKEN_LINT_PATHS: "Vauchi"
+    TOKEN_LINT_GLOBS: "*.swift"
 
 pages:
   extends: .badges-pages
