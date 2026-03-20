@@ -124,13 +124,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     ToastOverlayView(
                         message: message,
                         undoActionId: viewModel.toastUndoActionId,
-                        onAction: { action in viewModel.handleAction(action) }
-                    ) {
-                        withAnimation {
-                            viewModel.toastMessage = nil
-                            viewModel.toastUndoActionId = nil
+                        onAction: { action in viewModel.handleAction(action) },
+                        onDismiss: {
+                            withAnimation {
+                                viewModel.toastMessage = nil
+                                viewModel.toastUndoActionId = nil
+                            }
                         }
-                    }
+                    )
                     .transition(.move(edge: .top).combined(with: .opacity))
                     .padding(.top, 8)
                     .padding(.horizontal, 24)
