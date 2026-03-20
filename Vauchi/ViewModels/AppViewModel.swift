@@ -16,6 +16,8 @@ import SwiftUI
         @Published var currentScreen: ScreenModel?
         @Published var validationErrors: [String: String] = [:]
         @Published var alertMessage: AlertMessage?
+        @Published var toastMessage: String?
+        @Published var toastUndoActionId: String?
         @Published var showImportBackupSheet = false
         @Published var showDeviceLinkSheet = false
         @Published var deviceLinkState: DeviceLinkState = .idle
@@ -212,10 +214,10 @@ import SwiftUI
                 navigateToScreen(["ContactEdit": ["contact_id": contactId]])
             case let .openEntryDetail(fieldId):
                 navigateToScreen(["EntryDetail": ["field_id": fieldId]])
-            case .showToast:
-                // Toast rendering is handled by ScreenRendererView's toast overlay.
-                // The showToast component in the screen's component list drives the UI.
-                break
+            case let .showToast(message, undoActionId):
+                // ActionResult.showToast is triggered by core in response to user actions
+                // (e.g. "Field deleted" with undo). Show as overlay toast, not a blocking alert.
+                showToast(message, undoActionId: undoActionId)
             case .requestCamera:
                 // Load the scan screen — it has camera QR scanning with paste fallback
                 loadScreen()
@@ -227,6 +229,24 @@ import SwiftUI
             case .exchangeCommands:
                 // ADR-031: hardware exchange commands handled by exchange session
                 break
+            }
+        }
+
+        // MARK: - Toast
+
+        /// Show a toast overlay that auto-dismisses after the given duration.
+        func showToast(_ message: String, undoActionId: String? = nil, durationMs: UInt32 = 3000) {
+            withAnimation {
+                toastMessage = message
+                toastUndoActionId = undoActionId
+            }
+            let duration = max(Double(durationMs) / 1000.0, 1.0)
+            DispatchQueue.main.asyncAfter(deadline: .now() + duration) { [weak self] in
+                guard let self, self.toastMessage == message else { return }
+                withAnimation {
+                    self.toastMessage = nil
+                    self.toastUndoActionId = nil
+                }
             }
         }
 

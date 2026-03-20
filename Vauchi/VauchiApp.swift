@@ -106,15 +106,35 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         @ObservedObject var viewModel: AppViewModel
 
         var body: some View {
-            NavigationSplitView {
-                SidebarView(viewModel: viewModel)
-            } detail: {
-                if let screen = viewModel.currentScreen {
-                    ScreenRendererView(screen: screen, onAction: { action in
-                        viewModel.handleAction(action)
-                    })
-                } else {
-                    LoadingView()
+            ZStack(alignment: .top) {
+                NavigationSplitView {
+                    SidebarView(viewModel: viewModel)
+                } detail: {
+                    if let screen = viewModel.currentScreen {
+                        ScreenRendererView(screen: screen, onAction: { action in
+                            viewModel.handleAction(action)
+                        })
+                    } else {
+                        LoadingView()
+                    }
+                }
+
+                // Toast overlay for ActionResult.showToast (positioned above content)
+                if let message = viewModel.toastMessage {
+                    ToastOverlayView(
+                        message: message,
+                        undoActionId: viewModel.toastUndoActionId,
+                        onAction: { action in viewModel.handleAction(action) }
+                    ) {
+                        withAnimation {
+                            viewModel.toastMessage = nil
+                            viewModel.toastUndoActionId = nil
+                        }
+                    }
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                    .padding(.top, 8)
+                    .padding(.horizontal, 24)
+                    .zIndex(100)
                 }
             }
             .alert(item: $viewModel.alertMessage) { alert in
