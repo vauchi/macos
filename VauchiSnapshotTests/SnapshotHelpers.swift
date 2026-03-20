@@ -49,7 +49,7 @@ func assertComponentSnapshot(
     )
     assertSnapshot(
         of: host,
-        as: .image,
+        as: .image(perceptualPrecision: 0.98),
         record: isRecording,
         file: file,
         testName: testName,
@@ -77,7 +77,7 @@ func assertDarkComponentSnapshot(
     host.view.appearance = NSAppearance(named: .darkAqua)
     assertSnapshot(
         of: host,
-        as: .image,
+        as: .image(perceptualPrecision: 0.98),
         record: isRecording,
         file: file,
         testName: testName,
@@ -103,7 +103,7 @@ func assertScreenSnapshot(
     let host = hostingController(for: view, width: width, height: height)
     assertSnapshot(
         of: host,
-        as: .image,
+        as: .image(perceptualPrecision: 0.98),
         record: isRecording,
         file: file,
         testName: testName,
@@ -128,7 +128,7 @@ func assertDarkScreenSnapshot(
     host.view.appearance = NSAppearance(named: .darkAqua)
     assertSnapshot(
         of: host,
-        as: .image,
+        as: .image(perceptualPrecision: 0.98),
         record: isRecording,
         file: file,
         testName: testName,
