@@ -30,4 +30,32 @@ class AudioProximityHandler: MobileProximityHandler {
 
         return "" // success
     }
+
+    func verifyProximityTwoWay(
+        emitChallenge: Data, listenChallenge: Data,
+        timeoutMs: UInt64, isInitiator: Bool
+    ) -> String {
+        // Initiator emits first then listens; responder listens first then emits
+        if isInitiator {
+            let emitResult = verifier.emitChallenge(challenge: emitChallenge)
+            if !emitResult.success {
+                return emitResult.error.isEmpty ? "Emit failed" : emitResult.error
+            }
+
+            let response = verifier.listenForResponse(timeoutMs: timeoutMs)
+            if response.isEmpty { return "No proximity response received" }
+            if response != listenChallenge { return "Proximity verification failed: response mismatch" }
+        } else {
+            let response = verifier.listenForResponse(timeoutMs: timeoutMs)
+            if response.isEmpty { return "No proximity response received" }
+            if response != listenChallenge { return "Proximity verification failed: response mismatch" }
+
+            let emitResult = verifier.emitChallenge(challenge: emitChallenge)
+            if !emitResult.success {
+                return emitResult.error.isEmpty ? "Emit failed" : emitResult.error
+            }
+        }
+
+        return "" // success
+    }
 }
