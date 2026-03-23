@@ -29,6 +29,38 @@ workflow:
   auto_cancel:
     on_new_commit: interruptible
 
+# Interruptible default for auto-cancel
+default:
+  interruptible: true
+
+.macos-job:
+  tags:
+    - macos
+    - self-hosted
+
+# Cache SPM packages between pipeline runs.
+# Avoids re-compiling swift-syntax 602.0.0 from scratch (~1 hour cold).
+.spm-cache:
+  cache:
+    key: macos-spm-${CI_COMMIT_REF_SLUG}
+    fallback_keys:
+      - macos-spm-${CI_DEFAULT_BRANCH}
+      - macos-spm
+    paths:
+      - .spm-packages/
+    policy: pull-push
+
+# Read-only SPM cache for jobs that don't need to update it
+.spm-cache-readonly:
+  cache:
+    key: macos-spm-${CI_COMMIT_REF_SLUG}
+    fallback_keys:
+      - macos-spm-${CI_DEFAULT_BRANCH}
+      - macos-spm
+    paths:
+      - .spm-packages/
+    policy: pull
+
 # ============================================================
 # Update Stage (triggered by upstream vauchi-platform-swift release)
 # ============================================================
@@ -167,16 +199,15 @@ check:snapshot-recording:
 # ============================================================
 
 build:debug:
+  extends: [.macos-job, .spm-cache, .timeout-extended]
   stage: build
-  tags:
-    - macos
-    - self-hosted
   script:
     - command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
     - rm -rf Vauchi.xcodeproj
-    # Preserve .spm-packages and DerivedData across runs.
-    # swift-syntax (602.0.0) takes >1 hour to compile cold.
-    # SPM's -resolvePackageDependencies handles cache invalidation when versions change.
+    # Delete lock files so SPM re-resolves to latest versions.
+    # The cached bare repos in .spm-packages/ stay warm — only resolution reruns.
+    - rm -f .spm-packages/workspace-state.json
+    - rm -f Vauchi.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
     - xcodegen generate
     - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -resolvePackageDependencies
     # TEMPORARY: Fix macOS framework symlinks broken by zip -r in v0.3.0 XCFramework.
@@ -192,15 +223,14 @@ build:debug:
 # ============================================================
 
 test:unit:
+  extends: [.macos-job, .spm-cache-readonly]
   stage: test
-  tags:
-    - macos
-    - self-hosted
   needs:
     - build:debug
   script:
     - command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
-    - rm -rf Vauchi.xcodeproj .spm-packages
+    - rm -rf Vauchi.xcodeproj
+    - rm -f .spm-packages/workspace-state.json
     - xcodegen generate
     - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -resolvePackageDependencies
     # TEMPORARY: same workaround as build:debug — jobs don't share DerivedData
@@ -221,10 +251,8 @@ test:unit:
     - if: $CI_COMMIT_BRANCH == "main"
 
 test:snapshot:
+  extends: [.macos-job, .spm-cache-readonly]
   stage: test
-  tags:
-    - macos
-    - self-hosted
   needs:
     - build:debug
   allow_failure: true  # TODO: set back to false once snapshot flake is resolved
@@ -247,7 +275,8 @@ test:snapshot:
         exit 0
       fi
     - command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
-    - rm -rf Vauchi.xcodeproj .spm-packages
+    - rm -rf Vauchi.xcodeproj
+    - rm -f .spm-packages/workspace-state.json
     - xcodegen generate
     - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -resolvePackageDependencies
     - ./scripts/fix-xcframework-symlinks.sh
@@ -265,10 +294,8 @@ test:snapshot:
 # Manual job: record snapshot baselines on CI and commit them to the branch.
 # CI is the single source of truth for baselines — never record locally.
 test:snapshot:record:
+  extends: [.macos-job, .spm-cache-readonly]
   stage: test
-  tags:
-    - macos
-    - self-hosted
   needs:
     - job: build:debug
       artifacts: false  # record job does its own full build
@@ -277,7 +304,8 @@ test:snapshot:record:
   script:
     - echo "📸 Recording snapshot baselines..."
     - command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
-    - rm -rf Vauchi.xcodeproj .spm-packages
+    - rm -rf Vauchi.xcodeproj
+    - rm -f .spm-packages/workspace-state.json
     - xcodegen generate
     - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -resolvePackageDependencies
     - ./scripts/fix-xcframework-symlinks.sh
