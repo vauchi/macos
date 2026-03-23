@@ -173,8 +173,10 @@ build:debug:
     - self-hosted
   script:
     - command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
-    - rm -rf Vauchi.xcodeproj .spm-packages
-    - rm -rf ~/Library/Developer/Xcode/DerivedData/Vauchi-*
+    - rm -rf Vauchi.xcodeproj
+    # Preserve .spm-packages and DerivedData across runs.
+    # swift-syntax (602.0.0) takes >1 hour to compile cold.
+    # SPM's -resolvePackageDependencies handles cache invalidation when versions change.
     - xcodegen generate
     - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -resolvePackageDependencies
     # TEMPORARY: Fix macOS framework symlinks broken by zip -r in v0.3.0 XCFramework.
