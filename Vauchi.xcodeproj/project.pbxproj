@@ -18,6 +18,7 @@
 		3AB3684BA26BB47BF80BB933 /* SmokeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA16E627E566CF0467CBDC18 /* SmokeTests.swift */; };
 		406258333C40C48F3E43D569 /* ActionListComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 517370E68C1DA4C66CD5E3BA /* ActionListComponentView.swift */; };
 		51B03694B5149D7722B73BCC /* ExchangeCommandHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFEFA0373F92D41AE00637B0 /* ExchangeCommandHandler.swift */; };
+		5F1DB57B1D308F6CAD97F5F4 /* DeviceLinkSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AAAF89C9305A8173B0836D7 /* DeviceLinkSheet.swift */; };
 		5F8D2981766D6B43B9B09287 /* CardPreviewComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B524783275A3955F7CBEE76 /* CardPreviewComponentView.swift */; };
 		6B88FFA2E0ED30C5C6BD724E /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D65C152771F552C641B6A1 /* Models.swift */; };
 		719AC91DB0FAB238A99B310A /* SettingsWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB9707EE0B0A13EB3B25D347 /* SettingsWindowView.swift */; };
@@ -44,9 +45,9 @@
 		D65905F3E8A6B191F4611470 /* AudioProximityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49509AE0DF70B880F977B015 /* AudioProximityService.swift */; };
 		DA673F09635BBBF9871092A8 /* VauchiUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773C796EDEEFF9B928C04229 /* VauchiUITests.swift */; };
 		E522CA915372F8B514733D6B /* QrCodeComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EEEBB6EBF77701342433324 /* QrCodeComponentView.swift */; };
+		E95CE36219FD61DB87D693CB /* ImportBackupSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E43EEC0A45AF35EDBE794E /* ImportBackupSheet.swift */; };
 		EC30F92B5A66058CF9972C27 /* BleExchangeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418F950D6541F912A27DA57D /* BleExchangeService.swift */; };
 		EE6F9277C97E114DFE2D66F1 /* MenuBarManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452C42124CBE27154FCB283D /* MenuBarManager.swift */; };
-		F1A2B3C4D5E6F7081920A1B2 /* ImportBackupSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B5C /* ImportBackupSheet.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -94,6 +95,7 @@
 		554291CB7224022A54BC954F /* AppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewModel.swift; sourceTree = "<group>"; };
 		63AE253E0DF71B38AAE856FB /* TextComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextComponentView.swift; sourceTree = "<group>"; };
 		649B37B5A7280D282E65BC3F /* PinInputComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinInputComponentView.swift; sourceTree = "<group>"; };
+		68E43EEC0A45AF35EDBE794E /* ImportBackupSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportBackupSheet.swift; sourceTree = "<group>"; };
 		6EEEBB6EBF77701342433324 /* QrCodeComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QrCodeComponentView.swift; sourceTree = "<group>"; };
 		71E5FB136BF29B1F9D9B7F04 /* VauchiApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VauchiApp.swift; sourceTree = "<group>"; };
 		773C796EDEEFF9B928C04229 /* VauchiUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VauchiUITests.swift; sourceTree = "<group>"; };
@@ -109,6 +111,7 @@
 		95373D9E6440FED4B532EBDD /* VauchiRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VauchiRepository.swift; sourceTree = "<group>"; };
 		9764FE7904C8B94F71A1858D /* DividerComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DividerComponentView.swift; sourceTree = "<group>"; };
 		98DF34CD2C6C3C8226D07C0B /* EditableTextComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditableTextComponentView.swift; sourceTree = "<group>"; };
+		9AAAF89C9305A8173B0836D7 /* DeviceLinkSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceLinkSheet.swift; sourceTree = "<group>"; };
 		AA16E627E566CF0467CBDC18 /* SmokeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmokeTests.swift; sourceTree = "<group>"; };
 		AC15FD6D223D1A6700601767 /* ConfirmationDialogComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmationDialogComponentView.swift; sourceTree = "<group>"; };
 		B31DFE6F23CEA01F0437957B /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
@@ -116,7 +119,6 @@
 		DB9707EE0B0A13EB3B25D347 /* SettingsWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindowView.swift; sourceTree = "<group>"; };
 		EA272578E81247FB65A5C145 /* ComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentView.swift; sourceTree = "<group>"; };
 		F74CD83060E72D770CBCEB21 /* InfoPanelComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoPanelComponentView.swift; sourceTree = "<group>"; };
-		A1B2C3D4E5F60718293A4B5C /* ImportBackupSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportBackupSheet.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -209,6 +211,15 @@
 			path = VauchiUITests;
 			sourceTree = "<group>";
 		};
+		CC27001BE792CD487814D16E /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				9AAAF89C9305A8173B0836D7 /* DeviceLinkSheet.swift */,
+				68E43EEC0A45AF35EDBE794E /* ImportBackupSheet.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		CE3F5B89773435D1670DD40B /* Vauchi */ = {
 			isa = PBXGroup;
 			children = (
@@ -218,7 +229,7 @@
 				1ECAE840736F23F69563D30C /* Platform */,
 				F9FC793A89B3CAD3083ACA25 /* Services */,
 				DE4003224F0F48BD0A224CE5 /* ViewModels */,
-				B2C3D4E5F60718293A4B5C6D /* Views */,
+				CC27001BE792CD487814D16E /* Views */,
 			);
 			path = Vauchi;
 			sourceTree = "<group>";
@@ -245,14 +256,6 @@
 				8776D2F72715F9C93486FE18 /* ToggleListComponentView.swift */,
 			);
 			path = Components;
-			sourceTree = "<group>";
-		};
-		B2C3D4E5F60718293A4B5C6D /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				A1B2C3D4E5F60718293A4B5C /* ImportBackupSheet.swift */,
-			);
-			path = Views;
 			sourceTree = "<group>";
 		};
 		DE4003224F0F48BD0A224CE5 /* ViewModels */ = {
@@ -438,11 +441,12 @@
 				8F1D5438434B846475597477 /* ComponentView.swift in Sources */,
 				1ACE579015129CE4204CAFA8 /* ConfirmationDialogComponentView.swift in Sources */,
 				23D1EC2E1C8E3AB20680980F /* ContactListComponentView.swift in Sources */,
+				5F1DB57B1D308F6CAD97F5F4 /* DeviceLinkSheet.swift in Sources */,
 				C1698574A9244D5FB1EC8EB9 /* DividerComponentView.swift in Sources */,
 				B7FF1459323990242EB469DC /* EditableTextComponentView.swift in Sources */,
 				51B03694B5149D7722B73BCC /* ExchangeCommandHandler.swift in Sources */,
-				F1A2B3C4D5E6F7081920A1B2 /* ImportBackupSheet.swift in Sources */,
 				B7538752D99FA9DB91BC9FF9 /* FieldListComponentView.swift in Sources */,
+				E95CE36219FD61DB87D693CB /* ImportBackupSheet.swift in Sources */,
 				9C2069849249523C53C667F3 /* InfoPanelComponentView.swift in Sources */,
 				C7EC0C6E4ABED52AB382351A /* InlineConfirmComponentView.swift in Sources */,
 				9BA83E0C812D194A0C94FC64 /* KeyboardShortcuts.swift in Sources */,
@@ -814,7 +818,7 @@
 			repositoryURL = "https://gitlab.com/vauchi/vauchi-platform-swift.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = "0.8.1";
+				minimumVersion = 0.8.3;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
