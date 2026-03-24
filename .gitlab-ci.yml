@@ -38,7 +38,11 @@ default:
     - macos
     - self-hosted
   before_script:
-    - echo "Xcode $(xcodebuild -version | head -1)"
+    # Disable prebuilt binary downloads — SwiftPM's NetrcAuthorizationProvider
+    # deadlocks in non-interactive shells when no .netrc exists (Xcode 26.3 bug).
+    # swift-syntax compiles from source on first run (~1hr), then cached via .spm-cache.
+    - defaults write com.apple.dt.Xcode IDEPackageEnablePrebuilts -bool NO
+    - echo "Xcode $(xcodebuild -version | head -1), prebuilts disabled (CI workaround)"
 
 # Cache SPM packages between pipeline runs.
 # Avoids re-compiling swift-syntax 602.0.0 from scratch (~1 hour cold).
