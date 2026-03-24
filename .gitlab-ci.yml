@@ -209,11 +209,11 @@ build:debug:
     - rm -f .spm-packages/workspace-state.json
     - rm -f Vauchi.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
     - xcodegen generate
-    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -resolvePackageDependencies
+    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -clonedSourcePackagesDirPath .spm-packages -resolvePackageDependencies
     # TEMPORARY: Fix macOS framework symlinks broken by zip -r in v0.3.0 XCFramework.
     # Remove after core publishes with zip -ry (v0.3.1+). See core !259.
     - ./scripts/fix-xcframework-symlinks.sh
-    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -configuration Debug -destination "platform=macOS" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO build
+    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -configuration Debug -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO build
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == "main"
@@ -232,10 +232,10 @@ test:unit:
     - rm -rf Vauchi.xcodeproj
     - rm -f .spm-packages/workspace-state.json
     - xcodegen generate
-    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -resolvePackageDependencies
+    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -clonedSourcePackagesDirPath .spm-packages -resolvePackageDependencies
     # TEMPORARY: same workaround as build:debug — jobs don't share DerivedData
     - ./scripts/fix-xcframework-symlinks.sh
-    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
+    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
     - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -only-testing:VauchiTests -resultBundlePath TestResults test-without-building
     - command -v xcresultparser >/dev/null 2>&1 || brew install a7ex/homebrew-formulae/xcresultparser
     - xcresultparser --output-format junit TestResults > test-results.xml || true
@@ -278,9 +278,9 @@ test:snapshot:
     - rm -rf Vauchi.xcodeproj
     - rm -f .spm-packages/workspace-state.json
     - xcodegen generate
-    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -resolvePackageDependencies
+    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -clonedSourcePackagesDirPath .spm-packages -resolvePackageDependencies
     - ./scripts/fix-xcframework-symlinks.sh
-    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
+    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
     - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -only-testing:VauchiSnapshotTests -resultBundlePath SnapshotTestResults test-without-building
   artifacts:
     when: on_failure
@@ -307,13 +307,14 @@ test:snapshot:record:
     - rm -rf Vauchi.xcodeproj
     - rm -f .spm-packages/workspace-state.json
     - xcodegen generate
-    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -resolvePackageDependencies
+    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -clonedSourcePackagesDirPath .spm-packages -resolvePackageDependencies
     - ./scripts/fix-xcframework-symlinks.sh
     # SNAPSHOT_RECORD compilation condition forces isRecording=true in test binary.
     - |
       set +e
       xcodebuild -project Vauchi.xcodeproj -scheme Vauchi \
         -destination "platform=macOS" \
+        -clonedSourcePackagesDirPath .spm-packages \
         CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO \
         SWIFT_ACTIVE_COMPILATION_CONDITIONS='$(inherited) SNAPSHOT_RECORD' \
         test -only-testing:VauchiSnapshotTests \
