@@ -261,7 +261,7 @@ test:snapshot:
   stage: test
   needs:
     - build:debug
-  allow_failure: true  # TODO: set back to false once snapshot flake is resolved
+  # Enforced — snapshot flakes must be investigated, not ignored
   script:
     - |
       BASELINE_COUNT=0
