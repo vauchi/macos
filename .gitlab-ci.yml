@@ -38,10 +38,7 @@ default:
     - macos
     - self-hosted
   before_script:
-    # Use prebuilt swift-syntax binary instead of compiling from source.
-    # Requires Xcode 16.4+ (Swift 6.1.1). Reduces cold builds from ~1hr to seconds.
-    - defaults write com.apple.dt.Xcode IDEPackageEnablePrebuilts -bool YES
-    - echo "Xcode $(xcodebuild -version | head -1), prebuilts enabled"
+    - echo "Xcode $(xcodebuild -version | head -1)"
 
 # Cache SPM packages between pipeline runs.
 # Avoids re-compiling swift-syntax 602.0.0 from scratch (~1 hour cold).
