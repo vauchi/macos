@@ -365,13 +365,19 @@ extension BleExchangeService: CBPeripheralManagerDelegate {
         }
     }
 
-    func peripheralManager(_: CBPeripheralManager, central: CBCentral, didSubscribeTo characteristic: CBCharacteristic) {
+    func peripheralManager(
+        _: CBPeripheralManager, central: CBCentral,
+        didSubscribeTo characteristic: CBCharacteristic
+    ) {
         guard let gatt = gattCharacteristic, characteristic.uuid == gatt.uuid else { return }
         subscribedCentrals.append(central)
         eventCallback?(.bleConnected(deviceId: central.identifier.uuidString))
     }
 
-    func peripheralManager(_: CBPeripheralManager, central: CBCentral, didUnsubscribeFrom characteristic: CBCharacteristic) {
+    func peripheralManager(
+        _: CBPeripheralManager, central: CBCentral,
+        didUnsubscribeFrom characteristic: CBCharacteristic
+    ) {
         guard let gatt = gattCharacteristic, characteristic.uuid == gatt.uuid else { return }
         subscribedCentrals.removeAll { $0.identifier == central.identifier }
         eventCallback?(.bleDisconnected(reason: "central unsubscribed"))
