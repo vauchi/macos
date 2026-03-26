@@ -11,14 +11,23 @@ import XCTest
 final class SmokeTests: XCTestCase {
     #if canImport(VauchiPlatform)
         @MainActor
-        func testAppStateInitializes() {
+        func testAppStateInitializes() throws {
+            // Requires Keychain + native library — skip on headless CI
+            try XCTSkipIf(
+                ProcessInfo.processInfo.environment["CI"] != nil,
+                "AppState integration test requires Keychain access (interactive session)"
+            )
             let appState = AppState()
             XCTAssertNotNil(appState.viewModel, "AppState should create AppViewModel from PlatformAppEngine")
             XCTAssertNil(appState.error, "AppState should not have an error on fresh init")
         }
 
         @MainActor
-        func testAppViewModelLoadsInitialScreen() {
+        func testAppViewModelLoadsInitialScreen() throws {
+            try XCTSkipIf(
+                ProcessInfo.processInfo.environment["CI"] != nil,
+                "AppState integration test requires Keychain access (interactive session)"
+            )
             let appState = AppState()
             guard let viewModel = appState.viewModel else {
                 XCTFail("AppState should create AppViewModel")
