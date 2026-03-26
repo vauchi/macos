@@ -93,12 +93,37 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 viewModel = appViewModel
                 isAuthenticationRequired = false
                 error = nil
+                checkContentUpdates(vauchi: repo.vauchi)
             } catch VauchiRepositoryError.deviceLocked {
                 isAuthenticationRequired = true
                 print("VauchiApp: device locked, authentication required")
             } catch {
                 self.error = error.localizedDescription
                 print("VauchiApp: failed to initialize: \(error)")
+            }
+        }
+
+        /// Check for content updates (locales, themes) in the background after startup.
+        private func checkContentUpdates(vauchi: VauchiPlatform) {
+            guard vauchi.isContentUpdatesSupported() else { return }
+
+            Task.detached(priority: .utility) { [weak self] in
+                let status = vauchi.checkContentUpdates()
+                guard case .updatesAvailable = status else { return }
+
+                let result = vauchi.applyContentUpdates()
+                if case let .applied(applied, _) = result {
+                    // Refresh theme catalog if themes were updated
+                    if applied.contains(.themes) {
+                        await MainActor.run {
+                            ThemeService.shared.applySelectedTheme()
+                        }
+                    }
+                    // Locale store is hot-reloaded by core — no action needed
+                    await MainActor.run {
+                        self?.viewModel?.invalidateAll()
+                    }
+                }
             }
         }
 
