@@ -68,7 +68,7 @@ final class BleExchangeService: NSObject {
     func stopAdvertising() {
         peripheralManager?.stopAdvertising()
         if let characteristic = gattCharacteristic,
-           let service = characteristic.service
+           let service = characteristic.service as? CBMutableService
         {
             peripheralManager?.remove(service)
         }
