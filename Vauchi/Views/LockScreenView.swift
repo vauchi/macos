@@ -55,18 +55,16 @@ struct LockScreenView: View {
     }
 
     private var unlockLabel: String {
-        let biometric = BiometricService.shared.availableBiometricType
-        switch biometric {
-        case .touchID: "Unlock with Touch ID"
-        case .none: "Unlock"
+        switch BiometricService.shared.availableBiometricType {
+        case .touchID: return "Unlock with Touch ID"
+        case .none: return "Unlock"
         }
     }
 
     private var unlockIcon: String {
-        let biometric = BiometricService.shared.availableBiometricType
-        switch biometric {
-        case .touchID: "touchid"
-        case .none: "lock.open.fill"
+        switch BiometricService.shared.availableBiometricType {
+        case .touchID: return "touchid"
+        case .none: return "lock.open.fill"
         }
     }
 }
