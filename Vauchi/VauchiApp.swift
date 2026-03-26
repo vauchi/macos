@@ -74,6 +74,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         private var repository: VauchiRepository?
 
         init() {
+            // Skip heavy initialization when running as a test host.
+            // XCTest injects the test bundle into the app process — the app's
+            // full startup (Keychain, native library, biometric auth) would
+            // hang on headless CI runners without a login session.
+            guard ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil else {
+                return
+            }
             initializeRepository()
         }
 
