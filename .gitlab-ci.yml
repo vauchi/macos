@@ -244,9 +244,30 @@ test:unit:
     - ./scripts/fix-xcframework-symlinks.sh
     - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
     - rm -rf TestResults
-    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -only-testing:VauchiTests -resultBundlePath TestResults test-without-building
+    # xcodebuild exit 65 can be a false positive from logarchive errors (error 13,
+    # "failed to read version.plist"). Capture exit code and check actual test results.
+    - |
+      set +e
+      xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" \
+        -only-testing:VauchiTests -resultBundlePath TestResults test-without-building
+      XCODE_EXIT=$?
+      set -e
     - command -v xcresultparser >/dev/null 2>&1 || brew install a7ex/homebrew-formulae/xcresultparser
     - xcresultparser --output-format junit TestResults > test-results.xml || true
+    # Evaluate actual test results from xcresult, not xcodebuild exit code
+    - |
+      if [ -f test-results.xml ]; then
+        FAILURES=$(grep -c 'failures="[1-9]' test-results.xml || true)
+        ERRORS=$(grep -c 'errors="[1-9]' test-results.xml || true)
+        if [ "$FAILURES" -gt 0 ] || [ "$ERRORS" -gt 0 ]; then
+          echo "❌ Tests failed (${FAILURES} failure suites, ${ERRORS} error suites)"
+          exit 1
+        fi
+        echo "✅ All tests passed (xcodebuild exit ${XCODE_EXIT} was logarchive noise)"
+      elif [ "$XCODE_EXIT" -ne 0 ]; then
+        echo "❌ Tests failed and no results produced (exit code ${XCODE_EXIT})"
+        exit 1
+      fi
   artifacts:
     when: always
     paths:
