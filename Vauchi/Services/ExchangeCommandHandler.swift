@@ -64,8 +64,8 @@ final class ExchangeCommandHandler {
         case let .bleStartScanning(serviceUuid):
             bleService.startScanning(serviceUuid: serviceUuid)
 
-        case let .bleStartAdvertising(serviceUuid, _):
-            bleService.startAdvertising(serviceUuid: serviceUuid)
+        case let .bleStartAdvertising(serviceUuid, payload):
+            bleService.startAdvertising(serviceUuid: serviceUuid, payload: payload)
 
         case let .bleConnect(deviceId):
             bleService.connect(deviceId: deviceId)
