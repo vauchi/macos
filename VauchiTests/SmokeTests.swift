@@ -10,13 +10,16 @@ import XCTest
 
 final class SmokeTests: XCTestCase {
     #if canImport(VauchiPlatform)
+        /// Whether we're running inside a test host (CI or local XCTest).
+        /// AppState skips init in test hosts, so these integration tests
+        /// only work when the app is launched normally with Keychain access.
+        private var isTestHost: Bool {
+            ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
+        }
+
         @MainActor
         func testAppStateInitializes() throws {
-            // Requires Keychain + native library — skip on headless CI
-            try XCTSkipIf(
-                ProcessInfo.processInfo.environment["CI"] != nil,
-                "AppState integration test requires Keychain access (interactive session)"
-            )
+            try XCTSkipIf(isTestHost, "Requires Keychain — skipped in test host")
             let appState = AppState()
             XCTAssertNotNil(appState.viewModel, "AppState should create AppViewModel from PlatformAppEngine")
             XCTAssertNil(appState.error, "AppState should not have an error on fresh init")
@@ -24,10 +27,7 @@ final class SmokeTests: XCTestCase {
 
         @MainActor
         func testAppViewModelLoadsInitialScreen() throws {
-            try XCTSkipIf(
-                ProcessInfo.processInfo.environment["CI"] != nil,
-                "AppState integration test requires Keychain access (interactive session)"
-            )
+            try XCTSkipIf(isTestHost, "Requires Keychain — skipped in test host")
             let appState = AppState()
             guard let viewModel = appState.viewModel else {
                 XCTFail("AppState should create AppViewModel")
