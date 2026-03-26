@@ -15,12 +15,20 @@ final class BleExchangeService: NSObject {
     typealias EventCallback = (MobileExchangeHardwareEvent) -> Void
 
     private var centralManager: CBCentralManager?
+    private var peripheralManager: CBPeripheralManager?
     private var targetServiceUuid: CBUUID?
     private var connectedPeripheral: CBPeripheral?
     private var discoveredCharacteristics: [String: CBCharacteristic] = [:]
     private var eventCallback: EventCallback?
     private var pendingWrite: (uuid: String, data: Data)?
     private var pendingRead: String?
+
+    // MARK: - Peripheral (Advertising) State
+
+    private var advertisingServiceUuid: CBUUID?
+    private var advertisingPayload: Data?
+    private var gattCharacteristic: CBMutableCharacteristic?
+    private var subscribedCentrals: [CBCentral] = []
 
     /// Initialize and start CoreBluetooth.
     func activate(callback: @escaping EventCallback) {
@@ -43,11 +51,31 @@ final class BleExchangeService: NSObject {
         ])
     }
 
-    func startAdvertising(serviceUuid _: String) {
-        // iOS apps cannot advertise as BLE peripherals in the background.
-        // For exchange, we rely on one device scanning and the other advertising.
-        // Peripheral mode requires CBPeripheralManager — defer for now.
-        eventCallback?(.hardwareUnavailable(transport: "BLE-advertise"))
+    func startAdvertising(serviceUuid: String, payload: Data = Data()) {
+        // macOS supports CBPeripheralManager for BLE advertising.
+        // One device advertises while the other scans — the exchange protocol
+        // uses this asymmetry to establish the GATT connection.
+        advertisingServiceUuid = CBUUID(string: serviceUuid)
+        advertisingPayload = payload
+
+        if peripheralManager == nil {
+            peripheralManager = CBPeripheralManager(delegate: self, queue: .global(qos: .userInitiated))
+        } else if peripheralManager?.state == .poweredOn {
+            setupGattServiceAndAdvertise()
+        }
+    }
+
+    func stopAdvertising() {
+        peripheralManager?.stopAdvertising()
+        if let characteristic = gattCharacteristic,
+           let service = characteristic.service
+        {
+            peripheralManager?.remove(service)
+        }
+        subscribedCentrals.removeAll()
+        gattCharacteristic = nil
+        advertisingServiceUuid = nil
+        advertisingPayload = nil
     }
 
     func connect(deviceId: String) {
@@ -91,6 +119,7 @@ final class BleExchangeService: NSObject {
         if let peripheral = connectedPeripheral {
             centralManager?.cancelPeripheralConnection(peripheral)
         }
+        stopAdvertising()
         cleanup()
     }
 
@@ -107,6 +136,32 @@ final class BleExchangeService: NSObject {
         discoveredCharacteristics.removeAll()
         pendingWrite = nil
         pendingRead = nil
+        subscribedCentrals.removeAll()
+    }
+
+    /// Set up the GATT service with a read/write/notify characteristic and begin advertising.
+    private func setupGattServiceAndAdvertise() {
+        guard let serviceUuid = advertisingServiceUuid else { return }
+
+        // Create a characteristic that supports read, write, and notify
+        let characteristicUuid = CBUUID(string: "00000001-" + serviceUuid.uuidString.dropFirst(8))
+        let characteristic = CBMutableCharacteristic(
+            type: characteristicUuid,
+            properties: [.read, .write, .notify],
+            value: nil,
+            permissions: [.readable, .writeable]
+        )
+        gattCharacteristic = characteristic
+
+        // Set initial value from payload
+        if let payload = advertisingPayload, !payload.isEmpty {
+            characteristic.value = payload
+        }
+
+        let service = CBMutableService(type: serviceUuid, primary: true)
+        service.characteristics = [characteristic]
+
+        peripheralManager?.add(service)
     }
 }
 
@@ -220,5 +275,105 @@ extension BleExchangeService: CBPeripheralDelegate {
                 error: "Write failed: \(error.localizedDescription)"
             ))
         }
+    }
+}
+
+// MARK: - CBPeripheralManagerDelegate
+
+extension BleExchangeService: CBPeripheralManagerDelegate {
+    func peripheralManagerDidUpdateState(_ peripheral: CBPeripheralManager) {
+        switch peripheral.state {
+        case .poweredOn:
+            // Bluetooth is ready — set up the GATT service and start advertising
+            setupGattServiceAndAdvertise()
+        case .poweredOff, .unauthorized, .unsupported:
+            eventCallback?(.hardwareUnavailable(transport: "BLE-advertise"))
+        default:
+            break
+        }
+    }
+
+    func peripheralManager(_: CBPeripheralManager, didAdd _: CBService, error: Error?) {
+        guard error == nil else {
+            eventCallback?(.hardwareError(
+                transport: "BLE-advertise",
+                error: "Failed to add GATT service: \(error!.localizedDescription)"
+            ))
+            return
+        }
+
+        // Service registered — start advertising with the service UUID
+        guard let serviceUuid = advertisingServiceUuid else { return }
+        peripheralManager?.startAdvertising([
+            CBAdvertisementDataServiceUUIDsKey: [serviceUuid],
+            CBAdvertisementDataLocalNameKey: "Vauchi",
+        ])
+    }
+
+    func peripheralManagerDidStartAdvertising(_: CBPeripheralManager, error: Error?) {
+        if let error {
+            eventCallback?(.hardwareError(
+                transport: "BLE-advertise",
+                error: "Advertising failed: \(error.localizedDescription)"
+            ))
+        }
+        // No dedicated "advertising started" event exists in MobileExchangeHardwareEvent.
+        // The central's discovery callback (bleDeviceDiscovered) drives the protocol forward.
+    }
+
+    func peripheralManager(_: CBPeripheralManager, didReceiveRead request: CBATTRequest) {
+        guard let characteristic = gattCharacteristic else {
+            peripheralManager?.respond(to: request, withResult: .attributeNotFound)
+            return
+        }
+
+        guard request.characteristic.uuid == characteristic.uuid else {
+            peripheralManager?.respond(to: request, withResult: .attributeNotFound)
+            return
+        }
+
+        let value = characteristic.value ?? Data()
+        guard request.offset <= value.count else {
+            peripheralManager?.respond(to: request, withResult: .invalidOffset)
+            return
+        }
+
+        request.value = value.subdata(in: request.offset ..< value.count)
+        peripheralManager?.respond(to: request, withResult: .success)
+    }
+
+    func peripheralManager(_: CBPeripheralManager, didReceiveWrite requests: [CBATTRequest]) {
+        for request in requests {
+            guard let characteristic = gattCharacteristic,
+                  request.characteristic.uuid == characteristic.uuid
+            else {
+                peripheralManager?.respond(to: request, withResult: .attributeNotFound)
+                return
+            }
+
+            guard let data = request.value else {
+                peripheralManager?.respond(to: request, withResult: .invalidAttributeValueLength)
+                return
+            }
+
+            // Update the characteristic value and report to the session
+            characteristic.value = data
+            peripheralManager?.respond(to: request, withResult: .success)
+
+            let uuid = characteristic.uuid.uuidString.lowercased()
+            eventCallback?(.bleCharacteristicNotified(uuid: uuid, data: data))
+        }
+    }
+
+    func peripheralManager(_: CBPeripheralManager, central: CBCentral, didSubscribeTo characteristic: CBCharacteristic) {
+        guard let gatt = gattCharacteristic, characteristic.uuid == gatt.uuid else { return }
+        subscribedCentrals.append(central)
+        eventCallback?(.bleConnected(deviceId: central.identifier.uuidString))
+    }
+
+    func peripheralManager(_: CBPeripheralManager, central: CBCentral, didUnsubscribeFrom characteristic: CBCharacteristic) {
+        guard let gatt = gattCharacteristic, characteristic.uuid == gatt.uuid else { return }
+        subscribedCentrals.removeAll { $0.identifier == central.identifier }
+        eventCallback?(.bleDisconnected(reason: "central unsubscribed"))
     }
 }
