@@ -69,19 +69,48 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     class AppState: ObservableObject {
         @Published var viewModel: AppViewModel?
         @Published var error: String?
+        @Published var isAuthenticationRequired = false
 
         private var repository: VauchiRepository?
 
         init() {
+            initializeRepository()
+        }
+
+        func initializeRepository() {
             do {
                 let repo = try VauchiRepository()
                 repository = repo
                 let appViewModel = AppViewModel(appEngine: repo.appEngine)
                 appViewModel.vauchi = repo.vauchi
                 viewModel = appViewModel
+                isAuthenticationRequired = false
+                error = nil
+            } catch VauchiRepositoryError.deviceLocked {
+                isAuthenticationRequired = true
+                print("VauchiApp: device locked, authentication required")
             } catch {
                 self.error = error.localizedDescription
                 print("VauchiApp: failed to initialize: \(error)")
+            }
+        }
+
+        /// Authenticate with Touch ID / password and retry initialization.
+        func authenticateAndRetry() {
+            Task {
+                do {
+                    let success = try await BiometricService.shared.authenticate(
+                        reason: "Unlock Vauchi to access your contacts"
+                    )
+                    if success {
+                        initializeRepository()
+                    }
+                } catch BiometricError.cancelled {
+                    // User cancelled — stay on lock screen
+                    print("VauchiApp: authentication cancelled")
+                } catch {
+                    print("VauchiApp: authentication failed: \(error)")
+                }
             }
         }
     }
@@ -91,7 +120,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         var body: some View {
             Group {
-                if let error = appState.error {
+                if appState.isAuthenticationRequired {
+                    LockScreenView(onUnlock: { appState.authenticateAndRetry() })
+                } else if let error = appState.error {
                     ErrorView(message: error)
                 } else if let viewModel = appState.viewModel {
                     AppContentView(viewModel: viewModel)
