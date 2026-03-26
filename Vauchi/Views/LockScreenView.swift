@@ -49,8 +49,12 @@ struct LockScreenView: View {
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear {
-            // Auto-trigger authentication on first appearance
-            onUnlock()
+            // Auto-trigger only when Touch ID is available.
+            // On headless/CI runners (no biometrics), skip — let the user tap.
+            // This prevents LAContext from showing a blocking system dialog.
+            if BiometricService.shared.canUseBiometrics() {
+                onUnlock()
+            }
         }
     }
 

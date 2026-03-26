@@ -93,12 +93,15 @@ class BiometricService {
         let context = LAContext()
         var error: NSError?
 
+        // Use biometrics if available; fall back to device owner auth (password)
+        // only if the system can evaluate it without blocking (interactive session).
         let policy: LAPolicy
         if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
             policy = .deviceOwnerAuthenticationWithBiometrics
-        } else {
-            // Fall back to password authentication
+        } else if context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error) {
             policy = .deviceOwnerAuthentication
+        } else {
+            throw BiometricError.notAvailable
         }
 
         do {
