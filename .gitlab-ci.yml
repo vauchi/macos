@@ -280,7 +280,7 @@ test:unit:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == "main"
 
-test:snapshot:
+test:snapshots:
   extends: [.macos-job, .spm-cache-readonly]
   stage: test
   needs:
@@ -323,7 +323,7 @@ test:snapshot:
 
 # Manual job: record snapshot baselines on CI and commit them to the branch.
 # CI is the single source of truth for baselines — never record locally.
-test:snapshot:record:
+test:snapshots:record:
   extends: [.macos-job, .spm-cache-readonly]
   stage: test
   needs:
