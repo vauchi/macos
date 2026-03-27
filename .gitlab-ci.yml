@@ -45,14 +45,13 @@ default:
   # Runner concurrent=1 is the primary fix; this is defense-in-depth.
   resource_group: macos-spm
   before_script:
-    # Disable prebuilt binary downloads — SwiftPM's NetrcAuthorizationProvider
-    # deadlocks in non-interactive shells when no .netrc exists (Xcode 26.3 bug).
-    # swift-syntax compiles from source on first run (~1hr), then cached via .spm-cache.
-    - defaults write com.apple.dt.Xcode IDEPackageEnablePrebuilts -bool NO
-    - echo "Xcode $(xcodebuild -version | head -1), prebuilts disabled (CI workaround)"
+    # Prebuilts enabled (default) — Xcode 26.4 fixed the
+    # NetrcAuthorizationProvider deadlock that required disabling them.
+    # SPM now downloads prebuilt swift-syntax in seconds instead of
+    # compiling from source (~1hr).
+    - echo "Xcode $(xcodebuild -version | head -1)"
 
 # Cache SPM packages between pipeline runs.
-# Avoids re-compiling swift-syntax 602.0.0 from scratch (~1 hour cold).
 .spm-cache:
   cache:
     key: macos-spm-${CI_COMMIT_REF_SLUG}
