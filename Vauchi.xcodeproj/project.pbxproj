@@ -12,6 +12,7 @@
 		1BDCB504628325339F237DBB /* CoreUIComponentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273DE3DDCB1F1D595DEF1B92 /* CoreUIComponentTests.swift */; };
 		223E748C35520305B8EB1AE1 /* TextComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63AE253E0DF71B38AAE856FB /* TextComponentView.swift */; };
 		23D1EC2E1C8E3AB20680980F /* ContactListComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 851548F35E600FDD0D408A1D /* ContactListComponentView.swift */; };
+		2D0728F99D4DBB3C8491C25B /* ThemeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CF989EA84DBE8A9F43E05D /* ThemeService.swift */; };
 		2F5E5E0A77045722958E6979 /* PinInputComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649B37B5A7280D282E65BC3F /* PinInputComponentView.swift */; };
 		2F7D817E60BDE6223F5E0484 /* VauchiApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71E5FB136BF29B1F9D9B7F04 /* VauchiApp.swift */; };
 		38F82A294C5A587AB23E77A2 /* AccessibilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07586629234DE4E7F2551F5E /* AccessibilityTests.swift */; };
@@ -21,6 +22,7 @@
 		5F1DB57B1D308F6CAD97F5F4 /* DeviceLinkSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AAAF89C9305A8173B0836D7 /* DeviceLinkSheet.swift */; };
 		5F8D2981766D6B43B9B09287 /* CardPreviewComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B524783275A3955F7CBEE76 /* CardPreviewComponentView.swift */; };
 		6B88FFA2E0ED30C5C6BD724E /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D65C152771F552C641B6A1 /* Models.swift */; };
+		6E92A916EC67234553ED4D85 /* LocalizationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C859B6215BADD6A45480D9F /* LocalizationService.swift */; };
 		719AC91DB0FAB238A99B310A /* SettingsWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB9707EE0B0A13EB3B25D347 /* SettingsWindowView.swift */; };
 		7A78CA48664C6480438C549C /* ScreenSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10D759CE5B9B4F9B022F081A /* ScreenSnapshotTests.swift */; };
 		8233D17C24CBA0A46042C2BF /* SnapshotHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93EEF8A8901309034B87F6CB /* SnapshotHelpers.swift */; };
@@ -31,6 +33,7 @@
 		9B12926FA62EF78944BBD659 /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 584E70B43E05BAC9ADA1DC81 /* SnapshotTesting */; };
 		9BA83E0C812D194A0C94FC64 /* KeyboardShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80D01B0C0C941965F3F4DEDB /* KeyboardShortcuts.swift */; };
 		9C2069849249523C53C667F3 /* InfoPanelComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74CD83060E72D770CBCEB21 /* InfoPanelComponentView.swift */; };
+		9C9A5E8876CAFA84118E8DBF /* LockScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 644F12D83413B334E234F4AC /* LockScreenView.swift */; };
 		9F92EEBB337032A28D7F5C8C /* StatusIndicatorComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9075FCC3ED0182090E406725 /* StatusIndicatorComponentView.swift */; };
 		A3E49F296BDC037ED703393A /* TextInputComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22ABDAF6DF202F4F33D5CE19 /* TextInputComponentView.swift */; };
 		ADB778BBA40707BAD3F8B21A /* AppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554291CB7224022A54BC954F /* AppViewModel.swift */; };
@@ -42,6 +45,7 @@
 		C2BF1FC510A65D73DD722C95 /* VauchiPlatform in Frameworks */ = {isa = PBXBuildFile; productRef = BE415B866BE8E26F05791810 /* VauchiPlatform */; };
 		C48401965743DD70C01F2F95 /* SystemTrayManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5438036805D34A0588FAE1C3 /* SystemTrayManager.swift */; };
 		C7EC0C6E4ABED52AB382351A /* InlineConfirmComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 442BA1AE531958F5AE130DEC /* InlineConfirmComponentView.swift */; };
+		D53ADA09532F5A59A7BF3D75 /* BiometricService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F9D4D1B77DDD1226B84C5C /* BiometricService.swift */; };
 		D65905F3E8A6B191F4611470 /* AudioProximityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49509AE0DF70B880F977B015 /* AudioProximityService.swift */; };
 		DA673F09635BBBF9871092A8 /* VauchiUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773C796EDEEFF9B928C04229 /* VauchiUITests.swift */; };
 		E522CA915372F8B514733D6B /* QrCodeComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EEEBB6EBF77701342433324 /* QrCodeComponentView.swift */; };
@@ -94,8 +98,10 @@
 		5438036805D34A0588FAE1C3 /* SystemTrayManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemTrayManager.swift; sourceTree = "<group>"; };
 		554291CB7224022A54BC954F /* AppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewModel.swift; sourceTree = "<group>"; };
 		63AE253E0DF71B38AAE856FB /* TextComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextComponentView.swift; sourceTree = "<group>"; };
+		644F12D83413B334E234F4AC /* LockScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockScreenView.swift; sourceTree = "<group>"; };
 		649B37B5A7280D282E65BC3F /* PinInputComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinInputComponentView.swift; sourceTree = "<group>"; };
 		68E43EEC0A45AF35EDBE794E /* ImportBackupSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportBackupSheet.swift; sourceTree = "<group>"; };
+		6C859B6215BADD6A45480D9F /* LocalizationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationService.swift; sourceTree = "<group>"; };
 		6EEEBB6EBF77701342433324 /* QrCodeComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QrCodeComponentView.swift; sourceTree = "<group>"; };
 		71E5FB136BF29B1F9D9B7F04 /* VauchiApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VauchiApp.swift; sourceTree = "<group>"; };
 		773C796EDEEFF9B928C04229 /* VauchiUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VauchiUITests.swift; sourceTree = "<group>"; };
@@ -103,10 +109,12 @@
 		7ECC96545C3966B83B1D1AC7 /* VauchiTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VauchiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		80D01B0C0C941965F3F4DEDB /* KeyboardShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardShortcuts.swift; sourceTree = "<group>"; };
 		8193F0DBE26DA2026C2A4D5E /* FieldListComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldListComponentView.swift; sourceTree = "<group>"; };
+		84CF989EA84DBE8A9F43E05D /* ThemeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeService.swift; sourceTree = "<group>"; };
 		851548F35E600FDD0D408A1D /* ContactListComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactListComponentView.swift; sourceTree = "<group>"; };
 		8776D2F72715F9C93486FE18 /* ToggleListComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleListComponentView.swift; sourceTree = "<group>"; };
 		8FDE9009AE079A27B82E5CB6 /* VauchiUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VauchiUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9075FCC3ED0182090E406725 /* StatusIndicatorComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusIndicatorComponentView.swift; sourceTree = "<group>"; };
+		92F9D4D1B77DDD1226B84C5C /* BiometricService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricService.swift; sourceTree = "<group>"; };
 		93EEF8A8901309034B87F6CB /* SnapshotHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotHelpers.swift; sourceTree = "<group>"; };
 		95373D9E6440FED4B532EBDD /* VauchiRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VauchiRepository.swift; sourceTree = "<group>"; };
 		9764FE7904C8B94F71A1858D /* DividerComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DividerComponentView.swift; sourceTree = "<group>"; };
@@ -216,6 +224,7 @@
 			children = (
 				9AAAF89C9305A8173B0836D7 /* DeviceLinkSheet.swift */,
 				68E43EEC0A45AF35EDBE794E /* ImportBackupSheet.swift */,
+				644F12D83413B334E234F4AC /* LockScreenView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -271,9 +280,12 @@
 			children = (
 				47F1E7300CDA5ED177DEF3E2 /* AudioProximityHandler.swift */,
 				49509AE0DF70B880F977B015 /* AudioProximityService.swift */,
+				92F9D4D1B77DDD1226B84C5C /* BiometricService.swift */,
 				418F950D6541F912A27DA57D /* BleExchangeService.swift */,
 				BFEFA0373F92D41AE00637B0 /* ExchangeCommandHandler.swift */,
 				B31DFE6F23CEA01F0437957B /* KeychainService.swift */,
+				6C859B6215BADD6A45480D9F /* LocalizationService.swift */,
+				84CF989EA84DBE8A9F43E05D /* ThemeService.swift */,
 				95373D9E6440FED4B532EBDD /* VauchiRepository.swift */,
 			);
 			path = Services;
@@ -436,6 +448,7 @@
 				ADB778BBA40707BAD3F8B21A /* AppViewModel.swift in Sources */,
 				99E3A24800996D3A2B9A389E /* AudioProximityHandler.swift in Sources */,
 				D65905F3E8A6B191F4611470 /* AudioProximityService.swift in Sources */,
+				D53ADA09532F5A59A7BF3D75 /* BiometricService.swift in Sources */,
 				EC30F92B5A66058CF9972C27 /* BleExchangeService.swift in Sources */,
 				5F8D2981766D6B43B9B09287 /* CardPreviewComponentView.swift in Sources */,
 				8F1D5438434B846475597477 /* ComponentView.swift in Sources */,
@@ -451,6 +464,8 @@
 				C7EC0C6E4ABED52AB382351A /* InlineConfirmComponentView.swift in Sources */,
 				9BA83E0C812D194A0C94FC64 /* KeyboardShortcuts.swift in Sources */,
 				8CD4D48FC7E49B0DA82AD497 /* KeychainService.swift in Sources */,
+				6E92A916EC67234553ED4D85 /* LocalizationService.swift in Sources */,
+				9C9A5E8876CAFA84118E8DBF /* LockScreenView.swift in Sources */,
 				EE6F9277C97E114DFE2D66F1 /* MenuBarManager.swift in Sources */,
 				6B88FFA2E0ED30C5C6BD724E /* Models.swift in Sources */,
 				2F5E5E0A77045722958E6979 /* PinInputComponentView.swift in Sources */,
@@ -462,6 +477,7 @@
 				C48401965743DD70C01F2F95 /* SystemTrayManager.swift in Sources */,
 				223E748C35520305B8EB1AE1 /* TextComponentView.swift in Sources */,
 				A3E49F296BDC037ED703393A /* TextInputComponentView.swift in Sources */,
+				2D0728F99D4DBB3C8491C25B /* ThemeService.swift in Sources */,
 				8C9B49C0AE5BED8FEC8384AB /* ToggleListComponentView.swift in Sources */,
 				2F7D817E60BDE6223F5E0484 /* VauchiApp.swift in Sources */,
 				AE6ED32C72587A0283C520D2 /* VauchiRepository.swift in Sources */,
@@ -818,7 +834,7 @@
 			repositoryURL = "https://gitlab.com/vauchi/vauchi-platform-swift.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.8.3;
+				minimumVersion = 0.10.6;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
