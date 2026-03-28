@@ -218,7 +218,10 @@ build:debug:
     - rm -rf Vauchi.xcodeproj
     # Delete lock files so SPM re-resolves to latest versions.
     # The cached bare repos in .spm-packages/ stay warm — only resolution reruns.
+    # Also clear extracted binary artifacts — stale xcframework binaries cause
+    # xcodebuild to hang silently when the checksum changes (post-mortem 2026-03-28).
     - rm -f .spm-packages/workspace-state.json
+    - rm -rf .spm-packages/artifacts/
     - rm -f Vauchi.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
     - xcodegen generate
     - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -clonedSourcePackagesDirPath .spm-packages -resolvePackageDependencies
