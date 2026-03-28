@@ -226,33 +226,36 @@ build:debug:
     - xcodegen generate
     # SPM's internal binary target downloader hangs silently on large
     # files from GitLab's package registry (post-mortem 2026-03-28).
-    # Strategy: let resolvePackageDependencies run with a 120s timeout
-    # (enough for source checkout, not enough for hung binary download).
-    # If it times out, rewrite Package.swift to file:// and retry.
+    # Strategy: run resolve with 120s timeout (macOS has no `timeout`
+    # command — use background process + kill). After timeout kills
+    # xcodebuild, the source checkouts exist. Rewrite Package.swift
+    # to file:// URL pointing to the curl-downloaded zip, then retry.
     - |
       PLATFORM_VERSION=$(sed -n '/VauchiPlatform:/{n;n;s/.*from: *"\([^"]*\)".*/\1/p;}' project.yml)
       if [ -z "$PLATFORM_VERSION" ]; then
         PLATFORM_VERSION=$(sed -n '/VauchiPlatform:/{n;n;s/.*version: *"\([^"]*\)".*/\1/p;}' project.yml)
       fi
       ZIP_PATH="/tmp/VauchiPlatformFFI-${PLATFORM_VERSION}.xcframework.zip"
-      # Pre-download with curl (always reliable)
       echo "Downloading VauchiPlatformFFI.xcframework v${PLATFORM_VERSION}..."
       curl -fsSL --retry 3 "https://gitlab.com/api/v4/projects/vauchi%2Fcore/packages/generic/vauchi-platform/${PLATFORM_VERSION}/VauchiPlatformFFI.xcframework.zip" -o "$ZIP_PATH"
       CHECKSUM=$(shasum -a 256 "$ZIP_PATH" | cut -d' ' -f1)
       echo "Downloaded $(du -h "$ZIP_PATH" | cut -f1), checksum: ${CHECKSUM}"
-    # First attempt: resolve with 120s timeout (works if SPM download isn't broken)
-    - |
-      if timeout 120 xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -clonedSourcePackagesDirPath .spm-packages -resolvePackageDependencies; then
+      # Attempt resolve with 120s timeout (portable — no GNU timeout)
+      xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -clonedSourcePackagesDirPath .spm-packages -resolvePackageDependencies &
+      RESOLVE_PID=$!
+      ( sleep 120 && kill $RESOLVE_PID 2>/dev/null ) &
+      WATCHDOG_PID=$!
+      if wait $RESOLVE_PID 2>/dev/null; then
+        kill $WATCHDOG_PID 2>/dev/null; wait $WATCHDOG_PID 2>/dev/null
         echo "SPM resolve succeeded"
       else
-        echo "SPM resolve timed out — rewriting to file:// URL and retrying"
+        kill $WATCHDOG_PID 2>/dev/null; wait $WATCHDOG_PID 2>/dev/null
+        echo "SPM resolve timed out — rewriting Package.swift to file://"
         PKG_SWIFT=".spm-packages/checkouts/vauchi-platform-swift/Package.swift"
-        ZIP_PATH="/tmp/VauchiPlatformFFI-$(sed -n '/VauchiPlatform:/{n;n;s/.*from: *"\([^"]*\)".*/\1/p;}' project.yml).xcframework.zip"
-        CHECKSUM=$(shasum -a 256 "$ZIP_PATH" | cut -d' ' -f1)
         sed -i.bak "s|url: \"https://.*xcframework.zip\"|url: \"file://${ZIP_PATH}\"|" "$PKG_SWIFT"
         sed -i.bak "s|checksum: checksum|checksum: \"${CHECKSUM}\"|" "$PKG_SWIFT"
         rm -f "${PKG_SWIFT}.bak"
-        echo "Rewrote Package.swift → file://${ZIP_PATH}"
+        echo "Rewrote → file://${ZIP_PATH}"
         xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -clonedSourcePackagesDirPath .spm-packages -resolvePackageDependencies
       fi
     # TEMPORARY: Fix macOS framework symlinks broken by zip -r in v0.3.0 XCFramework.
