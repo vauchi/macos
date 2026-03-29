@@ -19,6 +19,7 @@ build/
 
 # UniFFI bindings (local copies created by `just bindings` for dev builds)
 Vauchi/Generated/
+Vauchi/Libs/*.a
 Vauchi/Libs/Vauchi*FFI.xcframework/
 Vauchi/Libs/VauchiPlatformLocal/.build/
 Vauchi/Libs/VauchiPlatformLocal/Vauchi*FFI.xcframework
