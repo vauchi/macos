@@ -223,6 +223,7 @@ build:debug:
   stage: build
   script:
     - command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
+    - echo "── [$(date +%H:%M:%S)] xcodegen ──"
     - rm -rf Vauchi.xcodeproj
     # Delete lock files so SPM re-resolves to latest versions.
     # The cached bare repos in .spm-packages/ stay warm — only resolution reruns.
@@ -230,11 +231,25 @@ build:debug:
     - rm -rf .spm-packages/artifacts/
     - rm -f Vauchi.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
     - xcodegen generate
+    - echo "── [$(date +%H:%M:%S)] SPM resolve ──"
     - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -clonedSourcePackagesDirPath .spm-packages -resolvePackageDependencies
     # TEMPORARY: Fix macOS framework symlinks broken by zip -r in v0.3.0 XCFramework.
     # Remove after core publishes with zip -ry (v0.3.1+). See core !259.
     - ./scripts/fix-xcframework-symlinks.sh
-    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -configuration Debug -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO build
+    - echo "── [$(date +%H:%M:%S)] xcodebuild compile ──"
+    - |
+      # Heartbeat: print elapsed time every 120s so CI log shows progress
+      ( while true; do sleep 120; printf '  [build heartbeat] %s\n' "$(date +%H:%M:%S)"; done ) &
+      HEARTBEAT=$!
+      trap 'kill $HEARTBEAT 2>/dev/null' EXIT
+      xcodebuild -project Vauchi.xcodeproj -scheme Vauchi \
+        -configuration Debug -destination "platform=macOS" \
+        -clonedSourcePackagesDirPath .spm-packages \
+        CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO \
+        -showBuildTimingSummary \
+        build
+      kill $HEARTBEAT 2>/dev/null || true
+    - echo "── [$(date +%H:%M:%S)] build:debug complete ──"
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == "main"
