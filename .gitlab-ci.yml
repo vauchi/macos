@@ -108,8 +108,9 @@ update:bindings-version:
         exit 0
       fi
 
-      # Create branch and update version in project.yml
-      git checkout -b "$BRANCH"
+      # Create branch and update version in project.yml (-B force-creates
+      # if stale local branch exists from a previous failed pipeline retry)
+      git checkout -B "$BRANCH"
       # Update VauchiPlatform dependency: branch: main → from: "version"
       # or from: "old_version" → from: "new_version"
       LINE=$(grep -n "vauchi-platform-swift" project.yml | head -1 | cut -d: -f1)
