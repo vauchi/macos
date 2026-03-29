@@ -35,3 +35,9 @@ SPDX-License-Identifier = "GPL-3.0-or-later"
 path = ["**/*.plist"]
 SPDX-FileCopyrightText = "2026 Mattia Egloff <mattia.egloff@pm.me>"
 SPDX-License-Identifier = "GPL-3.0-or-later"
+
+# Snapshot test artifacts (binary images and text dumps, can't embed headers)
+[[annotations]]
+path = ["VauchiSnapshotTests/__Snapshots__/**"]
+SPDX-FileCopyrightText = "2026 Mattia Egloff <mattia.egloff@pm.me>"
+SPDX-License-Identifier = "GPL-3.0-or-later"
