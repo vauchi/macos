@@ -235,21 +235,23 @@ build:debug:
     - echo "── [$(date +%H:%M:%S)] xcodegen ──"
     - rm -rf Vauchi.xcodeproj
     # Delete lock files so SPM re-resolves to latest versions.
-    # The cached bare repos in .spm-packages/ stay warm — only resolution reruns.
+    # Keep .spm-packages/artifacts/ — cached binary artifacts prevent
+    # re-download (SPM URLSession can't authenticate with GitLab).
     - rm -f .spm-packages/workspace-state.json
-    - rm -rf .spm-packages/artifacts/
     - rm -f Vauchi.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
     - xcodegen generate
     - echo "── [$(date +%H:%M:%S)] SPM resolve ──"
     - |
-      # Primary auth: ~/.netrc (set in .macos-job before_script).
-      # Defense-in-depth: 180s timeout + curl fallback if SPM hangs.
+      # SPM URLSession cannot authenticate with GitLab's package registry
+      # for binary target downloads (.netrc not used by URLSession).
+      # Resolve with timeout — if binary is cached, completes in <10s.
+      # If it hangs on download, fall back to authenticated curl.
       xcodebuild -project Vauchi.xcodeproj -scheme Vauchi \
         -clonedSourcePackagesDirPath .spm-packages \
         -derivedDataPath .derived-data \
         -resolvePackageDependencies &
       RESOLVE_PID=$!
-      ( sleep 180 && kill $RESOLVE_PID 2>/dev/null ) &
+      ( sleep 30 && kill $RESOLVE_PID 2>/dev/null ) &
       WATCHDOG=$!
       if wait $RESOLVE_PID 2>/dev/null; then
         kill $WATCHDOG 2>/dev/null; wait $WATCHDOG 2>/dev/null
@@ -257,22 +259,27 @@ build:debug:
       else
         kill $WATCHDOG 2>/dev/null; wait $WATCHDOG 2>/dev/null
         echo "  SPM resolve timed out — downloading XCFramework with curl"
-        V=$(sed -n '/vauchi-platform-swift/{n;s/.*from: *"\([^"]*\)".*/\1/p;}' project.yml)
-        ZIP="/tmp/VauchiPlatformFFI-${V}.xcframework.zip"
-        curl -fsSL --header "JOB-TOKEN: ${CI_JOB_TOKEN}" \
-          "https://gitlab.com/api/v4/projects/vauchi%2Fcore/packages/generic/vauchi-platform/${V}/VauchiPlatformFFI.xcframework.zip" \
-          -o "$ZIP"
-        CS=$(shasum -a 256 "$ZIP" | cut -d' ' -f1)
-        echo "  Downloaded $(du -h "$ZIP" | cut -f1), sha256: ${CS}"
-        PKG=".spm-packages/checkouts/vauchi-platform-swift/Package.swift"
-        sed -i.bak "s|url: \"https://.*xcframework.zip\"|url: \"file://${ZIP}\"|" "$PKG"
-        sed -i.bak "s|checksum: checksum|checksum: \"${CS}\"|" "$PKG"
-        rm -f "${PKG}.bak"
-        xcodebuild -project Vauchi.xcodeproj -scheme Vauchi \
-          -clonedSourcePackagesDirPath .spm-packages \
-          -derivedDataPath .derived-data \
-          -resolvePackageDependencies
-        echo "  SPM resolve OK (curl fallback)"
+        V=$(sed -n '/vauchi-platform-swift/{n;s/.*"\([^"]*\)".*/\1/p;}' project.yml)
+        if [ -n "$V" ]; then
+          ZIP="/tmp/VauchiPlatformFFI-${V}.xcframework.zip"
+          curl -fsSL --max-time 60 --header "JOB-TOKEN: ${CI_JOB_TOKEN}" \
+            "https://gitlab.com/api/v4/projects/vauchi%2Fcore/packages/generic/vauchi-platform/${V}/VauchiPlatformFFI.xcframework.zip" \
+            -o "$ZIP"
+          CS=$(shasum -a 256 "$ZIP" | cut -d' ' -f1)
+          echo "  Downloaded $(du -h "$ZIP" | cut -f1), sha256: ${CS}"
+          PKG=".spm-packages/checkouts/vauchi-platform-swift/Package.swift"
+          sed -i.bak 's|url: "https://[^"]*xcframework.zip"|url: "file://'"${ZIP}"'"|' "$PKG"
+          sed -i.bak 's|checksum: "[^"]*"|checksum: "'"${CS}"'"|' "$PKG"
+          rm -f "${PKG}.bak"
+          xcodebuild -project Vauchi.xcodeproj -scheme Vauchi \
+            -clonedSourcePackagesDirPath .spm-packages \
+            -derivedDataPath .derived-data \
+            -resolvePackageDependencies
+          echo "  SPM resolve OK (curl fallback)"
+        else
+          echo "  ERROR: Could not extract platform version from project.yml"
+          exit 1
+        fi
       fi
     # TEMPORARY: Fix macOS framework symlinks broken by zip -r in v0.3.0 XCFramework.
     # Remove after core publishes with zip -ry (v0.3.1+). See core !259.
