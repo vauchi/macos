@@ -50,6 +50,11 @@ default:
     # Duplicate/locked entries cause SPM binary target downloads to
     # crash with "fatalError" (post-mortem 2026-03-28).
     - security delete-internet-password -s gitlab.com 2>/dev/null || true
+    # Authenticate SPM binary target downloads from GitLab's private
+    # package registry. Without this, URLSession hangs indefinitely
+    # because CI_JOB_TOKEN only covers git, not HTTP downloads.
+    # Token is job-scoped and expires after the job completes.
+    - echo "machine gitlab.com login gitlab-ci-token password ${CI_JOB_TOKEN}" > ~/.netrc && chmod 600 ~/.netrc
 
 # Cache SPM packages between pipeline runs.
 .spm-cache:
@@ -232,7 +237,37 @@ build:debug:
     - rm -f Vauchi.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
     - xcodegen generate
     - echo "── [$(date +%H:%M:%S)] SPM resolve ──"
-    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -clonedSourcePackagesDirPath .spm-packages -resolvePackageDependencies
+    - |
+      # Primary auth: ~/.netrc (set in .macos-job before_script).
+      # Defense-in-depth: 180s timeout + curl fallback if SPM hangs.
+      xcodebuild -project Vauchi.xcodeproj -scheme Vauchi \
+        -clonedSourcePackagesDirPath .spm-packages \
+        -resolvePackageDependencies &
+      RESOLVE_PID=$!
+      ( sleep 180 && kill $RESOLVE_PID 2>/dev/null ) &
+      WATCHDOG=$!
+      if wait $RESOLVE_PID 2>/dev/null; then
+        kill $WATCHDOG 2>/dev/null; wait $WATCHDOG 2>/dev/null
+        echo "  SPM resolve OK"
+      else
+        kill $WATCHDOG 2>/dev/null; wait $WATCHDOG 2>/dev/null
+        echo "  SPM resolve timed out — downloading XCFramework with curl"
+        V=$(sed -n '/vauchi-platform-swift/{n;s/.*from: *"\([^"]*\)".*/\1/p;}' project.yml)
+        ZIP="/tmp/VauchiPlatformFFI-${V}.xcframework.zip"
+        curl -fsSL --header "JOB-TOKEN: ${CI_JOB_TOKEN}" \
+          "https://gitlab.com/api/v4/projects/vauchi%2Fcore/packages/generic/vauchi-platform/${V}/VauchiPlatformFFI.xcframework.zip" \
+          -o "$ZIP"
+        CS=$(shasum -a 256 "$ZIP" | cut -d' ' -f1)
+        echo "  Downloaded $(du -h "$ZIP" | cut -f1), sha256: ${CS}"
+        PKG=".spm-packages/checkouts/vauchi-platform-swift/Package.swift"
+        sed -i.bak "s|url: \"https://.*xcframework.zip\"|url: \"file://${ZIP}\"|" "$PKG"
+        sed -i.bak "s|checksum: checksum|checksum: \"${CS}\"|" "$PKG"
+        rm -f "${PKG}.bak"
+        xcodebuild -project Vauchi.xcodeproj -scheme Vauchi \
+          -clonedSourcePackagesDirPath .spm-packages \
+          -resolvePackageDependencies
+        echo "  SPM resolve OK (curl fallback)"
+      fi
     # TEMPORARY: Fix macOS framework symlinks broken by zip -r in v0.3.0 XCFramework.
     # Remove after core publishes with zip -ry (v0.3.1+). See core !259.
     - ./scripts/fix-xcframework-symlinks.sh
