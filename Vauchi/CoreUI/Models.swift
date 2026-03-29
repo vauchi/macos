@@ -622,6 +622,7 @@ enum ActionResult: Decodable {
     case showToast(message: String, undoActionId: String?)
     case wipeComplete
     case exchangeCommands(commands: [ExchangeCommandDTO])
+    case unknown
 
     init(from decoder: Decoder) throws {
         // Unit variants: "Complete", "StartDeviceLink", etc.

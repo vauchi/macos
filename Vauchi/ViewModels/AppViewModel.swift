@@ -229,6 +229,9 @@ import SwiftUI
             case .exchangeCommands:
                 // ADR-031: hardware exchange commands handled by exchange session
                 break
+            case .unknown:
+                // Unknown action result from newer core — ignore
+                break
             }
         }
 
