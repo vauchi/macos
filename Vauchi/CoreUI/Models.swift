@@ -90,6 +90,7 @@ enum Component: Decodable {
     case inlineConfirm(InlineConfirmComponent)
     case editableText(EditableTextComponent)
     case divider
+    case unknown
 
     init(from decoder: Decoder) throws {
         // Try unit variant first ("Divider")
@@ -109,7 +110,7 @@ enum Component: Decodable {
     // swiftlint:disable:next cyclomatic_complexity
     private static func decodeStructVariant(
         from container: KeyedDecodingContainer<VariantKey>,
-        codingPath: [CodingKey]
+        codingPath _: [CodingKey]
     ) throws -> Component {
         if container.contains(.text) {
             return try .text(container.decode(TextComponent.self, forKey: .text))
@@ -150,9 +151,7 @@ enum Component: Decodable {
                 container.decode(EditableTextComponent.self, forKey: .editableText)
             )
         }
-        throw DecodingError.dataCorrupted(
-            DecodingError.Context(codingPath: codingPath, debugDescription: "Unknown Component variant")
-        )
+        return .unknown
     }
 
     private enum VariantKey: String, CodingKey {
@@ -254,13 +253,8 @@ enum UiFieldVisibility: Decodable {
             switch stringValue {
             case "Shown": self = .shown
             case "Hidden": self = .hidden
-            default:
-                throw DecodingError.dataCorrupted(
-                    DecodingError.Context(
-                        codingPath: decoder.codingPath,
-                        debugDescription: "Unknown UiFieldVisibility variant: \(stringValue)"
-                    )
-                )
+            // Unknown visibility — default to shown
+            default: self = .shown
             }
             return
         }
@@ -344,6 +338,7 @@ enum SettingsItemKind: Decodable {
     case value(value: String)
     case link(detail: String?)
     case destructive(label: String)
+    case unknown
 
     init(from decoder: Decoder) throws {
         // Serde produces: {"Toggle": {"enabled": true}}, etc.
@@ -361,12 +356,7 @@ enum SettingsItemKind: Decodable {
             let data = try container.decode(DestructiveData.self, forKey: .destructive)
             self = .destructive(label: data.label)
         } else {
-            throw DecodingError.dataCorrupted(
-                DecodingError.Context(
-                    codingPath: decoder.codingPath,
-                    debugDescription: "Unknown SettingsItemKind"
-                )
-            )
+            self = .unknown
         }
     }
 
@@ -647,26 +637,21 @@ enum ActionResult: Decodable {
         self = try Self.decodeStructVariant(from: container, codingPath: decoder.codingPath)
     }
 
-    private static func decodeUnitVariant(_ value: String, codingPath: [CodingKey]) throws -> ActionResult {
+    private static func decodeUnitVariant(_ value: String, codingPath _: [CodingKey]) throws -> ActionResult {
         switch value {
         case "Complete": return .complete
         case "StartDeviceLink": return .startDeviceLink
         case "StartBackupImport": return .startBackupImport
         case "RequestCamera": return .requestCamera
         case "WipeComplete": return .wipeComplete
-        default:
-            throw DecodingError.dataCorrupted(
-                DecodingError.Context(
-                    codingPath: codingPath,
-                    debugDescription: "Unknown ActionResult unit variant: \(value)"
-                )
-            )
+        // Unknown action result — ignore
+        default: return .unknown
         }
     }
 
     private static func decodeStructVariant(
         from container: KeyedDecodingContainer<VariantKey>,
-        codingPath: [CodingKey]
+        codingPath _: [CodingKey]
     ) throws -> ActionResult {
         if container.contains(.updateScreen) {
             return try .updateScreen(container.decode(ScreenModel.self, forKey: .updateScreen))
@@ -697,9 +682,7 @@ enum ActionResult: Decodable {
             let data = try container.decode(ExchangeCommandsData.self, forKey: .exchangeCommands)
             return .exchangeCommands(commands: data.commands)
         }
-        throw DecodingError.dataCorrupted(
-            DecodingError.Context(codingPath: codingPath, debugDescription: "Unknown ActionResult variant")
-        )
+        return .unknown
     }
 
     private enum VariantKey: String, CodingKey {

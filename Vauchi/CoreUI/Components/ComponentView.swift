@@ -68,6 +68,9 @@ struct ComponentView: View {
 
         case .divider:
             DividerComponentView()
+
+        case .unknown:
+            EmptyView()
         }
     }
 }
