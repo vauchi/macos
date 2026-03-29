@@ -317,10 +317,8 @@ test:unit:
   script:
     - command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
     - rm -rf Vauchi.xcodeproj
-    - rm -f .spm-packages/workspace-state.json
     - xcodegen generate
-    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data -resolvePackageDependencies
-    # TEMPORARY: same workaround as build:debug — jobs don't share DerivedData
+    # SPM state cached from build:debug — don't re-resolve (avoids 401 on binary download)
     - ./scripts/fix-xcframework-symlinks.sh
     - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
     - rm -rf TestResults
@@ -385,9 +383,8 @@ test:snapshots:
       fi
     - command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
     - rm -rf Vauchi.xcodeproj
-    - rm -f .spm-packages/workspace-state.json
     - xcodegen generate
-    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data -resolvePackageDependencies
+    # SPM state cached from build:debug — don't re-resolve (avoids 401 on binary download)
     - ./scripts/fix-xcframework-symlinks.sh
     - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
     - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -derivedDataPath .derived-data -only-testing:VauchiSnapshotTests -resultBundlePath SnapshotTestResults test-without-building
@@ -414,9 +411,8 @@ test:snapshots:record:
     - echo "📸 Recording snapshot baselines..."
     - command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
     - rm -rf Vauchi.xcodeproj
-    - rm -f .spm-packages/workspace-state.json
     - xcodegen generate
-    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data -resolvePackageDependencies
+    # SPM state cached from build:debug — don't re-resolve (avoids 401 on binary download)
     - ./scripts/fix-xcframework-symlinks.sh
     # SNAPSHOT_RECORD compilation condition forces isRecording=true in test binary.
     - |
