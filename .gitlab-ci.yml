@@ -51,7 +51,9 @@ default:
     # crash with "fatalError" (post-mortem 2026-03-28).
     - security delete-internet-password -s gitlab.com 2>/dev/null || true
 
-# Cache SPM packages between pipeline runs.
+# Cache SPM packages + DerivedData between pipeline runs.
+# DerivedData contains compiled swift-syntax (602.0.0) which takes
+# >60min to build from source. Without this cache, builds time out.
 .spm-cache:
   cache:
     key: macos-spm-${CI_COMMIT_REF_SLUG}
@@ -60,6 +62,7 @@ default:
       - macos-spm
     paths:
       - .spm-packages/
+      - .derived-data/
     policy: pull-push
 
 # Read-only SPM cache for jobs that don't need to update it
@@ -71,6 +74,7 @@ default:
       - macos-spm
     paths:
       - .spm-packages/
+      - .derived-data/
     policy: pull
 
 # ============================================================
@@ -230,11 +234,11 @@ build:debug:
     - rm -rf .spm-packages/artifacts/
     - rm -f Vauchi.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
     - xcodegen generate
-    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -clonedSourcePackagesDirPath .spm-packages -resolvePackageDependencies
+    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data -resolvePackageDependencies
     # TEMPORARY: Fix macOS framework symlinks broken by zip -r in v0.3.0 XCFramework.
     # Remove after core publishes with zip -ry (v0.3.1+). See core !259.
     - ./scripts/fix-xcframework-symlinks.sh
-    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -configuration Debug -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO build
+    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -configuration Debug -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO build
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == "main"
@@ -253,10 +257,10 @@ test:unit:
     - rm -rf Vauchi.xcodeproj
     - rm -f .spm-packages/workspace-state.json
     - xcodegen generate
-    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -clonedSourcePackagesDirPath .spm-packages -resolvePackageDependencies
+    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data -resolvePackageDependencies
     # TEMPORARY: same workaround as build:debug — jobs don't share DerivedData
     - ./scripts/fix-xcframework-symlinks.sh
-    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
+    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
     - rm -rf TestResults
     # xcodebuild exit 65 can be a false positive from logarchive errors (error 13,
     # "failed to read version.plist"). Capture exit code and check actual test results.
@@ -321,10 +325,10 @@ test:snapshots:
     - rm -rf Vauchi.xcodeproj
     - rm -f .spm-packages/workspace-state.json
     - xcodegen generate
-    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -clonedSourcePackagesDirPath .spm-packages -resolvePackageDependencies
+    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data -resolvePackageDependencies
     - ./scripts/fix-xcframework-symlinks.sh
-    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
-    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -only-testing:VauchiSnapshotTests -resultBundlePath SnapshotTestResults test-without-building
+    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
+    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -derivedDataPath .derived-data -only-testing:VauchiSnapshotTests -resultBundlePath SnapshotTestResults test-without-building
   artifacts:
     when: on_failure
     paths:
@@ -350,7 +354,7 @@ test:snapshots:record:
     - rm -rf Vauchi.xcodeproj
     - rm -f .spm-packages/workspace-state.json
     - xcodegen generate
-    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -clonedSourcePackagesDirPath .spm-packages -resolvePackageDependencies
+    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data -resolvePackageDependencies
     - ./scripts/fix-xcframework-symlinks.sh
     # SNAPSHOT_RECORD compilation condition forces isRecording=true in test binary.
     - |
@@ -358,6 +362,7 @@ test:snapshots:record:
       xcodebuild -project Vauchi.xcodeproj -scheme Vauchi \
         -destination "platform=macOS" \
         -clonedSourcePackagesDirPath .spm-packages \
+        -derivedDataPath .derived-data \
         CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO \
         SWIFT_ACTIVE_COMPILATION_CONDITIONS='$(inherited) SNAPSHOT_RECORD' \
         test -only-testing:VauchiSnapshotTests \
