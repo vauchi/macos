@@ -96,12 +96,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     print("[Vauchi] --reset-for-testing: no repository")
                     return
                 }
-                guard !repo.hasIdentity() else {
+                guard !repo.vauchi.hasIdentity() else {
                     print("[Vauchi] --reset-for-testing: identity exists")
                     return
                 }
                 do {
-                    try repo.createIdentity(displayName: "Test User")
+                    try repo.vauchi.createIdentity(displayName: "Test User")
                     print("[Vauchi] --reset-for-testing: identity created")
                     // Reinitialize viewModel to pick up the new identity
                     let appViewModel = AppViewModel(appEngine: repo.appEngine)
