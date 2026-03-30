@@ -318,15 +318,18 @@ test:unit:
     - command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
     - rm -rf Vauchi.xcodeproj
     - xcodegen generate
-    # SPM state cached from build:debug — don't re-resolve (avoids 401 on binary download)
+    # SPM state cached from build:debug — disable automatic resolution to prevent
+    # implicit re-resolve that hangs on binary target download (401 auth failure).
     - ./scripts/fix-xcframework-symlinks.sh
-    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
+    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data -disableAutomaticPackageResolution CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
     - rm -rf TestResults
     # xcodebuild exit 65 can be a false positive from logarchive errors (error 13,
     # "failed to read version.plist"). Capture exit code and check actual test results.
     - |
       set +e
       xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" \
+        -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data \
+        -disableAutomaticPackageResolution \
         -only-testing:VauchiTests -resultBundlePath TestResults test-without-building
       XCODE_EXIT=$?
       set -e
@@ -384,10 +387,11 @@ test:snapshots:
     - command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
     - rm -rf Vauchi.xcodeproj
     - xcodegen generate
-    # SPM state cached from build:debug — don't re-resolve (avoids 401 on binary download)
+    # SPM state cached from build:debug — disable automatic resolution to prevent
+    # implicit re-resolve that hangs on binary target download (401 auth failure).
     - ./scripts/fix-xcframework-symlinks.sh
-    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
-    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -derivedDataPath .derived-data -only-testing:VauchiSnapshotTests -resultBundlePath SnapshotTestResults test-without-building
+    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data -disableAutomaticPackageResolution CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
+    - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data -disableAutomaticPackageResolution -only-testing:VauchiSnapshotTests -resultBundlePath SnapshotTestResults test-without-building
   artifacts:
     when: on_failure
     paths:
@@ -421,6 +425,7 @@ test:snapshots:record:
         -destination "platform=macOS" \
         -clonedSourcePackagesDirPath .spm-packages \
         -derivedDataPath .derived-data \
+        -disableAutomaticPackageResolution \
         CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO \
         SWIFT_ACTIVE_COMPILATION_CONDITIONS='$(inherited) SNAPSHOT_RECORD' \
         test -only-testing:VauchiSnapshotTests \
