@@ -18,9 +18,9 @@ path = [".gitignore", "**/.gitignore", ".DS_Store", "**/.gitkeep"]
 SPDX-FileCopyrightText = "2026 Mattia Egloff <mattia.egloff@pm.me>"
 SPDX-License-Identifier = "GPL-3.0-or-later"
 
-# JSON data files (can't have comments)
+# JSON data files and version metadata (can't have comments)
 [[annotations]]
-path = ["**/*.json"]
+path = ["**/*.json", "**/.version"]
 SPDX-FileCopyrightText = "2026 Mattia Egloff <mattia.egloff@pm.me>"
 SPDX-License-Identifier = "GPL-3.0-or-later"
 
