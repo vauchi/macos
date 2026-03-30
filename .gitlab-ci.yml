@@ -13,6 +13,7 @@ include:
       - '/ci-templates/removed-symbols.yml'
       - '/ci-templates/badges.yml'
       - '/ci-templates/github-mirror.yml'
+      - '/ci-templates/vrt-upload.yml'
 
 variables:
   SAST_EXCLUDED_PATHS: "build/, DerivedData/, .spm-packages/"
@@ -365,6 +366,9 @@ test:snapshots:
   stage: test
   needs:
     - build:debug
+  variables:
+    VRT_PLATFORM: macos
+    VRT_SCREENSHOT_DIR: VauchiSnapshotTests/__Snapshots__/VisualRegressionTests
   # Enforced — snapshot flakes must be investigated, not ignored
   script:
     - |
@@ -392,9 +396,12 @@ test:snapshots:
     - ./scripts/fix-xcframework-symlinks.sh
     - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data -disableAutomaticPackageResolution CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
     - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data -disableAutomaticPackageResolution -only-testing:VauchiSnapshotTests -resultBundlePath SnapshotTestResults test-without-building
+  after_script:
+    - !reference [.vrt-upload-script, script]
   artifacts:
-    when: on_failure
+    when: always
     paths:
+      - VauchiSnapshotTests/__Snapshots__/
       - SnapshotTestResults
     expire_in: 7 days
   rules:
