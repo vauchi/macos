@@ -82,7 +82,36 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 return
             }
             initializeRepository()
+
+            #if DEBUG
+                if ProcessInfo.processInfo.arguments.contains("--reset-for-testing") {
+                    seedTestIdentityIfNeeded()
+                }
+            #endif
         }
+
+        #if DEBUG
+            private func seedTestIdentityIfNeeded() {
+                guard let repo = repository else {
+                    print("[Vauchi] --reset-for-testing: no repository")
+                    return
+                }
+                guard !repo.hasIdentity() else {
+                    print("[Vauchi] --reset-for-testing: identity exists")
+                    return
+                }
+                do {
+                    try repo.createIdentity(displayName: "Test User")
+                    print("[Vauchi] --reset-for-testing: identity created")
+                    // Reinitialize viewModel to pick up the new identity
+                    let appViewModel = AppViewModel(appEngine: repo.appEngine)
+                    appViewModel.vauchi = repo.vauchi
+                    viewModel = appViewModel
+                } catch {
+                    print("[Vauchi] --reset-for-testing: failed: \(error)")
+                }
+            }
+        #endif
 
         func initializeRepository() {
             do {
