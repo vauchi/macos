@@ -122,13 +122,21 @@ update:bindings-version:
         exit 0
       fi
 
+      # Check if already at target version
+      LINE=$(grep -n "vauchi-platform-swift" project.yml | head -1 | cut -d: -f1)
+      NEXT=$((LINE + 1))
+      OLD_VERSION=$(sed -n "${NEXT}p" project.yml | sed 's/.*"\(.*\)"/\1/')
+      echo "Old version: $OLD_VERSION → New version: $BINDINGS_VERSION"
+      if [ "$OLD_VERSION" = "$BINDINGS_VERSION" ]; then
+        echo "Already at $BINDINGS_VERSION — nothing to do"
+        exit 0
+      fi
+
       # Create branch and update version in project.yml (-B force-creates
       # if stale local branch exists from a previous failed pipeline retry)
       git checkout -B "$BRANCH"
       # Update VauchiPlatform dependency: branch: main → from: "version"
       # or from: "old_version" → from: "new_version"
-      LINE=$(grep -n "vauchi-platform-swift" project.yml | head -1 | cut -d: -f1)
-      NEXT=$((LINE + 1))
       CURRENT=$(sed -n "${NEXT}p" project.yml)
       if echo "$CURRENT" | grep -q 'branch:'; then
         sed -i "" "${NEXT}s/branch: .*/from: \"${BINDINGS_VERSION}\"/" project.yml
