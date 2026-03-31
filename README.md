@@ -3,18 +3,20 @@
 
 > **Mirror:** This repo is a read-only mirror of [gitlab.com/vauchi/macos](https://gitlab.com/vauchi/macos). Please open issues and merge requests there.
 
-[![Pipeline](https://vauchi.gitlab.io/macos/badges/pipeline.svg)](https://gitlab.com/vauchi/macos/-/pipelines)
+[![Pipeline](https://img.shields.io/endpoint?url=https://vauchi.gitlab.io/macos/badges/pipeline.json&label=pipeline)](https://gitlab.com/vauchi/macos/-/pipelines)
 [![REUSE](https://api.reuse.software/badge/gitlab.com/vauchi/macos)](https://api.reuse.software/info/gitlab.com/vauchi/macos)
 
 > [!WARNING]
-> **Pre-Alpha Software** - This project is under heavy development and not ready for production use.
+> **Pre-Alpha Software** - This project is under heavy development
+> and not ready for production use.
 > APIs may change without notice. Use at your own risk.
 
 # Vauchi macOS
 
 Native macOS desktop app for Vauchi — privacy-focused contact card exchange.
 
-Built with SwiftUI + AppKit. Uses `vauchi-platform-swift` SPM package for core bindings (shared with iOS).
+Built with SwiftUI + AppKit. Uses `vauchi-platform-swift`
+SPM package for core bindings (shared with iOS).
 
 ## Prerequisites
 
