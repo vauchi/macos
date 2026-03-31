@@ -169,6 +169,7 @@
 		DB6A58ECD9CC3C501D1CF697 /* delivery_empty.json in Resources */ = {isa = PBXBuildFile; fileRef = 3E7B642257C4005F82A40BCF /* delivery_empty.json */; };
 		DEE606B56ADE8E72560BF538 /* testTextInputEmailType.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 21E325007F4C69CC6F55675D /* testTextInputEmailType.1.png */; };
 		E0642E4014C2147EBDC4FFF3 /* testContactListWithContacts.1.png in Resources */ = {isa = PBXBuildFile; fileRef = EDE8371E9A0D88B92DA2E683 /* testContactListWithContacts.1.png */; };
+		E1D1F36025544FD43BEEEB83 /* BannerComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDAC67C5337AAC5560D74DDD /* BannerComponentView.swift */; };
 		E48B85C4088FE7CA877DAB25 /* contact_edit_fields.json in Resources */ = {isa = PBXBuildFile; fileRef = 07F69D47DBE79635FE185938 /* contact_edit_fields.json */; };
 		E522CA915372F8B514733D6B /* QrCodeComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EEEBB6EBF77701342433324 /* QrCodeComponentView.swift */; };
 		E544D67D5C73DC535A0D4F68 /* contact_edit_preview.json in Resources */ = {isa = PBXBuildFile; fileRef = C29DE27FD4421553D034E37A /* contact_edit_preview.json */; };
@@ -378,6 +379,7 @@
 		CACA1754B8EE1F6D0FC0A04D /* testHomeViewWithFieldsDark.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testHomeViewWithFieldsDark.1.png; sourceTree = "<group>"; };
 		CB4B0784606C0D57CC2593CE /* testSetupViewGerman.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testSetupViewGerman.1.png; sourceTree = "<group>"; };
 		CC0264A403A8FF8004269E87 /* testTextInputPassword.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testTextInputPassword.1.png; sourceTree = "<group>"; };
+		CDAC67C5337AAC5560D74DDD /* BannerComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerComponentView.swift; sourceTree = "<group>"; };
 		D00EF6554B76A106ACC1A18A /* testThemeSettingsView.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testThemeSettingsView.1.png; sourceTree = "<group>"; };
 		D42379D47C2AFA9F80BAAB6A /* testSyncingState.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testSyncingState.1.png; sourceTree = "<group>"; };
 		D51F85BE507FC3741AFF9FE2 /* testExchangeShowQrDark.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testExchangeShowQrDark.1.png; sourceTree = "<group>"; };
@@ -704,6 +706,7 @@
 			isa = PBXGroup;
 			children = (
 				517370E68C1DA4C66CD5E3BA /* ActionListComponentView.swift */,
+				CDAC67C5337AAC5560D74DDD /* BannerComponentView.swift */,
 				2B524783275A3955F7CBEE76 /* CardPreviewComponentView.swift */,
 				EA272578E81247FB65A5C145 /* ComponentView.swift */,
 				AC15FD6D223D1A6700601767 /* ConfirmationDialogComponentView.swift */,
@@ -869,6 +872,7 @@
 				};
 			};
 			buildConfigurationList = BAFFDC71FBCC5FC569766377 /* Build configuration list for PBXProject "Vauchi" */;
+			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -882,7 +886,6 @@
 				8B834B486889A4518835FD33 /* XCRemoteSwiftPackageReference "vauchi-platform-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 6044B0E63DE2F73C5FDC8885 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -1085,6 +1088,7 @@
 				ADB778BBA40707BAD3F8B21A /* AppViewModel.swift in Sources */,
 				99E3A24800996D3A2B9A389E /* AudioProximityHandler.swift in Sources */,
 				D65905F3E8A6B191F4611470 /* AudioProximityService.swift in Sources */,
+				E1D1F36025544FD43BEEEB83 /* BannerComponentView.swift in Sources */,
 				D53ADA09532F5A59A7BF3D75 /* BiometricService.swift in Sources */,
 				EC30F92B5A66058CF9972C27 /* BleExchangeService.swift in Sources */,
 				5F8D2981766D6B43B9B09287 /* CardPreviewComponentView.swift in Sources */,

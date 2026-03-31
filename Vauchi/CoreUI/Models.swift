@@ -89,6 +89,7 @@ enum Component: Decodable {
     case showToast(ShowToastComponent)
     case inlineConfirm(InlineConfirmComponent)
     case editableText(EditableTextComponent)
+    case banner(BannerComponent)
     case divider
     case unknown
 
@@ -150,6 +151,8 @@ enum Component: Decodable {
             return try .editableText(
                 container.decode(EditableTextComponent.self, forKey: .editableText)
             )
+        } else if container.contains(.banner) {
+            return try .banner(container.decode(BannerComponent.self, forKey: .banner))
         }
         return .unknown
     }
@@ -171,6 +174,7 @@ enum Component: Decodable {
         case showToast = "ShowToast"
         case inlineConfirm = "InlineConfirm"
         case editableText = "EditableText"
+        case banner = "Banner"
     }
 }
 
@@ -466,6 +470,12 @@ struct EditableTextComponent: Decodable {
     let value: String
     let editing: Bool
     let validationError: String?
+}
+
+struct BannerComponent: Decodable {
+    let text: String
+    let actionLabel: String
+    let actionId: String
 }
 
 // MARK: - UserAction (Encodable for sending to core)

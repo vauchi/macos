@@ -66,6 +66,9 @@ struct ComponentView: View {
         case let .editableText(editableComponent):
             EditableTextComponentView(component: editableComponent, onAction: onAction)
 
+        case let .banner(bannerComponent):
+            BannerComponentView(component: bannerComponent, onAction: onAction)
+
         case .divider:
             DividerComponentView()
 
