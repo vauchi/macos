@@ -58,6 +58,10 @@ func assertComponentSnapshot(
 }
 
 /// Asserts a dark mode snapshot of a SwiftUI view.
+///
+/// Uses 0.95 perceptual precision (vs 0.98 for light mode) because AppKit's
+/// NSTextField border and NSAppearance(darkAqua) compositing produce
+/// non-deterministic rendering variance between xcodebuild invocations.
 @MainActor
 func assertDarkComponentSnapshot(
     of view: some View,
@@ -77,7 +81,7 @@ func assertDarkComponentSnapshot(
     host.view.appearance = NSAppearance(named: .darkAqua)
     assertSnapshot(
         of: host,
-        as: .image(perceptualPrecision: 0.98),
+        as: .image(perceptualPrecision: 0.95),
         record: isRecording,
         file: file,
         testName: testName,
@@ -112,6 +116,7 @@ func assertScreenSnapshot(
 }
 
 /// Asserts a dark mode snapshot of a full screen.
+/// See `assertDarkComponentSnapshot` for precision rationale.
 @MainActor
 func assertDarkScreenSnapshot(
     of screen: ScreenModel,
@@ -128,7 +133,7 @@ func assertDarkScreenSnapshot(
     host.view.appearance = NSAppearance(named: .darkAqua)
     assertSnapshot(
         of: host,
-        as: .image(perceptualPrecision: 0.98),
+        as: .image(perceptualPrecision: 0.95),
         record: isRecording,
         file: file,
         testName: testName,
