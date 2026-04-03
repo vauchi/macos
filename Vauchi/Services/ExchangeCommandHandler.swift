@@ -88,6 +88,27 @@ final class ExchangeCommandHandler {
 
         case .nfcDeactivate:
             break
+
+        // ── Accelerometer (proximity shake) ────────────────────────
+        case .accelerometerStart:
+            reportUnavailable(transport: "accelerometer")
+
+        case .accelerometerStop:
+            break
+
+        // ── Relay Escrow (link-mode exchange) ──────────────────────
+        case .relayEscrowDeposit:
+            reportUnavailable(transport: "relay-escrow")
+
+        case .relayEscrowCheck:
+            reportUnavailable(transport: "relay-escrow")
+
+        case .relayEscrowRetrieve:
+            reportUnavailable(transport: "relay-escrow")
+
+        // ── Share Sheet ────────────────────────────────────────────
+        case .showShareSheet:
+            reportUnavailable(transport: "share-sheet")
         }
     }
 
