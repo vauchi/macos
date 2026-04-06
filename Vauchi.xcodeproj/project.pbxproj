@@ -69,7 +69,6 @@
 		4F356B276D15222741358BA3 /* testExchangeViewGerman.1.png in Resources */ = {isa = PBXBuildFile; fileRef = A043222259F8702455558BF6 /* testExchangeViewGerman.1.png */; };
 		509731746B9C47207E43A874 /* testSettingsViewDark.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 24FCEEBE15B1A5CB1ACD4DAD /* testSettingsViewDark.1.png */; };
 		513D9801820C9578CAF7C97C /* testTextComponentCaption.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 4F819ABA85249C6394AE116A /* testTextComponentCaption.1.png */; };
-		51B03694B5149D7722B73BCC /* ExchangeCommandHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFEFA0373F92D41AE00637B0 /* ExchangeCommandHandler.swift */; };
 		51DD286A02E32D944FD15AE4 /* testSetupView.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 6490FD404F8F6EB461A4DE38 /* testSetupView.1.png */; };
 		51F789E9AED63A62D45C4539 /* skip_gate.json in Resources */ = {isa = PBXBuildFile; fileRef = EE2F2878EEA849795B242248 /* skip_gate.json */; };
 		52DC12F76B99B041E9446B00 /* testEditableTextEditing.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B4F37ED41BEFBB54770AB27 /* testEditableTextEditing.1.png */; };
@@ -111,7 +110,6 @@
 		904F29C70542F6760875A1A8 /* testTextComponentTitle.1.png in Resources */ = {isa = PBXBuildFile; fileRef = D591A9D83EA84F2E2EBCE827 /* testTextComponentTitle.1.png */; };
 		92298947313F6DDD98944A43 /* contact_edit_visibility.json in Resources */ = {isa = PBXBuildFile; fileRef = 66948B6E4E0E10C56A794B44 /* contact_edit_visibility.json */; };
 		950CE4D91D128D63DD0CCD7F /* testReadyStep.1.png in Resources */ = {isa = PBXBuildFile; fileRef = C2A9361B22965ACC0939BC78 /* testReadyStep.1.png */; };
-		99E3A24800996D3A2B9A389E /* AudioProximityHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47F1E7300CDA5ED177DEF3E2 /* AudioProximityHandler.swift */; };
 		9B0047F7A798FE0F300562CC /* testInlineConfirmDark.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 23946ECA0684070AFB40D2FA /* testInlineConfirmDark.1.png */; };
 		9B12926FA62EF78944BBD659 /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 584E70B43E05BAC9ADA1DC81 /* SnapshotTesting */; };
 		9B37E421D497D0041517566A /* testDivider.1.png in Resources */ = {isa = PBXBuildFile; fileRef = EE36127CE5C1D4AC425BF1D5 /* testDivider.1.png */; };
@@ -274,7 +272,6 @@
 		444EB6E932C6BF9631AEE4D3 /* testStatusIndicatorAccessibility.1.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = testStatusIndicatorAccessibility.1.txt; sourceTree = "<group>"; };
 		452C42124CBE27154FCB283D /* MenuBarManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarManager.swift; sourceTree = "<group>"; };
 		46CE8156A15BD5428BE8514A /* ContractTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContractTests.swift; sourceTree = "<group>"; };
-		47F1E7300CDA5ED177DEF3E2 /* AudioProximityHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioProximityHandler.swift; sourceTree = "<group>"; };
 		49509AE0DF70B880F977B015 /* AudioProximityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioProximityService.swift; sourceTree = "<group>"; };
 		4B8C613C7D55CF224BEE622D /* testPreviewCardStep.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testPreviewCardStep.1.png; sourceTree = "<group>"; };
 		4C16296B579065E5D536DB40 /* welcome.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = welcome.json; sourceTree = "<group>"; };
@@ -373,7 +370,6 @@
 		BD52706224375EBB9227ECF4 /* testCreateIdentityStepFilled.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testCreateIdentityStepFilled.1.png; sourceTree = "<group>"; };
 		BF21CF300C61D81BBA57F040 /* testTextComponentBody.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testTextComponentBody.1.png; sourceTree = "<group>"; };
 		BFB533E7A5279BAE43E57029 /* testFieldListWithFieldsShowHide.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testFieldListWithFieldsShowHide.1.png; sourceTree = "<group>"; };
-		BFEFA0373F92D41AE00637B0 /* ExchangeCommandHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeCommandHandler.swift; sourceTree = "<group>"; };
 		C29DE27FD4421553D034E37A /* contact_edit_preview.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = contact_edit_preview.json; sourceTree = "<group>"; };
 		C2A9361B22965ACC0939BC78 /* testReadyStep.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testReadyStep.1.png; sourceTree = "<group>"; };
 		CACA1754B8EE1F6D0FC0A04D /* testHomeViewWithFieldsDark.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testHomeViewWithFieldsDark.1.png; sourceTree = "<group>"; };
@@ -761,11 +757,9 @@
 		F9FC793A89B3CAD3083ACA25 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				47F1E7300CDA5ED177DEF3E2 /* AudioProximityHandler.swift */,
 				49509AE0DF70B880F977B015 /* AudioProximityService.swift */,
 				92F9D4D1B77DDD1226B84C5C /* BiometricService.swift */,
 				418F950D6541F912A27DA57D /* BleExchangeService.swift */,
-				BFEFA0373F92D41AE00637B0 /* ExchangeCommandHandler.swift */,
 				B31DFE6F23CEA01F0437957B /* KeychainService.swift */,
 				6C859B6215BADD6A45480D9F /* LocalizationService.swift */,
 				84CF989EA84DBE8A9F43E05D /* ThemeService.swift */,
@@ -1086,7 +1080,6 @@
 			files = (
 				406258333C40C48F3E43D569 /* ActionListComponentView.swift in Sources */,
 				ADB778BBA40707BAD3F8B21A /* AppViewModel.swift in Sources */,
-				99E3A24800996D3A2B9A389E /* AudioProximityHandler.swift in Sources */,
 				D65905F3E8A6B191F4611470 /* AudioProximityService.swift in Sources */,
 				E1D1F36025544FD43BEEEB83 /* BannerComponentView.swift in Sources */,
 				D53ADA09532F5A59A7BF3D75 /* BiometricService.swift in Sources */,
@@ -1098,7 +1091,6 @@
 				5F1DB57B1D308F6CAD97F5F4 /* DeviceLinkSheet.swift in Sources */,
 				C1698574A9244D5FB1EC8EB9 /* DividerComponentView.swift in Sources */,
 				B7FF1459323990242EB469DC /* EditableTextComponentView.swift in Sources */,
-				51B03694B5149D7722B73BCC /* ExchangeCommandHandler.swift in Sources */,
 				B7538752D99FA9DB91BC9FF9 /* FieldListComponentView.swift in Sources */,
 				E95CE36219FD61DB87D693CB /* ImportBackupSheet.swift in Sources */,
 				9C2069849249523C53C667F3 /* InfoPanelComponentView.swift in Sources */,
