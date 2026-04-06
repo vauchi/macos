@@ -402,8 +402,8 @@ import SwiftUI
                     if samples.isEmpty {
                         self?.sendHardwareUnavailable(transport: "Audio")
                     } else {
-                        let data = samples.map { UInt8(clamping: Int($0 * 255.0)) }
-                        self?.sendHardwareEvent(.audioResponseReceived(data: data))
+                        let bytes = samples.map { UInt8(clamping: Int($0 * 255.0)) }
+                        self?.sendHardwareEvent(.audioResponseReceived(data: Data(bytes)))
                     }
                 }
             }
