@@ -26,12 +26,6 @@ import SwiftUI
         let appEngine: PlatformAppEngine
         var vauchi: VauchiPlatform?
 
-        /// Active exchange session (created when user enters Exchange screen).
-        private var exchangeSession: MobileExchangeSession?
-
-        /// ADR-031 command handler — dispatches hardware commands from the session.
-        private var exchangeCommandHandler: ExchangeCommandHandler?
-
         /// Active device link initiator (holds session state for confirmation).
         private var currentInitiator: MobileDeviceLinkInitiator?
         private var currentSenderToken: String?
@@ -91,14 +85,6 @@ import SwiftUI
 
         /// Handles a user action by forwarding it to the core engine.
         func handleAction(_ action: UserAction) {
-            // Intercept QR paste to drive crypto session before forwarding to UI engine
-            if case let .textChanged(componentId, value) = action,
-               componentId == "scanned_data"
-            {
-                processScannedQr(value)
-                return
-            }
-
             forwardActionToEngine(action)
         }
 
@@ -126,7 +112,6 @@ import SwiftUI
 
         /// Navigate to a specific screen.
         func navigateTo(screenJson: String) {
-            teardownExchange()
             do {
                 let json = try appEngine.navigateToJson(screenJson: screenJson)
                 guard let data = json.data(using: .utf8) else { return }
@@ -141,7 +126,6 @@ import SwiftUI
 
         /// Navigate back in the history stack.
         func navigateBack() {
-            teardownExchange()
             do {
                 let json = try appEngine.navigateBackJson()
                 guard let data = json.data(using: .utf8) else { return }
@@ -199,13 +183,14 @@ import SwiftUI
         private func applyResult(_ result: ActionResult) {
             switch result {
             case let .updateScreen(screen):
-                applyExchangeScreen(screen)
+                currentScreen = screen
+                validationErrors = [:]
             case let .navigateTo(screen):
-                applyExchangeScreen(screen)
+                currentScreen = screen
+                validationErrors = [:]
             case let .validationError(componentId, message):
                 validationErrors[componentId] = message
             case .complete, .wipeComplete:
-                teardownExchange()
                 loadScreen()
             case let .openUrl(url):
                 if let nsUrl = URL(string: url) { NSWorkspace.shared.open(nsUrl) }
@@ -230,11 +215,8 @@ import SwiftUI
             case .startBackupImport:
                 showImportBackupSheet = true
             case let .exchangeCommands(commands):
-                if let handler = exchangeCommandHandler {
-                    for command in commands {
-                        handler.dispatchDTO(command)
-                    }
-                }
+                dispatchExchangeCommands(commands)
+                loadScreen()
             case .unknown:
                 // Unknown action result from newer core — ignore
                 break
@@ -350,133 +332,93 @@ import SwiftUI
             showDeviceLinkSheet = false
         }
 
-        // MARK: - Exchange Session Management
+        // MARK: - Exchange Command Dispatch (ADR-031)
 
-        /// Stop hardware services and release the exchange session and handler.
-        private func teardownExchange() {
-            exchangeCommandHandler?.stop()
-            exchangeCommandHandler = nil
-            exchangeSession = nil
-        }
-
-        /// Apply screen update, creating exchange session when entering exchange flow.
-        private func applyExchangeScreen(_ screen: ScreenModel) {
-            if screen.screenId == "exchange_show_qr", exchangeSession == nil {
-                startExchangeSession(screen: screen)
-            } else {
-                currentScreen = screen
-                validationErrors = [:]
-            }
-        }
-
-        /// Audio proximity service for ultrasonic verification.
-        private let audioService = AudioProximityService.shared
-
-        /// Create the exchange session via core.
-        /// Uses proximity-verified exchange when audio hardware is available,
-        /// falls back to manual confirmation otherwise.
-        func createSession(vauchi: VauchiPlatform) throws -> MobileExchangeSession {
-            let capability = audioService.checkCapability()
-            if capability == "full" || capability == "emit_only" {
-                let handler = AudioProximityHandler(audioService: audioService)
-                return try vauchi.createQrExchange(proximity: handler)
-            }
-            return try vauchi.createQrExchangeManual()
-        }
-
-        /// Create exchange session and replace QR data with real exchange QR.
-        private func startExchangeSession(screen: ScreenModel) {
-            guard let vauchi else {
-                currentScreen = screen
-                validationErrors = [:]
-                return
-            }
-
-            do {
-                let session = try createSession(vauchi: vauchi)
-                let handler = ExchangeCommandHandler(session: session)
-                let qrData = try session.generateQr()
-                handler.drainAndDispatch()
-                exchangeSession = session
-                exchangeCommandHandler = handler
-
-                // Replace the public_id QR data with the real exchange QR
-                let updatedComponents = screen.components.map { component -> Component in
-                    if case let .qrCode(qrComponent) = component, qrComponent.mode == .display {
-                        return .qrCode(QrCodeComponent(
-                            id: qrComponent.id, data: qrData, mode: qrComponent.mode, label: qrComponent.label
-                        ))
-                    }
-                    return component
+        /// BLE exchange service for CoreBluetooth commands.
+        private lazy var bleService: BleExchangeService = {
+            let service = BleExchangeService()
+            service.activate { [weak self] event in
+                DispatchQueue.main.async {
+                    self?.sendHardwareEvent(event)
                 }
-                currentScreen = ScreenModel(
-                    screenId: screen.screenId,
-                    title: screen.title,
-                    subtitle: screen.subtitle,
-                    components: updatedComponents,
-                    actions: screen.actions,
-                    progress: screen.progress
-                )
-                validationErrors = [:]
-            } catch {
-                print("AppViewModel: failed to create exchange session: \(error)")
-                alertMessage = AlertMessage(
-                    title: "Exchange Error",
-                    message: "Could not start exchange session. Please try again."
-                )
-                currentScreen = screen
-                validationErrors = [:]
             }
-        }
+            return service
+        }()
 
-        /// Process a pasted QR code from the peer.
-        func processScannedQr(_ qrData: String) {
-            guard let session = exchangeSession else {
-                alertMessage = AlertMessage(
-                    title: "Exchange Error",
-                    message: "No exchange session active"
-                )
-                return
-            }
-
-            do {
-                try session.processQr(qrData: qrData)
-                exchangeCommandHandler?.drainAndDispatch()
-                try session.theyScannedOurQr()
-                exchangeCommandHandler?.drainAndDispatch()
-                try session.confirmProximity()
-                exchangeCommandHandler?.drainAndDispatch()
-                try session.performKeyAgreement()
-                exchangeCommandHandler?.drainAndDispatch()
-
-                let peerName = session.peerDisplayName() ?? "Unknown"
-                try session.completeCardExchange(theirCardName: peerName)
-                exchangeCommandHandler?.drainAndDispatch()
-
-                if let vauchi {
-                    let result = try vauchi.finalizeExchange(session: session)
-                    if result.success {
-                        // Tell core engine the exchange succeeded (bypass intercept)
-                        forwardActionToEngine(.textChanged(componentId: "scanned_data", value: qrData))
-                        // Mark success in the UI engine
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-                            self?.invalidateAll()
-                        }
-                    } else {
-                        alertMessage = AlertMessage(
-                            title: "Exchange Failed",
-                            message: result.errorMessage ?? "Unknown error"
+        /// Dispatch exchange commands to platform hardware services.
+        private func dispatchExchangeCommands(_ commands: [ExchangeCommandDTO]) {
+            for command in commands {
+                switch command {
+                // QR — handled by view layer (screen model contains QR data)
+                case .qrDisplay, .qrRequestScan:
+                    break
+                // BLE — delegate to CoreBluetooth service
+                case let .bleStartScanning(serviceUuid):
+                    bleService.startScanning(serviceUuid: serviceUuid)
+                case let .bleStartAdvertising(serviceUuid, payload):
+                    bleService.startAdvertising(serviceUuid: serviceUuid, payload: Data(payload))
+                case let .bleConnect(deviceId):
+                    bleService.connect(deviceId: deviceId)
+                case let .bleWriteCharacteristic(uuid, data):
+                    bleService.writeCharacteristic(uuid: uuid, data: Data(data))
+                case let .bleReadCharacteristic(uuid):
+                    bleService.readCharacteristic(uuid: uuid)
+                case .bleDisconnect:
+                    bleService.disconnect()
+                // Audio — run on background queue (blocking calls)
+                case let .audioEmitChallenge(data):
+                    let samples = data.map { Float($0) / 255.0 }
+                    DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+                        let error = AudioProximityService.shared.emitSignal(
+                            samples: samples, sampleRate: 48000
                         )
+                        if !error.isEmpty {
+                            DispatchQueue.main.async {
+                                self?.sendHardwareUnavailable(transport: "Audio")
+                            }
+                        }
                     }
+                case let .audioListenForResponse(timeoutMs):
+                    DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+                        let samples = AudioProximityService.shared.receiveSignal(
+                            timeoutMs: timeoutMs, sampleRate: 48000
+                        )
+                        DispatchQueue.main.async {
+                            if samples.isEmpty {
+                                self?.sendHardwareUnavailable(transport: "Audio")
+                            } else {
+                                let data = samples.map { UInt8(clamping: Int($0 * 255.0)) }
+                                self?.sendHardwareEvent(.audioResponseReceived(data: data))
+                            }
+                        }
+                    }
+                case .audioStop:
+                    AudioProximityService.shared.stop()
+                // NFC — not available on macOS
+                case .nfcActivate, .nfcDeactivate:
+                    sendHardwareUnavailable(transport: "NFC")
+                case .unknown:
+                    break
                 }
-                teardownExchange()
-            } catch {
-                alertMessage = AlertMessage(
-                    title: "Exchange Failed",
-                    message: "\(error)"
-                )
-                teardownExchange()
             }
+        }
+
+        /// Send a hardware event back to core and apply the result.
+        private func sendHardwareEvent(_ event: MobileExchangeHardwareEvent) {
+            do {
+                if let resultJson = try appEngine.handleHardwareEvent(event: event) {
+                    guard let data = resultJson.data(using: .utf8) else { return }
+                    let result = try coreJSONDecoder.decode(ActionResult.self, from: data)
+                    applyResult(result)
+                }
+            } catch {
+                print("AppViewModel: hardware event failed: \(error)")
+            }
+        }
+
+        /// Report that a hardware transport is unavailable.
+        private func sendHardwareUnavailable(transport: String) {
+            sendHardwareEvent(.hardwareUnavailable(transport: transport))
         }
     }
 #endif
