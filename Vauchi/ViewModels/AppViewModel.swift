@@ -367,33 +367,11 @@ import SwiftUI
                     bleService.readCharacteristic(uuid: uuid)
                 case .bleDisconnect:
                     bleService.disconnect()
-                // Audio — run on background queue (blocking calls)
+                // Audio — delegate to helper (runs on background queue)
                 case let .audioEmitChallenge(data):
-                    let samples = data.map { Float($0) / 255.0 }
-                    DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-                        let error = AudioProximityService.shared.emitSignal(
-                            samples: samples, sampleRate: 48000
-                        )
-                        if !error.isEmpty {
-                            DispatchQueue.main.async {
-                                self?.sendHardwareUnavailable(transport: "Audio")
-                            }
-                        }
-                    }
+                    dispatchAudioEmit(data: data)
                 case let .audioListenForResponse(timeoutMs):
-                    DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-                        let samples = AudioProximityService.shared.receiveSignal(
-                            timeoutMs: timeoutMs, sampleRate: 48000
-                        )
-                        DispatchQueue.main.async {
-                            if samples.isEmpty {
-                                self?.sendHardwareUnavailable(transport: "Audio")
-                            } else {
-                                let data = samples.map { UInt8(clamping: Int($0 * 255.0)) }
-                                self?.sendHardwareEvent(.audioResponseReceived(data: data))
-                            }
-                        }
-                    }
+                    dispatchAudioListen(timeoutMs: timeoutMs)
                 case .audioStop:
                     AudioProximityService.shared.stop()
                 // NFC — not available on macOS
@@ -402,6 +380,31 @@ import SwiftUI
                 case .unknown:
                     // ADR-031: report unsupported commands so core can handle fallback
                     sendHardwareUnavailable(transport: "unsupported-command")
+                }
+            }
+        }
+
+        /// Send a hardware event back to core and apply the result.
+        private func dispatchAudioEmit(data: [UInt8]) {
+            let samples = data.map { Float($0) / 255.0 }
+            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+                let error = AudioProximityService.shared.emitSignal(samples: samples, sampleRate: 48000)
+                if !error.isEmpty {
+                    DispatchQueue.main.async { self?.sendHardwareUnavailable(transport: "Audio") }
+                }
+            }
+        }
+
+        private func dispatchAudioListen(timeoutMs: UInt64) {
+            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+                let samples = AudioProximityService.shared.receiveSignal(timeoutMs: timeoutMs, sampleRate: 48000)
+                DispatchQueue.main.async {
+                    if samples.isEmpty {
+                        self?.sendHardwareUnavailable(transport: "Audio")
+                    } else {
+                        let data = samples.map { UInt8(clamping: Int($0 * 255.0)) }
+                        self?.sendHardwareEvent(.audioResponseReceived(data: data))
+                    }
                 }
             }
         }
