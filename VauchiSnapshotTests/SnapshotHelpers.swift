@@ -62,6 +62,9 @@ func assertComponentSnapshot(
 /// Uses 0.95 perceptual precision (vs 0.98 for light mode) because AppKit's
 /// NSTextField border and NSAppearance(darkAqua) compositing produce
 /// non-deterministic rendering variance between xcodebuild invocations.
+///
+/// `.focusEffectDisabled()` prevents the system focus ring from appearing
+/// non-deterministically on text fields between runs (see testTextInputDark).
 @MainActor
 func assertDarkComponentSnapshot(
     of view: some View,
@@ -74,6 +77,7 @@ func assertDarkComponentSnapshot(
 ) {
     let host = hostingController(
         for: view.padding()
+            .focusEffectDisabled()
             .environment(\.colorScheme, .dark),
         width: width,
         height: height
@@ -116,7 +120,7 @@ func assertScreenSnapshot(
 }
 
 /// Asserts a dark mode snapshot of a full screen.
-/// See `assertDarkComponentSnapshot` for precision rationale.
+/// See `assertDarkComponentSnapshot` for precision and focus rationale.
 @MainActor
 func assertDarkScreenSnapshot(
     of screen: ScreenModel,
@@ -128,6 +132,7 @@ func assertDarkScreenSnapshot(
     line: UInt = #line
 ) {
     let view = ScreenRendererView(screen: screen, onAction: { _ in })
+        .focusEffectDisabled()
         .environment(\.colorScheme, .dark)
     let host = hostingController(for: view, width: width, height: height)
     host.view.appearance = NSAppearance(named: .darkAqua)
