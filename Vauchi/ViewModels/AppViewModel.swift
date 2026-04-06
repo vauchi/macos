@@ -29,6 +29,9 @@ import SwiftUI
         /// Active exchange session (created when user enters Exchange screen).
         private var exchangeSession: MobileExchangeSession?
 
+        /// ADR-031 command handler — dispatches hardware commands from the session.
+        private var exchangeCommandHandler: ExchangeCommandHandler?
+
         /// Active device link initiator (holds session state for confirmation).
         private var currentInitiator: MobileDeviceLinkInitiator?
         private var currentSenderToken: String?
@@ -123,7 +126,7 @@ import SwiftUI
 
         /// Navigate to a specific screen.
         func navigateTo(screenJson: String) {
-            exchangeSession = nil
+            teardownExchange()
             do {
                 let json = try appEngine.navigateToJson(screenJson: screenJson)
                 guard let data = json.data(using: .utf8) else { return }
@@ -138,7 +141,7 @@ import SwiftUI
 
         /// Navigate back in the history stack.
         func navigateBack() {
-            exchangeSession = nil
+            teardownExchange()
             do {
                 let json = try appEngine.navigateBackJson()
                 guard let data = json.data(using: .utf8) else { return }
@@ -202,7 +205,7 @@ import SwiftUI
             case let .validationError(componentId, message):
                 validationErrors[componentId] = message
             case .complete, .wipeComplete:
-                exchangeSession = nil
+                teardownExchange()
                 loadScreen()
             case let .openUrl(url):
                 if let nsUrl = URL(string: url) { NSWorkspace.shared.open(nsUrl) }
@@ -226,9 +229,12 @@ import SwiftUI
                 startDeviceLink()
             case .startBackupImport:
                 showImportBackupSheet = true
-            case .exchangeCommands:
-                // ADR-031: hardware exchange commands handled by exchange session
-                break
+            case let .exchangeCommands(commands):
+                if let handler = exchangeCommandHandler {
+                    for command in commands {
+                        handler.dispatchDTO(command)
+                    }
+                }
             case .unknown:
                 // Unknown action result from newer core — ignore
                 break
@@ -346,6 +352,13 @@ import SwiftUI
 
         // MARK: - Exchange Session Management
 
+        /// Stop hardware services and release the exchange session and handler.
+        private func teardownExchange() {
+            exchangeCommandHandler?.stop()
+            exchangeCommandHandler = nil
+            exchangeSession = nil
+        }
+
         /// Apply screen update, creating exchange session when entering exchange flow.
         private func applyExchangeScreen(_ screen: ScreenModel) {
             if screen.screenId == "exchange_show_qr", exchangeSession == nil {
@@ -381,8 +394,11 @@ import SwiftUI
 
             do {
                 let session = try createSession(vauchi: vauchi)
+                let handler = ExchangeCommandHandler(session: session)
                 let qrData = try session.generateQr()
+                handler.drainAndDispatch()
                 exchangeSession = session
+                exchangeCommandHandler = handler
 
                 // Replace the public_id QR data with the real exchange QR
                 let updatedComponents = screen.components.map { component -> Component in
@@ -425,12 +441,17 @@ import SwiftUI
 
             do {
                 try session.processQr(qrData: qrData)
+                exchangeCommandHandler?.drainAndDispatch()
                 try session.theyScannedOurQr()
+                exchangeCommandHandler?.drainAndDispatch()
                 try session.confirmProximity()
+                exchangeCommandHandler?.drainAndDispatch()
                 try session.performKeyAgreement()
+                exchangeCommandHandler?.drainAndDispatch()
 
                 let peerName = session.peerDisplayName() ?? "Unknown"
                 try session.completeCardExchange(theirCardName: peerName)
+                exchangeCommandHandler?.drainAndDispatch()
 
                 if let vauchi {
                     let result = try vauchi.finalizeExchange(session: session)
@@ -448,13 +469,13 @@ import SwiftUI
                         )
                     }
                 }
-                exchangeSession = nil
+                teardownExchange()
             } catch {
                 alertMessage = AlertMessage(
                     title: "Exchange Failed",
                     message: "\(error)"
                 )
-                exchangeSession = nil
+                teardownExchange()
             }
         }
     }

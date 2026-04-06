@@ -112,6 +112,48 @@ final class ExchangeCommandHandler {
         }
     }
 
+    // MARK: - DTO Dispatch (ActionResult path)
+
+    /// Dispatch an `ExchangeCommandDTO` from `ActionResult.exchangeCommands`.
+    ///
+    /// The JSON engine path sends commands as DTOs rather than UniFFI types.
+    /// This mirrors `dispatch(_:)` for that path.
+    func dispatchDTO(_ command: ExchangeCommandDTO) {
+        switch command {
+        case .qrDisplay, .qrRequestScan:
+            break
+        case let .audioEmitChallenge(data):
+            emitAudioChallenge(data: Data(data))
+        case let .audioListenForResponse(timeoutMs):
+            listenForAudioResponse(timeoutMs: timeoutMs)
+        case .audioStop:
+            break
+        case let .bleStartScanning(serviceUuid):
+            bleService.startScanning(serviceUuid: serviceUuid)
+        case let .bleStartAdvertising(serviceUuid, payload):
+            bleService.startAdvertising(serviceUuid: serviceUuid, payload: Data(payload))
+        case let .bleConnect(deviceId):
+            bleService.connect(deviceId: deviceId)
+        case let .bleWriteCharacteristic(uuid, data):
+            bleService.writeCharacteristic(uuid: uuid, data: Data(data))
+        case let .bleReadCharacteristic(uuid):
+            bleService.readCharacteristic(uuid: uuid)
+        case .bleDisconnect:
+            bleService.disconnect()
+        case .nfcActivate:
+            reportUnavailable(transport: "NFC-command")
+        case .nfcDeactivate:
+            break
+        case .unknown:
+            break
+        }
+    }
+
+    /// Stop all hardware operations and release resources.
+    func stop() {
+        bleService.disconnect()
+    }
+
     // MARK: - Audio
 
     private func emitAudioChallenge(data _: Data) {
