@@ -752,6 +752,7 @@ enum ExchangeCommandDTO: Decodable {
     case qrRequestScan
     case bleStartAdvertising(serviceUuid: String, payload: [UInt8])
     case bleStartScanning(serviceUuid: String)
+    case bleStopScanning
     case bleConnect(deviceId: String)
     case bleWriteCharacteristic(uuid: String, data: [UInt8])
     case bleReadCharacteristic(uuid: String)
@@ -769,6 +770,7 @@ enum ExchangeCommandDTO: Decodable {
         {
             switch stringValue {
             case "QrRequestScan": self = .qrRequestScan
+            case "BleStopScanning": self = .bleStopScanning
             case "BleDisconnect": self = .bleDisconnect
             case "NfcDeactivate": self = .nfcDeactivate
             case "AudioStop": self = .audioStop

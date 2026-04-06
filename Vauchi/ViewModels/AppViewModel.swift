@@ -355,6 +355,8 @@ import SwiftUI
                 // BLE — delegate to CoreBluetooth service
                 case let .bleStartScanning(serviceUuid):
                     bleService.startScanning(serviceUuid: serviceUuid)
+                case .bleStopScanning:
+                    bleService.stopScanning()
                 case let .bleStartAdvertising(serviceUuid, payload):
                     bleService.startAdvertising(serviceUuid: serviceUuid, payload: Data(payload))
                 case let .bleConnect(deviceId):

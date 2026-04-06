@@ -115,7 +115,13 @@ final class BleExchangeService: NSObject {
         peripheral.readValue(for: characteristic)
     }
 
+    func stopScanning() {
+        centralManager?.stopScan()
+        targetServiceUuid = nil
+    }
+
     func disconnect() {
+        centralManager?.stopScan()
         if let peripheral = connectedPeripheral {
             centralManager?.cancelPeripheralConnection(peripheral)
         }
