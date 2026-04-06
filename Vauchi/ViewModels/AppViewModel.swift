@@ -398,7 +398,8 @@ import SwiftUI
                 case .nfcActivate, .nfcDeactivate:
                     sendHardwareUnavailable(transport: "NFC")
                 case .unknown:
-                    break
+                    // ADR-031: report unsupported commands so core can handle fallback
+                    sendHardwareUnavailable(transport: "unsupported-command")
                 }
             }
         }
