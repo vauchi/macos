@@ -384,6 +384,58 @@ test:unit:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == "main"
 
+# Coverage: xcodebuild with code coverage enabled (main merges only).
+# Produces Cobertura XML for GitLab MR annotations and pushes metrics
+# to Grafana Pushgateway. Mirrors iOS coverage job — same toolchain.
+coverage:unit:
+  extends: [.macos-job, .spm-cache-readonly, .timeout-long]
+  stage: test
+  needs:
+    - job: build:debug
+      artifacts: true
+      optional: true
+  before_script:
+    - !reference [.macos-job, before_script]
+    - command -v xcresultparser >/dev/null 2>&1 || brew install a7ex/homebrew-formulae/xcresultparser
+  script:
+    - command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
+    - rm -rf Vauchi.xcodeproj
+    - xcodegen generate
+    - ./scripts/fix-xcframework-symlinks.sh
+    - |
+      xcodebuild -project Vauchi.xcodeproj -scheme Vauchi \
+        -destination "platform=macOS" \
+        -clonedSourcePackagesDirPath .spm-packages \
+        -derivedDataPath .derived-data \
+        -disableAutomaticPackageResolution \
+        CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO \
+        ENABLE_HARDENED_RUNTIME=NO \
+        test -enableCodeCoverage YES \
+        -resultBundlePath coverage_result \
+        -only-testing:VauchiTests
+    - xcrun xccov view --report coverage_result.xcresult
+    - xcresultparser --output-format cobertura coverage_result.xcresult > cobertura.xml
+    - |
+      curl --silent --fail \
+        "${CI_API_V4_URL}/projects/vauchi%2Fscripts/repository/files/scripts%2Fci%2Fpush-coverage.sh/raw?ref=main" \
+        -o push-coverage.sh
+      chmod +x push-coverage.sh
+    - ./push-coverage.sh cobertura.xml macos || true
+  coverage: '/Line Coverage:\s+(\d+(?:\.\d+)?%)/'
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: cobertura.xml
+    paths:
+      - cobertura.xml
+    expire_in: 1 week
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "pipeline" || $CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "api"
+      when: never
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+
 test:snapshots:
   extends: [.macos-job, .spm-cache-readonly]
   stage: test
