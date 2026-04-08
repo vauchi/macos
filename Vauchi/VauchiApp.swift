@@ -20,6 +20,9 @@ struct VauchiApp: App {
             #if canImport(VauchiPlatform)
                 ContentView()
                     .environmentObject(appState)
+                    .onReceive(timer) { _ in
+                        appState.pollNotifications()
+                    }
             #else
                 PlaceholderContentView()
             #endif
@@ -57,7 +60,24 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationWillTerminate(_: Notification) {
         systemTrayManager.teardown()
     }
+
+    func applicationDidResignActive(_: Notification) {
+        // Trigger auto-lock if enabled when app loses focus (C1)
+        #if canImport(VauchiPlatform)
+            // Use NSApp to find our AppState which is @StateObject in @main VauchiApp
+            // But since AppState is a @StateObject in a struct, we should ideally access it via a notification
+            // or a shared singleton if AppState was one.
+            // Given the current structure, let's post a notification that AppState can listen to.
+            NotificationCenter.default.post(name: .vauchiAppResignedActive, object: nil)
+        #endif
+    }
 }
+
+#if canImport(VauchiPlatform)
+    extension Notification.Name {
+        static let vauchiAppResignedActive = Notification.Name("vauchiAppResignedActive")
+    }
+#endif
 
 // MARK: - With VauchiPlatform bindings
 
@@ -88,6 +108,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     seedTestIdentityIfNeeded()
                 }
             #endif
+
+            NotificationCenter.default.addObserver(forName: .vauchiAppResignedActive, object: nil, queue: .main) { [weak self] _ in
+                self?.handleAppBackgrounded()
+            }
         }
 
         #if DEBUG
@@ -171,6 +195,35 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     print("VauchiApp: authentication cancelled")
                 } catch {
                     print("VauchiApp: authentication failed: \(error)")
+                }
+            }
+        }
+
+        /// Handle app backgrounded event (C1 auto-lock).
+        func handleAppBackgrounded() {
+            _ = repository?.handleAppBackgrounded()
+        }
+
+        /// Poll for and display OS notifications (E).
+        func pollNotifications() {
+            guard let notifications = repository?.pollNotifications(), !notifications.isEmpty else { return }
+
+            for notification in notifications {
+                let content = UNMutableNotificationContent()
+                content.title = notification.title
+                content.body = notification.body
+                content.sound = .default
+
+                let request = UNNotificationRequest(
+                    identifier: notification.id,
+                    content: content,
+                    trigger: nil // Deliver immediately
+                )
+
+                UNUserNotificationCenter.current().add(request) { error in
+                    if let error = error {
+                        print("AppState: Notification error: \(error)")
+                    }
                 }
             }
         }
