@@ -5,7 +5,11 @@
 // VauchiApp.swift
 // macOS native desktop app entry point
 
+import Combine
 import SwiftUI
+import UserNotifications
+
+private let timer = Timer.publish(every: 30, on: .main, in: .common).autoconnect()
 
 @main
 struct VauchiApp: App {
@@ -219,7 +223,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 content.sound = .default
 
                 let request = UNNotificationRequest(
-                    identifier: notification.id,
+                    identifier: notification.eventKey,
                     content: content,
                     trigger: nil // Deliver immediately
                 )
