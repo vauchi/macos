@@ -53,6 +53,7 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
 
     /// Poll for and display OS notifications (E).
     func pollAndDisplayNotifications(repository: VauchiRepository?) {
+        guard UserDefaults.standard.object(forKey: "vauchi.notificationsEnabled") as? Bool ?? true else { return }
         guard let notifications = repository?.pollNotifications(), !notifications.isEmpty else { return }
 
         for notification in notifications {
