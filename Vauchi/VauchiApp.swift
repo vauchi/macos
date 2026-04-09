@@ -109,7 +109,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 }
             #endif
 
-            NotificationCenter.default.addObserver(forName: .vauchiAppResignedActive, object: nil, queue: .main) { [weak self] _ in
+            NotificationCenter.default.addObserver(
+                forName: .vauchiAppResignedActive,
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
                 self?.handleAppBackgrounded()
             }
         }
