@@ -209,7 +209,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         /// Handle app backgrounded event (C1 auto-lock).
         func handleAppBackgrounded() {
-            _ = repository?.handleAppBackgrounded()
+            guard repository?.handleAppBackgrounded() != nil else { return }
+            // Core navigated to Lock screen — refresh UI to show it
+            viewModel?.loadScreen()
         }
 
         /// Poll for and display OS notifications (E).
