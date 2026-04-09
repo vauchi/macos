@@ -214,26 +214,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         /// Poll for and display OS notifications (E).
         func pollNotifications() {
-            guard let notifications = repository?.pollNotifications(), !notifications.isEmpty else { return }
-
-            for notification in notifications {
-                let content = UNMutableNotificationContent()
-                content.title = notification.title
-                content.body = notification.body
-                content.sound = .default
-
-                let request = UNNotificationRequest(
-                    identifier: notification.eventKey,
-                    content: content,
-                    trigger: nil // Deliver immediately
-                )
-
-                UNUserNotificationCenter.current().add(request) { error in
-                    if let error = error {
-                        print("AppState: Notification error: \(error)")
-                    }
-                }
-            }
+            NotificationService.shared.pollAndDisplayNotifications(repository: repository)
         }
     }
 
