@@ -51,18 +51,24 @@ default:
   # Serialize all SPM-using jobs on the shared macOS runner.
   # Multiple concurrent xcodebuild -resolvePackageDependencies deadlock
   # on SPM's global package cache (~/.cache/org.swift.swiftpm/).
-  # Runner concurrent=1 is the primary fix; this is defense-in-depth.
   resource_group: macos-spm
+  variables:
+    CI_JOB_KEYCHAIN: ci-spm-${CI_JOB_ID}.keychain-db
   before_script:
     - echo "Xcode $(xcodebuild -version | head -1)"
-    # Authenticate SPM binary target downloads from GitLab's private package registry.
+    # Per-job keychain for SPM binary target downloads from GitLab's package registry.
     # URLSession uses the keychain (not .netrc) for HTTP auth challenges.
-    # 1. Delete ALL stale entries (duplicates cause fatalError — post-mortem 2026-03-28)
-    # 2. Add fresh entry with current CI_JOB_TOKEN (-A = allow all apps, incl. xcodebuild)
-    # 3. Keep .netrc as fallback for git operations
-    - while security delete-internet-password -s gitlab.com 2>/dev/null; do :; done
-    - security add-internet-password -s gitlab.com -a gitlab-ci-token -w "${CI_JOB_TOKEN}" -r htps -A 2>/dev/null || true
+    # Each concurrent job gets its own keychain to avoid cross-job credential races
+    # (post-mortem 2026-03-28: duplicates in shared keychain cause fatalError).
+    - security create-keychain -p "" "$CI_JOB_KEYCHAIN"
+    - security set-keychain-settings -lut 3600 "$CI_JOB_KEYCHAIN"
+    - security unlock-keychain -p "" "$CI_JOB_KEYCHAIN"
+    - security list-keychains -d user -s "$CI_JOB_KEYCHAIN" $(security list-keychains -d user | tr -d '"')
+    - security add-internet-password -s gitlab.com -a gitlab-ci-token -w "${CI_JOB_TOKEN}" -r htps -A -k "$CI_JOB_KEYCHAIN" 2>/dev/null || true
     - echo "machine gitlab.com login gitlab-ci-token password ${CI_JOB_TOKEN}" > ~/.netrc && chmod 600 ~/.netrc
+  after_script:
+    # Clean up per-job keychain (best-effort — after_script runs even on failure)
+    - security delete-keychain "$CI_JOB_KEYCHAIN" 2>/dev/null || true
 
 # Cache SPM packages + DerivedData between pipeline runs.
 # DerivedData contains compiled swift-syntax (602.0.0) which takes
@@ -276,7 +282,7 @@ build:debug:
         echo "  SPM resolve timed out — downloading XCFramework with curl"
         V=$(sed -n '/vauchi-platform-swift/{n;s/.*"\([^"]*\)".*/\1/p;}' project.yml)
         if [ -n "$V" ]; then
-          ZIP="/tmp/VauchiPlatformFFI-${V}.xcframework.zip"
+          ZIP="/tmp/VauchiPlatformFFI-${CI_JOB_ID}-${V}.xcframework.zip"
           curl -fsSL --max-time 60 --header "JOB-TOKEN: ${CI_JOB_TOKEN}" \
             "https://gitlab.com/api/v4/projects/vauchi%2Fcore/packages/generic/vauchi-platform/${V}/VauchiPlatformFFI.xcframework.zip" \
             -o "$ZIP"
@@ -482,6 +488,7 @@ test:snapshots:
     - xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data -disableAutomaticPackageResolution -only-testing:VauchiSnapshotTests -resultBundlePath SnapshotTestResults test-without-building
   after_script:
     - !reference [.vrt-upload-script, script]
+    - !reference [.macos-job, after_script]
   artifacts:
     when: always
     paths:
@@ -523,17 +530,17 @@ test:snapshots:record:
         CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO \
         SWIFT_ACTIVE_COMPILATION_CONDITIONS='$(inherited) SNAPSHOT_RECORD' \
         test -only-testing:VauchiSnapshotTests \
-        2>&1 | tee /tmp/xcodebuild-record.log
+        2>&1 | tee /tmp/xcodebuild-record-${CI_JOB_ID}.log
       XCODE_EXIT=$?
       set -e
-      if ! grep -q "Executed.*test" /tmp/xcodebuild-record.log; then
+      if ! grep -q "Executed.*test" /tmp/xcodebuild-record-${CI_JOB_ID}.log; then
         echo "❌ Tests never executed — infrastructure failure"
-        tail -20 /tmp/xcodebuild-record.log
+        tail -20 /tmp/xcodebuild-record-${CI_JOB_ID}.log
         exit 1
       fi
       echo "✅ Tests executed (exit code ${XCODE_EXIT} is expected in record mode)"
     # Preserve recorded snapshots across git checkout
-    - cp -r VauchiSnapshotTests/__Snapshots__/ /tmp/__Snapshots__/
+    - cp -r VauchiSnapshotTests/__Snapshots__/ /tmp/__Snapshots__-${CI_JOB_ID}/
     # Switch from detached merge-ref HEAD to the actual branch.
     # CI_JOB_TOKEN auth is auto-configured by GitLab (insteadOf rewrite).
     # Push permissions enabled via project setting (ci_push_repository_for_job_token_allowed).
@@ -544,7 +551,7 @@ test:snapshots:record:
     - git fetch origin "+refs/heads/${CI_COMMIT_REF_NAME}:refs/heads/${CI_COMMIT_REF_NAME}"
     - git checkout "${CI_COMMIT_REF_NAME}"
     # Restore recorded snapshots (git checkout resets working directory)
-    - cp -r /tmp/__Snapshots__/ VauchiSnapshotTests/__Snapshots__/
+    - cp -r /tmp/__Snapshots__-${CI_JOB_ID}/ VauchiSnapshotTests/__Snapshots__/
     # Commit and push baselines (skip if unchanged)
     - |
       git add VauchiSnapshotTests/__Snapshots__/
