@@ -31,7 +31,7 @@ import Foundation
         let vauchi: VauchiPlatform
         let appEngine: PlatformAppEngine
 
-        init(dataDir: String? = nil, relayUrl: String = "wss://relay.vauchi.app") throws {
+        init(dataDir: String? = nil, relayUrl: String = "https://relay.vauchi.app") throws {
             let dir = dataDir ?? VauchiRepository.defaultDataDir()
 
             try FileManager.default.createDirectory(
