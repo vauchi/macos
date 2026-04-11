@@ -39,7 +39,8 @@ struct PinInputComponentView: View {
                 }
                 onAction(.textChanged(componentId: component.id, value: value))
             }
-            .accessibilityLabel(component.label)
+            .accessibilityLabel(component.a11y?.label ?? component.label)
+            .accessibilityHint(component.a11y?.hint ?? "")
 
             if let error = component.validationError {
                 Text(error)

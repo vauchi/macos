@@ -37,6 +37,8 @@ struct QrCodeComponentView: View {
         .background(Color(nsColor: .controlBackgroundColor))
         .cornerRadius(12)
         .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
+        .accessibilityLabel(component.a11y?.label ?? component.label ?? "QR code")
+        .accessibilityHint(component.a11y?.hint ?? "")
     }
 
     @ViewBuilder

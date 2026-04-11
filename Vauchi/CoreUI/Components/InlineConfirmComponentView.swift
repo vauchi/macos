@@ -52,5 +52,7 @@ struct InlineConfirmComponentView: View {
         .padding(12)
         .background(Color(nsColor: .controlBackgroundColor))
         .cornerRadius(10)
+        .accessibilityLabel(component.a11y?.label ?? component.warning)
+        .accessibilityHint(component.a11y?.hint ?? "")
     }
 }
