@@ -868,6 +868,7 @@ enum ExchangeCommandDTO: Decodable {
         let payload: [UInt8]
         let isInitiator: Bool
 
+        // swiftlint:disable:next nesting
         enum CodingKeys: String, CodingKey {
             case payload
             case isInitiator = "is_initiator"

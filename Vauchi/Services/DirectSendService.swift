@@ -125,11 +125,11 @@ import Foundation
         private func sendAll(sock: Int32, data: [UInt8]) throws {
             var sent = 0
             while sent < data.count {
-                let n = data[sent...].withUnsafeBytes {
+                let bytesSent = data[sent...].withUnsafeBytes {
                     Darwin.send(sock, $0.baseAddress!, data.count - sent, 0)
                 }
-                guard n > 0 else { throw VxchError.sendFailed }
-                sent += n
+                guard bytesSent > 0 else { throw VxchError.sendFailed }
+                sent += bytesSent
             }
         }
 
@@ -137,11 +137,11 @@ import Foundation
             var buf = [UInt8](repeating: 0, count: count)
             var received = 0
             while received < count {
-                let n = buf[received...].withUnsafeMutableBytes {
+                let bytesRead = buf[received...].withUnsafeMutableBytes {
                     Darwin.recv(sock, $0.baseAddress!, count - received, 0)
                 }
-                guard n > 0 else { throw VxchError.recvFailed }
-                received += n
+                guard bytesRead > 0 else { throw VxchError.recvFailed }
+                received += bytesRead
             }
             return buf
         }
