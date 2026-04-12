@@ -9,6 +9,7 @@
 // protocol, and reports the peer's payload back via callback.
 
 import Foundation
+import Network
 
 #if canImport(VauchiPlatform)
     import VauchiPlatform
@@ -35,9 +36,31 @@ import Foundation
             }
         }
 
+        /// Discover the phone's address via Bonjour (DNS-SD `_vauchi-exchange._tcp.`).
+        ///
+        /// Returns a "host:port" string if a service is found within 5 seconds, or `nil`.
+        ///
+        /// - Note: Currently a stub — always returns `nil` so callers fall back to
+        ///   127.0.0.1 (works when usbmuxd port-forwarding is active). Full resolution
+        ///   via `NWConnection` will be added once the phone-side advertiser is wired up.
+        ///   TODO: resolve `NWEndpoint.service` to a concrete host:port using a temporary
+        ///   `NWConnection` and `currentPath?.remoteEndpoint`.
+        private func discoverPhoneAddress() -> String? {
+            // Placeholder: NWBrowser browse is straightforward, but resolving the
+            // returned NWEndpoint.service to a host+port requires an NWConnection
+            // round-trip that needs careful cancellation to avoid a real TCP handshake
+            // with the exchange peer. Deferred until the phone-side Bonjour advertiser
+            // (`_vauchi-exchange._tcp.`) is implemented.
+            return nil
+        }
+
         private func performExchange(address: String, payload: [UInt8], isInitiator: Bool) {
+            // Try Bonjour discovery; fall back to the caller-supplied address
+            // (typically 127.0.0.1 via usbmuxd port-forwarding).
+            let resolvedAddress = discoverPhoneAddress() ?? address
+
             // Parse address (host:port)
-            let parts = address.split(separator: ":")
+            let parts = resolvedAddress.split(separator: ":")
             let host = parts.count > 0 ? String(parts[0]) : "127.0.0.1"
             let port = parts.count > 1 ? UInt16(parts[1]) ?? Self.defaultPort : Self.defaultPort
 
