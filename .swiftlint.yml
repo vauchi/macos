@@ -11,6 +11,7 @@ disabled_rules:
 
 excluded:
   - .build
+  - .derived-data
   - .spm-packages
   - DerivedData
   - Vauchi/Libs
