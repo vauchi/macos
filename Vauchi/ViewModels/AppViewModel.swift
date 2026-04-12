@@ -345,6 +345,15 @@ import SwiftUI
             return service
         }()
 
+        /// TCP client for USB cable exchange (ADR-031).
+        private lazy var directSendService: DirectSendService = {
+            let service = DirectSendService()
+            service.setEventCallback { [weak self] event in
+                self?.sendHardwareEvent(event)
+            }
+            return service
+        }()
+
         /// Dispatch exchange commands to platform hardware services.
         private func dispatchExchangeCommands(_ commands: [ExchangeCommandDTO]) {
             for command in commands {
@@ -374,6 +383,13 @@ import SwiftUI
                     dispatchAudioListen(timeoutMs: timeoutMs)
                 case .audioStop:
                     AudioProximityService.shared.stop()
+                // DirectSend — TCP cable exchange
+                case let .directSend(payload, isInitiator):
+                    directSendService.exchange(
+                        address: "127.0.0.1:\(DirectSendService.defaultPort)",
+                        payload: payload,
+                        isInitiator: isInitiator
+                    )
                 // NFC — not available on macOS
                 case .nfcActivate, .nfcDeactivate:
                     sendHardwareUnavailable(transport: "NFC")

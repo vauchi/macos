@@ -181,6 +181,7 @@
 		E9866D4AE388DC57B562ADDB /* testContactListEmpty.1.png in Resources */ = {isa = PBXBuildFile; fileRef = B8027B69C9794DDF7044A016 /* testContactListEmpty.1.png */; };
 		EBDF43BF0E850A5D4345CA75 /* testScreenRendererAccessibility.1.txt in Resources */ = {isa = PBXBuildFile; fileRef = 1DDB8A091A24E66931A46D88 /* testScreenRendererAccessibility.1.txt */; };
 		EC30F92B5A66058CF9972C27 /* BleExchangeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418F950D6541F912A27DA57D /* BleExchangeService.swift */; };
+		1C6C5CAF281349E1A4F647D9 /* DirectSendService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A4B601ABF24E3BA15AEBE8 /* DirectSendService.swift */; };
 		EE06B8DCB941892BEACE00A0 /* testCreateIdentityStepFilled.1.png in Resources */ = {isa = PBXBuildFile; fileRef = BD52706224375EBB9227ECF4 /* testCreateIdentityStepFilled.1.png */; };
 		EE2E45E26234B17B707ADED9 /* testInlineConfirmDefault.1.png in Resources */ = {isa = PBXBuildFile; fileRef = E919A41F13031155AC578B3E /* testInlineConfirmDefault.1.png */; };
 		EE6F9277C97E114DFE2D66F1 /* MenuBarManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452C42124CBE27154FCB283D /* MenuBarManager.swift */; };
@@ -269,6 +270,7 @@
 		3FC1E2FF696B02B2B79363C3 /* emergency_shred.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = emergency_shred.json; sourceTree = "<group>"; };
 		3FF0727A90972B41385E4C9B /* delivery_status.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = delivery_status.json; sourceTree = "<group>"; };
 		418F950D6541F912A27DA57D /* BleExchangeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BleExchangeService.swift; sourceTree = "<group>"; };
+		24A4B601ABF24E3BA15AEBE8 /* DirectSendService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectSendService.swift; sourceTree = "<group>"; };
 		442BA1AE531958F5AE130DEC /* InlineConfirmComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineConfirmComponentView.swift; sourceTree = "<group>"; };
 		444EB6E932C6BF9631AEE4D3 /* testStatusIndicatorAccessibility.1.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = testStatusIndicatorAccessibility.1.txt; sourceTree = "<group>"; };
 		452C42124CBE27154FCB283D /* MenuBarManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarManager.swift; sourceTree = "<group>"; };
@@ -762,6 +764,7 @@
 				49509AE0DF70B880F977B015 /* AudioProximityService.swift */,
 				92F9D4D1B77DDD1226B84C5C /* BiometricService.swift */,
 				418F950D6541F912A27DA57D /* BleExchangeService.swift */,
+				24A4B601ABF24E3BA15AEBE8 /* DirectSendService.swift */,
 				B31DFE6F23CEA01F0437957B /* KeychainService.swift */,
 				6C859B6215BADD6A45480D9F /* LocalizationService.swift */,
 				BDB1CEDFBA5AE37F12D5BE39 /* NotificationService.swift */,
@@ -1087,6 +1090,7 @@
 				E1D1F36025544FD43BEEEB83 /* BannerComponentView.swift in Sources */,
 				D53ADA09532F5A59A7BF3D75 /* BiometricService.swift in Sources */,
 				EC30F92B5A66058CF9972C27 /* BleExchangeService.swift in Sources */,
+				1C6C5CAF281349E1A4F647D9 /* DirectSendService.swift in Sources */,
 				5F8D2981766D6B43B9B09287 /* CardPreviewComponentView.swift in Sources */,
 				8F1D5438434B846475597477 /* ComponentView.swift in Sources */,
 				1ACE579015129CE4204CAFA8 /* ConfirmationDialogComponentView.swift in Sources */,

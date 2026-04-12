@@ -788,6 +788,7 @@ enum ExchangeCommandDTO: Decodable {
     case audioEmitChallenge(data: [UInt8])
     case audioListenForResponse(timeoutMs: UInt64)
     case audioStop
+    case directSend(payload: [UInt8], isInitiator: Bool)
     case unknown
 
     init(from decoder: Decoder) throws {
@@ -833,6 +834,9 @@ enum ExchangeCommandDTO: Decodable {
         } else if container.contains(.audioListenForResponse) {
             let data = try container.decode(AudioListenData.self, forKey: .audioListenForResponse)
             self = .audioListenForResponse(timeoutMs: data.timeoutMs)
+        } else if container.contains(.directSend) {
+            let data = try container.decode(DirectSendData.self, forKey: .directSend)
+            self = .directSend(payload: data.payload, isInitiator: data.isInitiator)
         } else {
             self = .unknown
         }
@@ -848,6 +852,7 @@ enum ExchangeCommandDTO: Decodable {
         case nfcActivate = "NfcActivate"
         case audioEmitChallenge = "AudioEmitChallenge"
         case audioListenForResponse = "AudioListenForResponse"
+        case directSend = "DirectSend"
     }
 
     private struct QrDisplayData: Decodable { let data: String }
@@ -859,4 +864,13 @@ enum ExchangeCommandDTO: Decodable {
     private struct NfcActivateData: Decodable { let payload: [UInt8] }
     private struct AudioChallengeData: Decodable { let data: [UInt8] }
     private struct AudioListenData: Decodable { let timeoutMs: UInt64 }
+    private struct DirectSendData: Decodable {
+        let payload: [UInt8]
+        let isInitiator: Bool
+
+        enum CodingKeys: String, CodingKey {
+            case payload
+            case isInitiator = "is_initiator"
+        }
+    }
 }
