@@ -24,6 +24,7 @@ struct InfoPanelComponentView: View {
 
                 Text(component.title)
                     .font(.headline)
+                    .accessibilityLabel(component.a11y?.label ?? component.title)
                     .accessibilityAddTraits(.isHeader)
             }
 

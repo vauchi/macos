@@ -22,6 +22,7 @@ struct CardPreviewComponentView: View {
             // Card
             cardView
         }
+        .accessibilityLabel(component.a11y?.label ?? "Card preview: \(component.name)")
     }
 
     private var groupSelector: some View {
@@ -156,7 +157,7 @@ struct CardFieldRow: View {
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(field.label): \(field.value)")
+        .accessibilityLabel(field.a11y?.label ?? "\(field.label): \(field.value)")
     }
 
     private func iconForFieldType(_ type: String) -> String {

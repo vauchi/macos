@@ -5,3 +5,6 @@
 extend-exclude = [
     "*.pbxproj",
 ]
+
+[default.extend-words]
+mappin = "mappin"
