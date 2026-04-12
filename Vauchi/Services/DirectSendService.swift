@@ -93,7 +93,7 @@ import Foundation
         // VXCH wire format: [4 bytes magic "VXCH"] [1 byte version] [4 bytes BE length] [payload]
         private static let magic: [UInt8] = [0x56, 0x58, 0x43, 0x48] // "VXCH"
         private static let version: UInt8 = 1
-        private static let maxPayload: UInt32 = 65_536
+        private static let maxPayload: UInt32 = 65536
 
         private func sendVxch(sock: Int32, payload: [UInt8]) throws {
             guard !payload.isEmpty else { throw VxchError.emptyPayload }
