@@ -203,8 +203,10 @@ import SwiftUI
             case let .openEntryDetail(fieldId):
                 navigateToScreen(["EntryDetail": ["field_id": fieldId]])
             case let .showToast(message, undoActionId):
-                // ActionResult.showToast is triggered by core in response to user actions
-                // (e.g. "Field deleted" with undo). Show as overlay toast, not a blocking alert.
+                // Reload screen — core may have navigated internally
+                // (e.g. archive_contact intercept calls navigate_back()
+                // before returning ShowToast).
+                loadScreen()
                 showToast(message, undoActionId: undoActionId)
             case .requestCamera:
                 // Load the scan screen — it has camera QR scanning with paste fallback
