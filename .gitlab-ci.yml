@@ -71,14 +71,15 @@ default:
     - security delete-keychain "$CI_JOB_KEYCHAIN" 2>/dev/null || true
 
 # Cache SPM packages + DerivedData between pipeline runs.
-# DerivedData contains compiled swift-syntax (602.0.0) which takes
-# >60min to build from source. Without this cache, builds time out.
+# DerivedData contains compiled swift-syntax which takes >60min to build
+# from source. Cache key includes swift-syntax version so major bumps
+# get a fresh cache instead of silently invalidating.
 .spm-cache:
   cache:
-    key: macos-spm-${CI_COMMIT_REF_SLUG}
+    key: macos-spm-ss603-${CI_COMMIT_REF_SLUG}
     fallback_keys:
-      - macos-spm-${CI_DEFAULT_BRANCH}
-      - macos-spm
+      - macos-spm-ss603-${CI_DEFAULT_BRANCH}
+      - macos-spm-ss603
     paths:
       - .spm-packages/
       - .derived-data/
@@ -87,10 +88,10 @@ default:
 # Read-only SPM cache for jobs that don't need to update it
 .spm-cache-readonly:
   cache:
-    key: macos-spm-${CI_COMMIT_REF_SLUG}
+    key: macos-spm-ss603-${CI_COMMIT_REF_SLUG}
     fallback_keys:
-      - macos-spm-${CI_DEFAULT_BRANCH}
-      - macos-spm
+      - macos-spm-ss603-${CI_DEFAULT_BRANCH}
+      - macos-spm-ss603
     paths:
       - .spm-packages/
       - .derived-data/
