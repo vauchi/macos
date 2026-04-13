@@ -255,11 +255,10 @@ build:debug:
     - command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
     - echo "── [$(date +%H:%M:%S)] xcodegen ──"
     - rm -rf Vauchi.xcodeproj
-    # Delete lock files so SPM re-resolves to latest versions.
-    # Keep .spm-packages/artifacts/ — cached binary artifacts prevent
-    # re-download (SPM URLSession can't authenticate with GitLab).
+    # Clear workspace state so SPM re-resolves, but keep Package.resolved
+    # to pin versions (deleting it causes swift-syntax version jumps that
+    # invalidate the DerivedData cache and cause >1h recompiles).
     - rm -f .spm-packages/workspace-state.json
-    - rm -f Vauchi.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
     - xcodegen generate
     - echo "── [$(date +%H:%M:%S)] SPM resolve ──"
     - |
