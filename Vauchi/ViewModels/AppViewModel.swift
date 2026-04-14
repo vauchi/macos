@@ -151,6 +151,7 @@ import SwiftUI
         /// Screen IDs like "exchange_show_qr" map to "Exchange" via prefix match.
         private static let screenIdPrefixToAppScreen: [(prefix: String, appScreen: String)] = [
             ("my_info", "MyInfo"),
+            ("archived_contacts", "Contacts"),
             ("contact", "Contacts"),
             ("exchange", "Exchange"),
             ("groups", "Groups"),
