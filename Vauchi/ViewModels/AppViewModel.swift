@@ -158,6 +158,7 @@ import UniformTypeIdentifiers
             ("exchange", "Exchange"),
             ("groups", "Groups"),
             ("group_detail", "Groups"),
+            ("device_replacement", "More"),
             ("more", "More"),
         ]
 
