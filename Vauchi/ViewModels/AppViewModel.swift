@@ -453,7 +453,7 @@ import UniformTypeIdentifiers
                     if response == .OK, let url = panel.url,
                        let data = try? Data(contentsOf: url)
                     {
-                        self.sendHardwareEvent(.imageReceived(data: [UInt8](data)))
+                        self.sendHardwareEvent(.imageReceived(data: data))
                     } else {
                         self.sendHardwareEvent(.imagePickCancelled)
                     }
