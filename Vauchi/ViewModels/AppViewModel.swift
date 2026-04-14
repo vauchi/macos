@@ -19,6 +19,7 @@ import SwiftUI
         @Published var toastMessage: String?
         @Published var toastUndoActionId: String?
         @Published var showImportBackupSheet = false
+        @Published var showImportContactsSheet = false
         @Published var showDeviceLinkSheet = false
         @Published var deviceLinkState: DeviceLinkState = .idle
         @Published var availableScreens: [String] = []

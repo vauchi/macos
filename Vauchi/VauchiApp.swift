@@ -303,6 +303,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 ImportBackupSheet()
                     .environmentObject(viewModel)
             }
+            .onReceive(NotificationCenter.default.publisher(for: .vauchiMenuImportContacts)) { _ in
+                viewModel.showImportContactsSheet = true
+            }
+            .sheet(isPresented: $viewModel.showImportContactsSheet) {
+                ImportContactsSheet()
+                    .environmentObject(viewModel)
+            }
         }
     }
 

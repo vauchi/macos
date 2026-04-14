@@ -15,6 +15,7 @@ import AppKit
 /// - Dynamic menu updates based on app state
 class MenuBarManager {
     private var exchangeMenuItem: NSMenuItem?
+    private var importContactsMenuItem: NSMenuItem?
     private var myCardMenuItem: NSMenuItem?
     private var contactsMenuItem: NSMenuItem?
     private var groupsMenuItem: NSMenuItem?
@@ -33,11 +34,14 @@ class MenuBarManager {
 
     private func buildFileMenu() -> NSMenuItem {
         let menu = NSMenu(title: "File")
-        let item = addMenuItem(
+        exchangeMenuItem = addMenuItem(
             to: menu, title: "Exchange Contact Card",
             action: #selector(exchangeAction(_:)), key: "e"
         )
-        exchangeMenuItem = item
+        importContactsMenuItem = addMenuItem(
+            to: menu, title: "Import Contacts...",
+            action: #selector(importContactsAction(_:)), key: "i"
+        )
         let menuItem = NSMenuItem(title: "File", action: nil, keyEquivalent: "")
         menuItem.submenu = menu
         return menuItem
@@ -68,6 +72,7 @@ class MenuBarManager {
     /// Updates menu item states based on current app state.
     func updateMenuState(hasIdentity: Bool) {
         exchangeMenuItem?.isEnabled = hasIdentity
+        importContactsMenuItem?.isEnabled = hasIdentity
         myCardMenuItem?.isEnabled = hasIdentity
         contactsMenuItem?.isEnabled = hasIdentity
         groupsMenuItem?.isEnabled = hasIdentity
@@ -82,6 +87,11 @@ class MenuBarManager {
     @objc private func exchangeAction(_: Any?) {
         NSApp.activate(ignoringOtherApps: true)
         NotificationCenter.default.post(name: .vauchiMenuExchange, object: nil)
+    }
+
+    @objc private func importContactsAction(_: Any?) {
+        NSApp.activate(ignoringOtherApps: true)
+        NotificationCenter.default.post(name: .vauchiMenuImportContacts, object: nil)
     }
 
     @objc private func myCardAction(_: Any?) {
@@ -115,6 +125,7 @@ class MenuBarManager {
 
 extension Notification.Name {
     static let vauchiMenuExchange = Notification.Name("vauchiMenuExchange")
+    static let vauchiMenuImportContacts = Notification.Name("vauchiMenuImportContacts")
     static let vauchiMenuContacts = Notification.Name("vauchiMenuContacts")
     static let vauchiMenuGroups = Notification.Name("vauchiMenuGroups")
     static let vauchiMenuMyCard = Notification.Name("vauchiMenuMyCard")
