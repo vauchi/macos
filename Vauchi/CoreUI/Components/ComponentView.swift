@@ -69,6 +69,12 @@ struct ComponentView: View {
         case let .banner(bannerComponent):
             BannerComponentView(component: bannerComponent, onAction: onAction)
 
+        case let .avatarPreview(avatarComponent):
+            AvatarPreviewComponentView(component: avatarComponent, onAction: onAction)
+
+        case let .slider(sliderComponent):
+            SliderComponentView(component: sliderComponent, onAction: onAction)
+
         case .divider:
             DividerComponentView()
 

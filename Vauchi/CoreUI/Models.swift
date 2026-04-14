@@ -90,6 +90,8 @@ enum Component: Decodable {
     case inlineConfirm(InlineConfirmComponent)
     case editableText(EditableTextComponent)
     case banner(BannerComponent)
+    case avatarPreview(AvatarPreviewComponent)
+    case slider(SliderComponent)
     case divider
     case unknown
 
@@ -153,6 +155,12 @@ enum Component: Decodable {
             )
         } else if container.contains(.banner) {
             return try .banner(container.decode(BannerComponent.self, forKey: .banner))
+        } else if container.contains(.avatarPreview) {
+            return try .avatarPreview(
+                container.decode(AvatarPreviewComponent.self, forKey: .avatarPreview)
+            )
+        } else if container.contains(.slider) {
+            return try .slider(container.decode(SliderComponent.self, forKey: .slider))
         }
         return .unknown
     }
@@ -175,6 +183,8 @@ enum Component: Decodable {
         case inlineConfirm = "InlineConfirm"
         case editableText = "EditableText"
         case banner = "Banner"
+        case avatarPreview = "AvatarPreview"
+        case slider = "Slider"
     }
 }
 
@@ -290,6 +300,7 @@ enum UiFieldVisibility: Decodable {
 
 struct CardPreviewComponent: Decodable {
     let name: String
+    let avatarData: [UInt8]?
     let fields: [FieldDisplay]
     let groupViews: [GroupCardView]
     let selectedGroup: String?
@@ -504,6 +515,32 @@ struct BannerComponent: Decodable {
     var a11y: A11y?
 }
 
+// MARK: - AvatarPreview Component
+
+struct AvatarPreviewComponent: Decodable {
+    let id: String
+    let imageData: [UInt8]?
+    let initials: String
+    let bgColor: [UInt8]?
+    let brightness: Float
+    let editable: Bool
+    let a11y: A11y?
+}
+
+// MARK: - Slider Component
+
+struct SliderComponent: Decodable {
+    let id: String
+    let label: String
+    let value: Float
+    let min: Float
+    let max: Float
+    let step: Float
+    let minIcon: String?
+    let maxIcon: String?
+    let a11y: A11y?
+}
+
 // MARK: - UserAction (Encodable for sending to core)
 
 /// An action the user performed in the UI.
@@ -520,7 +557,9 @@ enum UserAction: Encodable {
     case listItemSelected(componentId: String, itemId: String)
     case settingsToggled(componentId: String, itemId: String)
     case undoPressed(actionId: String)
+    case sliderChanged(componentId: String, valueMilli: Int32)
 
+    // swiftlint:disable:next function_body_length
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: VariantKey.self)
 
@@ -579,6 +618,13 @@ enum UserAction: Encodable {
                 keyedBy: UndoPressedKeys.self, forKey: .undoPressed
             )
             try nested.encode(actionId, forKey: .actionId)
+
+        case let .sliderChanged(componentId, valueMilli):
+            var nested = container.nestedContainer(
+                keyedBy: SliderChangedKeys.self, forKey: .sliderChanged
+            )
+            try nested.encode(componentId, forKey: .componentId)
+            try nested.encode(valueMilli, forKey: .valueMilli)
         }
     }
 
@@ -592,6 +638,7 @@ enum UserAction: Encodable {
         case listItemSelected = "ListItemSelected"
         case settingsToggled = "SettingsToggled"
         case undoPressed = "UndoPressed"
+        case sliderChanged = "SliderChanged"
     }
 
     private enum TextChangedKeys: String, CodingKey {
@@ -635,6 +682,11 @@ enum UserAction: Encodable {
 
     private enum UndoPressedKeys: String, CodingKey {
         case actionId = "action_id"
+    }
+
+    private enum SliderChangedKeys: String, CodingKey {
+        case componentId = "component_id"
+        case valueMilli = "value_milli"
     }
 }
 
@@ -789,6 +841,9 @@ enum ExchangeCommandDTO: Decodable {
     case audioListenForResponse(timeoutMs: UInt64)
     case audioStop
     case directSend(payload: [UInt8], isInitiator: Bool)
+    case imagePickFromLibrary
+    case imageCaptureFromCamera
+    case imagePickFromFile
     case unknown
 
     init(from decoder: Decoder) throws {
@@ -801,6 +856,9 @@ enum ExchangeCommandDTO: Decodable {
             case "BleDisconnect": self = .bleDisconnect
             case "NfcDeactivate": self = .nfcDeactivate
             case "AudioStop": self = .audioStop
+            case "ImagePickFromLibrary": self = .imagePickFromLibrary
+            case "ImageCaptureFromCamera": self = .imageCaptureFromCamera
+            case "ImagePickFromFile": self = .imagePickFromFile
             default: self = .unknown
             }
             return

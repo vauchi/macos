@@ -192,6 +192,8 @@
 		F835B561DD3F9802AF7163FC /* testToggleListAccessibility.1.txt in Resources */ = {isa = PBXBuildFile; fileRef = 33A0048E8A2E34AA58D84E4A /* testToggleListAccessibility.1.txt */; };
 		FDEE93990E0D194E2D7BD828 /* contact_info.json in Resources */ = {isa = PBXBuildFile; fileRef = 0F85E4838465BB8A1A9CB4F2 /* contact_info.json */; };
 		FFA654F0756CA4D7C564AB0F /* testStatusIndicatorPending.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 6376B531DB29A29598D9D0F6 /* testStatusIndicatorPending.1.png */; };
+		A1B2C3D4E5F60718A9B0C1D2 /* AvatarPreviewComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718A9B0C1D3 /* AvatarPreviewComponentView.swift */; };
+		A1B2C3D4E5F60718A9B0C1D4 /* SliderComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718A9B0C1D5 /* SliderComponentView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -382,6 +384,8 @@
 		CB4B0784606C0D57CC2593CE /* testSetupViewGerman.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testSetupViewGerman.1.png; sourceTree = "<group>"; };
 		CC0264A403A8FF8004269E87 /* testTextInputPassword.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testTextInputPassword.1.png; sourceTree = "<group>"; };
 		CDAC67C5337AAC5560D74DDD /* BannerComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerComponentView.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718A9B0C1D3 /* AvatarPreviewComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarPreviewComponentView.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718A9B0C1D5 /* SliderComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliderComponentView.swift; sourceTree = "<group>"; };
 		D00EF6554B76A106ACC1A18A /* testThemeSettingsView.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testThemeSettingsView.1.png; sourceTree = "<group>"; };
 		D42379D47C2AFA9F80BAAB6A /* testSyncingState.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testSyncingState.1.png; sourceTree = "<group>"; };
 		D51F85BE507FC3741AFF9FE2 /* testExchangeShowQrDark.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testExchangeShowQrDark.1.png; sourceTree = "<group>"; };
@@ -709,6 +713,7 @@
 			isa = PBXGroup;
 			children = (
 				517370E68C1DA4C66CD5E3BA /* ActionListComponentView.swift */,
+				A1B2C3D4E5F60718A9B0C1D3 /* AvatarPreviewComponentView.swift */,
 				CDAC67C5337AAC5560D74DDD /* BannerComponentView.swift */,
 				2B524783275A3955F7CBEE76 /* CardPreviewComponentView.swift */,
 				EA272578E81247FB65A5C145 /* ComponentView.swift */,
@@ -722,6 +727,7 @@
 				649B37B5A7280D282E65BC3F /* PinInputComponentView.swift */,
 				6EEEBB6EBF77701342433324 /* QrCodeComponentView.swift */,
 				19E25AFE32D45CA1C95DA590 /* SettingsGroupComponentView.swift */,
+				A1B2C3D4E5F60718A9B0C1D5 /* SliderComponentView.swift */,
 				9075FCC3ED0182090E406725 /* StatusIndicatorComponentView.swift */,
 				63AE253E0DF71B38AAE856FB /* TextComponentView.swift */,
 				22ABDAF6DF202F4F33D5CE19 /* TextInputComponentView.swift */,
@@ -1088,6 +1094,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				406258333C40C48F3E43D569 /* ActionListComponentView.swift in Sources */,
+				A1B2C3D4E5F60718A9B0C1D2 /* AvatarPreviewComponentView.swift in Sources */,
 				ADB778BBA40707BAD3F8B21A /* AppViewModel.swift in Sources */,
 				D65905F3E8A6B191F4611470 /* AudioProximityService.swift in Sources */,
 				E1D1F36025544FD43BEEEB83 /* BannerComponentView.swift in Sources */,
@@ -1117,6 +1124,7 @@
 				E522CA915372F8B514733D6B /* QrCodeComponentView.swift in Sources */,
 				C2AA1DC7FD7FA22C155F70BD /* ScreenRendererView.swift in Sources */,
 				09004B0A2E938952E9D267FC /* SettingsGroupComponentView.swift in Sources */,
+				A1B2C3D4E5F60718A9B0C1D4 /* SliderComponentView.swift in Sources */,
 				719AC91DB0FAB238A99B310A /* SettingsWindowView.swift in Sources */,
 				9F92EEBB337032A28D7F5C8C /* StatusIndicatorComponentView.swift in Sources */,
 				C48401965743DD70C01F2F95 /* SystemTrayManager.swift in Sources */,

@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import UniformTypeIdentifiers
 
 #if canImport(VauchiPlatform)
     import VauchiPlatform
@@ -397,6 +398,13 @@ import SwiftUI
                 // NFC — not available on macOS
                 case .nfcActivate, .nfcDeactivate:
                     sendHardwareUnavailable(transport: "NFC")
+                // Image picking (ADR-042 avatar editor)
+                case .imagePickFromFile:
+                    presentFileImagePicker()
+                case .imagePickFromLibrary:
+                    sendHardwareUnavailable(transport: "PhotoLibrary")
+                case .imageCaptureFromCamera:
+                    sendHardwareUnavailable(transport: "Camera")
                 case .unknown:
                     // ADR-031: report unsupported commands so core can handle fallback
                     sendHardwareUnavailable(transport: "unsupported-command")
@@ -424,6 +432,30 @@ import SwiftUI
                     } else {
                         let bytes = samples.map { UInt8(clamping: Int($0 * 255.0)) }
                         self?.sendHardwareEvent(.audioResponseReceived(data: Data(bytes)))
+                    }
+                }
+            }
+        }
+
+        // MARK: - Image Picker (ADR-042)
+
+        /// Present NSOpenPanel for image file selection.
+        private func presentFileImagePicker() {
+            let panel = NSOpenPanel()
+            panel.title = "Select Image"
+            panel.allowedContentTypes = [.image]
+            panel.allowsMultipleSelection = false
+            panel.canChooseDirectories = false
+
+            panel.begin { [weak self] response in
+                guard let self else { return }
+                DispatchQueue.main.async {
+                    if response == .OK, let url = panel.url,
+                       let data = try? Data(contentsOf: url)
+                    {
+                        self.sendHardwareEvent(.imageReceived(data: [UInt8](data)))
+                    } else {
+                        self.sendHardwareEvent(.imagePickCancelled)
                     }
                 }
             }

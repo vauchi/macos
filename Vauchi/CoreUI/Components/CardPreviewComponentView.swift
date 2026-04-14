@@ -66,20 +66,9 @@ struct CardPreviewComponentView: View {
         VStack(spacing: 0) {
             // Card header
             VStack(spacing: 8) {
-                Circle()
-                    .fill(
-                        LinearGradient(
-                            colors: [.cyan, .blue],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
+                avatarCircle
                     .frame(width: 80, height: 80)
-                    .overlay(
-                        Text(currentDisplayName.prefix(1).uppercased())
-                            .font(.system(size: 36, weight: .bold))
-                            .foregroundColor(.white)
-                    )
+                    .clipShape(Circle())
                     .accessibilityHidden(true)
 
                 Text(currentDisplayName)
@@ -109,6 +98,31 @@ struct CardPreviewComponentView: View {
         .background(Color(nsColor: .controlBackgroundColor))
         .cornerRadius(16)
         .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 4)
+    }
+
+    @ViewBuilder
+    private var avatarCircle: some View {
+        if let avatarData = component.avatarData,
+           let nsImage = NSImage(data: Data(avatarData))
+        {
+            Image(nsImage: nsImage)
+                .resizable()
+                .scaledToFill()
+        } else {
+            Circle()
+                .fill(
+                    LinearGradient(
+                        colors: [.cyan, .blue],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .overlay(
+                    Text(currentDisplayName.prefix(1).uppercased())
+                        .font(.system(size: 36, weight: .bold))
+                        .foregroundColor(.white)
+                )
+        }
     }
 
     private var currentDisplayName: String {
