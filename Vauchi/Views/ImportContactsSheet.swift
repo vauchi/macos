@@ -170,7 +170,7 @@ import UniformTypeIdentifiers
 
             Task {
                 do {
-                    let result = try vauchi.importContactsFromVcf(data: Array(data))
+                    let result = try vauchi.importContactsFromVcf(data: data)
                     await MainActor.run {
                         importResult = ContactImportResult(
                             imported: Int(result.imported),
