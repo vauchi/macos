@@ -141,6 +141,7 @@ final class ScreenSnapshotTests: XCTestCase {
             components: [
                 .cardPreview(CardPreviewComponent(
                     name: "Alice",
+                    avatarData: nil,
                     fields: [],
                     groupViews: [],
                     selectedGroup: nil
@@ -161,6 +162,7 @@ final class ScreenSnapshotTests: XCTestCase {
             components: [
                 .cardPreview(CardPreviewComponent(
                     name: "Alice",
+                    avatarData: nil,
                     fields: [
                         FieldDisplay(
                             id: "f1",
@@ -402,6 +404,7 @@ final class ScreenSnapshotTests: XCTestCase {
             components: [
                 .cardPreview(CardPreviewComponent(
                     name: "Alice",
+                    avatarData: nil,
                     fields: [
                         FieldDisplay(
                             id: "f1",

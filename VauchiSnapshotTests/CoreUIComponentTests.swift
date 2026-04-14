@@ -202,6 +202,7 @@ final class CoreUIComponentTests: XCTestCase {
     func testCardPreviewMinimal() {
         let component = CardPreviewComponent(
             name: "Alice",
+            avatarData: nil,
             fields: [],
             groupViews: [],
             selectedGroup: nil
@@ -213,6 +214,7 @@ final class CoreUIComponentTests: XCTestCase {
     func testCardPreviewWithFields() {
         let component = CardPreviewComponent(
             name: "Alice",
+            avatarData: nil,
             fields: [
                 FieldDisplay(
                     id: "f1",
@@ -239,6 +241,7 @@ final class CoreUIComponentTests: XCTestCase {
     func testCardPreviewWithGroups() {
         let component = CardPreviewComponent(
             name: "Alice",
+            avatarData: nil,
             fields: [
                 FieldDisplay(
                     id: "f1",
@@ -564,6 +567,7 @@ final class CoreUIComponentTests: XCTestCase {
     func testCardPreviewDark() {
         let component = CardPreviewComponent(
             name: "Alice",
+            avatarData: nil,
             fields: [
                 FieldDisplay(
                     id: "f1",
