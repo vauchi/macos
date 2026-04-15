@@ -83,7 +83,7 @@ final class AccessibilityTests: XCTestCase {
                 ),
                 InfoItem(
                     icon: "shield",
-                    title: "Zero Knowledge",
+                    title: "Oblivious Relay",
                     detail: "The relay server cannot read your contact data."
                 ),
             ]
