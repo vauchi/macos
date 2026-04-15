@@ -185,7 +185,8 @@ func makeScreen(
     subtitle: String? = nil,
     components: [Component] = [],
     actions: [ScreenAction] = [],
-    progress: Vauchi.Progress? = nil
+    progress: Vauchi.Progress? = nil,
+    tokens: DesignTokens = .defaults
 ) -> ScreenModel {
     ScreenModel(
         screenId: screenId,
@@ -193,6 +194,7 @@ func makeScreen(
         subtitle: subtitle,
         components: components,
         actions: actions,
-        progress: progress
+        progress: progress,
+        tokens: tokens
     )
 }
