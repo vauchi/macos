@@ -11,6 +11,7 @@ import SwiftUI
 struct ComponentView: View {
     let component: Component
     let onAction: (UserAction) -> Void
+    var onQrScanned: ((String) -> Void)?
 
     var body: some View {
         switch component {
@@ -48,7 +49,11 @@ struct ComponentView: View {
             PinInputComponentView(component: pinComponent, onAction: onAction)
 
         case let .qrCode(qrComponent):
-            QrCodeComponentView(component: qrComponent, onAction: onAction)
+            QrCodeComponentView(
+                component: qrComponent,
+                onAction: onAction,
+                onQrScanned: onQrScanned
+            )
 
         case let .confirmationDialog(dialogComponent):
             ConfirmationDialogComponentView(component: dialogComponent, onAction: onAction)

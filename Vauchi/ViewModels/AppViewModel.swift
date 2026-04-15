@@ -461,6 +461,11 @@ import UniformTypeIdentifiers
             }
         }
 
+        /// ADR-031: Route QR scan data through the hardware event path.
+        func handleQrScanned(data: String) {
+            sendHardwareEvent(.qrScanned(data: data))
+        }
+
         /// Send a hardware event back to core and apply the result.
         private func sendHardwareEvent(_ event: MobileExchangeHardwareEvent) {
             do {

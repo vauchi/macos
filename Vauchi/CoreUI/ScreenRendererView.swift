@@ -23,6 +23,7 @@ import SwiftUI
 struct ScreenRendererView: View {
     let screen: ScreenModel
     let onAction: (UserAction) -> Void
+    var onQrScanned: ((String) -> Void)?
 
     @State private var toastMessage: String?
     @State private var toastUndoActionId: String?
@@ -63,7 +64,7 @@ struct ScreenRendererView: View {
 
                         // Components
                         ForEach(Array(screen.components.enumerated()), id: \.offset) { _, component in
-                            ComponentView(component: component, onAction: onAction)
+                            ComponentView(component: component, onAction: onAction, onQrScanned: onQrScanned)
                         }
                     }
                     .padding(.horizontal, 24)

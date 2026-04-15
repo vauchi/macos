@@ -247,9 +247,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     SidebarView(viewModel: viewModel)
                 } detail: {
                     if let screen = viewModel.currentScreen {
-                        ScreenRendererView(screen: screen, onAction: { action in
-                            viewModel.handleAction(action)
-                        })
+                        ScreenRendererView(
+                            screen: screen,
+                            onAction: { action in
+                                viewModel.handleAction(action)
+                            },
+                            onQrScanned: { data in
+                                viewModel.handleQrScanned(data: data)
+                            }
+                        )
                     } else {
                         LoadingView()
                     }

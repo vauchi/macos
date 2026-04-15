@@ -13,6 +13,7 @@ import SwiftUI
 struct QrCodeComponentView: View {
     let component: QrCodeComponent
     let onAction: (UserAction) -> Void
+    var onQrScanned: ((String) -> Void)?
 
     var body: some View {
         VStack(spacing: 16) {
@@ -22,7 +23,12 @@ struct QrCodeComponentView: View {
 
             case .scan:
                 QrScannerView { scannedData in
-                    onAction(.textChanged(componentId: "scanned_data", value: scannedData))
+                    if let onQrScanned {
+                        onQrScanned(scannedData)
+                    } else {
+                        // Fallback for contexts without hardware event routing (e.g. snapshots)
+                        onAction(.textChanged(componentId: "scanned_data", value: scannedData))
+                    }
                 }
             }
 
