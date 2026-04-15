@@ -374,6 +374,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     struct ErrorView: View {
         let message: String
 
+        @Environment(\.designTokens) private var tokens
+
         var body: some View {
             VStack(spacing: 16) {
                 Image(systemName: "exclamationmark.triangle")
@@ -388,7 +390,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
             }
-            .padding(32)
+            .padding(CGFloat(tokens.spacing.xl))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }

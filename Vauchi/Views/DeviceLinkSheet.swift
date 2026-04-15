@@ -15,6 +15,8 @@ import SwiftUI
     struct DeviceLinkSheet: View {
         @ObservedObject var viewModel: AppViewModel
 
+        @Environment(\.designTokens) private var tokens
+
         var body: some View {
             VStack(spacing: 24) {
                 sheetHeader()
@@ -22,7 +24,7 @@ import SwiftUI
                 Spacer()
                 sheetActions()
             }
-            .padding(24)
+            .padding(CGFloat(tokens.spacing.lg))
             .frame(width: 400)
             .frame(minHeight: 450)
         }
@@ -150,11 +152,11 @@ import SwiftUI
                             .fontWeight(.bold)
                     }
                 }
-                .padding(16)
+                .padding(CGFloat(tokens.spacing.md))
                 .background(
                     Color(nsColor: .controlBackgroundColor)
                 )
-                .cornerRadius(8)
+                .cornerRadius(CGFloat(tokens.borderRadius.md))
 
                 Text(
                     "Verify the code matches on both devices"

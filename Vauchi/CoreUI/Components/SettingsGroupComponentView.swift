@@ -12,6 +12,8 @@ struct SettingsGroupComponentView: View {
     let component: SettingsGroupComponent
     let onAction: (UserAction) -> Void
 
+    @Environment(\.designTokens) private var tokens
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(component.label)
@@ -33,7 +35,7 @@ struct SettingsGroupComponentView: View {
                 }
             }
             .background(Color(nsColor: .controlBackgroundColor))
-            .cornerRadius(12)
+            .cornerRadius(CGFloat(tokens.borderRadius.mdLg))
             .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
         }
     }
@@ -43,6 +45,8 @@ struct SettingsItemRow: View {
     let item: SettingsItem
     let componentId: String
     let onAction: (UserAction) -> Void
+
+    @Environment(\.designTokens) private var tokens
 
     var body: some View {
         switch item.kind {
@@ -80,7 +84,7 @@ struct SettingsItemRow: View {
             .labelsHidden()
         }
         .padding(.horizontal, 16)
-        .padding(.vertical, 12)
+        .padding(.vertical, CGFloat(tokens.borderRadius.mdLg))
         .accessibilityElement(children: .combine)
         .accessibilityLabel(item.a11y?.label ?? item.label)
         .accessibilityHint(item.a11y?.hint ?? "")
@@ -100,7 +104,7 @@ struct SettingsItemRow: View {
                 .foregroundColor(.secondary)
         }
         .padding(.horizontal, 16)
-        .padding(.vertical, 12)
+        .padding(.vertical, CGFloat(tokens.borderRadius.mdLg))
         .accessibilityElement(children: .combine)
         .accessibilityLabel(item.a11y?.label ?? "\(item.label): \(value)")
         .accessibilityHint(item.a11y?.hint ?? "")
@@ -128,7 +132,7 @@ struct SettingsItemRow: View {
                     .foregroundColor(.secondary)
             }
             .padding(.horizontal, 16)
-            .padding(.vertical, 12)
+            .padding(.vertical, CGFloat(tokens.borderRadius.mdLg))
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -150,7 +154,7 @@ struct SettingsItemRow: View {
                 Spacer()
             }
             .padding(.horizontal, 16)
-            .padding(.vertical, 12)
+            .padding(.vertical, CGFloat(tokens.borderRadius.mdLg))
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

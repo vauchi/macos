@@ -11,6 +11,8 @@ import SwiftUI
 struct StatusIndicatorComponentView: View {
     let component: StatusIndicatorComponent
 
+    @Environment(\.designTokens) private var tokens
+
     var body: some View {
         HStack(spacing: 12) {
             if let icon = component.icon {
@@ -39,9 +41,9 @@ struct StatusIndicatorComponentView: View {
                 .frame(width: 12, height: 12)
                 .accessibilityLabel(statusLabel(for: component.status))
         }
-        .padding(16)
+        .padding(CGFloat(tokens.spacing.md))
         .background(Color(nsColor: .controlBackgroundColor))
-        .cornerRadius(12)
+        .cornerRadius(CGFloat(tokens.borderRadius.mdLg))
         .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
         .accessibilityElement(children: .combine)
         .accessibilityLabel(component.a11y?.label ?? component.title)

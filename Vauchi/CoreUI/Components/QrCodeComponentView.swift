@@ -15,6 +15,8 @@ struct QrCodeComponentView: View {
     let onAction: (UserAction) -> Void
     var onQrScanned: ((String) -> Void)?
 
+    @Environment(\.designTokens) private var tokens
+
     var body: some View {
         VStack(spacing: 16) {
             switch component.mode {
@@ -39,9 +41,9 @@ struct QrCodeComponentView: View {
                     .multilineTextAlignment(.center)
             }
         }
-        .padding(16)
+        .padding(CGFloat(tokens.spacing.md))
         .background(Color(nsColor: .controlBackgroundColor))
-        .cornerRadius(12)
+        .cornerRadius(CGFloat(tokens.borderRadius.mdLg))
         .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
         .accessibilityLabel(component.a11y?.label ?? component.label ?? "QR code")
         .accessibilityHint(component.a11y?.hint ?? "")
@@ -91,6 +93,7 @@ struct QrCodeComponentView: View {
 struct QrScannerView: View {
     let onScanned: (String) -> Void
 
+    @Environment(\.designTokens) private var tokens
     @State private var showPasteField = false
     @State private var cameraAvailable = true
     @State private var scannedCode: String?
@@ -104,9 +107,9 @@ struct QrScannerView: View {
                     onScanned(code)
                 }
                 .frame(width: 300, height: 250)
-                .cornerRadius(8)
+                .cornerRadius(CGFloat(tokens.borderRadius.md))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 8)
+                    RoundedRectangle(cornerRadius: CGFloat(tokens.borderRadius.md))
                         .stroke(Color.cyan.opacity(0.5), lineWidth: 2)
                 )
 

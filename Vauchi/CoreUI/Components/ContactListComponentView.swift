@@ -12,6 +12,7 @@ struct ContactListComponentView: View {
     let component: ContactListComponent
     let onAction: (UserAction) -> Void
 
+    @Environment(\.designTokens) private var tokens
     @State private var searchQuery: String = ""
 
     var body: some View {
@@ -38,7 +39,7 @@ struct ContactListComponentView: View {
                 }
             }
             .background(Color(nsColor: .controlBackgroundColor))
-            .cornerRadius(12)
+            .cornerRadius(CGFloat(tokens.borderRadius.mdLg))
             .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
         }
     }
@@ -47,6 +48,8 @@ struct ContactListComponentView: View {
 struct ContactItemRow: View {
     let contact: ContactItem
     let onTap: () -> Void
+
+    @Environment(\.designTokens) private var tokens
 
     var body: some View {
         Button(action: onTap) {
@@ -84,7 +87,7 @@ struct ContactItemRow: View {
                     .foregroundColor(.secondary)
             }
             .padding(.horizontal, 16)
-            .padding(.vertical, 12)
+            .padding(.vertical, CGFloat(tokens.borderRadius.mdLg))
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

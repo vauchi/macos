@@ -12,6 +12,8 @@ struct ToggleListComponentView: View {
     let component: ToggleListComponent
     let onAction: (UserAction) -> Void
 
+    @Environment(\.designTokens) private var tokens
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(component.label)
@@ -31,7 +33,7 @@ struct ToggleListComponentView: View {
                 }
             }
             .background(Color(nsColor: .controlBackgroundColor))
-            .cornerRadius(12)
+            .cornerRadius(CGFloat(tokens.borderRadius.mdLg))
             .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
         }
         .accessibilityLabel(component.a11y?.label ?? component.label)
@@ -41,6 +43,8 @@ struct ToggleListComponentView: View {
 struct ToggleItemRow: View {
     let item: ToggleItem
     let onToggle: () -> Void
+
+    @Environment(\.designTokens) private var tokens
 
     var body: some View {
         Button(action: onToggle) {
@@ -64,7 +68,7 @@ struct ToggleItemRow: View {
                     .font(.title3)
             }
             .padding(.horizontal, 16)
-            .padding(.vertical, 12)
+            .padding(.vertical, CGFloat(tokens.borderRadius.mdLg))
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

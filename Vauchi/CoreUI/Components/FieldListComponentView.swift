@@ -12,6 +12,8 @@ struct FieldListComponentView: View {
     let component: FieldListComponent
     let onAction: (UserAction) -> Void
 
+    @Environment(\.designTokens) private var tokens
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             if component.fields.isEmpty {
@@ -57,6 +59,8 @@ struct FieldListRow: View {
     let availableGroups: [String]
     let onAction: (UserAction) -> Void
 
+    @Environment(\.designTokens) private var tokens
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
@@ -83,9 +87,9 @@ struct FieldListRow: View {
             }
         }
         .padding(.horizontal, 16)
-        .padding(.vertical, 12)
+        .padding(.vertical, CGFloat(tokens.borderRadius.mdLg))
         .background(Color(nsColor: .controlBackgroundColor))
-        .cornerRadius(12)
+        .cornerRadius(CGFloat(tokens.borderRadius.mdLg))
         .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
         .accessibilityElement(children: .combine)
         .accessibilityLabel(field.a11y?.label ?? "\(field.label): \(field.value)")
@@ -136,11 +140,11 @@ struct FieldListRow: View {
                     } label: {
                         Text(group)
                             .font(.caption)
-                            .padding(.horizontal, 10)
+                            .padding(.horizontal, CGFloat(tokens.spacing.sm))
                             .padding(.vertical, 4)
                             .background(isVisible ? Color.cyan.opacity(0.2) : Color(nsColor: .quaternaryLabelColor))
                             .foregroundColor(isVisible ? .cyan : .secondary)
-                            .cornerRadius(8)
+                            .cornerRadius(CGFloat(tokens.borderRadius.md))
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel("\(group): \(isVisible ? "visible" : "hidden")")

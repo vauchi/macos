@@ -12,6 +12,8 @@ struct CardPreviewComponentView: View {
     let component: CardPreviewComponent
     let onAction: (UserAction) -> Void
 
+    @Environment(\.designTokens) private var tokens
+
     var body: some View {
         VStack(spacing: 16) {
             // Group selector (if groups exist)
@@ -54,7 +56,7 @@ struct CardPreviewComponentView: View {
                 .padding(.vertical, 8)
                 .background(isSelected ? Color.cyan : Color(nsColor: .quaternaryLabelColor))
                 .foregroundColor(isSelected ? .white : .primary)
-                .cornerRadius(20)
+                .cornerRadius(CGFloat(tokens.borderRadius.lg))
         }
         .buttonStyle(.plain)
         .accessibilityLabel(name)
@@ -96,7 +98,7 @@ struct CardPreviewComponentView: View {
             }
         }
         .background(Color(nsColor: .controlBackgroundColor))
-        .cornerRadius(16)
+        .cornerRadius(CGFloat(tokens.borderRadius.lg))
         .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 4)
     }
 
@@ -151,6 +153,8 @@ struct CardPreviewComponentView: View {
 struct CardFieldRow: View {
     let field: FieldDisplay
 
+    @Environment(\.designTokens) private var tokens
+
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: iconForFieldType(field.fieldType))
@@ -169,7 +173,7 @@ struct CardFieldRow: View {
             Spacer()
         }
         .padding(.horizontal, 16)
-        .padding(.vertical, 12)
+        .padding(.vertical, CGFloat(tokens.borderRadius.mdLg))
         .accessibilityElement(children: .combine)
         .accessibilityLabel(field.a11y?.label ?? "\(field.label): \(field.value)")
     }

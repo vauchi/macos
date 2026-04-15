@@ -12,6 +12,8 @@ struct ActionListComponentView: View {
     let component: ActionListComponent
     let onAction: (UserAction) -> Void
 
+    @Environment(\.designTokens) private var tokens
+
     var body: some View {
         VStack(spacing: 0) {
             ForEach(component.items) { item in
@@ -26,7 +28,7 @@ struct ActionListComponentView: View {
             }
         }
         .background(Color(nsColor: .controlBackgroundColor))
-        .cornerRadius(12)
+        .cornerRadius(CGFloat(tokens.borderRadius.mdLg))
         .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
     }
 }
@@ -34,6 +36,8 @@ struct ActionListComponentView: View {
 struct ActionListItemRow: View {
     let item: ActionListItem
     let onTap: () -> Void
+
+    @Environment(\.designTokens) private var tokens
 
     var body: some View {
         Button(action: onTap) {
@@ -63,7 +67,7 @@ struct ActionListItemRow: View {
                     .foregroundColor(.secondary)
             }
             .padding(.horizontal, 16)
-            .padding(.vertical, 12)
+            .padding(.vertical, CGFloat(tokens.borderRadius.mdLg))
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

@@ -11,6 +11,8 @@ import SwiftUI
 struct InfoPanelComponentView: View {
     let component: InfoPanelComponent
 
+    @Environment(\.designTokens) private var tokens
+
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             // Panel header
@@ -35,9 +37,9 @@ struct InfoPanelComponentView: View {
                 }
             }
         }
-        .padding(16)
+        .padding(CGFloat(tokens.spacing.md))
         .background(Color(nsColor: .controlBackgroundColor))
-        .cornerRadius(12)
+        .cornerRadius(CGFloat(tokens.borderRadius.mdLg))
         .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
     }
 }

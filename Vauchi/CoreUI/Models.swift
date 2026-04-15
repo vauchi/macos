@@ -10,6 +10,20 @@
 // TODO: Extract to vauchi-platform-swift SPM package to avoid duplication.
 
 import Foundation
+import SwiftUI
+
+// MARK: - Design Token Environment
+
+private struct DesignTokensKey: EnvironmentKey {
+    static let defaultValue: DesignTokens = .defaults
+}
+
+extension EnvironmentValues {
+    var designTokens: DesignTokens {
+        get { self[DesignTokensKey.self] }
+        set { self[DesignTokensKey.self] = newValue }
+    }
+}
 
 // MARK: - JSON Decoding Strategy
 
@@ -40,15 +54,30 @@ struct DesignTokens: Decodable {
     let motion: MotionTokens
 
     static let defaults = DesignTokens(
-        spacing: SpacingTokens(xs: 4, sm: 8, md: 16, lg: 24, xl: 32),
-        spacingDirection: SpacingDirectionTokens(contentStart: 16, contentEnd: 16, listItemStart: 8, listItemEnd: 8, listItemInlineStart: 12, listItemInlineEnd: 12),
-        typography: TypographyTokens(titleSize: 24, subtitleSize: 18, bodySize: 16, captionSize: 14),
-        borderRadius: BorderRadiusTokens(sm: 4, md: 8, mdLg: 12, lg: 16),
+        spacing: SpacingTokens(
+            xs: 4, sm: 8, md: 16, lg: 24, xl: 32
+        ),
+        spacingDirection: SpacingDirectionTokens(
+            contentStart: 16, contentEnd: 16,
+            listItemStart: 8, listItemEnd: 8,
+            listItemInlineStart: 12, listItemInlineEnd: 12
+        ),
+        typography: TypographyTokens(
+            titleSize: 24, subtitleSize: 18,
+            bodySize: 16, captionSize: 14
+        ),
+        borderRadius: BorderRadiusTokens(
+            sm: 4, md: 8, mdLg: 12, lg: 16
+        ),
         touchTarget: TouchTargetTokens(minimum: 44),
-        motion: MotionTokens(enterDurationMs: 200, exitDurationMs: 150, emphasisDurationMs: 300)
+        motion: MotionTokens(
+            enterDurationMs: 200, exitDurationMs: 150,
+            emphasisDurationMs: 300
+        )
     )
 }
 
+// swiftlint:disable identifier_name
 struct SpacingTokens: Decodable {
     let xs: UInt16
     let sm: UInt16
@@ -56,6 +85,8 @@ struct SpacingTokens: Decodable {
     let lg: UInt16
     let xl: UInt16
 }
+
+// swiftlint:enable identifier_name
 
 struct SpacingDirectionTokens: Decodable {
     let contentStart: UInt16
@@ -73,12 +104,15 @@ struct TypographyTokens: Decodable {
     let captionSize: UInt16
 }
 
+// swiftlint:disable identifier_name
 struct BorderRadiusTokens: Decodable {
     let sm: UInt16
     let md: UInt16
     let mdLg: UInt16
     let lg: UInt16
 }
+
+// swiftlint:enable identifier_name
 
 struct TouchTargetTokens: Decodable {
     let minimum: UInt16

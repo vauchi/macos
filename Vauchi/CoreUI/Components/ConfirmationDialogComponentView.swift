@@ -12,6 +12,8 @@ struct ConfirmationDialogComponentView: View {
     let component: ConfirmationDialogComponent
     let onAction: (UserAction) -> Void
 
+    @Environment(\.designTokens) private var tokens
+
     var body: some View {
         VStack(spacing: 16) {
             Text(component.title)
@@ -32,9 +34,9 @@ struct ConfirmationDialogComponentView: View {
                         .font(.body.weight(.medium))
                         .foregroundColor(.primary)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
+                        .padding(.vertical, CGFloat(tokens.borderRadius.mdLg))
                         .background(Color(nsColor: .quaternaryLabelColor))
-                        .cornerRadius(10)
+                        .cornerRadius(CGFloat(tokens.borderRadius.mdLg))
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Cancel")
@@ -46,17 +48,17 @@ struct ConfirmationDialogComponentView: View {
                         .font(.body.weight(.semibold))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
+                        .padding(.vertical, CGFloat(tokens.borderRadius.mdLg))
                         .background(component.destructive ? Color.red : Color.cyan)
-                        .cornerRadius(10)
+                        .cornerRadius(CGFloat(tokens.borderRadius.mdLg))
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(component.confirmText)
             }
         }
-        .padding(16)
+        .padding(CGFloat(tokens.spacing.md))
         .background(Color(nsColor: .controlBackgroundColor))
-        .cornerRadius(12)
+        .cornerRadius(CGFloat(tokens.borderRadius.mdLg))
         .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
     }
 }

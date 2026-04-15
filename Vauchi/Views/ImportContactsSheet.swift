@@ -14,6 +14,7 @@ import UniformTypeIdentifiers
     struct ImportContactsSheet: View {
         @EnvironmentObject var viewModel: AppViewModel
         @Environment(\.dismiss) var dismiss
+        @Environment(\.designTokens) private var tokens
         @State private var showFilePicker = false
         @State private var isImporting = false
         @State private var importResult: ContactImportResult?
@@ -72,7 +73,7 @@ import UniformTypeIdentifiers
                 } label: {
                     Label("Choose File", systemImage: "doc.badge.plus")
                         .frame(maxWidth: .infinity)
-                        .padding(8)
+                        .padding(CGFloat(tokens.spacing.sm))
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(.cyan)

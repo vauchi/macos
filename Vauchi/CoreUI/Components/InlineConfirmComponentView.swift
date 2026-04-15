@@ -12,6 +12,8 @@ struct InlineConfirmComponentView: View {
     let component: InlineConfirmComponent
     let onAction: (UserAction) -> Void
 
+    @Environment(\.designTokens) private var tokens
+
     var body: some View {
         VStack(spacing: 12) {
             Text(component.warning)
@@ -27,9 +29,9 @@ struct InlineConfirmComponentView: View {
                         .font(.body.weight(.medium))
                         .foregroundColor(.primary)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 10)
+                        .padding(.vertical, CGFloat(tokens.spacing.sm))
                         .background(Color(nsColor: .quaternaryLabelColor))
-                        .cornerRadius(8)
+                        .cornerRadius(CGFloat(tokens.borderRadius.md))
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(component.cancelText)
@@ -41,17 +43,17 @@ struct InlineConfirmComponentView: View {
                         .font(.body.weight(.semibold))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 10)
+                        .padding(.vertical, CGFloat(tokens.spacing.sm))
                         .background(component.destructive ? Color.red : Color.cyan)
-                        .cornerRadius(8)
+                        .cornerRadius(CGFloat(tokens.borderRadius.md))
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(component.confirmText)
             }
         }
-        .padding(12)
+        .padding(CGFloat(tokens.borderRadius.mdLg))
         .background(Color(nsColor: .controlBackgroundColor))
-        .cornerRadius(10)
+        .cornerRadius(CGFloat(tokens.borderRadius.mdLg))
         .accessibilityLabel(component.a11y?.label ?? component.warning)
         .accessibilityHint(component.a11y?.hint ?? "")
     }

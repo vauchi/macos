@@ -25,6 +25,7 @@ struct ScreenRendererView: View {
     let onAction: (UserAction) -> Void
     var onQrScanned: ((String) -> Void)?
 
+    @Environment(\.designTokens) private var tokens
     @State private var toastMessage: String?
     @State private var toastUndoActionId: String?
 
@@ -112,6 +113,7 @@ struct ScreenRendererView: View {
         .onAppear {
             checkForToastComponent()
         }
+        .environment(\.designTokens, screen.tokens)
     }
 
     private func checkForToastComponent() {
@@ -145,6 +147,8 @@ struct ToastOverlayView: View {
     let onAction: (UserAction) -> Void
     let onDismiss: () -> Void
 
+    @Environment(\.designTokens) private var tokens
+
     var body: some View {
         HStack(spacing: 12) {
             Text(message)
@@ -163,9 +167,9 @@ struct ToastOverlayView: View {
             }
         }
         .padding(.horizontal, 16)
-        .padding(.vertical, 12)
+        .padding(.vertical, CGFloat(tokens.borderRadius.mdLg))
         .background(
-            RoundedRectangle(cornerRadius: 10)
+            RoundedRectangle(cornerRadius: CGFloat(tokens.borderRadius.mdLg))
                 .fill(Color.black.opacity(0.85))
         )
         .accessibilityElement(children: .combine)
@@ -178,15 +182,17 @@ struct ActionButton: View {
     let action: ScreenAction
     let onTap: () -> Void
 
+    @Environment(\.designTokens) private var tokens
+
     var body: some View {
         Button(action: onTap) {
             Text(action.label)
                 .font(isPrimary ? .headline : .subheadline)
                 .frame(maxWidth: isPrimary ? .infinity : nil)
-                .padding(isPrimary ? 16 : 8)
+                .padding(isPrimary ? CGFloat(tokens.spacing.md) : CGFloat(tokens.spacing.sm))
                 .background(background)
                 .foregroundColor(foregroundColor)
-                .cornerRadius(12)
+                .cornerRadius(CGFloat(tokens.borderRadius.mdLg))
         }
         .buttonStyle(.plain)
         .disabled(!action.enabled)

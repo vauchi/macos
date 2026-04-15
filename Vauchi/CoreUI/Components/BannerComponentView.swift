@@ -12,6 +12,8 @@ struct BannerComponentView: View {
     let component: BannerComponent
     let onAction: (UserAction) -> Void
 
+    @Environment(\.designTokens) private var tokens
+
     var body: some View {
         HStack {
             Text(component.text)
@@ -26,9 +28,9 @@ struct BannerComponentView: View {
             .font(.subheadline.weight(.semibold))
             .foregroundColor(.accentColor)
         }
-        .padding(12)
+        .padding(CGFloat(tokens.borderRadius.mdLg))
         .background(Color(nsColor: .controlBackgroundColor))
-        .cornerRadius(8)
+        .cornerRadius(CGFloat(tokens.borderRadius.md))
         .accessibilityElement(children: .combine)
         .accessibilityLabel(component.a11y?.label ?? component.text)
     }
