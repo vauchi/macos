@@ -141,6 +141,24 @@ struct ScreenModel: Decodable {
         case screenId, title, subtitle, components, actions, progress, tokens
     }
 
+    init(
+        screenId: String,
+        title: String,
+        subtitle: String? = nil,
+        components: [Component] = [],
+        actions: [ScreenAction] = [],
+        progress: Progress? = nil,
+        tokens: DesignTokens = .defaults
+    ) {
+        self.screenId = screenId
+        self.title = title
+        self.subtitle = subtitle
+        self.components = components
+        self.actions = actions
+        self.progress = progress
+        self.tokens = tokens
+    }
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         screenId = try container.decode(String.self, forKey: .screenId)
