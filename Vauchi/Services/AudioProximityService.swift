@@ -4,7 +4,7 @@
 
 // AudioProximityService.swift
 // Ultrasonic audio proximity verification for Vauchi macOS
-// Implements PlatformAudioHandler callback interface for vauchi-platform
+// Audio proximity verification (inherent methods, PlatformAudioHandler removed in core 0.19.21)
 //
 // Ported from iOS AudioProximityService with macOS adaptations:
 // - No AVAudioSession (macOS doesn't have it)
@@ -12,11 +12,10 @@
 // - Capability detection via AVAudioEngine node formats
 
 import AVFoundation
-import VauchiPlatform
 
 /// Service for ultrasonic audio proximity verification on macOS.
 /// Uses AVAudioEngine to emit and receive signals at 18-20 kHz.
-class AudioProximityService: PlatformAudioHandler {
+class AudioProximityService {
     // MARK: - Audio Engine
 
     private let audioEngine = AVAudioEngine()
@@ -36,7 +35,7 @@ class AudioProximityService: PlatformAudioHandler {
         stop()
     }
 
-    // MARK: - PlatformAudioHandler Protocol
+    // MARK: - Audio Capability & Signal Methods
 
     /// Check device capability for ultrasonic audio.
     func checkCapability() -> String {
