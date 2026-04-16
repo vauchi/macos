@@ -166,7 +166,7 @@ import UniformTypeIdentifiers
 
             Task {
                 do {
-                    try vauchi.importBackup(backupData: data, password: password)
+                    try vauchi.importFullBackup(backupData: data, password: password)
                     await MainActor.run {
                         viewModel.invalidateAll()
                         dismiss()
