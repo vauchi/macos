@@ -341,6 +341,33 @@ build:debug:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == "main"
 
+build:release:
+  extends: [.macos-job, .spm-cache-readonly, .timeout-extended]
+  stage: build
+  needs: []
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/
+  script:
+    - command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
+    - rm -rf Vauchi.xcodeproj
+    - xcodegen generate
+    - ./scripts/fix-xcframework-symlinks.sh
+    - |
+      xcodebuild archive \
+        -project Vauchi.xcodeproj \
+        -scheme Vauchi \
+        -archivePath build/Vauchi.xcarchive \
+        -destination "generic/platform=macOS" \
+        -clonedSourcePackagesDirPath .spm-packages \
+        -derivedDataPath .derived-data \
+        -disableAutomaticPackageResolution \
+        CODE_SIGN_IDENTITY="${MACOS_CODE_SIGN_IDENTITY:-}" \
+        DEVELOPMENT_TEAM="${MACOS_DEVELOPMENT_TEAM:-}"
+  artifacts:
+    paths:
+      - build/Vauchi.xcarchive
+    expire_in: 1 week
+
 # ============================================================
 # Test Stage
 # ============================================================
@@ -661,8 +688,23 @@ check:removed-symbols:
     SEARCH_DIRS: "Vauchi/"
 
 # ============================================================
-# Deploy Stage — Badge Pages
+# Deploy Stage — DMG Packaging + Badge Pages
 # ============================================================
+
+package:dmg:
+  extends: [.macos-job, .timeout-extended]
+  stage: deploy
+  needs: ["build:release"]
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/
+  script:
+    - VERSION="${CI_COMMIT_TAG#v}"
+    - chmod +x scripts/build-dmg.sh
+    - ./scripts/build-dmg.sh "$VERSION" build/Vauchi.xcarchive
+  artifacts:
+    paths:
+      - "Vauchi-*.dmg"
+    expire_in: 1 week
 
 pages:
   extends: .badges-pages
