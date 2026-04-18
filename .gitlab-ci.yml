@@ -333,6 +333,10 @@ build:debug:
         build
       kill $HEARTBEAT 2>/dev/null || true
     - echo "── [$(date +%H:%M:%S)] build:debug complete ──"
+  artifacts:
+    paths:
+      - Vauchi.xcodeproj/
+    expire_in: 1 hour
   rules:
     # Skip on upstream triggers — update:bindings-version handles the bump,
     # build runs later on the bump MR or main merge.
@@ -377,11 +381,9 @@ test:unit:
   stage: test
   needs:
     - job: build:debug
-      optional: true
+      artifacts: true
   script:
-    - command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
-    - rm -rf Vauchi.xcodeproj
-    - xcodegen generate
+    # Reuse build:debug artifacts (Vauchi.xcodeproj) — skip xcodegen regen.
     # SPM state cached from build:debug — disable automatic resolution to prevent
     # implicit re-resolve that hangs on binary target download (401 auth failure).
     - ./scripts/fix-xcframework-symlinks.sh
@@ -394,6 +396,7 @@ test:unit:
       xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" \
         -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data \
         -disableAutomaticPackageResolution \
+        -parallel-testing-enabled YES -parallel-testing-worker-count 4 \
         -only-testing:VauchiTests -resultBundlePath TestResults test-without-building
       XCODE_EXIT=$?
       set -e
@@ -440,9 +443,13 @@ coverage:unit:
     - !reference [.macos-job, before_script]
     - command -v xcresultparser >/dev/null 2>&1 || brew install a7ex/homebrew-formulae/xcresultparser
   script:
-    - command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
-    - rm -rf Vauchi.xcodeproj
-    - xcodegen generate
+    # Prefer Vauchi.xcodeproj from build:debug artifact; regen only if missing
+    # (e.g. scheduled pipelines where build:debug doesn't run).
+    - |
+      if [ ! -d Vauchi.xcodeproj ]; then
+        command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
+        xcodegen generate
+      fi
     - ./scripts/fix-xcframework-symlinks.sh
     - |
       xcodebuild -project Vauchi.xcodeproj -scheme Vauchi \
@@ -453,6 +460,7 @@ coverage:unit:
         CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO \
         ENABLE_HARDENED_RUNTIME=NO \
         test -enableCodeCoverage YES \
+        -parallel-testing-enabled YES -parallel-testing-worker-count 4 \
         -resultBundlePath coverage_result \
         -only-testing:VauchiTests
     - xcrun xccov view --report coverage_result.xcresult
@@ -483,6 +491,7 @@ test:snapshots:
   stage: test
   needs:
     - job: build:debug
+      artifacts: true
       optional: true
   variables:
     VRT_PLATFORM: macos
@@ -506,9 +515,12 @@ test:snapshots:
         echo "CI is the single source of truth — do not record locally."
         exit 0
       fi
-    - command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
-    - rm -rf Vauchi.xcodeproj
-    - xcodegen generate
+    # Prefer Vauchi.xcodeproj from build:debug artifact; regen only if missing.
+    - |
+      if [ ! -d Vauchi.xcodeproj ]; then
+        command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
+        xcodegen generate
+      fi
     # SPM state cached from build:debug — disable automatic resolution to prevent
     # implicit re-resolve that hangs on binary target download (401 auth failure).
     - ./scripts/fix-xcframework-symlinks.sh
