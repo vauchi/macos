@@ -5,7 +5,6 @@
 // DeviceLinkSheet.swift
 // State-driven sheet UI for the device link initiator flow
 
-import CoreImage.CIFilterBuiltins
 import SwiftUI
 
 #if canImport(VauchiPlatform)
@@ -213,30 +212,42 @@ import SwiftUI
 
         // MARK: - QR Code Generation
 
+        /// Generates a QR code image using the Rust qrcode crate via UniFFI.
         private func generateQRCode(from string: String) -> NSImage? {
-            let context = CIContext()
-            let filter = CIFilter.qrCodeGenerator()
-            filter.message = Data(string.utf8)
-            filter.correctionLevel = "M"
+            guard let qrCode = try? generateQrModules(
+                data: string,
+                errorCorrection: .m
+            ) else { return nil }
 
-            guard let outputImage = filter.outputImage else {
-                return nil
+            let width = Int(qrCode.width)
+            let scale = 10
+            let imageSize = width * scale
+
+            var pixels = [UInt8](repeating: 255, count: imageSize * imageSize)
+            for (index, isDark) in qrCode.modules.enumerated() where isDark {
+                let row = index / width
+                let col = index % width
+                for pixelY in (row * scale) ..< ((row + 1) * scale) {
+                    for pixelX in (col * scale) ..< ((col + 1) * scale) {
+                        pixels[pixelY * imageSize + pixelX] = 0
+                    }
+                }
             }
 
-            let scale = 10.0
-            let scaledImage = outputImage.transformed(
-                by: CGAffineTransform(scaleX: scale, y: scale)
-            )
+            let colorSpace = CGColorSpaceCreateDeviceGray()
+            guard let provider = CGDataProvider(data: Data(pixels) as CFData),
+                  let cgImage = CGImage(
+                      width: imageSize, height: imageSize,
+                      bitsPerComponent: 8, bitsPerPixel: 8,
+                      bytesPerRow: imageSize,
+                      space: colorSpace,
+                      bitmapInfo: CGBitmapInfo(rawValue: 0),
+                      provider: provider,
+                      decode: nil, shouldInterpolate: false,
+                      intent: .defaultIntent
+                  ) else { return nil }
 
-            guard let cgImage = context.createCGImage(
-                scaledImage, from: scaledImage.extent
-            ) else {
-                return nil
-            }
-
-            let size = NSSize(
-                width: cgImage.width, height: cgImage.height
-            )
+            let size = NSSize(width: cgImage.width, height: cgImage.height)
             return NSImage(cgImage: cgImage, size: size)
         }
     }
