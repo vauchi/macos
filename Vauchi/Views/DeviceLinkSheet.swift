@@ -214,41 +214,20 @@ import SwiftUI
 
         /// Generates a QR code image using the Rust qrcode crate via UniFFI.
         private func generateQRCode(from string: String) -> NSImage? {
-            guard let qrCode = try? generateQrModules(
-                data: string,
-                errorCorrection: .m
+            guard let qrBitmap = try? generateQrBitmap(
+                data: string, size: 512, ecc: .medium, dark: 0, light: 255, margin: 4
             ) else { return nil }
-
-            let width = Int(qrCode.width)
-            let scale = 10
-            let imageSize = width * scale
-
-            var pixels = [UInt8](repeating: 255, count: imageSize * imageSize)
-            for (index, isDark) in qrCode.modules.enumerated() where isDark {
-                let row = index / width
-                let col = index % width
-                for pixelY in (row * scale) ..< ((row + 1) * scale) {
-                    for pixelX in (col * scale) ..< ((col + 1) * scale) {
-                        pixels[pixelY * imageSize + pixelX] = 0
-                    }
-                }
-            }
-
+            let imageSize = Int(qrBitmap.size)
             let colorSpace = CGColorSpaceCreateDeviceGray()
-            guard let provider = CGDataProvider(data: Data(pixels) as CFData),
+            guard let provider = CGDataProvider(data: Data(qrBitmap.pixels) as CFData),
                   let cgImage = CGImage(
                       width: imageSize, height: imageSize,
-                      bitsPerComponent: 8, bitsPerPixel: 8,
-                      bytesPerRow: imageSize,
-                      space: colorSpace,
-                      bitmapInfo: CGBitmapInfo(rawValue: 0),
-                      provider: provider,
-                      decode: nil, shouldInterpolate: false,
+                      bitsPerComponent: 8, bitsPerPixel: 8, bytesPerRow: imageSize,
+                      space: colorSpace, bitmapInfo: CGBitmapInfo(rawValue: 0),
+                      provider: provider, decode: nil, shouldInterpolate: false,
                       intent: .defaultIntent
                   ) else { return nil }
-
-            let size = NSSize(width: cgImage.width, height: cgImage.height)
-            return NSImage(cgImage: cgImage, size: size)
+            return NSImage(cgImage: cgImage, size: NSSize(width: cgImage.width, height: cgImage.height))
         }
     }
 #endif
