@@ -163,6 +163,11 @@ import UniformTypeIdentifiers
 
         // MARK: - Animated QR Frame Cycling
 
+        // NOTE: this block is duplicated in vauchi/ios at
+        // `Vauchi/CoreUI/AppViewModel.swift`. Keep the two in sync until the
+        // shared-module decision lands — see `_private/docs/problems/\
+        // 2026-04-19-qr-frame-timer-ios-macos-duplication/`.
+
         /// Start a 10 fps timer that advances animated-QR frames on the ShowQr
         /// screen. Idempotent: calling while already running is a no-op. The
         /// view calls this when `screenId` becomes `exchange_show_qr`.
