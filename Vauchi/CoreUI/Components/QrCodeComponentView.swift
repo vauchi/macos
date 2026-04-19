@@ -7,6 +7,7 @@
 
 import AVFoundation
 import SwiftUI
+import VauchiPlatform
 
 /// Renders a core `Component::QrCode` as a QR code display or camera scanner.
 struct QrCodeComponentView: View {
