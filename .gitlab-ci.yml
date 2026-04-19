@@ -51,7 +51,11 @@ default:
   # Serialize all SPM-using jobs on the shared macOS runner.
   # Multiple concurrent xcodebuild -resolvePackageDependencies deadlock
   # on SPM's global package cache (~/.cache/org.swift.swiftpm/).
-  resource_group: macos-spm
+  # NOTE: If jobs get stuck in waiting_for_resource due to a poisoned
+  # lock (GitLab bug: cancelled jobs don't release resource_group),
+  # bump the suffix (e.g. macos-spm-v3) to mint a fresh lock.
+  # See incident 2026-04-19.
+  resource_group: macos-spm-v2
   variables:
     CI_JOB_KEYCHAIN: ci-spm-${CI_JOB_ID}.keychain-db
   before_script:
