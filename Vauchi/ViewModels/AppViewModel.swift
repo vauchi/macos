@@ -184,7 +184,9 @@ import UniformTypeIdentifiers
                 let frame = try coreJSONDecoder.decode(ScreenModel.self, from: data)
                 currentScreen = frame
             } catch {
-                print("AppViewModel: failed to advance QR frame: \(error)")
+                #if DEBUG
+                    print("AppViewModel: failed to advance QR frame: \(error)")
+                #endif
             }
         }
 
