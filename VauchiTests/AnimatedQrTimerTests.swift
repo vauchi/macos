@@ -27,7 +27,17 @@ import XCTest
         var engine: PlatformAppEngine!
         var viewModel: AppViewModel!
 
+        /// `PlatformAppEngine` init touches SecureStorage which fails in the
+        /// macOS XCTest host (no signed Vauchi app → no Keychain entitlement).
+        /// SmokeTests uses the same skip pattern; see pipeline #2463404370 job
+        /// 13987634725 where these tests crashed in 0.000s before this guard.
+        private var isTestHost: Bool {
+            ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
+        }
+
         override func setUpWithError() throws {
+            try XCTSkipIf(isTestHost, "Requires Keychain — skipped in test host (SmokeTests convention)")
+
             tempDir = FileManager.default.temporaryDirectory
                 .appendingPathComponent(UUID().uuidString)
             try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
@@ -44,10 +54,10 @@ import XCTest
         }
 
         override func tearDownWithError() throws {
-            viewModel.stopQrFrameTimer()
+            viewModel?.stopQrFrameTimer()
             viewModel = nil
             engine = nil
-            try? FileManager.default.removeItem(at: tempDir)
+            if let tempDir { try? FileManager.default.removeItem(at: tempDir) }
         }
 
         /// Scenario: starting the timer twice does not create a second timer.
