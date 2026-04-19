@@ -287,6 +287,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     dismissButton: .default(Text("OK"))
                 )
             }
+            .onChange(of: viewModel.currentScreen?.screenId) { newId in
+                if newId == "exchange_show_qr" {
+                    viewModel.startQrFrameTimer()
+                } else {
+                    viewModel.stopQrFrameTimer()
+                }
+            }
+            .onDisappear {
+                viewModel.stopQrFrameTimer()
+            }
             .sheet(isPresented: $viewModel.showDeviceLinkSheet) {
                 DeviceLinkSheet(viewModel: viewModel)
             }
