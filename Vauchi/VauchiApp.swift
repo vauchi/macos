@@ -288,11 +288,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 )
             }
             .onChange(of: viewModel.currentScreen?.screenId) { newId in
-                if newId == "exchange_show_qr" {
-                    viewModel.startQrFrameTimer()
-                } else {
-                    viewModel.stopQrFrameTimer()
-                }
+                syncQrFrameTimer(for: newId)
+            }
+            .onAppear {
+                syncQrFrameTimer(for: viewModel.currentScreen?.screenId)
             }
             .onDisappear {
                 viewModel.stopQrFrameTimer()
@@ -325,6 +324,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             .sheet(isPresented: $viewModel.showImportContactsSheet) {
                 ImportContactsSheet()
                     .environmentObject(viewModel)
+            }
+        }
+
+        /// Start the animated-QR timer while the ShowQr screen is visible; stop
+        /// it everywhere else. Cheap to call unconditionally — both methods are
+        /// idempotent.
+        private func syncQrFrameTimer(for screenId: String?) {
+            if screenId == "exchange_show_qr" {
+                viewModel.startQrFrameTimer()
+            } else {
+                viewModel.stopQrFrameTimer()
             }
         }
     }
