@@ -6,6 +6,9 @@
 // Renders a FieldList component from core UI (macOS)
 
 import SwiftUI
+#if canImport(VauchiPlatform)
+    import VauchiPlatform
+#endif
 
 /// Renders a core `Component::FieldList` with field rows and visibility controls.
 struct FieldListComponentView: View {
@@ -13,6 +16,7 @@ struct FieldListComponentView: View {
     let onAction: (UserAction) -> Void
 
     @Environment(\.designTokens) private var tokens
+    @ObservedObject private var localizationService = LocalizationService.shared
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -29,7 +33,7 @@ struct FieldListComponentView: View {
                 }
             }
         }
-        .accessibilityLabel(component.a11y?.label ?? "Contact fields")
+        .accessibilityLabel(component.a11y?.label ?? localizationService.t("fields.a11y_contact_fields"))
     }
 
     private var emptyState: some View {
@@ -39,11 +43,11 @@ struct FieldListComponentView: View {
                 .foregroundColor(.secondary)
                 .accessibilityHidden(true)
 
-            Text("No fields added yet")
+            Text(localizationService.t("fields.none_added"))
                 .font(.body)
                 .foregroundColor(.secondary)
 
-            Text("You can add fields later in your card settings")
+            Text(localizationService.t("fields.none_added_hint"))
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
@@ -60,6 +64,7 @@ struct FieldListRow: View {
     let onAction: (UserAction) -> Void
 
     @Environment(\.designTokens) private var tokens
+    @ObservedObject private var localizationService = LocalizationService.shared
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -114,8 +119,8 @@ struct FieldListRow: View {
                     .foregroundColor(isShown ? .cyan : .gray)
             }
             .buttonStyle(.plain)
-            .accessibilityLabel(isShown ? "Visible" : "Hidden")
-            .accessibilityHint("Toggle field visibility")
+            .accessibilityLabel(localizationService.t(isShown ? "fields.visible" : "fields.hidden"))
+            .accessibilityHint(localizationService.t("fields.a11y_toggle_hint"))
         }
     }
 
@@ -147,7 +152,13 @@ struct FieldListRow: View {
                             .cornerRadius(CGFloat(tokens.borderRadius.md))
                     }
                     .buttonStyle(.plain)
-                    .accessibilityLabel("\(group): \(isVisible ? "visible" : "hidden")")
+                    .accessibilityLabel(localizationService.t(
+                        "a11y.field_status",
+                        args: [
+                            "group": group,
+                            "status": localizationService.t(isVisible ? "fields.a11y_visible" : "fields.a11y_hidden"),
+                        ]
+                    ))
                 }
             }
         }

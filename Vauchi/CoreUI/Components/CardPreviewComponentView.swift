@@ -6,6 +6,9 @@
 // Renders a CardPreview component from core UI (macOS)
 
 import SwiftUI
+#if canImport(VauchiPlatform)
+    import VauchiPlatform
+#endif
 
 /// Renders a core `Component::CardPreview` as a styled card with group views.
 struct CardPreviewComponentView: View {
@@ -13,6 +16,7 @@ struct CardPreviewComponentView: View {
     let onAction: (UserAction) -> Void
 
     @Environment(\.designTokens) private var tokens
+    @ObservedObject private var localizationService = LocalizationService.shared
 
     var body: some View {
         VStack(spacing: 16) {
@@ -24,14 +28,20 @@ struct CardPreviewComponentView: View {
             // Card
             cardView
         }
-        .accessibilityLabel(component.a11y?.label ?? "Card preview: \(component.name)")
+        .accessibilityLabel(component.a11y?.label ?? localizationService.t(
+            "card_preview.a11y_card_preview",
+            args: ["name": component.name]
+        ))
     }
 
     private var groupSelector: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
                 // "All" tab
-                groupTab(name: "All", isSelected: component.selectedGroup == nil) {
+                groupTab(
+                    name: localizationService.t("card_preview.all_groups"),
+                    isSelected: component.selectedGroup == nil
+                ) {
                     onAction(.groupViewSelected(groupName: nil))
                 }
 
@@ -60,7 +70,7 @@ struct CardPreviewComponentView: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel(name)
-        .accessibilityValue(isSelected ? "Selected" : "Not selected")
+        .accessibilityValue(localizationService.t(isSelected ? "a11y.selected" : "a11y.not_selected"))
         .accessibilityAddTraits(isSelected ? [.isSelected] : [])
     }
 
@@ -76,7 +86,10 @@ struct CardPreviewComponentView: View {
                 Text(currentDisplayName)
                     .font(.title2)
                     .fontWeight(.semibold)
-                    .accessibilityLabel("Display name: \(currentDisplayName)")
+                    .accessibilityLabel(localizationService.t(
+                        "a11y.display_name",
+                        args: ["name": currentDisplayName]
+                    ))
             }
             .padding(.vertical, 24)
 
@@ -86,7 +99,7 @@ struct CardPreviewComponentView: View {
             VStack(spacing: 0) {
                 let fields = currentFields
                 if fields.isEmpty {
-                    Text("No fields visible")
+                    Text(localizationService.t("card_preview.no_fields_visible"))
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                         .padding()
@@ -154,6 +167,7 @@ struct CardFieldRow: View {
     let field: FieldDisplay
 
     @Environment(\.designTokens) private var tokens
+    @ObservedObject private var localizationService = LocalizationService.shared
 
     var body: some View {
         HStack(spacing: 12) {
@@ -175,7 +189,10 @@ struct CardFieldRow: View {
         .padding(.horizontal, 16)
         .padding(.vertical, CGFloat(tokens.borderRadius.mdLg))
         .accessibilityElement(children: .combine)
-        .accessibilityLabel(field.a11y?.label ?? "\(field.label): \(field.value)")
+        .accessibilityLabel(field.a11y?.label ?? localizationService.t(
+            "a11y.field_value",
+            args: ["label": field.label, "value": field.value]
+        ))
     }
 
     private func iconForFieldType(_ type: String) -> String {

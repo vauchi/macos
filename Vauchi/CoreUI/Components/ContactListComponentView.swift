@@ -6,6 +6,9 @@
 // Renders a ContactList component from core UI (macOS)
 
 import SwiftUI
+#if canImport(VauchiPlatform)
+    import VauchiPlatform
+#endif
 
 /// Renders a core `Component::ContactList` as a searchable list of contacts.
 struct ContactListComponentView: View {
@@ -13,17 +16,18 @@ struct ContactListComponentView: View {
     let onAction: (UserAction) -> Void
 
     @Environment(\.designTokens) private var tokens
+    @ObservedObject private var localizationService = LocalizationService.shared
     @State private var searchQuery: String = ""
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             if component.searchable {
-                TextField("Search", text: $searchQuery)
+                TextField(localizationService.t("action.search"), text: $searchQuery)
                     .textFieldStyle(.roundedBorder)
                     .onChange(of: searchQuery) { newValue in
                         onAction(.searchChanged(componentId: component.id, query: newValue))
                     }
-                    .accessibilityLabel("Search contacts")
+                    .accessibilityLabel(localizationService.t("a11y.search_contacts"))
             }
 
             VStack(spacing: 0) {

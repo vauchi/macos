@@ -6,12 +6,16 @@
 // Renders a TextInput component from core UI (macOS)
 
 import SwiftUI
+#if canImport(VauchiPlatform)
+    import VauchiPlatform
+#endif
 
 /// Renders a core `Component::TextInput` as a styled TextField with validation.
 struct TextInputComponentView: View {
     let component: TextInputComponent
     let onAction: (UserAction) -> Void
 
+    @ObservedObject private var localizationService = LocalizationService.shared
     @State private var localValue: String = ""
 
     var body: some View {
@@ -52,7 +56,10 @@ struct TextInputComponentView: View {
                 Text(error)
                     .font(.caption)
                     .foregroundColor(.red)
-                    .accessibilityLabel("Error: \(error)")
+                    .accessibilityLabel(localizationService.t(
+                        "a11y.error_prefix",
+                        args: ["error": error]
+                    ))
             }
         }
         .onAppear {

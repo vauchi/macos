@@ -9,6 +9,9 @@
 // Uses macOS-native styling (NSColor, larger spacing for desktop).
 
 import SwiftUI
+#if canImport(VauchiPlatform)
+    import VauchiPlatform
+#endif
 
 /// Generic view that renders any core `ScreenModel`.
 ///
@@ -26,6 +29,7 @@ struct ScreenRendererView: View {
     var onQrScanned: ((String) -> Void)?
 
     @Environment(\.designTokens) private var tokens
+    @ObservedObject private var localizationService = LocalizationService.shared
     @State private var toastMessage: String?
     @State private var toastUndoActionId: String?
 
@@ -41,7 +45,13 @@ struct ScreenRendererView: View {
                     .tint(.cyan)
                     .padding(.horizontal)
                     .padding(.top, 8)
-                    .accessibilityLabel("Step \(progress.currentStep) of \(progress.totalSteps)")
+                    .accessibilityLabel(localizationService.t(
+                        "a11y.step_of",
+                        args: [
+                            "current": String(progress.currentStep),
+                            "total": String(progress.totalSteps),
+                        ]
+                    ))
                     .accessibilityValue(progress.label ?? "\(progress.currentStep) of \(progress.totalSteps)")
                 }
 
@@ -148,6 +158,7 @@ struct ToastOverlayView: View {
     let onDismiss: () -> Void
 
     @Environment(\.designTokens) private var tokens
+    @ObservedObject private var localizationService = LocalizationService.shared
 
     var body: some View {
         HStack(spacing: 12) {
@@ -157,7 +168,7 @@ struct ToastOverlayView: View {
                 .lineLimit(2)
 
             if let undoId = undoActionId {
-                Button("Undo") {
+                Button(localizationService.t("action.undo")) {
                     onAction(.undoPressed(actionId: undoId))
                     onDismiss()
                 }
@@ -173,7 +184,10 @@ struct ToastOverlayView: View {
                 .fill(Color.black.opacity(0.85))
         )
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Toast: \(message)")
+        .accessibilityLabel(localizationService.t(
+            "a11y.toast_prefix",
+            args: ["message": message]
+        ))
     }
 }
 

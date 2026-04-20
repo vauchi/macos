@@ -6,6 +6,9 @@
 // Renders a ConfirmationDialog component from core UI (macOS)
 
 import SwiftUI
+#if canImport(VauchiPlatform)
+    import VauchiPlatform
+#endif
 
 /// Renders a core `Component::ConfirmationDialog` as a title, message, and action buttons.
 struct ConfirmationDialogComponentView: View {
@@ -13,6 +16,7 @@ struct ConfirmationDialogComponentView: View {
     let onAction: (UserAction) -> Void
 
     @Environment(\.designTokens) private var tokens
+    @ObservedObject private var localizationService = LocalizationService.shared
 
     var body: some View {
         VStack(spacing: 16) {
@@ -30,7 +34,7 @@ struct ConfirmationDialogComponentView: View {
                 Button {
                     onAction(.actionPressed(actionId: "cancel"))
                 } label: {
-                    Text("Cancel")
+                    Text(localizationService.t("action.cancel"))
                         .font(.body.weight(.medium))
                         .foregroundColor(.primary)
                         .frame(maxWidth: .infinity)
@@ -39,7 +43,7 @@ struct ConfirmationDialogComponentView: View {
                         .cornerRadius(CGFloat(tokens.borderRadius.mdLg))
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel("Cancel")
+                .accessibilityLabel(localizationService.t("action.cancel"))
 
                 Button {
                     onAction(.actionPressed(actionId: "confirm"))

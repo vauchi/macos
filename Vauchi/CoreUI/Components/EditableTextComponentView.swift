@@ -6,11 +6,16 @@
 // Renders an EditableText component from core UI (macOS)
 
 import SwiftUI
+#if canImport(VauchiPlatform)
+    import VauchiPlatform
+#endif
 
 /// Renders a core `Component::EditableText` that toggles between display and edit mode.
 struct EditableTextComponentView: View {
     let component: EditableTextComponent
     let onAction: (UserAction) -> Void
+
+    @ObservedObject private var localizationService = LocalizationService.shared
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -44,7 +49,10 @@ struct EditableTextComponentView: View {
                             .foregroundColor(.accentColor)
                     }
                     .buttonStyle(.plain)
-                    .accessibilityLabel("Edit \(component.label)")
+                    .accessibilityLabel(localizationService.t(
+                        "a11y.edit_field",
+                        args: ["label": component.label]
+                    ))
                 }
             }
         }

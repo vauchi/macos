@@ -16,6 +16,7 @@ struct QrCodeComponentView: View {
     var onQrScanned: ((String) -> Void)?
 
     @Environment(\.designTokens) private var tokens
+    @ObservedObject private var localizationService = LocalizationService.shared
 
     var body: some View {
         VStack(spacing: 16) {
@@ -45,7 +46,7 @@ struct QrCodeComponentView: View {
         .background(Color(nsColor: .controlBackgroundColor))
         .cornerRadius(CGFloat(tokens.borderRadius.mdLg))
         .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
-        .accessibilityLabel(component.a11y?.label ?? component.label ?? "QR code")
+        .accessibilityLabel(component.a11y?.label ?? component.label ?? localizationService.t("qr.a11y_label"))
         .accessibilityHint(component.a11y?.hint ?? "")
     }
 
@@ -57,9 +58,9 @@ struct QrCodeComponentView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(maxWidth: 250, maxHeight: 250)
-                .accessibilityLabel("QR code")
+                .accessibilityLabel(localizationService.t("qr.a11y_label"))
         } else {
-            Text("Failed to generate QR code")
+            Text(localizationService.t("qr.failed_to_generate"))
                 .font(.caption)
                 .foregroundColor(.secondary)
         }
@@ -92,6 +93,7 @@ struct QrScannerView: View {
     let onScanned: (String) -> Void
 
     @Environment(\.designTokens) private var tokens
+    @ObservedObject private var localizationService = LocalizationService.shared
     @State private var showPasteField = false
     @State private var cameraAvailable = true
     @State private var scannedCode: String?
@@ -111,11 +113,11 @@ struct QrScannerView: View {
                         .stroke(Color.cyan.opacity(0.5), lineWidth: 2)
                 )
 
-                Text("Point your camera at the QR code")
+                Text(localizationService.t("qr.point_camera"))
                     .font(.subheadline)
                     .foregroundColor(.secondary)
 
-                Button("Or paste QR data instead") {
+                Button(localizationService.t("qr.paste_instead")) {
                     showPasteField = true
                 }
                 .buttonStyle(.link)
@@ -124,7 +126,7 @@ struct QrScannerView: View {
                 QrPasteField(onSubmit: onScanned)
 
                 if cameraAvailable {
-                    Button("Use camera instead") {
+                    Button(localizationService.t("qr.use_camera_instead")) {
                         showPasteField = false
                         scannedCode = nil
                     }
@@ -147,6 +149,7 @@ struct QrScannerView: View {
 /// Text field for pasting QR code data (fallback when camera unavailable).
 struct QrPasteField: View {
     let onSubmit: (String) -> Void
+    @ObservedObject private var localizationService = LocalizationService.shared
     @State private var pastedText = ""
 
     var body: some View {
@@ -156,17 +159,17 @@ struct QrPasteField: View {
                 .foregroundColor(.cyan)
                 .accessibilityHidden(true)
 
-            TextField("Paste QR data (wb://...)", text: $pastedText)
+            TextField(localizationService.t("qr.paste_placeholder"), text: $pastedText)
                 .textFieldStyle(.roundedBorder)
                 .frame(maxWidth: 300)
                 .onSubmit { submitIfValid() }
 
             HStack(spacing: 12) {
-                Button("Submit") { submitIfValid() }
+                Button(localizationService.t("action.submit")) { submitIfValid() }
                     .buttonStyle(.borderedProminent)
                     .disabled(pastedText.isEmpty)
 
-                Button("Paste from Clipboard") { pasteFromClipboard() }
+                Button(localizationService.t("qr.paste_from_clipboard")) { pasteFromClipboard() }
                     .buttonStyle(.bordered)
             }
         }

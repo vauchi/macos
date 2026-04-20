@@ -6,12 +6,16 @@
 // Renders a PinInput component from core UI (macOS)
 
 import SwiftUI
+#if canImport(VauchiPlatform)
+    import VauchiPlatform
+#endif
 
 /// Renders a core `Component::PinInput` as a PIN entry field.
 struct PinInputComponentView: View {
     let component: PinInputComponent
     let onAction: (UserAction) -> Void
 
+    @ObservedObject private var localizationService = LocalizationService.shared
     @State private var localValue: String = ""
 
     var body: some View {
@@ -46,7 +50,10 @@ struct PinInputComponentView: View {
                 Text(error)
                     .font(.caption)
                     .foregroundColor(.red)
-                    .accessibilityLabel("Error: \(error)")
+                    .accessibilityLabel(localizationService.t(
+                        "a11y.error_prefix",
+                        args: ["error": error]
+                    ))
             }
         }
     }
