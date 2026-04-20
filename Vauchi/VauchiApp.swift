@@ -193,7 +193,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             Task {
                 do {
                     let success = try await BiometricService.shared.authenticate(
-                        reason: "Unlock Vauchi to access your contacts"
+                        reason: LocalizationService.shared.t("lock.auth_reason")
                     )
                     if success {
                         initializeRepository()
@@ -232,7 +232,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 } else if let viewModel = appState.viewModel {
                     AppContentView(viewModel: viewModel)
                 } else {
-                    ProgressView("Initializing...")
+                    ProgressView(LocalizationService.shared.t("app.initializing"))
                 }
             }
         }
@@ -284,7 +284,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 Alert(
                     title: Text(alert.title),
                     message: Text(alert.message),
-                    dismissButton: .default(Text("OK"))
+                    dismissButton: .default(Text(LocalizationService.shared.t("action.ok")))
                 )
             }
             .onChange(of: viewModel.currentScreen?.screenId) { newId in
@@ -351,7 +351,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                         .tag(screen)
                 }
             }
-            .navigationTitle("Vauchi")
+            .navigationTitle(LocalizationService.shared.t("app.name"))
             .onChange(of: sidebarSelection) { newValue in
                 guard let screen = newValue,
                       screen != viewModel.selectedScreen
@@ -367,13 +367,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         private func displayName(for screen: String) -> String {
-            switch screen {
-            case "MyInfo": "My Card"
-            case "Contacts": "Contacts"
-            case "Exchange": "Exchange"
-            case "Groups": "Groups"
-            case "More": "More"
-            case "Onboarding": "Setup"
+            let loc = LocalizationService.shared
+            return switch screen {
+            case "MyInfo": loc.t("nav.myCard")
+            case "Contacts": loc.t("nav.contacts")
+            case "Exchange": loc.t("nav.exchange")
+            case "Groups": loc.t("nav.groups")
+            case "More": loc.t("nav.more")
+            case "Onboarding": loc.t("setup.title")
             default: screen
             }
         }
@@ -402,7 +403,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     .font(.system(size: 48))
                     .foregroundColor(.orange)
 
-                Text("Failed to Start")
+                Text(LocalizationService.shared.t("app.failed_to_start"))
                     .font(.title2.bold())
 
                 Text(message)
@@ -421,7 +422,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 ProgressView()
                     .controlSize(.large)
 
-                Text("Loading...")
+                Text(LocalizationService.shared.t("app.loading"))
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }

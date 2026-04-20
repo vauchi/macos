@@ -6,6 +6,9 @@
 // macOS menu bar integration
 
 import AppKit
+#if canImport(VauchiPlatform)
+    import VauchiPlatform
+#endif
 
 /// Manages the macOS menu bar for the Vauchi app.
 ///
@@ -33,31 +36,41 @@ class MenuBarManager {
     }
 
     private func buildFileMenu() -> NSMenuItem {
-        let menu = NSMenu(title: "File")
+        let menu = NSMenu(title: t("menu.file"))
         exchangeMenuItem = addMenuItem(
-            to: menu, title: "Exchange Contact Card",
+            to: menu, title: t("menu.exchange_card"),
             action: #selector(exchangeAction(_:)), key: "e"
         )
         importContactsMenuItem = addMenuItem(
-            to: menu, title: "Import Contacts...",
+            to: menu, title: t("menu.import_contacts"),
             action: #selector(importContactsAction(_:)), key: "i"
         )
-        let menuItem = NSMenuItem(title: "File", action: nil, keyEquivalent: "")
+        let menuItem = NSMenuItem(title: t("menu.file"), action: nil, keyEquivalent: "")
         menuItem.submenu = menu
         return menuItem
     }
 
     private func buildViewMenu() -> NSMenuItem {
-        let menu = NSMenu(title: "View")
-        myCardMenuItem = addMenuItem(to: menu, title: "My Card", action: #selector(myCardAction(_:)), key: "1")
-        contactsMenuItem = addMenuItem(to: menu, title: "Contacts", action: #selector(contactsAction(_:)), key: "2")
-        groupsMenuItem = addMenuItem(to: menu, title: "Groups", action: #selector(groupsAction(_:)), key: "3")
-        moreMenuItem = addMenuItem(to: menu, title: "More", action: #selector(moreAction(_:)), key: "4")
+        let menu = NSMenu(title: t("menu.view"))
+        myCardMenuItem = addMenuItem(to: menu, title: t("nav.myCard"), action: #selector(myCardAction(_:)), key: "1")
+        contactsMenuItem = addMenuItem(to: menu, title: t("nav.contacts"), action: #selector(contactsAction(_:)), key: "2")
+        groupsMenuItem = addMenuItem(to: menu, title: t("nav.groups"), action: #selector(groupsAction(_:)), key: "3")
+        moreMenuItem = addMenuItem(to: menu, title: t("nav.more"), action: #selector(moreAction(_:)), key: "4")
         menu.addItem(NSMenuItem.separator())
-        settingsMenuItem = addMenuItem(to: menu, title: "Settings...", action: #selector(settingsAction(_:)), key: ",")
-        let menuItem = NSMenuItem(title: "View", action: nil, keyEquivalent: "")
+        settingsMenuItem = addMenuItem(to: menu, title: t("menu.settings_ellipsis"), action: #selector(settingsAction(_:)), key: ",")
+        let menuItem = NSMenuItem(title: t("menu.view"), action: nil, keyEquivalent: "")
         menuItem.submenu = menu
         return menuItem
+    }
+
+    /// Look up a localized string. Falls back to the raw key when the
+    /// VauchiPlatform bindings are not available (unit-test builds).
+    private func t(_ key: String) -> String {
+        #if canImport(VauchiPlatform)
+            return LocalizationService.shared.t(key)
+        #else
+            return key
+        #endif
     }
 
     @discardableResult

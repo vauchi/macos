@@ -6,6 +6,9 @@
 // macOS keyboard shortcut definitions
 
 import SwiftUI
+#if canImport(VauchiPlatform)
+    import VauchiPlatform
+#endif
 
 /// Keyboard shortcut definitions for the Vauchi macOS app.
 ///
@@ -35,31 +38,41 @@ enum VauchiShortcuts {
 
 /// SwiftUI Commands that wire VauchiShortcuts to navigation via NotificationCenter.
 struct VauchiMenuCommands: Commands {
+    /// Localized string lookup with a key-fallback when VauchiPlatform is
+    /// unavailable (unit-test builds without the bindings).
+    private func t(_ key: String) -> String {
+        #if canImport(VauchiPlatform)
+            return LocalizationService.shared.t(key)
+        #else
+            return key
+        #endif
+    }
+
     var body: some Commands {
         CommandGroup(after: .newItem) {
-            Button("Exchange Contact Card") {
+            Button(t("menu.exchange_card")) {
                 NotificationCenter.default.post(name: .vauchiMenuExchange, object: nil)
             }
             .keyboardShortcut(VauchiShortcuts.exchange)
         }
 
         CommandGroup(replacing: .toolbar) {
-            Button("My Card") {
+            Button(t("nav.myCard")) {
                 NotificationCenter.default.post(name: .vauchiMenuMyCard, object: nil)
             }
             .keyboardShortcut(VauchiShortcuts.myCard)
 
-            Button("Contacts") {
+            Button(t("nav.contacts")) {
                 NotificationCenter.default.post(name: .vauchiMenuContacts, object: nil)
             }
             .keyboardShortcut(VauchiShortcuts.contacts)
 
-            Button("Groups") {
+            Button(t("nav.groups")) {
                 NotificationCenter.default.post(name: .vauchiMenuGroups, object: nil)
             }
             .keyboardShortcut(VauchiShortcuts.groups)
 
-            Button("More") {
+            Button(t("nav.more")) {
                 NotificationCenter.default.post(name: .vauchiMenuMore, object: nil)
             }
             .keyboardShortcut(VauchiShortcuts.more)
