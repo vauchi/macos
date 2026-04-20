@@ -20,7 +20,7 @@ import UniformTypeIdentifiers
     private func classifyImportError(_ error: Error) -> String {
         let description = error.localizedDescription
         if description.contains("decrypt") || description.contains("password") {
-            return "Incorrect password"
+            return LocalizationService.shared.t("backup.error_incorrect_password")
         }
         return description
     }
@@ -29,6 +29,7 @@ import UniformTypeIdentifiers
         @EnvironmentObject var viewModel: AppViewModel
         @Environment(\.dismiss) var dismiss
         @Environment(\.designTokens) private var tokens
+        @ObservedObject private var localizationService = LocalizationService.shared
         @State private var showFilePicker = false
         @State private var backupData: String?
         @State private var password = ""
@@ -50,11 +51,11 @@ import UniformTypeIdentifiers
                     .font(.system(size: 48))
                     .foregroundColor(.cyan)
 
-                Text("Import Backup")
+                Text(localizationService.t("backup.import_title"))
                     .font(.title2.bold())
 
                 if hasExistingIdentity {
-                    Text("Warning: Importing a backup will replace your current identity!")
+                    Text(localizationService.t("backup.import_warning_inline"))
                         .foregroundColor(.orange)
                         .font(.caption)
                         .multilineTextAlignment(.center)
@@ -66,12 +67,15 @@ import UniformTypeIdentifiers
                         HStack {
                             Image(systemName: "checkmark.circle.fill")
                                 .foregroundColor(.green)
-                            Text("Backup file loaded")
+                            Text(localizationService.t("backup.file_loaded"))
                         }
 
-                        SecureField("Enter backup password", text: $password)
-                            .textFieldStyle(.roundedBorder)
-                            .padding(.horizontal)
+                        SecureField(
+                            localizationService.t("backup.enter_backup_password"),
+                            text: $password
+                        )
+                        .textFieldStyle(.roundedBorder)
+                        .padding(.horizontal)
 
                         Button {
                             if hasExistingIdentity {
@@ -85,7 +89,7 @@ import UniformTypeIdentifiers
                                     ProgressView()
                                         .controlSize(.small)
                                 } else {
-                                    Text("Restore Identity")
+                                    Text(localizationService.t("backup.restore_identity"))
                                 }
                             }
                             .frame(maxWidth: .infinity)
@@ -97,16 +101,19 @@ import UniformTypeIdentifiers
                         .padding(.horizontal)
                     }
                 } else {
-                    Text("Select a backup file to restore your identity")
+                    Text(localizationService.t("backup.select_file_instruction"))
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
 
                     Button {
                         showFilePicker = true
                     } label: {
-                        Label("Choose File", systemImage: "folder")
-                            .frame(maxWidth: .infinity)
-                            .padding(CGFloat(tokens.spacing.sm))
+                        Label(
+                            localizationService.t("backup.choose_file"),
+                            systemImage: "folder"
+                        )
+                        .frame(maxWidth: .infinity)
+                        .padding(CGFloat(tokens.spacing.sm))
                     }
                     .buttonStyle(.borderedProminent)
                     .tint(.cyan)
@@ -126,7 +133,7 @@ import UniformTypeIdentifiers
             .frame(minWidth: 360, minHeight: 340)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button(localizationService.t("action.cancel")) { dismiss() }
                 }
             }
             .fileImporter(
@@ -136,16 +143,16 @@ import UniformTypeIdentifiers
             ) { result in
                 handleFileSelection(result)
             }
-            .alert("Replace Identity?", isPresented: $showConfirmation) {
-                Button("Cancel", role: .cancel) {}
-                Button("Replace", role: .destructive) {
+            .alert(
+                localizationService.t("backup.replace_confirm"),
+                isPresented: $showConfirmation
+            ) {
+                Button(localizationService.t("action.cancel"), role: .cancel) {}
+                Button(localizationService.t("backup.replace_button"), role: .destructive) {
                     importBackup()
                 }
             } message: {
-                Text(
-                    "This will permanently replace your current identity. "
-                        + "Make sure you have a backup of your current identity first."
-                )
+                Text(localizationService.t("backup.replace_warning"))
             }
         }
 
@@ -156,7 +163,7 @@ import UniformTypeIdentifiers
 
                 do {
                     guard url.startAccessingSecurityScopedResource() else {
-                        errorMessage = "Could not access file"
+                        errorMessage = localizationService.t("backup.error_access_file")
                         return
                     }
                     defer { url.stopAccessingSecurityScopedResource() }
@@ -165,10 +172,16 @@ import UniformTypeIdentifiers
                     backupData = data.trimmingCharacters(in: .whitespacesAndNewlines)
                     errorMessage = nil
                 } catch {
-                    errorMessage = "Could not read file: \(error.localizedDescription)"
+                    errorMessage = localizationService.t(
+                        "backup.error_read_file",
+                        args: ["error": error.localizedDescription]
+                    )
                 }
             case let .failure(error):
-                errorMessage = "File selection failed: \(error.localizedDescription)"
+                errorMessage = localizationService.t(
+                    "backup.error_file_selection",
+                    args: ["error": error.localizedDescription]
+                )
             }
         }
 
