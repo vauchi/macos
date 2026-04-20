@@ -52,12 +52,27 @@ class MenuBarManager {
 
     private func buildViewMenu() -> NSMenuItem {
         let menu = NSMenu(title: t("menu.view"))
-        myCardMenuItem = addMenuItem(to: menu, title: t("nav.myCard"), action: #selector(myCardAction(_:)), key: "1")
-        contactsMenuItem = addMenuItem(to: menu, title: t("nav.contacts"), action: #selector(contactsAction(_:)), key: "2")
-        groupsMenuItem = addMenuItem(to: menu, title: t("nav.groups"), action: #selector(groupsAction(_:)), key: "3")
-        moreMenuItem = addMenuItem(to: menu, title: t("nav.more"), action: #selector(moreAction(_:)), key: "4")
+        myCardMenuItem = addMenuItem(
+            to: menu, title: t("nav.myCard"),
+            action: #selector(myCardAction(_:)), key: "1"
+        )
+        contactsMenuItem = addMenuItem(
+            to: menu, title: t("nav.contacts"),
+            action: #selector(contactsAction(_:)), key: "2"
+        )
+        groupsMenuItem = addMenuItem(
+            to: menu, title: t("nav.groups"),
+            action: #selector(groupsAction(_:)), key: "3"
+        )
+        moreMenuItem = addMenuItem(
+            to: menu, title: t("nav.more"),
+            action: #selector(moreAction(_:)), key: "4"
+        )
         menu.addItem(NSMenuItem.separator())
-        settingsMenuItem = addMenuItem(to: menu, title: t("menu.settings_ellipsis"), action: #selector(settingsAction(_:)), key: ",")
+        settingsMenuItem = addMenuItem(
+            to: menu, title: t("menu.settings_ellipsis"),
+            action: #selector(settingsAction(_:)), key: ","
+        )
         let menuItem = NSMenuItem(title: t("menu.view"), action: nil, keyEquivalent: "")
         menuItem.submenu = menu
         return menuItem

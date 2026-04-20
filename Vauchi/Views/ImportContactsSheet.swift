@@ -102,9 +102,12 @@ import UniformTypeIdentifiers
                     .font(.headline)
 
                 if result.skipped > 0 {
-                    Text(localizationService.t("import_contacts.result_skipped", args: ["count": String(result.skipped)]))
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+                    Text(localizationService.t(
+                        "import_contacts.result_skipped",
+                        args: ["count": String(result.skipped)]
+                    ))
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
                 }
 
                 if !result.warnings.isEmpty {

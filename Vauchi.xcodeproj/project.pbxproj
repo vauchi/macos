@@ -120,6 +120,7 @@
 		9C2069849249523C53C667F3 /* InfoPanelComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74CD83060E72D770CBCEB21 /* InfoPanelComponentView.swift */; };
 		9C356FC3005B310BF322001D /* testAddFieldsStep.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 268841458ED0C3A21E73ECA5 /* testAddFieldsStep.1.png */; };
 		9C9A5E8876CAFA84118E8DBF /* LockScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 644F12D83413B334E234F4AC /* LockScreenView.swift */; };
+		9CA8DD6871E91F814D81FED6 /* LocalizationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FBC9B875F77F7D59BA26DC7 /* LocalizationServiceTests.swift */; };
 		9CF23C4022ADB5366AD67245 /* testActionButtonEnabledAccessibility.1.txt in Resources */ = {isa = PBXBuildFile; fileRef = D618628DDEAEBAD0CE3FB0EC /* testActionButtonEnabledAccessibility.1.txt */; };
 		9F92EEBB337032A28D7F5C8C /* StatusIndicatorComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9075FCC3ED0182090E406725 /* StatusIndicatorComponentView.swift */; };
 		A20441612CDA08A586DADCC0 /* DirectSendService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A701A0C348B6758EED1D949 /* DirectSendService.swift */; };
@@ -262,6 +263,7 @@
 		2B4F37ED41BEFBB54770AB27 /* testEditableTextEditing.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testEditableTextEditing.1.png; sourceTree = "<group>"; };
 		2B524783275A3955F7CBEE76 /* CardPreviewComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardPreviewComponentView.swift; sourceTree = "<group>"; };
 		2BCD1112BEA2A776E27B15C3 /* ScreenRendererView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenRendererView.swift; sourceTree = "<group>"; };
+		2FBC9B875F77F7D59BA26DC7 /* LocalizationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationServiceTests.swift; sourceTree = "<group>"; };
 		32949B7AFAC3435ABA7D93FD /* testInfoPanelWithoutIcon.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testInfoPanelWithoutIcon.1.png; sourceTree = "<group>"; };
 		334AA464FB30E416B9A73537 /* testContactsScreenDark.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testContactsScreenDark.1.png; sourceTree = "<group>"; };
 		33A0048E8A2E34AA58D84E4A /* testToggleListAccessibility.1.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = testToggleListAccessibility.1.txt; sourceTree = "<group>"; };
@@ -513,6 +515,7 @@
 			isa = PBXGroup;
 			children = (
 				9482055F6F50F6E5868FAB7B /* AnimatedQrTimerTests.swift */,
+				2FBC9B875F77F7D59BA26DC7 /* LocalizationServiceTests.swift */,
 				AA16E627E566CF0467CBDC18 /* SmokeTests.swift */,
 				0551E4C6C31A1EF46B1DE22E /* CoreUI */,
 			);
@@ -1070,6 +1073,7 @@
 			files = (
 				5A581EE38D8BE24BC7FA5BBE /* AnimatedQrTimerTests.swift in Sources */,
 				697942891CF20348B250C67D /* ContractTests.swift in Sources */,
+				9CA8DD6871E91F814D81FED6 /* LocalizationServiceTests.swift in Sources */,
 				3AB3684BA26BB47BF80BB933 /* SmokeTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
