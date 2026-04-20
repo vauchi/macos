@@ -148,7 +148,11 @@ struct FieldListRow: View {
                             .font(.caption)
                             .padding(.horizontal, CGFloat(tokens.spacing.sm))
                             .padding(.vertical, 4)
-                            .background(isVisible ? themeService.accent.opacity(0.2) : Color(nsColor: .quaternaryLabelColor))
+                            .background(
+                                isVisible
+                                    ? themeService.accent.opacity(0.2)
+                                    : Color(nsColor: .quaternaryLabelColor)
+                            )
                             .foregroundColor(isVisible ? themeService.accent : .secondary)
                             .cornerRadius(CGFloat(tokens.borderRadius.md))
                     }
