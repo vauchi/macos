@@ -17,6 +17,7 @@ struct VauchiApp: App {
 
     #if canImport(VauchiPlatform)
         @StateObject private var appState = AppState()
+        @StateObject private var themeService = ThemeService.shared
     #endif
 
     var body: some Scene {
@@ -24,6 +25,7 @@ struct VauchiApp: App {
             #if canImport(VauchiPlatform)
                 ContentView()
                     .environmentObject(appState)
+                    .environmentObject(themeService)
                     .onReceive(timer) { _ in
                         appState.pollNotifications()
                     }
@@ -40,6 +42,7 @@ struct VauchiApp: App {
             Settings {
                 SettingsWindowView()
                     .environmentObject(appState)
+                    .environmentObject(themeService)
                     .frame(minWidth: 400, minHeight: 500)
             }
         #endif

@@ -12,13 +12,14 @@ struct StatusIndicatorComponentView: View {
     let component: StatusIndicatorComponent
 
     @Environment(\.designTokens) private var tokens
+    @EnvironmentObject private var themeService: ThemeService
 
     var body: some View {
         HStack(spacing: 12) {
             if let icon = component.icon {
                 Image(systemName: sfSymbolForCoreIcon(icon))
                     .font(.system(size: 24))
-                    .foregroundColor(.cyan)
+                    .foregroundColor(themeService.accent)
                     .accessibilityHidden(true)
             }
 
@@ -53,10 +54,10 @@ struct StatusIndicatorComponentView: View {
     private func statusColor(for status: Status) -> Color {
         switch status {
         case .pending: .gray
-        case .inProgress: .blue
-        case .success: .green
-        case .failed: .red
-        case .warning: .orange
+        case .inProgress: themeService.accent
+        case .success: themeService.success
+        case .failed: themeService.error
+        case .warning: themeService.warning
         }
     }
 

@@ -12,6 +12,7 @@ struct InfoPanelComponentView: View {
     let component: InfoPanelComponent
 
     @Environment(\.designTokens) private var tokens
+    @EnvironmentObject private var themeService: ThemeService
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -20,7 +21,7 @@ struct InfoPanelComponentView: View {
                 if let icon = component.icon {
                     Image(systemName: sfSymbolForCoreIcon(icon))
                         .font(.system(size: 24))
-                        .foregroundColor(.cyan)
+                        .foregroundColor(themeService.accent)
                         .accessibilityHidden(true)
                 }
 
@@ -47,12 +48,14 @@ struct InfoPanelComponentView: View {
 struct InfoItemRow: View {
     let item: InfoItem
 
+    @EnvironmentObject private var themeService: ThemeService
+
     var body: some View {
         HStack(alignment: .top, spacing: 16) {
             if let icon = item.icon {
                 Image(systemName: sfSymbolForCoreIcon(icon))
                     .font(.system(size: 20))
-                    .foregroundColor(.cyan)
+                    .foregroundColor(themeService.accent)
                     .frame(width: 28)
                     .accessibilityHidden(true)
             }

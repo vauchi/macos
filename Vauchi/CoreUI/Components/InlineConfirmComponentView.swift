@@ -13,12 +13,13 @@ struct InlineConfirmComponentView: View {
     let onAction: (UserAction) -> Void
 
     @Environment(\.designTokens) private var tokens
+    @EnvironmentObject private var themeService: ThemeService
 
     var body: some View {
         VStack(spacing: 12) {
             Text(component.warning)
                 .font(.callout)
-                .foregroundColor(component.destructive ? .red : .primary)
+                .foregroundColor(component.destructive ? themeService.error : .primary)
                 .multilineTextAlignment(.center)
 
             HStack(spacing: 12) {
@@ -44,7 +45,7 @@ struct InlineConfirmComponentView: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, CGFloat(tokens.spacing.sm))
-                        .background(component.destructive ? Color.red : Color.cyan)
+                        .background(component.destructive ? themeService.error : themeService.accent)
                         .cornerRadius(CGFloat(tokens.borderRadius.md))
                 }
                 .buttonStyle(.plain)

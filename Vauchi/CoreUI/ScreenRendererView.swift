@@ -159,6 +159,7 @@ struct ToastOverlayView: View {
 
     @Environment(\.designTokens) private var tokens
     @ObservedObject private var localizationService = LocalizationService.shared
+    @EnvironmentObject private var themeService: ThemeService
 
     var body: some View {
         HStack(spacing: 12) {
@@ -173,7 +174,7 @@ struct ToastOverlayView: View {
                     onDismiss()
                 }
                 .font(.subheadline.bold())
-                .foregroundColor(.cyan)
+                .foregroundColor(themeService.accent)
                 .buttonStyle(.plain)
             }
         }

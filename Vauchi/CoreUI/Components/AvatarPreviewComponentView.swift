@@ -14,6 +14,8 @@ struct AvatarPreviewComponentView: View {
     let component: AvatarPreviewComponent
     let onAction: (UserAction) -> Void
 
+    @EnvironmentObject private var themeService: ThemeService
+
     var body: some View {
         let content = avatarContent
             .frame(width: 120, height: 120)
@@ -68,7 +70,7 @@ struct AvatarPreviewComponentView: View {
             )
         }
         return LinearGradient(
-            colors: [.cyan, .blue],
+            colors: [themeService.accent, themeService.accent.opacity(0.6)],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
@@ -78,7 +80,7 @@ struct AvatarPreviewComponentView: View {
         ZStack(alignment: .bottomTrailing) {
             Color.clear
             Circle()
-                .fill(Color.cyan)
+                .fill(themeService.accent)
                 .frame(width: 32, height: 32)
                 .overlay(
                     Image(systemName: "camera.fill")

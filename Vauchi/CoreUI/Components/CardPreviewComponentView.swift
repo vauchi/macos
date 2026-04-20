@@ -17,6 +17,7 @@ struct CardPreviewComponentView: View {
 
     @Environment(\.designTokens) private var tokens
     @ObservedObject private var localizationService = LocalizationService.shared
+    @EnvironmentObject private var themeService: ThemeService
 
     var body: some View {
         VStack(spacing: 16) {
@@ -64,7 +65,7 @@ struct CardPreviewComponentView: View {
                 .font(.subheadline.weight(isSelected ? .semibold : .regular))
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
-                .background(isSelected ? Color.cyan : Color(nsColor: .quaternaryLabelColor))
+                .background(isSelected ? themeService.accent : Color(nsColor: .quaternaryLabelColor))
                 .foregroundColor(isSelected ? .white : .primary)
                 .cornerRadius(CGFloat(tokens.borderRadius.lg))
         }
@@ -127,7 +128,7 @@ struct CardPreviewComponentView: View {
             Circle()
                 .fill(
                     LinearGradient(
-                        colors: [.cyan, .blue],
+                        colors: [themeService.accent, themeService.accent.opacity(0.6)],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     )
@@ -168,11 +169,12 @@ struct CardFieldRow: View {
 
     @Environment(\.designTokens) private var tokens
     @ObservedObject private var localizationService = LocalizationService.shared
+    @EnvironmentObject private var themeService: ThemeService
 
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: iconForFieldType(field.fieldType))
-                .foregroundColor(.cyan)
+                .foregroundColor(themeService.accent)
                 .frame(width: 24)
                 .accessibilityHidden(true)
 

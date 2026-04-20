@@ -65,12 +65,13 @@ struct FieldListRow: View {
 
     @Environment(\.designTokens) private var tokens
     @ObservedObject private var localizationService = LocalizationService.shared
+    @EnvironmentObject private var themeService: ThemeService
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Image(systemName: iconForFieldType(field.fieldType))
-                    .foregroundColor(.cyan)
+                    .foregroundColor(themeService.accent)
                     .frame(width: 24)
                     .accessibilityHidden(true)
 
@@ -116,7 +117,7 @@ struct FieldListRow: View {
                 ))
             } label: {
                 Image(systemName: isShown ? "eye" : "eye.slash")
-                    .foregroundColor(isShown ? .cyan : .gray)
+                    .foregroundColor(isShown ? themeService.accent : .gray)
             }
             .buttonStyle(.plain)
             .accessibilityLabel(localizationService.t(isShown ? "fields.visible" : "fields.hidden"))
@@ -147,8 +148,8 @@ struct FieldListRow: View {
                             .font(.caption)
                             .padding(.horizontal, CGFloat(tokens.spacing.sm))
                             .padding(.vertical, 4)
-                            .background(isVisible ? Color.cyan.opacity(0.2) : Color(nsColor: .quaternaryLabelColor))
-                            .foregroundColor(isVisible ? .cyan : .secondary)
+                            .background(isVisible ? themeService.accent.opacity(0.2) : Color(nsColor: .quaternaryLabelColor))
+                            .foregroundColor(isVisible ? themeService.accent : .secondary)
                             .cornerRadius(CGFloat(tokens.borderRadius.md))
                     }
                     .buttonStyle(.plain)

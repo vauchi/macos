@@ -15,15 +15,25 @@ import SwiftUI
 
 // MARK: - NSHostingController Wrapper
 
+/// Shared ThemeService instance used for all snapshot tests. Reads the same
+/// `ThemeService.shared` the app uses — gives deterministic output once a
+/// baseline theme (Catppuccin Mocha / Latte) is loaded on the first FFI call.
+@MainActor
+private let snapshotThemeService = ThemeService.shared
+
 /// Wraps a SwiftUI view in an NSHostingController for macOS snapshot testing.
 /// swift-snapshot-testing requires NSViewController (not bare SwiftUI views) on macOS.
+/// Injects `ThemeService` as an `@EnvironmentObject` so CoreUI components
+/// that consume it render with the real palette instead of hitting a runtime
+/// "missing environmentObject" crash.
 @MainActor
 private func hostingController(
     for view: some View,
     width: CGFloat,
     height: CGFloat
 ) -> NSViewController {
-    let controller = NSHostingController(rootView: view)
+    let themed = view.environmentObject(snapshotThemeService)
+    let controller = NSHostingController(rootView: themed)
     controller.view.frame = CGRect(x: 0, y: 0, width: width, height: height)
     return controller
 }

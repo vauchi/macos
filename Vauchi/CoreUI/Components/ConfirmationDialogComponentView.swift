@@ -17,6 +17,7 @@ struct ConfirmationDialogComponentView: View {
 
     @Environment(\.designTokens) private var tokens
     @ObservedObject private var localizationService = LocalizationService.shared
+    @EnvironmentObject private var themeService: ThemeService
 
     var body: some View {
         VStack(spacing: 16) {
@@ -53,7 +54,7 @@ struct ConfirmationDialogComponentView: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, CGFloat(tokens.borderRadius.mdLg))
-                        .background(component.destructive ? Color.red : Color.cyan)
+                        .background(component.destructive ? themeService.error : themeService.accent)
                         .cornerRadius(CGFloat(tokens.borderRadius.mdLg))
                 }
                 .buttonStyle(.plain)

@@ -54,6 +54,7 @@ struct ContactItemRow: View {
     let onTap: () -> Void
 
     @Environment(\.designTokens) private var tokens
+    @EnvironmentObject private var themeService: ThemeService
 
     var body: some View {
         Button(action: onTap) {
@@ -63,7 +64,7 @@ struct ContactItemRow: View {
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(.white)
                     .frame(width: 40, height: 40)
-                    .background(Color.cyan)
+                    .background(themeService.accent)
                     .clipShape(Circle())
 
                 VStack(alignment: .leading, spacing: 2) {

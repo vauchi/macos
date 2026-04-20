@@ -94,6 +94,7 @@ struct QrScannerView: View {
 
     @Environment(\.designTokens) private var tokens
     @ObservedObject private var localizationService = LocalizationService.shared
+    @EnvironmentObject private var themeService: ThemeService
     @State private var showPasteField = false
     @State private var cameraAvailable = true
     @State private var scannedCode: String?
@@ -110,7 +111,7 @@ struct QrScannerView: View {
                 .cornerRadius(CGFloat(tokens.borderRadius.md))
                 .overlay(
                     RoundedRectangle(cornerRadius: CGFloat(tokens.borderRadius.md))
-                        .stroke(Color.cyan.opacity(0.5), lineWidth: 2)
+                        .stroke(themeService.accent.opacity(0.5), lineWidth: 2)
                 )
 
                 Text(localizationService.t("qr.point_camera"))
@@ -150,13 +151,14 @@ struct QrScannerView: View {
 struct QrPasteField: View {
     let onSubmit: (String) -> Void
     @ObservedObject private var localizationService = LocalizationService.shared
+    @EnvironmentObject private var themeService: ThemeService
     @State private var pastedText = ""
 
     var body: some View {
         VStack(spacing: 8) {
             Image(systemName: "qrcode.viewfinder")
                 .font(.system(size: 48))
-                .foregroundColor(.cyan)
+                .foregroundColor(themeService.accent)
                 .accessibilityHidden(true)
 
             TextField(localizationService.t("qr.paste_placeholder"), text: $pastedText)

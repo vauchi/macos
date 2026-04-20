@@ -16,6 +16,7 @@ struct EditableTextComponentView: View {
     let onAction: (UserAction) -> Void
 
     @ObservedObject private var localizationService = LocalizationService.shared
+    @EnvironmentObject private var themeService: ThemeService
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -33,7 +34,7 @@ struct EditableTextComponentView: View {
                 if let error = component.validationError {
                     Text(error)
                         .font(.caption)
-                        .foregroundColor(.red)
+                        .foregroundColor(themeService.error)
                 }
             } else {
                 HStack {
@@ -46,7 +47,7 @@ struct EditableTextComponentView: View {
                         onAction(.actionPressed(actionId: "\(component.id):edit"))
                     } label: {
                         Image(systemName: "pencil")
-                            .foregroundColor(.accentColor)
+                            .foregroundColor(themeService.accent)
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel(localizationService.t(

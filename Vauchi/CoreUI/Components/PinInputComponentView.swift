@@ -16,6 +16,7 @@ struct PinInputComponentView: View {
     let onAction: (UserAction) -> Void
 
     @ObservedObject private var localizationService = LocalizationService.shared
+    @EnvironmentObject private var themeService: ThemeService
     @State private var localValue: String = ""
 
     var body: some View {
@@ -49,7 +50,7 @@ struct PinInputComponentView: View {
             if let error = component.validationError {
                 Text(error)
                     .font(.caption)
-                    .foregroundColor(.red)
+                    .foregroundColor(themeService.error)
                     .accessibilityLabel(localizationService.t(
                         "a11y.error_prefix",
                         args: ["error": error]

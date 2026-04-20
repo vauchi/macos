@@ -47,6 +47,7 @@ struct SettingsItemRow: View {
     let onAction: (UserAction) -> Void
 
     @Environment(\.designTokens) private var tokens
+    @EnvironmentObject private var themeService: ThemeService
 
     var body: some View {
         switch item.kind {
@@ -149,7 +150,7 @@ struct SettingsItemRow: View {
             HStack {
                 Text(label)
                     .font(.body)
-                    .foregroundColor(.red)
+                    .foregroundColor(themeService.error)
 
                 Spacer()
             }

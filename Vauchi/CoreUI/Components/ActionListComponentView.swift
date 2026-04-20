@@ -38,6 +38,7 @@ struct ActionListItemRow: View {
     let onTap: () -> Void
 
     @Environment(\.designTokens) private var tokens
+    @EnvironmentObject private var themeService: ThemeService
 
     var body: some View {
         Button(action: onTap) {
@@ -45,7 +46,7 @@ struct ActionListItemRow: View {
                 if let icon = item.icon {
                     Image(systemName: sfSymbolForCoreIcon(icon))
                         .font(.system(size: 20))
-                        .foregroundColor(.cyan)
+                        .foregroundColor(themeService.accent)
                         .frame(width: 28)
                         .accessibilityHidden(true)
                 }
