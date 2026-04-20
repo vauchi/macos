@@ -15,6 +15,7 @@ import UniformTypeIdentifiers
         @EnvironmentObject var viewModel: AppViewModel
         @Environment(\.dismiss) var dismiss
         @Environment(\.designTokens) private var tokens
+        @ObservedObject private var localizationService = LocalizationService.shared
         @State private var showFilePicker = false
         @State private var isImporting = false
         @State private var importResult: ContactImportResult?
@@ -27,13 +28,13 @@ import UniformTypeIdentifiers
                     .foregroundColor(.cyan)
                     .accessibilityHidden(true)
 
-                Text("Import Contacts")
+                Text(localizationService.t("import_contacts.title"))
                     .font(.title2.bold())
 
                 if let result = importResult {
                     resultView(result)
                 } else if isImporting {
-                    ProgressView("Importing...")
+                    ProgressView(localizationService.t("import_contacts.importing"))
                 } else {
                     promptView
                 }
@@ -44,7 +45,7 @@ import UniformTypeIdentifiers
             .frame(minWidth: 360, minHeight: 300)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button(localizationService.t("action.cancel")) { dismiss() }
                 }
             }
             .fileImporter(
@@ -64,14 +65,14 @@ import UniformTypeIdentifiers
 
         private var promptView: some View {
             VStack(spacing: 16) {
-                Text("Import contacts from a vCard (.vcf) file.")
+                Text(localizationService.t("import_contacts.description"))
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
 
                 Button {
                     showFilePicker = true
                 } label: {
-                    Label("Choose File", systemImage: "doc.badge.plus")
+                    Label(localizationService.t("import_contacts.choose_file"), systemImage: "doc.badge.plus")
                         .frame(maxWidth: .infinity)
                         .padding(CGFloat(tokens.spacing.sm))
                 }
@@ -97,11 +98,11 @@ import UniformTypeIdentifiers
                     .foregroundColor(result.imported > 0 ? .green : .orange)
                     .accessibilityHidden(true)
 
-                Text("\(result.imported) contact(s) imported")
+                Text(localizationService.t("import_contacts.result_imported", args: ["count": String(result.imported)]))
                     .font(.headline)
 
                 if result.skipped > 0 {
-                    Text("\(result.skipped) skipped (duplicates or invalid)")
+                    Text(localizationService.t("import_contacts.result_skipped", args: ["count": String(result.skipped)]))
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
@@ -114,9 +115,12 @@ import UniformTypeIdentifiers
                                 .foregroundColor(.secondary)
                         }
                         if result.warnings.count > 5 {
-                            Text("... and \(result.warnings.count - 5) more")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
+                            Text(localizationService.t(
+                                "import_contacts.result_more",
+                                args: ["count": String(result.warnings.count - 5)]
+                            ))
+                            .font(.caption)
+                            .foregroundColor(.secondary)
                         }
                     }
                     .padding(.horizontal)
@@ -127,11 +131,11 @@ import UniformTypeIdentifiers
                         importResult = nil
                         errorMessage = nil
                     } label: {
-                        Label("Import More", systemImage: "doc.badge.plus")
+                        Label(localizationService.t("import_contacts.import_more"), systemImage: "doc.badge.plus")
                     }
                     .buttonStyle(.bordered)
 
-                    Button("Done") { dismiss() }
+                    Button(localizationService.t("action.done")) { dismiss() }
                         .buttonStyle(.borderedProminent)
                         .tint(.cyan)
                 }
@@ -146,7 +150,7 @@ import UniformTypeIdentifiers
                 guard let url = urls.first else { return }
 
                 guard url.startAccessingSecurityScopedResource() else {
-                    errorMessage = "Could not access file"
+                    errorMessage = localizationService.t("import_contacts.error_access_file")
                     return
                 }
                 defer { url.stopAccessingSecurityScopedResource() }
@@ -155,11 +159,17 @@ import UniformTypeIdentifiers
                     let data = try Data(contentsOf: url)
                     importVcf(data)
                 } catch {
-                    errorMessage = "Could not read file: \(error.localizedDescription)"
+                    errorMessage = localizationService.t(
+                        "import_contacts.error_read_file",
+                        args: ["error": error.localizedDescription]
+                    )
                 }
 
             case let .failure(error):
-                errorMessage = "File selection failed: \(error.localizedDescription)"
+                errorMessage = localizationService.t(
+                    "import_contacts.error_file_selection",
+                    args: ["error": error.localizedDescription]
+                )
             }
         }
 
@@ -190,7 +200,10 @@ import UniformTypeIdentifiers
                     }
                 } catch {
                     await MainActor.run {
-                        errorMessage = "Import failed: \(error.localizedDescription)"
+                        errorMessage = localizationService.t(
+                            "import_contacts.error_import_failed",
+                            args: ["error": error.localizedDescription]
+                        )
                         isImporting = false
                     }
                 }

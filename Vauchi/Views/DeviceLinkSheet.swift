@@ -13,6 +13,7 @@ import SwiftUI
     /// Sheet that drives the device link flow based on `AppViewModel.deviceLinkState`.
     struct DeviceLinkSheet: View {
         @ObservedObject var viewModel: AppViewModel
+        @ObservedObject private var localizationService = LocalizationService.shared
 
         @Environment(\.designTokens) private var tokens
 
@@ -32,10 +33,10 @@ import SwiftUI
 
         private func sheetHeader() -> some View {
             VStack(spacing: 8) {
-                Text("Link a Device")
+                Text(localizationService.t("device_link.title"))
                     .font(.title2.bold())
 
-                Text("Scan this QR code from the new device")
+                Text(localizationService.t("device_link.scan_instruction"))
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
@@ -48,13 +49,13 @@ import SwiftUI
         private func stateContent() -> some View {
             switch viewModel.deviceLinkState {
             case .idle, .generatingQR:
-                progressMessage("Generating QR code...")
+                progressMessage(localizationService.t("device_link.generating_qr"))
             case let .waitingForRequest(qrData):
                 waitingForRequestView(qrData: qrData)
             case let .confirmingDevice(name, code, _):
                 confirmingDeviceView(name: name, code: code)
             case .completing:
-                progressMessage("Completing device link...")
+                progressMessage(localizationService.t("device_link.completing"))
             case .success:
                 successView()
             case let .failed(message):
@@ -82,16 +83,16 @@ import SwiftUI
                         .resizable()
                         .scaledToFit()
                         .frame(maxWidth: 250, maxHeight: 250)
-                        .accessibilityLabel("Device link QR code")
+                        .accessibilityLabel(localizationService.t("device_link.a11y_qr"))
                 } else {
-                    Text("Failed to generate QR code")
+                    Text(localizationService.t("device_link.failed_qr"))
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
                 HStack(spacing: 8) {
                     ProgressView()
                         .controlSize(.small)
-                    Text("Waiting for other device...")
+                    Text(localizationService.t("device_link.waiting_other"))
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
@@ -103,7 +104,7 @@ import SwiftUI
                 Image(systemName: "checkmark.circle.fill")
                     .font(.system(size: 48))
                     .foregroundColor(.green)
-                Text("Device linked successfully!")
+                Text(localizationService.t("device_link.success"))
                     .font(.headline)
             }
         }
@@ -113,7 +114,7 @@ import SwiftUI
                 Image(systemName: "xmark.circle.fill")
                     .font(.system(size: 48))
                     .foregroundColor(.red)
-                Text("Device Link Failed")
+                Text(localizationService.t("device_link.failed_title"))
                     .font(.headline)
                 Text(message)
                     .font(.caption)
@@ -133,18 +134,18 @@ import SwiftUI
                     .font(.system(size: 36))
                     .foregroundColor(.cyan)
 
-                Text("New device wants to link")
+                Text(localizationService.t("device_link.request_title"))
                     .font(.headline)
 
                 VStack(spacing: 8) {
                     HStack {
-                        Text("Device:")
+                        Text(localizationService.t("device_link.device_label"))
                             .foregroundColor(.secondary)
                         Text(name)
                             .fontWeight(.medium)
                     }
                     HStack {
-                        Text("Code:")
+                        Text(localizationService.t("device_link.code_label"))
                             .foregroundColor(.secondary)
                         Text(code)
                             .font(.system(.title3, design: .monospaced))
@@ -157,11 +158,9 @@ import SwiftUI
                 )
                 .cornerRadius(CGFloat(tokens.borderRadius.md))
 
-                Text(
-                    "Verify the code matches on both devices"
-                )
-                .font(.caption)
-                .foregroundColor(.secondary)
+                Text(localizationService.t("device_link.verify_code_hint"))
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             }
         }
 
@@ -171,38 +170,38 @@ import SwiftUI
         private func sheetActions() -> some View {
             switch viewModel.deviceLinkState {
             case .idle, .generatingQR, .waitingForRequest, .completing:
-                Button("Cancel") {
+                Button(localizationService.t("action.cancel")) {
                     viewModel.cancelDeviceLink()
                 }
                 .buttonStyle(.bordered)
 
             case .confirmingDevice:
                 HStack(spacing: 16) {
-                    Button("Reject") {
+                    Button(localizationService.t("device_link.reject")) {
                         viewModel.cancelDeviceLink()
                     }
                     .buttonStyle(.bordered)
 
-                    Button("Approve") {
+                    Button(localizationService.t("device_link.approve")) {
                         viewModel.approveDeviceLink()
                     }
                     .buttonStyle(.borderedProminent)
                 }
 
             case .success:
-                Button("Done") {
+                Button(localizationService.t("action.done")) {
                     viewModel.cancelDeviceLink()
                 }
                 .buttonStyle(.borderedProminent)
 
             case .failed:
                 HStack(spacing: 16) {
-                    Button("Close") {
+                    Button(localizationService.t("action.close")) {
                         viewModel.cancelDeviceLink()
                     }
                     .buttonStyle(.bordered)
 
-                    Button("Retry") {
+                    Button(localizationService.t("action.retry")) {
                         viewModel.startDeviceLink()
                     }
                     .buttonStyle(.borderedProminent)

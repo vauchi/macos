@@ -17,6 +17,7 @@ import SwiftUI
     /// main window's view state.
     struct SettingsWindowView: View {
         @EnvironmentObject var appState: AppState
+        @ObservedObject private var localizationService = LocalizationService.shared
         @State private var settingsScreen: ScreenModel?
         @State private var error: String?
 
@@ -25,11 +26,11 @@ import SwiftUI
                 if let screen = settingsScreen {
                     ScreenRendererView(screen: screen, onAction: handleAction)
                 } else if let error {
-                    Text("Failed to load settings: \(error)")
+                    Text(localizationService.t("settings.failed_to_load", args: ["error": error]))
                         .foregroundColor(.secondary)
                         .padding()
                 } else {
-                    ProgressView("Loading settings...")
+                    ProgressView(localizationService.t("settings.loading"))
                         .padding()
                 }
             }
