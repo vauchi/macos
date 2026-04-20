@@ -212,7 +212,19 @@ struct ActionButton: View {
         .buttonStyle(.plain)
         .disabled(!action.enabled)
         .opacity(action.enabled ? 1.0 : 0.6)
-        .accessibilityLabel(action.label)
+        // `accessibilityIdentifier` is the stable handle for
+        // XCUITest / Maestro / any a11y-driven test driver — the
+        // SwiftUI counterpart of GTK widget name / Qt objectName /
+        // Compose testTag. Not visible to the user; immune to
+        // localization. Plan Task 3.1 /
+        // _private/docs/problems/2026-04-20-screen-action-a11y-identifier-gap.
+        .accessibilityIdentifier(action.id)
+        // Core-provided a11y override: `a11y.label` replaces the
+        // visible-text-derived screen-reader announcement;
+        // `a11y.hint` surfaces as the VoiceOver hint string.
+        // Absent → fall back to `action.label`.
+        .accessibilityLabel(action.a11y?.label ?? action.label)
+        .accessibilityHint(action.a11y?.hint ?? "")
     }
 
     private var isPrimary: Bool {

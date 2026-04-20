@@ -186,6 +186,12 @@ struct ScreenAction: Decodable, Identifiable {
     let label: String
     let style: ActionStyle
     let enabled: Bool
+    /// Optional accessibility override. When `nil`, SwiftUI falls
+    /// back to deriving the screen-reader announcement from
+    /// `label`. When `Some`, `a11y.label` replaces it and
+    /// `a11y.hint` surfaces as the VoiceOver hint.
+    /// See `_private/docs/problems/2026-04-20-screen-action-a11y-identifier-gap`.
+    let a11y: A11y?
 }
 
 /// Visual style for a screen action.
