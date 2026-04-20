@@ -173,10 +173,17 @@ import UniformTypeIdentifiers
                 do {
                     let result = try vauchi.importContactsFromVcf(data: data)
                     await MainActor.run {
+                        // 0.20.2: result.warnings is now [MobileImportWarning] —
+                        // a struct of (key, args, legacyText). Map to the English
+                        // legacyText here (this branch only bumps the binding —
+                        // the localization routing lives in feature/macos-
+                        // localization-adoption and will replace legacyText with
+                        // LocalizationService.t(warning.key, args: warning.args)
+                        // once that MR lands).
                         importResult = ContactImportResult(
                             imported: Int(result.imported),
                             skipped: Int(result.skipped),
-                            warnings: result.warnings
+                            warnings: result.warnings.map { $0.legacyText }
                         )
                         isImporting = false
                         viewModel.invalidateAll()
