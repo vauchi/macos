@@ -192,6 +192,21 @@ struct ScreenAction: Decodable, Identifiable {
     /// `a11y.hint` surfaces as the VoiceOver hint.
     /// See `_private/docs/problems/2026-04-20-screen-action-a11y-identifier-gap`.
     let a11y: A11y?
+
+    /// Explicit memberwise init. A plain `let a11y: A11y? = nil`
+    /// default would satisfy existing test literals but blocks
+    /// `Decodable` synthesis from overwriting the field with the
+    /// JSON value. The explicit init keeps both paths working:
+    /// - struct-literal callers omit `a11y:` (defaults to `nil`),
+    /// - JSON decoding uses the synthesized `init(from:)` which
+    ///   calls `decodeIfPresent` for the `A11y?` field.
+    init(id: String, label: String, style: ActionStyle, enabled: Bool, a11y: A11y? = nil) {
+        self.id = id
+        self.label = label
+        self.style = style
+        self.enabled = enabled
+        self.a11y = a11y
+    }
 }
 
 /// Visual style for a screen action.
