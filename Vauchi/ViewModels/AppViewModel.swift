@@ -303,6 +303,11 @@ import UniformTypeIdentifiers
             case let .exchangeCommands(commands):
                 dispatchExchangeCommands(commands)
                 loadScreen()
+            case .showFormDialog, .previewAs:
+                // Form dialog + preview-as are iOS/mobile flows.
+                // Desktop (macOS) has no UI for them yet; ignore to stay
+                // forward-compatible with cross-platform ActionResult.
+                break
             case .unknown:
                 // Unknown action result from newer core — ignore
                 break
