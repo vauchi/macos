@@ -6,6 +6,7 @@
 // macOS native desktop app entry point
 
 import Combine
+import CoreUIModels
 import SwiftUI
 import UserNotifications
 

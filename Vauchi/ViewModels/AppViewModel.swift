@@ -5,6 +5,7 @@
 // AppViewModel.swift
 // Wraps PlatformAppEngine to drive ScreenRendererView for all screens
 
+import CoreUIModels
 import Foundation
 import SwiftUI
 import UniformTypeIdentifiers

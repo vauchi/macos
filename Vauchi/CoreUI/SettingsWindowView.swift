@@ -5,6 +5,7 @@
 // SettingsWindowView.swift
 // Renders the core Settings screen in the macOS Settings window (Cmd+,)
 
+import CoreUIModels
 import SwiftUI
 
 #if canImport(VauchiPlatform)

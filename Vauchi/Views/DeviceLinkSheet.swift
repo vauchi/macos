@@ -5,6 +5,7 @@
 // DeviceLinkSheet.swift
 // State-driven sheet UI for the device link initiator flow
 
+import CoreUIModels
 import SwiftUI
 
 #if canImport(VauchiPlatform)

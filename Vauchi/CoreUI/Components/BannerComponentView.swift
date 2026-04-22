@@ -5,6 +5,7 @@
 // BannerComponentView.swift
 // Renders a Banner component from core UI (macOS)
 
+import CoreUIModels
 import SwiftUI
 
 /// Renders a core `Component::Banner` as an informational banner with an action button.

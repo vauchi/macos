@@ -5,6 +5,7 @@
 // ImportContactsSheet.swift
 // File picker for importing contacts from vCard (.vcf) files
 
+import CoreUIModels
 import SwiftUI
 import UniformTypeIdentifiers
 

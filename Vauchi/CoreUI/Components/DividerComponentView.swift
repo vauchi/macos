@@ -5,6 +5,7 @@
 // DividerComponentView.swift
 // Renders a Divider component from core UI (macOS)
 
+import CoreUIModels
 import SwiftUI
 
 /// Renders a core `Component::Divider` as a styled horizontal divider.

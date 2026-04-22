@@ -5,6 +5,7 @@
 // EditableTextComponentView.swift
 // Renders an EditableText component from core UI (macOS)
 
+import CoreUIModels
 import SwiftUI
 #if canImport(VauchiPlatform)
     import VauchiPlatform

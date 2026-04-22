@@ -6,6 +6,7 @@
 // Renders a QrCode component from core UI (macOS)
 
 import AVFoundation
+import CoreUIModels
 import SwiftUI
 import VauchiPlatform
 

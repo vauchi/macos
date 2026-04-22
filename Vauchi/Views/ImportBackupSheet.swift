@@ -5,6 +5,7 @@
 // ImportBackupSheet.swift
 // File picker and password entry for restoring an encrypted backup
 
+import CoreUIModels
 import SwiftUI
 import UniformTypeIdentifiers
 

@@ -5,6 +5,7 @@
 // AvatarPreviewComponentView.swift
 // Renders an AvatarPreview component from core UI (macOS)
 
+import CoreUIModels
 import SwiftUI
 
 /// Renders a core `Component::AvatarPreview` as a circular avatar with

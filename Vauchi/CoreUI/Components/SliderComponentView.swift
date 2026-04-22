@@ -5,6 +5,7 @@
 // SliderComponentView.swift
 // Renders a Slider component from core UI (macOS)
 
+import CoreUIModels
 import SwiftUI
 
 /// Renders a core `Component::Slider` as a labelled SwiftUI Slider.

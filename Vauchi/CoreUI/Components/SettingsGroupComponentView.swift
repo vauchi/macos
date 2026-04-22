@@ -5,6 +5,7 @@
 // SettingsGroupComponentView.swift
 // Renders a SettingsGroup component from core UI (macOS)
 
+import CoreUIModels
 import SwiftUI
 
 /// Renders a core `Component::SettingsGroup` as a grouped list of settings items.

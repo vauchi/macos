@@ -5,6 +5,7 @@
 // StatusIndicatorComponentView.swift
 // Renders a StatusIndicator component from core UI (macOS)
 
+import CoreUIModels
 import SwiftUI
 
 /// Renders a core `Component::StatusIndicator` as a read-only status display.

@@ -8,6 +8,7 @@
 // macOS adaptation of ios/Vauchi/CoreUI/ScreenRendererView.swift.
 // Uses macOS-native styling (NSColor, larger spacing for desktop).
 
+import CoreUIModels
 import SwiftUI
 #if canImport(VauchiPlatform)
     import VauchiPlatform
