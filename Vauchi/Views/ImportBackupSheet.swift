@@ -12,18 +12,21 @@ import UniformTypeIdentifiers
 #if canImport(VauchiPlatform)
     import VauchiPlatform
 
-    /// Classify a backup-import failure.
-    ///
-    /// TODO(ADR-044): Once the UniFFI bindings ship the new `MobileError`
-    /// variants (`wrongPassword`, `decryptFailed`, `invalidInput`, `other`,
-    /// etc.), replace this substring match with a `switch` on the variant.
-    /// See `_private/docs/decisions/2026-04-20-adr-044-mobile-error-typing.md`.
+    /// Classify a backup-import failure by matching ADR-044 `MobileError`
+    /// variants. `WrongPassword` and `DecryptFailed` both surface as
+    /// "Incorrect password" — the user-facing distinction between them
+    /// (wrong key vs. corrupt blob) can be split later if a dedicated
+    /// UX appears. Unknown variants fall through to the raw description.
     private func classifyImportError(_ error: Error) -> String {
-        let description = error.localizedDescription
-        if description.contains("decrypt") || description.contains("password") {
-            return LocalizationService.shared.t("backup.error_incorrect_password")
+        if let mobileError = error as? MobileError {
+            switch mobileError {
+            case .WrongPassword, .DecryptFailed:
+                return LocalizationService.shared.t("backup.error_incorrect_password")
+            default:
+                break
+            }
         }
-        return description
+        return error.localizedDescription
     }
 
     struct ImportBackupSheet: View {
