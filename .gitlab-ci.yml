@@ -223,8 +223,18 @@ lint:swiftlint:
   tags:
     - macos
     - self-hosted
+  # Skip when no Swift source / config changed — swiftlint only inspects
+  # .swift files, so a docs/CI-only MR shouldn't take a nell macOS slot.
+  # Mirrors ios/.gitlab-ci.yml's lint:swiftlint filter. Part of T3.1 nell
+  # capacity work under 2026-04-22-ci-pipeline-health-audit.
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        compare_to: refs/heads/main
+        paths:
+          - "**/*.swift"
+          - ".swiftlint.yml"
+          - ".gitlab-ci.yml"
 
 check:snapshot-recording:
   stage: lint
