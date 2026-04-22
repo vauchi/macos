@@ -20,6 +20,7 @@ let package = Package(
             name: "Vauchi",
             dependencies: [
                 .product(name: "VauchiPlatform", package: "vauchi-platform-swift"),
+                .product(name: "CoreUIModels", package: "vauchi-platform-swift"),
             ],
             path: "Vauchi"
         ),

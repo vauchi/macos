@@ -74,6 +74,14 @@ struct ComponentView: View {
         case let .banner(bannerComponent):
             BannerComponentView(component: bannerComponent, onAction: onAction)
 
+        case .dropdown:
+            // `Component.dropdown` is defined in CoreUIModels but no
+            // production engine emits it on a macOS-reachable screen
+            // today. Render empty so the switch stays exhaustive; port
+            // `ios/Vauchi/CoreUI/Components/DropdownView.swift` once a
+            // screen starts using it.
+            EmptyView()
+
         case let .avatarPreview(avatarComponent):
             AvatarPreviewComponentView(component: avatarComponent, onAction: onAction)
 
