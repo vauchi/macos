@@ -288,7 +288,12 @@ build:debug:
         V=$(sed -n '/vauchi-platform-swift/{n;s/.*"\([^"]*\)".*/\1/p;}' project.yml)
         if [ -n "$V" ]; then
           ZIP="/tmp/VauchiPlatformFFI-${CI_JOB_ID}-${V}.xcframework.zip"
-          curl -fsSL --max-time 60 --header "JOB-TOKEN: ${CI_JOB_TOKEN}" \
+          # --retry covers transient 5xx / auth-retry (GitLab registry
+          # occasionally returns 401 on the first request until the
+          # JOB-TOKEN is indexed). --retry-connrefused because the
+          # kernel may drop the first SYN during heavy runner load.
+          curl -fsSL --max-time 60 --retry 3 --retry-max-time 120 --retry-connrefused \
+            --header "JOB-TOKEN: ${CI_JOB_TOKEN}" \
             "https://gitlab.com/api/v4/projects/vauchi%2Fcore/packages/generic/vauchi-platform/${V}/VauchiPlatformFFI.xcframework.zip" \
             -o "$ZIP"
           echo "  Downloaded $(du -h "$ZIP" | cut -f1)"
