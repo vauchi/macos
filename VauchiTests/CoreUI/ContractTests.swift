@@ -5,6 +5,7 @@
 // Contract tests: verify macOS decoders stay compatible with core's golden fixtures.
 // No test references core action IDs — assertions are structural only.
 
+import CoreUIModels
 @testable import Vauchi
 import XCTest
 

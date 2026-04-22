@@ -5,6 +5,7 @@
 // SmokeTests.swift
 // Basic smoke tests for the macOS app
 
+import CoreUIModels
 @testable import Vauchi
 import XCTest
 

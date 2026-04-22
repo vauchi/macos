@@ -10,6 +10,7 @@
 // Uses ScreenRendererView + ScreenModel instead of per-view snapshots,
 // since macOS app renders all screens through core's UI contract.
 
+import CoreUIModels
 import SnapshotTesting
 import SwiftUI
 @testable import Vauchi
@@ -91,7 +92,7 @@ final class ScreenSnapshotTests: XCTestCase {
                 ScreenAction(id: "continue", label: "Continue", style: .primary, enabled: false),
                 ScreenAction(id: "back", label: "Back", style: .secondary, enabled: true),
             ],
-            progress: Vauchi.Progress(currentStep: 1, totalSteps: 4, label: "Step 1 of 4")
+            progress: CoreUIModels.Progress(currentStep: 1, totalSteps: 4, label: "Step 1 of 4")
         )
         assertScreenSnapshot(of: screen, record: isRecording)
     }
@@ -126,7 +127,7 @@ final class ScreenSnapshotTests: XCTestCase {
                 ScreenAction(id: "skip", label: "Skip for Now", style: .secondary, enabled: true),
                 ScreenAction(id: "back", label: "Back", style: .secondary, enabled: true),
             ],
-            progress: Vauchi.Progress(currentStep: 2, totalSteps: 4, label: "Step 2 of 4")
+            progress: CoreUIModels.Progress(currentStep: 2, totalSteps: 4, label: "Step 2 of 4")
         )
         assertScreenSnapshot(of: screen, record: isRecording)
     }

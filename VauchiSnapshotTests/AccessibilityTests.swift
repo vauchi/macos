@@ -7,6 +7,7 @@
 // Verifies that all interactive elements have proper accessibility labels,
 // traits, and values for VoiceOver users.
 
+import CoreUIModels
 import SnapshotTesting
 import SwiftUI
 @testable import Vauchi
@@ -165,7 +166,7 @@ final class AccessibilityTests: XCTestCase {
                 ScreenAction(id: "continue", label: "Continue", style: .primary, enabled: false),
                 ScreenAction(id: "back", label: "Back", style: .secondary, enabled: true),
             ],
-            progress: Vauchi.Progress(currentStep: 1, totalSteps: 4, label: "Step 1 of 4")
+            progress: CoreUIModels.Progress(currentStep: 1, totalSteps: 4, label: "Step 1 of 4")
         )
         let view = ScreenRendererView(screen: screen, onAction: noOp)
         assertAccessibilitySnapshot(of: view, height: 700, record: isRecording)

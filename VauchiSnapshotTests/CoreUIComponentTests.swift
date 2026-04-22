@@ -9,6 +9,7 @@
 // macOS adaptation of ios/VauchiSnapshotTests/CoreUIComponentTests.swift.
 // Uses NSImage-based snapshots, no UITraitCollection.
 
+import CoreUIModels
 import SnapshotTesting
 import SwiftUI
 @testable import Vauchi

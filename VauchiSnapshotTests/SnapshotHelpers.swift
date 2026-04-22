@@ -9,6 +9,7 @@
 // Uses NSHostingController + NSImage-based snapshots (no UIKit on macOS).
 
 import AppKit
+import CoreUIModels
 import SnapshotTesting
 import SwiftUI
 @testable import Vauchi
@@ -195,7 +196,7 @@ func makeScreen(
     subtitle: String? = nil,
     components: [Component] = [],
     actions: [ScreenAction] = [],
-    progress: Vauchi.Progress? = nil,
+    progress: CoreUIModels.Progress? = nil,
     tokens: DesignTokens = .defaults
 ) -> ScreenModel {
     ScreenModel(
