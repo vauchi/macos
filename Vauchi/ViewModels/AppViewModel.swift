@@ -149,7 +149,7 @@ import UniformTypeIdentifiers
                 guard let data = json.data(using: .utf8) else { return }
                 currentScreen = try coreJSONDecoder.decode(ScreenModel.self, from: data)
                 validationErrors = [:]
-                loadAvailableScreens()
+                loadSidebarItems()
                 updateSelectedScreen()
             } catch {
                 print("AppViewModel: failed to navigate: \(error)")
@@ -172,7 +172,7 @@ import UniformTypeIdentifiers
         func invalidateAll() {
             do {
                 try appEngine.invalidateAll()
-                loadAvailableScreens()
+                loadSidebarItems()
                 loadScreen()
             } catch {
                 print("AppViewModel: failed to invalidate: \(error)")
