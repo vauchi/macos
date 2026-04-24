@@ -350,9 +350,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         var body: some View {
             List(selection: $sidebarSelection) {
-                ForEach(viewModel.availableScreens, id: \.self) { screen in
-                    Label(displayName(for: screen), systemImage: icon(for: screen))
-                        .tag(screen)
+                ForEach(viewModel.sidebarItems, id: \.id) { tab in
+                    Label(
+                        tab.label,
+                        systemImage: sidebarIcon(forScreenId: tab.id)
+                    )
+                    .tag(AppViewModel.appScreenName(fromScreenId: tab.id))
                 }
             }
             .navigationTitle(LocalizationService.shared.t("app.name"))
@@ -370,27 +373,28 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
 
-        private func displayName(for screen: String) -> String {
-            let loc = LocalizationService.shared
-            return switch screen {
-            case "MyInfo": loc.t("nav.myCard")
-            case "Contacts": loc.t("nav.contacts")
-            case "Exchange": loc.t("nav.exchange")
-            case "Groups": loc.t("nav.groups")
-            case "More": loc.t("nav.more")
-            case "Onboarding": loc.t("setup.title")
-            default: screen
-            }
-        }
-
-        private func icon(for screen: String) -> String {
-            switch screen {
-            case "MyInfo": "person.crop.rectangle.fill"
-            case "Contacts": "person.2.fill"
-            case "Exchange": "qrcode"
-            case "Groups": "rectangle.3.group.fill"
-            case "More": "ellipsis.circle.fill"
-            case "Onboarding": "wand.and.stars"
+        /// macOS contributes the preferred SF Symbol (prefer filled
+        /// variants) for each top-level sidebar entry. Labels + the
+        /// entry set itself are core-owned via
+        /// `AppEngine::sidebar_items(locale)`; see §6 of the
+        /// pure-renderer audit for rationale.
+        private func sidebarIcon(forScreenId id: String) -> String {
+            switch id {
+            case "my_info": "person.crop.rectangle.fill"
+            case "contacts": "person.2.fill"
+            case "exchange": "qrcode"
+            case "groups": "rectangle.3.group.fill"
+            case "settings": "gearshape.fill"
+            case "recovery": "key.horizontal.fill"
+            case "device_management": "laptopcomputer"
+            case "backup": "externaldrive.fill"
+            case "privacy": "hand.raised.fill"
+            case "support": "bubble.left.and.bubble.right.fill"
+            case "help": "questionmark.circle.fill"
+            case "activity_log": "list.bullet.rectangle.fill"
+            case "sync": "arrow.triangle.2.circlepath"
+            case "more": "ellipsis.circle.fill"
+            case "onboarding": "wand.and.stars"
             default: "square"
             }
         }

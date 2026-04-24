@@ -24,7 +24,11 @@ import UniformTypeIdentifiers
         @Published var showImportContactsSheet = false
         @Published var showDeviceLinkSheet = false
         @Published var deviceLinkState: DeviceLinkState = .idle
-        @Published var availableScreens: [String] = []
+        /// Core-owned top-level sidebar entries. Each element carries
+        /// the screen_id (snake_case), a locale-resolved label, the
+        /// SF Symbol icon name, and a badge count. 14 entries
+        /// post-identity, 1 (Onboarding) before.
+        @Published var sidebarItems: [MobileTabInfo] = []
         @Published var selectedScreen: String?
         let appEngine: PlatformAppEngine
         var vauchi: VauchiPlatform?
@@ -67,19 +71,32 @@ import UniformTypeIdentifiers
 
         init(appEngine: PlatformAppEngine) {
             self.appEngine = appEngine
-            loadAvailableScreens()
+            loadSidebarItems()
             loadScreen()
         }
 
-        /// Loads available navigation screens from core.
-        func loadAvailableScreens() {
+        /// Loads the sidebar entries from core. Labels + the top-level
+        /// screen set are core-owned (§6 of the pure-renderer audit);
+        /// macOS only contributes the native SF Symbol icon (see
+        /// `sidebarIcon(forScreenId:)` in VauchiApp.swift).
+        func loadSidebarItems() {
             do {
-                let json = try appEngine.availableScreensJson()
-                guard let data = json.data(using: .utf8) else { return }
-                availableScreens = try JSONDecoder().decode([String].self, from: data)
+                let locale = LocalizationService.shared.currentLocale
+                sidebarItems = try appEngine.sidebarItems(locale: locale)
             } catch {
-                print("AppViewModel: failed to load available screens: \(error)")
+                print("AppViewModel: failed to load sidebar items: \(error)")
             }
+        }
+
+        /// Convert a core screen_id ("my_info") to the AppScreen enum
+        /// variant name ("MyInfo") that `navigateToJson` expects. Only
+        /// handles non-parameterized screens — parameterized ones
+        /// (contact_detail, ...) go through `navigateToScreen` with
+        /// structured payloads instead.
+        static func appScreenName(fromScreenId id: String) -> String {
+            id.split(separator: "_")
+                .map { $0.prefix(1).uppercased() + $0.dropFirst() }
+                .joined()
         }
 
         /// Loads the current screen from the core engine.
