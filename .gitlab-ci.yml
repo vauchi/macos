@@ -649,6 +649,17 @@ test:unit:
     - job: build:debug
       artifacts: true
       optional: true
+  variables:
+    # Mirror build:debug's env var: vauchi-platform-swift's manifest
+    # emits `path:` binaryTarget when set (Fix C). Without this,
+    # xcodebuild's manifest evaluation during build-for-testing emits
+    # `url:` and tries to download the xcframework via URLSession,
+    # which hangs against Cloudflare-fronted gitlab.com (the original
+    # 2026-04-26 hang). The mirror committed the xcframework into the
+    # SPM checkout (build:debug populated `.spm-packages/checkouts/
+    # vauchi-platform-swift/VauchiPlatformFFI.xcframework`), so `path:`
+    # resolution finds the local binary instead of fetching.
+    VAUCHI_PLATFORM_USE_LOCAL_XCFRAMEWORK: "1"
   script:
     # Prefer Vauchi.xcodeproj from build:debug artifact; regen only if missing
     # (e.g. manual retry after the 1h artifact expiry).
@@ -712,6 +723,8 @@ coverage:unit:
     - job: build:debug
       artifacts: true
       optional: true
+  variables:
+    VAUCHI_PLATFORM_USE_LOCAL_XCFRAMEWORK: "1"
   before_script:
     - !reference [.macos-job, before_script]
     - command -v xcresultparser >/dev/null 2>&1 || brew install a7ex/homebrew-formulae/xcresultparser
@@ -770,6 +783,9 @@ test:snapshots:
   variables:
     VRT_PLATFORM: macos
     VRT_SCREENSHOT_DIR: VauchiSnapshotTests/__Snapshots__/VisualRegressionTests
+    # See test:unit comment — env var keeps the manifest on `path:`
+    # so xcodebuild doesn't try to re-download the xcframework.
+    VAUCHI_PLATFORM_USE_LOCAL_XCFRAMEWORK: "1"
   # Enforced — snapshot flakes must be investigated, not ignored
   script:
     - |
@@ -826,6 +842,8 @@ test:snapshots:record:
       optional: true
   when: manual
   allow_failure: true
+  variables:
+    VAUCHI_PLATFORM_USE_LOCAL_XCFRAMEWORK: "1"
   script:
     - echo "📸 Recording snapshot baselines..."
     - command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
