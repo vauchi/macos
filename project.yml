@@ -17,7 +17,7 @@ settings:
 packages:
   VauchiPlatform:
     url: https://gitlab.com/vauchi/vauchi-platform-swift.git
-    from: "0.24.0"
+    from: "0.25.0"
   SnapshotTesting:
     url: https://github.com/pointfreeco/swift-snapshot-testing
     from: "1.17.0"
