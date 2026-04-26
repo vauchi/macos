@@ -48,9 +48,13 @@ default:
   tags:
     - macos
     - self-hosted
-  # Serialize all SPM-using jobs on the shared macOS runner.
-  # Multiple concurrent xcodebuild -resolvePackageDependencies deadlock
-  # on SPM's global package cache (~/.cache/org.swift.swiftpm/).
+  # Resolve-touching jobs (build:debug, build:release, snapshot:record)
+  # use this group. The deadlock that motivated serialization is on
+  # `xcodebuild -resolvePackageDependencies` against SPM's global
+  # cache (`~/.cache/org.swift.swiftpm/`). Test jobs use
+  # `-disableAutomaticPackageResolution` and DO NOT touch this cache,
+  # so they extend `.macos-test-job` below to get their own lock and
+  # run in parallel with each other.
   # NOTE: If jobs get stuck in waiting_for_resource due to a poisoned
   # lock (GitLab bug: cancelled jobs don't release resource_group),
   # bump the suffix (e.g. macos-spm-v4) to mint a fresh lock.
@@ -61,6 +65,23 @@ default:
   # Empty after_script kept as an anchor target for
   # !reference [.macos-job, after_script] in extending jobs.
   after_script: []
+
+# Test-only macOS job: shares all of .macos-job's setup but uses a
+# DIFFERENT resource_group so two test jobs from different categories
+# (test:unit + test:snapshots + test:ui) can run in parallel on the
+# same runner. Each individual test JOB still gets concurrency-1
+# (overridden per-job below), but the tests-as-a-class are not
+# serialized against each other or against build/release jobs.
+#
+# Per-job lock is critical: gitlab-runner's shell executor runs
+# concurrent jobs in DIFFERENT build dirs (.../{concurrent-id}/...)
+# so DerivedData clobbering between concurrent jobs of the same
+# name is impossible — only the same-name re-runs need the lock.
+.macos-test-job:
+  extends: .macos-job
+  # Overridden per-job (see test:unit, test:snapshots, etc.) so each
+  # test type gets its own concurrency-1 lock.
+  resource_group: macos-test-default
 
 # Cache SPM packages + DerivedData between pipeline runs.
 # DerivedData contains compiled swift-syntax which takes >60min to build
@@ -254,6 +275,11 @@ check:snapshot-recording:
 build:debug:
   extends: [.macos-job, .spm-cache, .timeout-extended]
   stage: build
+  # Don't gate on the lint stage — build:debug has no dependency on
+  # swiftlint/swiftformat/reuse output, only on the source tree itself.
+  # Without this, build:debug waits for the slowest lint job (typically
+  # lint:reuse at ~63s) before starting, even though they're orthogonal.
+  needs: []
   variables:
     # Triggers vauchi-platform-swift Package.swift to emit a `path:`
     # binaryTarget instead of `url:` (Fix C, see Package.swift comment +
@@ -261,6 +287,10 @@ build:debug:
     # MUST be set at job level so all script blocks see it (xcodebuild
     # resolve AND compile both invoke SPM manifest evaluation).
     VAUCHI_PLATFORM_USE_LOCAL_XCFRAMEWORK: "1"
+    # Skip Xcode index-store generation in CI — we never read the
+    # autocomplete/cross-reference index here. Cuts 10–30% off
+    # incremental compile per Bitrise/Flutter benchmarks.
+    COMPILER_INDEX_STORE_ENABLE: "NO"
   script:
     - command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
     - echo "── [$(date +%H:%M:%S)] xcodegen ──"
@@ -612,8 +642,9 @@ build:release:
 # ============================================================
 
 test:unit:
-  extends: [.macos-job, .spm-cache-readonly]
+  extends: [.macos-test-job, .spm-cache-readonly]
   stage: test
+  resource_group: macos-test-unit
   needs:
     - job: build:debug
       artifacts: true
@@ -729,8 +760,9 @@ coverage:unit:
     - if: $CI_PIPELINE_SOURCE == "schedule"
 
 test:snapshots:
-  extends: [.macos-job, .spm-cache-readonly]
+  extends: [.macos-test-job, .spm-cache-readonly]
   stage: test
+  resource_group: macos-test-snapshots
   needs:
     - job: build:debug
       artifacts: true
