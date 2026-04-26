@@ -66,22 +66,19 @@ default:
   # !reference [.macos-job, after_script] in extending jobs.
   after_script: []
 
-# Test-only macOS job: shares all of .macos-job's setup but uses a
-# DIFFERENT resource_group so two test jobs from different categories
-# (test:unit + test:snapshots + test:ui) can run in parallel on the
-# same runner. Each individual test JOB still gets concurrency-1
-# (overridden per-job below), but the tests-as-a-class are not
-# serialized against each other or against build/release jobs.
-#
-# Per-job lock is critical: gitlab-runner's shell executor runs
-# concurrent jobs in DIFFERENT build dirs (.../{concurrent-id}/...)
-# so DerivedData clobbering between concurrent jobs of the same
-# name is impossible — only the same-name re-runs need the lock.
-.macos-test-job:
-  extends: .macos-job
-  # Overridden per-job (see test:unit, test:snapshots, etc.) so each
-  # test type gets its own concurrency-1 lock.
-  resource_group: macos-test-default
+# Test parallelism via per-job resource_group was attempted but reverted
+# in 2026-04-26 (#2480722326): gitlab-runner concurrent jobs land in
+# DIFFERENT build dirs (`SUG6XvG3z/{0,1,2,3}/...`), so when test:unit
+# runs in slot 0 and pulls a `.derived-data/` cache that was pushed
+# from slot 2, Xcode's hard-coded absolute paths in the VFS overlay
+# files (`Vauchi-...-VFS/all-product-headers.yaml`) fail to resolve.
+# The agent's research called this out: "Xcode bakes absolute paths
+# into DerivedData; the moment you cp/restore from a tarball, Xcode
+# invalidates the cache." The proper fix is slot-cached DerivedData
+# (`/opt/vauchi/slots/N/derived-data` with lock-file slot acquisition),
+# which is a substantial refactor. Until then, keep test jobs on
+# .macos-job's single resource_group so they reuse the same slot
+# across the build→test transition.
 
 # Cache SPM packages + DerivedData between pipeline runs.
 # DerivedData contains compiled swift-syntax which takes >60min to build
@@ -642,9 +639,8 @@ build:release:
 # ============================================================
 
 test:unit:
-  extends: [.macos-test-job, .spm-cache-readonly]
+  extends: [.macos-job, .spm-cache-readonly]
   stage: test
-  resource_group: macos-test-unit
   needs:
     - job: build:debug
       artifacts: true
@@ -773,9 +769,8 @@ coverage:unit:
     - if: $CI_PIPELINE_SOURCE == "schedule"
 
 test:snapshots:
-  extends: [.macos-test-job, .spm-cache-readonly]
+  extends: [.macos-job, .spm-cache-readonly]
   stage: test
-  resource_group: macos-test-snapshots
   needs:
     - job: build:debug
       artifacts: true
