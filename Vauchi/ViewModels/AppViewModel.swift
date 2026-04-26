@@ -33,10 +33,6 @@ import UniformTypeIdentifiers
         let appEngine: PlatformAppEngine
         var vauchi: VauchiPlatform?
 
-        /// Active device link initiator (holds session state for confirmation).
-        private var currentInitiator: MobileDeviceLinkInitiator?
-        private var currentSenderToken: String?
-
         /// Timer that drives animated-QR frame advancement (~10fps) while the
         /// "Share Your Code" screen is visible. Controlled by the view layer
         /// via `startQrFrameTimer` / `stopQrFrameTimer`.
@@ -69,10 +65,68 @@ import UniformTypeIdentifiers
             let message: String
         }
 
+        private var currentSession: MobileDeviceLinkSession?
+
         init(appEngine: PlatformAppEngine) {
             self.appEngine = appEngine
             loadSidebarItems()
             loadScreen()
+        }
+
+        /// Session listener that bridges core events to @Published state (Phase 2b).
+        private class DeviceLinkSessionBridge: DeviceLinkSessionListener {
+            weak var viewModel: AppViewModel?
+
+            func onQrReady(qrData: String, expiresAtUnix _: UInt64) {
+                DispatchQueue.main.async {
+                    self.viewModel?.deviceLinkState = .waitingForRequest(qrData: qrData)
+                }
+            }
+
+            func onConfirmationRequired(
+                deviceName: String,
+                confirmationCode: String,
+                identityFingerprint _: String,
+                proximityChallenge: Data
+            ) {
+                DispatchQueue.main.async {
+                    self.viewModel?.deviceLinkState = .confirmingDevice(
+                        name: deviceName,
+                        code: confirmationCode,
+                        challenge: proximityChallenge
+                    )
+                }
+            }
+
+            func onRequestSent(confirmationCode _: String) {
+                // Phase 2 responder only, not used in Phase 1
+            }
+
+            func onCompleted(deviceName _: String, deviceIndex _: UInt32) {
+                DispatchQueue.main.async {
+                    self.viewModel?.deviceLinkState = .success
+                }
+            }
+
+            func onFailed(reason: String) {
+                DispatchQueue.main.async {
+                    self.viewModel?.deviceLinkState = .failed(reason)
+                }
+            }
+
+            func onSessionEnded() {
+                DispatchQueue.main.async {
+                    if case .idle = self.viewModel?.deviceLinkState {
+                        // Already cancelled
+                    } else if case .success = self.viewModel?.deviceLinkState {
+                        // Success already set
+                    } else if case .failed = self.viewModel?.deviceLinkState {
+                        // Failed already set
+                    } else {
+                        self.viewModel?.deviceLinkState = .idle
+                    }
+                }
+            }
         }
 
         /// Loads the sidebar entries from core. Labels + the top-level
@@ -361,47 +415,23 @@ import UniformTypeIdentifiers
             deviceLinkState = .generatingQR
             Task {
                 do {
-                    let initiator = try vauchi.startDeviceLink()
-                    currentInitiator = initiator
-                    let qrData = initiator.qrData()
-                    deviceLinkState = .waitingForRequest(
-                        qrData: qrData
-                    )
-                    try await listenForDeviceLinkRequest()
+                    let session = try vauchi.createDeviceLinkSessionInitiator()
+                    self.currentSession = session
+
+                    let bridge = DeviceLinkSessionBridge()
+                    bridge.viewModel = self
+                    try session.setListener(listener: bridge)
+                    try session.start()
+                    // Listener callbacks handle state transitions
                 } catch {
                     deviceLinkState = .failed("\(error)")
                 }
             }
         }
 
-        /// Listen for a device link request (blocking relay call).
-        private func listenForDeviceLinkRequest() async throws {
-            guard let vauchi,
-                  let initiator = currentInitiator
-            else { return }
-
-            let request = try vauchi.listenForDeviceLinkRequest(
-                timeoutSecs: 300
-            )
-            currentSenderToken = request.senderToken
-            let confirmation = try initiator.prepareConfirmation(
-                encryptedRequest: request.encryptedPayload
-            )
-            let challenge = initiator.proximityChallenge()
-
-            deviceLinkState = .confirmingDevice(
-                name: confirmation.deviceName,
-                code: confirmation.confirmationCode,
-                challenge: challenge
-            )
-        }
-
         /// Approve the device link with manual confirmation.
         func approveDeviceLink() {
-            guard let vauchi,
-                  let initiator = currentInitiator,
-                  let senderToken = currentSenderToken
-            else {
+            guard let session = currentSession else {
                 deviceLinkState = .failed("No active link session")
                 return
             }
@@ -413,19 +443,8 @@ import UniformTypeIdentifiers
             Task {
                 do {
                     let now = UInt64(Date().timeIntervalSince1970)
-                    let result = try initiator.confirmLinkManual(
-                        confirmationCode: code,
-                        confirmedAt: now
-                    )
-                    if let response = result.encryptedResponse {
-                        try vauchi.sendDeviceLinkResponse(
-                            senderToken: senderToken,
-                            encryptedResponse: response
-                        )
-                    }
-                    deviceLinkState = .success
-                    currentInitiator = nil
-                    currentSenderToken = nil
+                    try session.confirmManual(confirmationCode: code, confirmedAt: now)
+                    // Listener callback handles success
                 } catch {
                     deviceLinkState = .failed("\(error)")
                 }
@@ -434,9 +453,11 @@ import UniformTypeIdentifiers
 
         /// Cancel the device link flow and reset state.
         func cancelDeviceLink() {
+            if let session = currentSession {
+                try? session.cancel()
+            }
             deviceLinkState = .idle
-            currentInitiator = nil
-            currentSenderToken = nil
+            currentSession = nil
             showDeviceLinkSheet = false
         }
 
