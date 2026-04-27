@@ -41,12 +41,16 @@ import UniformTypeIdentifiers
         @State private var errorMessage: String?
         @State private var showConfirmation = false
 
-        /// True when the current screen is not an onboarding flow (identity likely exists).
+        /// True when an identity already exists in core. Drives the
+        /// "importing will overwrite your card" confirmation.
+        ///
+        /// Replaces the previous screen-ID substring scrape (§1D
+        /// pure-renderer remediation): asking core directly is both
+        /// stronger ("identity exists" is the real question, not "is the
+        /// current screen an onboarding screen") and removes a screen-id
+        /// catalogue that goes stale every time onboarding is renamed.
         private var hasExistingIdentity: Bool {
-            guard let screenId = viewModel.currentScreen?.screenId else { return false }
-            return !screenId.lowercased().contains("onboarding")
-                && !screenId.lowercased().contains("welcome")
-                && !screenId.lowercased().contains("create_identity")
+            viewModel.vauchi?.hasIdentity() ?? false
         }
 
         var body: some View {
