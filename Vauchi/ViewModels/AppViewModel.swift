@@ -23,7 +23,6 @@ import UniformTypeIdentifiers
         @Published var showImportBackupSheet = false
         @Published var showImportContactsSheet = false
         @Published var showDeviceLinkSheet = false
-        @Published var deviceLinkState: DeviceLinkState = .idle
         /// Core-owned top-level sidebar entries. Each element carries
         /// the screen_id (snake_case), a locale-resolved label, the
         /// SF Symbol icon name, and a badge count. 14 entries
@@ -45,88 +44,16 @@ import UniformTypeIdentifiers
         private var qrFrameDecodeFailures = 0
         private static let maxConsecutiveQrDecodeFailures = 10 // ~1s at 10 fps
 
-        // MARK: - Device Link State
-
-        enum DeviceLinkState {
-            case idle
-            case generatingQR
-            case waitingForRequest(qrData: String)
-            case confirmingDevice(
-                name: String, code: String, challenge: Data
-            )
-            case completing
-            case success
-            case failed(String)
-        }
-
         struct AlertMessage: Identifiable {
             let id = UUID()
             let title: String
             let message: String
         }
 
-        private var currentSession: MobileDeviceLinkSession?
-
         init(appEngine: PlatformAppEngine) {
             self.appEngine = appEngine
             loadSidebarItems()
             loadScreen()
-        }
-
-        /// Session listener that bridges core events to @Published state (Phase 2b).
-        private class DeviceLinkSessionBridge: DeviceLinkSessionListener {
-            weak var viewModel: AppViewModel?
-
-            func onQrReady(qrData: String, expiresAtUnix _: UInt64) {
-                DispatchQueue.main.async {
-                    self.viewModel?.deviceLinkState = .waitingForRequest(qrData: qrData)
-                }
-            }
-
-            func onConfirmationRequired(
-                deviceName: String,
-                confirmationCode: String,
-                identityFingerprint _: String,
-                proximityChallenge: Data
-            ) {
-                DispatchQueue.main.async {
-                    self.viewModel?.deviceLinkState = .confirmingDevice(
-                        name: deviceName,
-                        code: confirmationCode,
-                        challenge: proximityChallenge
-                    )
-                }
-            }
-
-            func onRequestSent(confirmationCode _: String) {
-                // Phase 2 responder only, not used in Phase 1
-            }
-
-            func onCompleted(deviceName _: String, deviceIndex _: UInt32) {
-                DispatchQueue.main.async {
-                    self.viewModel?.deviceLinkState = .success
-                }
-            }
-
-            func onFailed(reason: String) {
-                DispatchQueue.main.async {
-                    self.viewModel?.deviceLinkState = .failed(reason)
-                }
-            }
-
-            func onSessionEnded() {
-                DispatchQueue.main.async {
-                    if case .idle = self.viewModel?.deviceLinkState {
-                        // Already cancelled
-                    } else if case .success = self.viewModel?.deviceLinkState {
-                        // Success already set
-                    } else if case .failed = self.viewModel?.deviceLinkState {
-                        // Failed already set
-                    } else {
-                        self.viewModel?.deviceLinkState = .idle
-                    }
-                }
-            }
         }
 
         /// Loads the sidebar entries from core. Labels + the top-level
@@ -372,8 +299,10 @@ import UniformTypeIdentifiers
                 // Load the scan screen — it has camera QR scanning with paste fallback
                 loadScreen()
             case .startDeviceLink:
+                // Sheet content (`DeviceLinkSheet`) navigates the engine
+                // to `DeviceLinking` on appear; `after_screen_transition`
+                // creates the `MobileDeviceLinkSession` automatically.
                 showDeviceLinkSheet = true
-                startDeviceLink()
             case .startBackupImport:
                 showImportBackupSheet = true
             case let .exchangeCommands(commands):
@@ -406,64 +335,6 @@ import UniformTypeIdentifiers
                     self.toastUndoActionId = nil
                 }
             }
-        }
-
-        // MARK: - Device Link
-
-        /// Start the device link initiator flow.
-        func startDeviceLink() {
-            guard let vauchi else {
-                deviceLinkState = .failed("App not initialized")
-                return
-            }
-
-            deviceLinkState = .generatingQR
-            Task {
-                do {
-                    let session = try vauchi.createDeviceLinkSessionInitiator()
-                    self.currentSession = session
-
-                    let bridge = DeviceLinkSessionBridge()
-                    bridge.viewModel = self
-                    try session.setListener(listener: bridge)
-                    try session.start()
-                    // Listener callbacks handle state transitions
-                } catch {
-                    deviceLinkState = .failed("\(error)")
-                }
-            }
-        }
-
-        /// Approve the device link with manual confirmation.
-        func approveDeviceLink() {
-            guard let session = currentSession else {
-                deviceLinkState = .failed("No active link session")
-                return
-            }
-
-            guard case let .confirmingDevice(_, code, _) = deviceLinkState
-            else { return }
-
-            deviceLinkState = .completing
-            Task {
-                do {
-                    let now = UInt64(Date().timeIntervalSince1970)
-                    try session.confirmManual(confirmationCode: code, confirmedAt: now)
-                    // Listener callback handles success
-                } catch {
-                    deviceLinkState = .failed("\(error)")
-                }
-            }
-        }
-
-        /// Cancel the device link flow and reset state.
-        func cancelDeviceLink() {
-            if let session = currentSession {
-                try? session.cancel()
-            }
-            deviceLinkState = .idle
-            currentSession = nil
-            showDeviceLinkSheet = false
         }
 
         // MARK: - Exchange Command Dispatch (ADR-031)

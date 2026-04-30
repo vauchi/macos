@@ -3,7 +3,22 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 // DeviceLinkSheet.swift
-// State-driven sheet UI for the device link initiator flow
+// Pair 5b of `_private/docs/problems/2026-04-28-pure-humble-ui-retire-native-screens`.
+//
+// Pure Humble UI shell — renders the device-link flow via the core
+// `DeviceLinkingEngine`. The cycle-thread session lifecycle is owned
+// by `PlatformAppEngine` (`after_screen_transition` auto-creates and
+// cancels the `MobileDeviceLinkSession` on entry / exit of
+// `AppScreen::DeviceLinking`).
+//
+// Per ADR-021/043 this view holds no domain state, no nav decisions,
+// and references no domain types. It only:
+//   1. Navigates the engine to `device_linking` on appear and renders
+//      whatever screen core publishes (transport selection, QR display,
+//      confirming-device, proximity verification, success/failed —
+//      all driven by core).
+//   2. Emits a `UserAction("cancel")` to core when SwiftUI dismisses
+//      the sheet without core having routed away.
 
 import CoreUIModels
 import SwiftUI
@@ -11,223 +26,102 @@ import SwiftUI
 #if canImport(VauchiPlatform)
     import VauchiPlatform
 
-    /// Sheet that drives the device link flow based on `AppViewModel.deviceLinkState`.
     struct DeviceLinkSheet: View {
         @ObservedObject var viewModel: AppViewModel
         @ObservedObject private var localizationService = LocalizationService.shared
-
         @Environment(\.designTokens) private var tokens
 
+        @State private var screen: ScreenModel?
+        @State private var error: String?
+
         var body: some View {
-            VStack(spacing: 24) {
-                sheetHeader()
-                stateContent()
-                Spacer()
-                sheetActions()
+            Group {
+                if let screen {
+                    ScreenRendererView(screen: screen, onAction: handleAction)
+                } else if let error {
+                    Text(localizationService.t(
+                        "device_link.failed_to_load",
+                        args: ["error": error]
+                    ))
+                    .foregroundColor(.secondary)
+                    .padding()
+                } else {
+                    ProgressView()
+                        .padding()
+                }
             }
             .padding(CGFloat(tokens.spacing.lg))
             .frame(width: 400)
             .frame(minHeight: 450)
+            .onAppear { loadScreen() }
+            .onDisappear { cancelIfStillLinking() }
         }
 
-        // MARK: - Header
+        // MARK: - Engine glue
 
-        private func sheetHeader() -> some View {
-            VStack(spacing: 8) {
-                Text(localizationService.t("device_link.title"))
-                    .font(.title2.bold())
-
-                Text(localizationService.t("device_link.scan_instruction"))
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-            }
-        }
-
-        // MARK: - State Content
-
-        @ViewBuilder
-        private func stateContent() -> some View {
-            switch viewModel.deviceLinkState {
-            case .idle, .generatingQR:
-                progressMessage(localizationService.t("device_link.generating_qr"))
-            case let .waitingForRequest(qrData):
-                waitingForRequestView(qrData: qrData)
-            case let .confirmingDevice(name, code, _):
-                confirmingDeviceView(name: name, code: code)
-            case .completing:
-                progressMessage(localizationService.t("device_link.completing"))
-            case .success:
-                successView()
-            case let .failed(message):
-                failedView(message: message)
-            }
-        }
-
-        // MARK: - State Sub-Views
-
-        private func progressMessage(_ text: String) -> some View {
-            VStack(spacing: 12) {
-                ProgressView()
-                    .controlSize(.large)
-                Text(text)
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-            }
-        }
-
-        private func waitingForRequestView(qrData: String) -> some View {
-            VStack(spacing: 16) {
-                if let qrImage = generateQRCode(from: qrData) {
-                    Image(nsImage: qrImage)
-                        .interpolation(.none)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(maxWidth: 250, maxHeight: 250)
-                        .accessibilityLabel(localizationService.t("device_link.a11y_qr"))
-                } else {
-                    Text(localizationService.t("device_link.failed_qr"))
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                HStack(spacing: 8) {
-                    ProgressView()
-                        .controlSize(.small)
-                    Text(localizationService.t("device_link.waiting_other"))
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
-            }
-        }
-
-        private func successView() -> some View {
-            VStack(spacing: 12) {
-                Image(systemName: "checkmark.circle.fill")
-                    .font(.system(size: 48))
-                    .foregroundColor(.green)
-                Text(localizationService.t("device_link.success"))
-                    .font(.headline)
-            }
-        }
-
-        private func failedView(message: String) -> some View {
-            VStack(spacing: 12) {
-                Image(systemName: "xmark.circle.fill")
-                    .font(.system(size: 48))
-                    .foregroundColor(.red)
-                Text(localizationService.t("device_link.failed_title"))
-                    .font(.headline)
-                Text(message)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                    .lineLimit(4)
-            }
-        }
-
-        // MARK: - Confirming Device
-
-        private func confirmingDeviceView(
-            name: String, code: String
-        ) -> some View {
-            VStack(spacing: 16) {
-                Image(systemName: "iphone.and.arrow.forward")
-                    .font(.system(size: 36))
-                    .foregroundColor(.cyan)
-
-                Text(localizationService.t("device_link.request_title"))
-                    .font(.headline)
-
-                VStack(spacing: 8) {
-                    HStack {
-                        Text(localizationService.t("device_link.device_label"))
-                            .foregroundColor(.secondary)
-                        Text(name)
-                            .fontWeight(.medium)
-                    }
-                    HStack {
-                        Text(localizationService.t("device_link.code_label"))
-                            .foregroundColor(.secondary)
-                        Text(code)
-                            .font(.system(.title3, design: .monospaced))
-                            .fontWeight(.bold)
-                    }
-                }
-                .padding(CGFloat(tokens.spacing.md))
-                .background(
-                    Color(nsColor: .controlBackgroundColor)
+        private func loadScreen() {
+            do {
+                let json = try viewModel.appEngine.navigateToJson(
+                    screenJson: "\"DeviceLinking\""
                 )
-                .cornerRadius(CGFloat(tokens.borderRadius.md))
-
-                Text(localizationService.t("device_link.verify_code_hint"))
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                guard let data = json.data(using: .utf8) else {
+                    error = "Invalid JSON"
+                    return
+                }
+                screen = try coreJSONDecoder.decode(ScreenModel.self, from: data)
+            } catch {
+                self.error = error.localizedDescription
             }
         }
 
-        // MARK: - Actions
-
-        @ViewBuilder
-        private func sheetActions() -> some View {
-            switch viewModel.deviceLinkState {
-            case .idle, .generatingQR, .waitingForRequest, .completing:
-                Button(localizationService.t("action.cancel")) {
-                    viewModel.cancelDeviceLink()
-                }
-                .buttonStyle(.bordered)
-
-            case .confirmingDevice:
-                HStack(spacing: 16) {
-                    Button(localizationService.t("device_link.reject")) {
-                        viewModel.cancelDeviceLink()
-                    }
-                    .buttonStyle(.bordered)
-
-                    Button(localizationService.t("device_link.approve")) {
-                        viewModel.approveDeviceLink()
-                    }
-                    .buttonStyle(.borderedProminent)
-                }
-
-            case .success:
-                Button(localizationService.t("action.done")) {
-                    viewModel.cancelDeviceLink()
-                }
-                .buttonStyle(.borderedProminent)
-
-            case .failed:
-                HStack(spacing: 16) {
-                    Button(localizationService.t("action.close")) {
-                        viewModel.cancelDeviceLink()
-                    }
-                    .buttonStyle(.bordered)
-
-                    Button(localizationService.t("action.retry")) {
-                        viewModel.startDeviceLink()
-                    }
-                    .buttonStyle(.borderedProminent)
-                }
+        private func handleAction(_ action: UserAction) {
+            do {
+                let actionData = try coreJSONEncoder.encode(action)
+                guard let actionJson = String(data: actionData, encoding: .utf8)
+                else { return }
+                let resultJson = try viewModel.appEngine.handleActionJson(
+                    actionJson: actionJson
+                )
+                guard let resultData = resultJson.data(using: .utf8) else { return }
+                let result = try coreJSONDecoder.decode(
+                    ActionResult.self, from: resultData
+                )
+                applyResult(result)
+            } catch {
+                self.error = error.localizedDescription
             }
         }
 
-        // MARK: - QR Code Generation
+        private func applyResult(_ result: ActionResult) {
+            switch result {
+            case let .updateScreen(screen), let .navigateTo(screen):
+                self.screen = screen
+            case .complete:
+                // Core ended the flow (success / cancel / done). Close sheet.
+                viewModel.showDeviceLinkSheet = false
+            default:
+                // Other results don't apply to the device-link subtree.
+                break
+            }
+        }
 
-        /// Generates a QR code image using the Rust qrcode crate via UniFFI.
-        private func generateQRCode(from string: String) -> NSImage? {
-            guard let qrBitmap = try? generateQrBitmap(
-                data: string, size: 512, ecc: .medium, dark: 0, light: 255, margin: 4
-            ) else { return nil }
-            let imageSize = Int(qrBitmap.size)
-            let colorSpace = CGColorSpaceCreateDeviceGray()
-            guard let provider = CGDataProvider(data: Data(qrBitmap.pixels) as CFData),
-                  let cgImage = CGImage(
-                      width: imageSize, height: imageSize,
-                      bitsPerComponent: 8, bitsPerPixel: 8, bytesPerRow: imageSize,
-                      space: colorSpace, bitmapInfo: CGBitmapInfo(rawValue: 0),
-                      provider: provider, decode: nil, shouldInterpolate: false,
-                      intent: .defaultIntent
-                  ) else { return nil }
-            return NSImage(cgImage: cgImage, size: NSSize(width: cgImage.width, height: cgImage.height))
+        /// Sheet dismissed without an explicit Cancel tap (e.g. system
+        /// gesture). If core hasn't already routed away from the
+        /// device-link subtree, send `cancel` so the engine ends the
+        /// cycle thread and navigates back.
+        private func cancelIfStillLinking() {
+            guard screen?.screenId.hasPrefix("link_") == true else { return }
+            do {
+                let action = UserAction.actionPressed(actionId: "cancel")
+                let actionData = try coreJSONEncoder.encode(action)
+                guard let actionJson = String(data: actionData, encoding: .utf8)
+                else { return }
+                _ = try viewModel.appEngine.handleActionJson(
+                    actionJson: actionJson
+                )
+            } catch {
+                // Best-effort cleanup; engine state is consistent regardless.
+            }
         }
     }
 #endif

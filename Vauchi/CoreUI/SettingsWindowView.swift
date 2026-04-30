@@ -83,11 +83,10 @@ import SwiftUI
             case .startBackupImport:
                 appState.viewModel?.showImportBackupSheet = true
             case .startDeviceLink:
-                // Delegate to the main view model to show the sheet
-                if let viewModel = appState.viewModel {
-                    viewModel.showDeviceLinkSheet = true
-                    viewModel.startDeviceLink()
-                }
+                // Sheet content (`DeviceLinkSheet`) navigates the engine
+                // to `DeviceLinking` on appear; `after_screen_transition`
+                // creates the `MobileDeviceLinkSession` automatically.
+                appState.viewModel?.showDeviceLinkSheet = true
             default:
                 // Other results (alerts, urls, etc.) — reload settings
                 loadSettingsScreen()
