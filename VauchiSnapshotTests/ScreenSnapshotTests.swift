@@ -156,6 +156,29 @@ final class ScreenSnapshotTests: XCTestCase {
     }
 
     func testHomeScreenWithFields() {
+        let fields = [
+            FieldDisplay(
+                id: "f1",
+                fieldType: "email",
+                label: "Personal Email",
+                value: "alice@example.com",
+                visibility: .shown
+            ),
+            FieldDisplay(
+                id: "f2",
+                fieldType: "phone",
+                label: "Mobile",
+                value: "+41 79 123 45 67",
+                visibility: .shown
+            ),
+            FieldDisplay(
+                id: "f3",
+                fieldType: "website",
+                label: "Website",
+                value: "https://alice.example.com",
+                visibility: .shown
+            ),
+        ]
         let screen = makeScreen(
             screenId: "home",
             title: "Your Card",
@@ -164,31 +187,10 @@ final class ScreenSnapshotTests: XCTestCase {
                 .cardPreview(CardPreviewComponent(
                     name: "Alice",
                     avatarData: nil,
-                    fields: [
-                        FieldDisplay(
-                            id: "f1",
-                            fieldType: "email",
-                            label: "Personal Email",
-                            value: "alice@example.com",
-                            visibility: .shown
-                        ),
-                        FieldDisplay(
-                            id: "f2",
-                            fieldType: "phone",
-                            label: "Mobile",
-                            value: "+41 79 123 45 67",
-                            visibility: .shown
-                        ),
-                        FieldDisplay(
-                            id: "f3",
-                            fieldType: "website",
-                            label: "Website",
-                            value: "https://alice.example.com",
-                            visibility: .shown
-                        ),
-                    ],
+                    fields: fields,
                     groupViews: [],
-                    selectedGroup: nil
+                    selectedGroup: nil,
+                    visibleFields: fields
                 )),
             ],
             actions: [
@@ -403,34 +405,40 @@ final class ScreenSnapshotTests: XCTestCase {
             title: "Your Card",
             subtitle: "Alice",
             components: [
-                .cardPreview(CardPreviewComponent(
-                    name: "Alice",
-                    avatarData: nil,
-                    fields: [
-                        FieldDisplay(
-                            id: "f1",
-                            fieldType: "email",
-                            label: "Email",
-                            value: "alice@example.com",
-                            visibility: .shown
-                        ),
-                        FieldDisplay(
-                            id: "f2",
-                            fieldType: "phone",
-                            label: "Mobile",
-                            value: "+41 79 123 45 67",
-                            visibility: .shown
-                        ),
-                    ],
-                    groupViews: [],
-                    selectedGroup: nil
-                )),
+                .cardPreview(makeDarkHomeCardPreview()),
             ],
             actions: [
                 ScreenAction(id: "edit_card", label: "Edit Card", style: .secondary, enabled: true),
             ]
         )
         assertDarkScreenSnapshot(of: screen, record: isRecording)
+    }
+
+    private func makeDarkHomeCardPreview() -> CardPreviewComponent {
+        let fields = [
+            FieldDisplay(
+                id: "f1",
+                fieldType: "email",
+                label: "Email",
+                value: "alice@example.com",
+                visibility: .shown
+            ),
+            FieldDisplay(
+                id: "f2",
+                fieldType: "phone",
+                label: "Mobile",
+                value: "+41 79 123 45 67",
+                visibility: .shown
+            ),
+        ]
+        return CardPreviewComponent(
+            name: "Alice",
+            avatarData: nil,
+            fields: fields,
+            groupViews: [],
+            selectedGroup: nil,
+            visibleFields: fields
+        )
     }
 
     func testContactsScreenDark() {

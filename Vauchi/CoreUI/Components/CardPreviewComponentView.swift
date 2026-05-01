@@ -152,14 +152,12 @@ struct CardPreviewComponentView: View {
     }
 
     private var currentFields: [FieldDisplay] {
-        // G1 (ADR-021/043): core's `build_visible_fields` helper emits the
-        // already-filtered list — no frontend-side filter or selectedGroup
-        // branch. Empty list means pre-G1 ScreenModel JSON; fall back to
-        // `component.fields` so legacy fixtures still render.
-        if !component.visibleFields.isEmpty {
-            return component.visibleFields
-        }
-        return component.fields
+        // Core's `build_visible_fields` does the selectedGroup branch + the
+        // visibility filter identically across frontends. Render the
+        // pre-computed list directly — no fallback. Test fixtures are part
+        // of the contract: they must populate `visibleFields:` matching
+        // what core emits. ADR-021 / ADR-043 (Humble UI).
+        component.visibleFields
     }
 }
 

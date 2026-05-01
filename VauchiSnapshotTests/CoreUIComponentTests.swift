@@ -213,45 +213,50 @@ final class CoreUIComponentTests: XCTestCase {
     }
 
     func testCardPreviewWithFields() {
+        let fields = [
+            FieldDisplay(
+                id: "f1",
+                fieldType: "email",
+                label: "Email",
+                value: "alice@example.com",
+                visibility: .shown
+            ),
+            FieldDisplay(
+                id: "f2",
+                fieldType: "phone",
+                label: "Mobile",
+                value: "+41 79 123 45 67",
+                visibility: .shown
+            ),
+        ]
         let component = CardPreviewComponent(
             name: "Alice",
             avatarData: nil,
-            fields: [
-                FieldDisplay(
-                    id: "f1",
-                    fieldType: "email",
-                    label: "Email",
-                    value: "alice@example.com",
-                    visibility: .shown
-                ),
-                FieldDisplay(
-                    id: "f2",
-                    fieldType: "phone",
-                    label: "Mobile",
-                    value: "+41 79 123 45 67",
-                    visibility: .shown
-                ),
-            ],
+            fields: fields,
             groupViews: [],
-            selectedGroup: nil
+            selectedGroup: nil,
+            // Match what core's `build_visible_fields` emits when no group
+            // is selected: every field with `.shown` or `.groups` visibility.
+            visibleFields: fields
         )
         let view = CardPreviewComponentView(component: component, onAction: noOp)
         assertComponentSnapshot(of: view, height: 400, record: isRecording)
     }
 
     func testCardPreviewWithGroups() {
+        let fields = [
+            FieldDisplay(
+                id: "f1",
+                fieldType: "email",
+                label: "Email",
+                value: "alice@example.com",
+                visibility: .groups(["Family", "Friends"])
+            ),
+        ]
         let component = CardPreviewComponent(
             name: "Alice",
             avatarData: nil,
-            fields: [
-                FieldDisplay(
-                    id: "f1",
-                    fieldType: "email",
-                    label: "Email",
-                    value: "alice@example.com",
-                    visibility: .groups(["Family", "Friends"])
-                ),
-            ],
+            fields: fields,
             groupViews: [
                 GroupCardView(
                     groupName: "Family",
@@ -280,7 +285,10 @@ final class CoreUIComponentTests: XCTestCase {
                     ]
                 ),
             ],
-            selectedGroup: nil
+            selectedGroup: nil,
+            // Field has `.groups` visibility, so the no-group-selected
+            // path through `build_visible_fields` keeps it.
+            visibleFields: fields
         )
         let view = CardPreviewComponentView(component: component, onAction: noOp)
         assertComponentSnapshot(of: view, height: 450, record: isRecording)
@@ -566,27 +574,29 @@ final class CoreUIComponentTests: XCTestCase {
     }
 
     func testCardPreviewDark() {
+        let fields = [
+            FieldDisplay(
+                id: "f1",
+                fieldType: "email",
+                label: "Email",
+                value: "alice@example.com",
+                visibility: .shown
+            ),
+            FieldDisplay(
+                id: "f2",
+                fieldType: "phone",
+                label: "Mobile",
+                value: "+41 79 123 45 67",
+                visibility: .shown
+            ),
+        ]
         let component = CardPreviewComponent(
             name: "Alice",
             avatarData: nil,
-            fields: [
-                FieldDisplay(
-                    id: "f1",
-                    fieldType: "email",
-                    label: "Email",
-                    value: "alice@example.com",
-                    visibility: .shown
-                ),
-                FieldDisplay(
-                    id: "f2",
-                    fieldType: "phone",
-                    label: "Mobile",
-                    value: "+41 79 123 45 67",
-                    visibility: .shown
-                ),
-            ],
+            fields: fields,
             groupViews: [],
-            selectedGroup: nil
+            selectedGroup: nil,
+            visibleFields: fields
         )
         assertDarkComponentSnapshot(
             of: CardPreviewComponentView(component: component, onAction: noOp),
