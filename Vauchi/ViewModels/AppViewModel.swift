@@ -430,8 +430,7 @@ import UniformTypeIdentifiers
                     if samples.isEmpty {
                         self?.sendHardwareUnavailable(transport: "Audio")
                     } else {
-                        let bytes = samples.map { UInt8(clamping: Int($0 * 255.0)) }
-                        self?.sendHardwareEvent(.audioResponseReceived(data: Data(bytes)))
+                        self?.sendHardwareEvent(.audioSamplesRecorded(samples: samples, sampleRate: 48000))
                     }
                 }
             }
