@@ -152,16 +152,14 @@ struct CardPreviewComponentView: View {
     }
 
     private var currentFields: [FieldDisplay] {
-        if let selectedGroup = component.selectedGroup,
-           let groupView = component.groupViews.first(where: { $0.groupName == selectedGroup })
-        {
-            return groupView.visibleFields
+        // G1 (ADR-021/043): core's `build_visible_fields` helper emits the
+        // already-filtered list — no frontend-side filter or selectedGroup
+        // branch. Empty list means pre-G1 ScreenModel JSON; fall back to
+        // `component.fields` so legacy fixtures still render.
+        if !component.visibleFields.isEmpty {
+            return component.visibleFields
         }
-        return component.fields.filter { field in
-            if case .shown = field.visibility { return true }
-            if case .groups = field.visibility { return true }
-            return false
-        }
+        return component.fields
     }
 }
 
