@@ -56,6 +56,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let menuBarManager = MenuBarManager()
 
     func applicationDidFinishLaunching(_: Notification) {
+        ScreenCaptureProtection.enable()
         systemTrayManager.setup()
         menuBarManager.setupMenuBar()
     }
