@@ -79,11 +79,21 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             NotificationCenter.default.post(name: .vauchiAppResignedActive, object: nil)
         #endif
     }
+
+    func applicationDidBecomeActive(_: Notification) {
+        // Re-fetch the current screen from core on background→foreground.
+        // Listener events cover most state changes, but a missed event
+        // would leave the UI stale until the next user action.
+        #if canImport(VauchiPlatform)
+            NotificationCenter.default.post(name: .vauchiAppBecameActive, object: nil)
+        #endif
+    }
 }
 
 #if canImport(VauchiPlatform)
     extension Notification.Name {
         static let vauchiAppResignedActive = Notification.Name("vauchiAppResignedActive")
+        static let vauchiAppBecameActive = Notification.Name("vauchiAppBecameActive")
     }
 #endif
 
@@ -123,6 +133,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 queue: .main
             ) { [weak self] _ in
                 self?.handleAppBackgrounded()
+            }
+
+            NotificationCenter.default.addObserver(
+                forName: .vauchiAppBecameActive,
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                self?.viewModel?.loadScreen()
             }
         }
 
