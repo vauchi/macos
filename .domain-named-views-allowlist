@@ -1,0 +1,25 @@
+# SPDX-FileCopyrightText: 2026 Mattia Egloff <mattia.egloff@pm.me>
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Allow-list for macos/Vauchi/Views/*.swift consumed by
+# scripts/scripts/check-domain-named-views.sh (wired into `just lint macos`).
+#
+# Ratchet-down: each retirement MR (problem record
+# 2026-05-02-macos-humble-ui-retirement, G1) deletes both the view
+# file and its entry below. The destination is the platform-required
+# subset only.
+#
+# One filename per line. Lines starting with `#` and blank lines
+# ignored.
+#
+# --- Platform-required (likely permanent) ----------------------------
+# LockScreenView — pre-unlock screen; runs before core is decrypted,
+#                  so cannot render a core ScreenModel.
+LockScreenView.swift
+
+# --- To-be-retired (G1 targets) --------------------------------------
+# Each is a SwiftUI Sheet that will become CoreScreenView-rendered
+# once the corresponding core ScreenModel is wired through.
+DeviceLinkSheet.swift
+ImportBackupSheet.swift
+ImportContactsSheet.swift
