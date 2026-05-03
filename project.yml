@@ -17,13 +17,16 @@ settings:
 packages:
   VauchiPlatform:
     url: https://gitlab.com/vauchi/vauchi-platform-swift.git
-    # Exact pin (matches ios/project.yml). The earlier `from: "0.35.0"`
-    # range pin caused CI to occasionally re-resolve to 0.35.0 instead
-    # of honouring Package.resolved's 0.36.0 — the runner's SPM mirror
-    # then tried to check out a v0.35.0 commit that wasn't fetched into
-    # the v0.36.0 mirror dir, producing `unable to read tree` errors.
-    # Exact pin removes the version-resolution flexibility entirely.
     version: "0.36.0"
+    # CI mirror script (.gitlab-ci.yml ~line 329) extracts this version
+    # via `sed -n '/vauchi-platform-swift/{n;s/.*"\([^"]*\)".*/\1/p;}'`
+    # — it advances past the URL line and reads the FIRST quoted string
+    # on the next line. Keep the `version:` line immediately after the
+    # URL with no comment in between, otherwise sed picks up a quoted
+    # token from the comment instead and the runner builds the wrong
+    # mirror dir. Use exact-version pin (not `from:`) to match
+    # ios/project.yml and prevent SPM from re-resolving to a different
+    # version when Package.resolved is missing in fresh CI checkouts.
   SnapshotTesting:
     url: https://github.com/pointfreeco/swift-snapshot-testing
     from: "1.17.0"
