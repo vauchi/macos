@@ -18,8 +18,10 @@
 LockScreenView.swift
 
 # --- To-be-retired (G1 targets) --------------------------------------
-# Each is a SwiftUI Sheet that will become CoreScreenView-rendered
+# Each is a SwiftUI Sheet that will become CoreSheetView-rendered
 # once the corresponding core ScreenModel is wired through.
-DeviceLinkSheet.swift
+# DeviceLinkSheet retired 2026-05-03 — inlined CoreSheetView at the
+# call site (VauchiApp). The remaining 2 sheets need core to expose
+# file-picker via the ExchangeCommand pattern (analogous to camera).
 ImportBackupSheet.swift
 ImportContactsSheet.swift

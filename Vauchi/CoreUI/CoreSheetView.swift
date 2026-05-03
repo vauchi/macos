@@ -2,23 +2,24 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// DeviceLinkSheet.swift
-// Pair 5b of `_private/docs/problems/2026-04-28-pure-humble-ui-retire-native-screens`.
+// CoreSheetView.swift
+// Generic SwiftUI Sheet shell that drives the core engine through a
+// named screen subtree, isolated from the main window's
+// `currentScreen`. macOS counterpart of iOS's `CoreScreenView`,
+// adapted for the macOS sheet lifecycle: navigate on appear, render
+// via `ScreenRendererView`, dispatch actions through the shared
+// `PlatformAppEngine`, apply local `ActionResult`s, and emit a
+// `cancel` `UserAction` on user-initiated dismiss when the sheet
+// flow is still active.
 //
-// Pure Humble UI shell — renders the device-link flow via the core
-// `DeviceLinkingEngine`. The cycle-thread session lifecycle is owned
-// by `PlatformAppEngine` (`after_screen_transition` auto-creates and
-// cancels the `MobileDeviceLinkSession` on entry / exit of
-// `AppScreen::DeviceLinking`).
+// Per ADR-021/043, the sheet holds no domain state, no nav decisions,
+// and references no domain types. All flow state lives in core's
+// engine; the sheet is a renderer.
 //
-// Per ADR-021/043 this view holds no domain state, no nav decisions,
-// and references no domain types. It only:
-//   1. Navigates the engine to `device_linking` on appear and renders
-//      whatever screen core publishes (transport selection, QR display,
-//      confirming-device, proximity verification, success/failed —
-//      all driven by core).
-//   2. Emits a `UserAction("cancel")` to core when SwiftUI dismisses
-//      the sheet without core having routed away.
+// Replaces the per-sheet engine glue (loadScreen / handleAction /
+// applyResult / cancelIfStillLinking) that each sheet previously
+// duplicated — see the retired `DeviceLinkSheet` for the prior
+// pattern.
 
 import CoreUIModels
 import SwiftUI
@@ -26,10 +27,21 @@ import SwiftUI
 #if canImport(VauchiPlatform)
     import VauchiPlatform
 
-    struct DeviceLinkSheet: View {
+    struct CoreSheetView: View {
+        /// Core screen name to navigate to on appear (e.g. `"DeviceLinking"`).
+        let screenName: String
+
+        /// Shared `AppViewModel` whose `appEngine` drives the flow.
         @ObservedObject var viewModel: AppViewModel
-        @ObservedObject private var localizationService = LocalizationService.shared
-        @Environment(\.designTokens) private var tokens
+
+        /// Called when core emits `ActionResult.complete` (or
+        /// `wipeComplete`). The caller closes the sheet.
+        let onComplete: () -> Void
+
+        /// Predicate over the current screen ID; if true on `onDisappear`,
+        /// emit `UserAction.actionPressed("cancel")` so core ends the flow.
+        /// Default: never cancel (caller opts in).
+        var cancelIfScreenMatches: (String) -> Bool = { _ in false }
 
         @State private var screen: ScreenModel?
         @State private var error: String?
@@ -39,22 +51,16 @@ import SwiftUI
                 if let screen {
                     ScreenRendererView(screen: screen, onAction: handleAction)
                 } else if let error {
-                    Text(localizationService.t(
-                        "device_link.failed_to_load",
-                        args: ["error": error]
-                    ))
-                    .foregroundColor(.secondary)
-                    .padding()
+                    Text(error)
+                        .foregroundColor(.secondary)
+                        .padding()
                 } else {
                     ProgressView()
                         .padding()
                 }
             }
-            .padding(CGFloat(tokens.spacing.lg))
-            .frame(width: 400)
-            .frame(minHeight: 450)
             .onAppear { loadScreen() }
-            .onDisappear { cancelIfStillLinking() }
+            .onDisappear { cancelIfStillActive() }
         }
 
         // MARK: - Engine glue
@@ -62,7 +68,7 @@ import SwiftUI
         private func loadScreen() {
             do {
                 let json = try viewModel.appEngine.navigateToJson(
-                    screenJson: "\"DeviceLinking\""
+                    screenJson: "\"\(screenName)\""
                 )
                 guard let data = json.data(using: .utf8) else {
                     error = "Invalid JSON"
@@ -96,21 +102,23 @@ import SwiftUI
             switch result {
             case let .updateScreen(screen), let .navigateTo(screen):
                 self.screen = screen
-            case .complete:
-                // Core ended the flow (success / cancel / done). Close sheet.
-                viewModel.showDeviceLinkSheet = false
+            case .complete, .wipeComplete:
+                onComplete()
             default:
-                // Other results don't apply to the device-link subtree.
+                // Other variants (showAlert, openContact, …) belong to
+                // the main window's flow, not the sheet subtree.
                 break
             }
         }
 
-        /// Sheet dismissed without an explicit Cancel tap (e.g. system
-        /// gesture). If core hasn't already routed away from the
-        /// device-link subtree, send `cancel` so the engine ends the
-        /// cycle thread and navigates back.
-        private func cancelIfStillLinking() {
-            guard screen?.screenId.hasPrefix("link_") == true else { return }
+        /// Sheet was dismissed (system gesture, button outside the
+        /// flow, etc.). If core hasn't already routed away from the
+        /// sheet's screen subtree, send `cancel` so the engine ends
+        /// the flow cleanly.
+        private func cancelIfStillActive() {
+            guard let id = screen?.screenId, cancelIfScreenMatches(id) else {
+                return
+            }
             do {
                 let action = UserAction.actionPressed(actionId: "cancel")
                 let actionData = try coreJSONEncoder.encode(action)

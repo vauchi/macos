@@ -299,8 +299,8 @@ import UniformTypeIdentifiers
                 // Load the scan screen — it has camera QR scanning with paste fallback
                 loadScreen()
             case .startDeviceLink:
-                // Sheet content (`DeviceLinkSheet`) navigates the engine
-                // to `DeviceLinking` on appear; `after_screen_transition`
+                // Sheet content (`CoreSheetView` for `"DeviceLinking"`)
+                // navigates the engine on appear; `after_screen_transition`
                 // creates the `MobileDeviceLinkSession` automatically.
                 showDeviceLinkSheet = true
             case .startBackupImport:

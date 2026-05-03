@@ -320,7 +320,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 viewModel.stopQrFrameTimer()
             }
             .sheet(isPresented: $viewModel.showDeviceLinkSheet) {
-                DeviceLinkSheet(viewModel: viewModel)
+                CoreSheetView(
+                    screenName: "DeviceLinking",
+                    viewModel: viewModel,
+                    onComplete: { viewModel.showDeviceLinkSheet = false },
+                    cancelIfScreenMatches: { $0.hasPrefix("link_") }
+                )
+                .padding(20)
+                .frame(width: 400)
+                .frame(minHeight: 450)
             }
             .onReceive(NotificationCenter.default.publisher(for: .vauchiMenuExchange)) { _ in
                 viewModel.navigateTo(screenJson: "\"Exchange\"")
