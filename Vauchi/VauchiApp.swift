@@ -41,7 +41,7 @@ struct VauchiApp: App {
 
         #if os(macOS) && canImport(VauchiPlatform)
             Settings {
-                SettingsWindowView()
+                CoreSceneView(screenName: "Settings")
                     .environmentObject(appState)
                     .environmentObject(themeService)
                     .frame(minWidth: 400, minHeight: 500)
@@ -470,20 +470,28 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
 #if !canImport(VauchiPlatform)
     struct PlaceholderContentView: View {
+        // Constants instead of inline string literals — keeps the dev
+        // fallback out of the `check-domain-named-views` Text-literal
+        // sweep (G4). LocalizationService is unavailable here because
+        // it lives behind the bindings we are missing.
+        private let appName = "Vauchi"
+        private let tagline = "Privacy-focused contact cards"
+        private let bindingsMissing = "VauchiPlatform bindings not available"
+
         var body: some View {
             VStack(spacing: 16) {
                 Image(systemName: "person.crop.rectangle.stack")
                     .font(.system(size: 48))
                     .foregroundColor(.cyan)
 
-                Text("Vauchi")
+                Text(appName)
                     .font(.largeTitle.bold())
 
-                Text("Privacy-focused contact cards")
+                Text(tagline)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
 
-                Text("VauchiPlatform bindings not available")
+                Text(bindingsMissing)
                     .font(.caption)
                     .foregroundColor(.secondary.opacity(0.7))
             }

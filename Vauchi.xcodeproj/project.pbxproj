@@ -63,6 +63,7 @@
 		431503ADA7BCDB0CA94FBDEE /* testWelcomeScreen.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 962C13D56F463655E00BA233 /* testWelcomeScreen.1.png */; };
 		43631E8778F64B024498C964 /* testTextComponentBody.1.png in Resources */ = {isa = PBXBuildFile; fileRef = BF21CF300C61D81BBA57F040 /* testTextComponentBody.1.png */; };
 		448378F56DA9D463363E5A7C /* testActionButtonDisabledAccessibility.1.txt in Resources */ = {isa = PBXBuildFile; fileRef = 7661570C00E05D693455F344 /* testActionButtonDisabledAccessibility.1.txt */; };
+		45685E44E7BFD33F3E76E4FC /* CoreSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5643418785566B51920F9776 /* CoreSceneView.swift */; };
 		45EDBC6D5526AD94E96F8033 /* testHomeScreenDark.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 07158D127A67F8535723755C /* testHomeScreenDark.1.png */; };
 		4718BCB4E146E4166FA5C099 /* testTextComponentSubtitle.1.png in Resources */ = {isa = PBXBuildFile; fileRef = A3A0DA0F1F9BF466F1D07D6E /* testTextComponentSubtitle.1.png */; };
 		478EA49E96D2582348C820EC /* settings.json in Resources */ = {isa = PBXBuildFile; fileRef = 8C92250DB74883B6DE9A0792 /* settings.json */; };
@@ -93,7 +94,6 @@
 		6C775CA748C7BDD8C00321F0 /* testHomeViewWithFields.1.png in Resources */ = {isa = PBXBuildFile; fileRef = AE391D2B30E4ECCA0C1161B7 /* testHomeViewWithFields.1.png */; };
 		6E92A916EC67234553ED4D85 /* LocalizationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C859B6215BADD6A45480D9F /* LocalizationService.swift */; };
 		7017670F8C2EDE1BDBDDAA7B /* testHelpView.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 367C77DA03F258D4B1D9C6FF /* testHelpView.1.png */; };
-		719AC91DB0FAB238A99B310A /* SettingsWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB9707EE0B0A13EB3B25D347 /* SettingsWindowView.swift */; };
 		71CABD3B8764AE19DD69EE44 /* testInfoPanelWithoutIcon.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 32949B7AFAC3435ABA7D93FD /* testInfoPanelWithoutIcon.1.png */; };
 		72989B5EB5FC96F172CB1C49 /* testAddFieldsScreen.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 22CBF2E4029854CB3051D98A /* testAddFieldsScreen.1.png */; };
 		7596A973F4CBE39E516B5EBF /* testSettingsScreen.1.png in Resources */ = {isa = PBXBuildFile; fileRef = EBA2E942944A9B0DF10E7D44 /* testSettingsScreen.1.png */; };
@@ -296,6 +296,7 @@
 		549D880176A65B3914B77EAC /* testTextInputWithErrorAccessibility.1.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = testTextInputWithErrorAccessibility.1.txt; sourceTree = "<group>"; };
 		554291CB7224022A54BC954F /* AppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewModel.swift; sourceTree = "<group>"; };
 		55B70A19F1E750FF86294C16 /* testContactListAccessibility.1.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = testContactListAccessibility.1.txt; sourceTree = "<group>"; };
+		5643418785566B51920F9776 /* CoreSceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreSceneView.swift; sourceTree = "<group>"; };
 		5A0105ADEB1ADDB86013DBCF /* testLanguageSettingsView.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testLanguageSettingsView.1.png; sourceTree = "<group>"; };
 		5A2DFACA328F9C9EBEF5C3A2 /* testCardPreviewDark.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testCardPreviewDark.1.png; sourceTree = "<group>"; };
 		5AAC9A42D453BD1CCD3905C7 /* testFieldListMultipleFieldTypes.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testFieldListMultipleFieldTypes.1.png; sourceTree = "<group>"; };
@@ -399,7 +400,6 @@
 		D6E1FE2EE5B0C2CC821F5397 /* testInfoPanelDark.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testInfoPanelDark.1.png; sourceTree = "<group>"; };
 		D95AE616E6EB683927F6A57E /* testRecoveryView.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testRecoveryView.1.png; sourceTree = "<group>"; };
 		D98D690995A0DF8546684FA8 /* testSetupViewDark.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testSetupViewDark.1.png; sourceTree = "<group>"; };
-		DB9707EE0B0A13EB3B25D347 /* SettingsWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindowView.swift; sourceTree = "<group>"; };
 		E31A56C292E9073A8A07BAF0 /* testTextInputWithValidationError.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testTextInputWithValidationError.1.png; sourceTree = "<group>"; };
 		E919A41F13031155AC578B3E /* testInlineConfirmDefault.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testInlineConfirmDefault.1.png; sourceTree = "<group>"; };
 		EA272578E81247FB65A5C145 /* ComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentView.swift; sourceTree = "<group>"; };
@@ -595,9 +595,9 @@
 		A9A5EC2572980F7E8930C6E3 /* CoreUI */ = {
 			isa = PBXGroup;
 			children = (
+				5643418785566B51920F9776 /* CoreSceneView.swift */,
 				41C908E5750753A3AA73B98E /* CoreSheetView.swift */,
 				2BCD1112BEA2A776E27B15C3 /* ScreenRendererView.swift */,
-				DB9707EE0B0A13EB3B25D347 /* SettingsWindowView.swift */,
 				CE42D30F93ED2ECE0C78FB70 /* Components */,
 			);
 			path = CoreUI;
@@ -1115,6 +1115,7 @@
 				8F1D5438434B846475597477 /* ComponentView.swift in Sources */,
 				1ACE579015129CE4204CAFA8 /* ConfirmationDialogComponentView.swift in Sources */,
 				23D1EC2E1C8E3AB20680980F /* ContactListComponentView.swift in Sources */,
+				45685E44E7BFD33F3E76E4FC /* CoreSceneView.swift in Sources */,
 				E86EA35921647177C60EB7B2 /* CoreSheetView.swift in Sources */,
 				A20441612CDA08A586DADCC0 /* DirectSendService.swift in Sources */,
 				C1698574A9244D5FB1EC8EB9 /* DividerComponentView.swift in Sources */,
@@ -1135,7 +1136,6 @@
 				3202529BECD6DFEEB2B2BECF /* ScreenCaptureProtection.swift in Sources */,
 				C2AA1DC7FD7FA22C155F70BD /* ScreenRendererView.swift in Sources */,
 				09004B0A2E938952E9D267FC /* SettingsGroupComponentView.swift in Sources */,
-				719AC91DB0FAB238A99B310A /* SettingsWindowView.swift in Sources */,
 				C0C3AE19386A7C486E82B792 /* SliderComponentView.swift in Sources */,
 				9F92EEBB337032A28D7F5C8C /* StatusIndicatorComponentView.swift in Sources */,
 				C48401965743DD70C01F2F95 /* SystemTrayManager.swift in Sources */,
