@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: 2026 Mattia Egloff <mattia.egloff@pm.me>
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Hardcoded SwiftUI `Text("Foo")` literal count — Humble UI G4 ratchet.
+#
+# Per ADR-021/043 + ADR-038, every user-visible string lives in
+# `locales/*.json` and is read via `LocalizationService.shared.t("foo.key")`.
+# A `Text("Foo")` literal bypasses i18n.
+#
+# Scope: `Vauchi/Views/`, `Vauchi/CoreUI/`, and `Vauchi/VauchiApp.swift`.
+# Scanned by `just lint macos` via `scripts/scripts/check-text-literal-count.sh`.
+#
+# G4 closed in Phase 1c (macos!201): the only 2 prior matches lived in
+# `PlaceholderContentView`'s `#if !canImport(VauchiPlatform)` dev fallback
+# and moved to `let` constants. The baseline is 0 and any reintroduction
+# must be justified — typically via locale keys, occasionally via constants
+# in pre-binding fallback code.
+
+0
