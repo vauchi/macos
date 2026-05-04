@@ -396,15 +396,20 @@ build:debug:
       # 2. Per-version mirror lives outside the build dir so it survives
       # cache wipes and is shared across ios/macos jobs on this runner.
       MIRROR="$HOME/.cache/vauchi-platform-swift-mirror/v$V"
-      # Bumped (-v4) to invalidate v3 caches built during the gitlab.com
-      # eventual-consistency window after the v0.25.0 force-tag-move. The
-      # first v3 rebuild ran before the new tag SHA propagated to all git
-      # replicas, so `git clone --branch v0.25.0` re-served the broken
-      # manifest and the sanity checks below didn't catch it (they only
-      # validate `let version = ...` and the env-var switch — both still
-      # textually present in the broken Package.swift). Prior bumps:
-      # v3 (force-moved v0.25.0 tag), v2 (symlink-fix invalidation).
-      MIRROR_READY="$MIRROR/.ci-mirror-ready-v4"
+      # Bumped (-v5) on 2026-05-04 to invalidate v4 caches that
+      # carried orphaned SHA `daab1b91dbaf9f9c6c13ced7e5a256ab53a8d9cc`
+      # — the runner's per-version mirror dir was stamped MIRROR_READY
+      # but its tag pointed at a SHA that no longer exists in
+      # vauchi-platform-swift (force-tag-move during the v0.39.0 →
+      # v0.41.0 transition). SPM resolve then failed with
+      # "Couldn't check out revision daab1b91…" on every macos
+      # pipeline (verified macos!207 bot bump + macos!208 file rename
+      # MR both red). Bumping the stamp forces a fresh shallow clone
+      # of `v$V` from gitlab.com, which sanity checks 1+2+3 below
+      # then validate. Prior bumps: v4 (gitlab eventual-consistency
+      # window after v0.25.0 force-tag-move), v3 (force-moved
+      # v0.25.0 tag), v2 (symlink-fix invalidation).
+      MIRROR_READY="$MIRROR/.ci-mirror-ready-v5"
 
       if [ -f "$MIRROR_READY" ]; then
         echo "  Mirror cache hit at $MIRROR"
