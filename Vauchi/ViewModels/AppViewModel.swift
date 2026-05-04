@@ -301,14 +301,6 @@ import UniformTypeIdentifiers
                 // navigates the engine on appear; `after_screen_transition`
                 // creates the `MobileDeviceLinkSession` automatically.
                 showDeviceLinkSheet = true
-            case .startBackupImport:
-                // Phase 2B retired StartBackupImport emission on core —
-                // backup-restore now goes through Onboarding's
-                // `restore_backup` action which emits FilePickFromUser.
-                // Variant kept in the enum as a chrome hint per problem
-                // record G2; this no-op handles legacy emitters until
-                // Phase 4 retires the variant entirely.
-                break
             case let .exchangeCommands(commands):
                 dispatchExchangeCommands(commands)
                 loadScreen()

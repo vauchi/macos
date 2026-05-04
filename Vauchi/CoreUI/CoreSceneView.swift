@@ -108,14 +108,6 @@ import SwiftUI
                 // Setting changed — reload to reflect new state. Scenes
                 // (unlike sheets) stay open after `.complete`.
                 loadScreen()
-            case .startBackupImport:
-                // Phase 2B retired StartBackupImport emission on core
-                // (backup-restore now flows through Onboarding's
-                // `restore_backup` → FilePickFromUser path). The variant
-                // remains in the enum as a chrome hint until Phase 4;
-                // no-op so we stay forward-compatible with any straggler
-                // emitter and don't open a deleted sheet.
-                break
             case .startDeviceLink:
                 // Sheet content (`CoreSheetView` for `"DeviceLinking"`)
                 // navigates the engine on appear; core's
