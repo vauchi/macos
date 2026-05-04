@@ -126,7 +126,7 @@ final class AccessibilityTests: XCTestCase {
             ],
             searchable: true
         )
-        let view = ContactListComponentView(component: component, onAction: noOp)
+        let view = ListComponentView(component: component, onAction: noOp)
         assertAccessibilitySnapshot(of: view, height: 250, record: isRecording)
     }
 

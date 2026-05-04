@@ -198,7 +198,7 @@ final class CoreUIComponentTests: XCTestCase {
         assertComponentSnapshot(of: view, height: 350, record: isRecording)
     }
 
-    // MARK: - CardPreviewComponentView
+    // MARK: - PreviewComponentView
 
     func testCardPreviewMinimal() {
         let component = CardPreviewComponent(
@@ -208,7 +208,7 @@ final class CoreUIComponentTests: XCTestCase {
             groupViews: [],
             selectedGroup: nil
         )
-        let view = CardPreviewComponentView(component: component, onAction: noOp)
+        let view = PreviewComponentView(component: component, onAction: noOp)
         assertComponentSnapshot(of: view, height: 300, record: isRecording)
     }
 
@@ -239,7 +239,7 @@ final class CoreUIComponentTests: XCTestCase {
             // is selected: every field with `.shown` or `.groups` visibility.
             visibleFields: fields
         )
-        let view = CardPreviewComponentView(component: component, onAction: noOp)
+        let view = PreviewComponentView(component: component, onAction: noOp)
         assertComponentSnapshot(of: view, height: 400, record: isRecording)
     }
 
@@ -290,7 +290,7 @@ final class CoreUIComponentTests: XCTestCase {
             // path through `build_visible_fields` keeps it.
             visibleFields: fields
         )
-        let view = CardPreviewComponentView(component: component, onAction: noOp)
+        let view = PreviewComponentView(component: component, onAction: noOp)
         assertComponentSnapshot(of: view, height: 450, record: isRecording)
     }
 
@@ -464,7 +464,7 @@ final class CoreUIComponentTests: XCTestCase {
         assertComponentSnapshot(of: view, height: 120, record: isRecording)
     }
 
-    // MARK: - ContactListComponentView
+    // MARK: - ListComponentView
 
     func testContactListEmpty() {
         let component = ContactListComponent(
@@ -472,7 +472,7 @@ final class CoreUIComponentTests: XCTestCase {
             contacts: [],
             searchable: false
         )
-        let view = ContactListComponentView(component: component, onAction: noOp)
+        let view = ListComponentView(component: component, onAction: noOp)
         assertComponentSnapshot(of: view, height: 100, record: isRecording)
     }
 
@@ -486,7 +486,7 @@ final class CoreUIComponentTests: XCTestCase {
             ],
             searchable: true
         )
-        let view = ContactListComponentView(component: component, onAction: noOp)
+        let view = ListComponentView(component: component, onAction: noOp)
         assertComponentSnapshot(of: view, height: 350, record: isRecording)
     }
 
@@ -599,7 +599,7 @@ final class CoreUIComponentTests: XCTestCase {
             visibleFields: fields
         )
         assertDarkComponentSnapshot(
-            of: CardPreviewComponentView(component: component, onAction: noOp),
+            of: PreviewComponentView(component: component, onAction: noOp),
             height: 400,
             record: isRecording
         )

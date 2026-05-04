@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// CardPreviewComponentView.swift
+// PreviewComponentView.swift
 // Renders a CardPreview component from core UI (macOS)
 
 import CoreUIModels
@@ -12,7 +12,7 @@ import SwiftUI
 #endif
 
 /// Renders a core `Component::CardPreview` as a styled card with group views.
-struct CardPreviewComponentView: View {
+struct PreviewComponentView: View {
     let component: CardPreviewComponent
     let onAction: (UserAction) -> Void
 
