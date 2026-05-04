@@ -345,10 +345,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             .onReceive(NotificationCenter.default.publisher(for: .vauchiMenuMore)) { _ in
                 viewModel.navigateTo(screenJson: "\"More\"")
             }
-            .sheet(isPresented: $viewModel.showImportBackupSheet) {
-                ImportBackupSheet()
-                    .environmentObject(viewModel)
-            }
             // Phase 3 retirement of `2026-05-02-macos-humble-ui-retirement` G1:
             // emit core's `import_contacts` action instead of opening
             // the bespoke ImportContactsSheet. Sequence:

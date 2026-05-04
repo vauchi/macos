@@ -18,9 +18,17 @@
 LockScreenView.swift
 
 # --- To-be-retired (G1 targets) --------------------------------------
-# Each is a SwiftUI Sheet that will become CoreSheetView-rendered
-# once the corresponding core ScreenModel is wired through.
-# DeviceLinkSheet retired 2026-05-03 — inlined CoreSheetView at the
-# call site (VauchiApp). The remaining 2 sheets need core to expose
-# file-picker via the ExchangeCommand pattern (analogous to camera).
-ImportBackupSheet.swift
+# All sheets retired 2026-05-04 after the file-picker
+# `ExchangeCommand` shipped (Phase 2A/2B/3 of
+# `2026-05-03-core-file-picker-command`):
+# - DeviceLinkSheet retired 2026-05-03 — inlined CoreSheetView at
+#   the VauchiApp call site.
+# - ImportContactsSheet retired 2026-05-04 in `tidy/retire-import-
+#   contacts-sheet` — menu rewired through MoreEngine's
+#   `import_contacts` action.
+# - ImportBackupSheet retired 2026-05-04 (this MR) — orphan-
+#   confirmed: post-Phase-2B no caller emits StartBackupImport on
+#   core; the variant remains in the enum as a chrome hint
+#   (handled as `case ... break` in AppViewModel + CoreSceneView)
+#   and Phase 4 retires it.
+# G1 closed for macOS.

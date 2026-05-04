@@ -20,7 +20,6 @@ import UniformTypeIdentifiers
         @Published var alertMessage: AlertMessage?
         @Published var toastMessage: String?
         @Published var toastUndoActionId: String?
-        @Published var showImportBackupSheet = false
         @Published var showDeviceLinkSheet = false
         /// Core-owned top-level sidebar entries. Each element carries
         /// the screen_id (snake_case), a locale-resolved label, the
@@ -303,7 +302,13 @@ import UniformTypeIdentifiers
                 // creates the `MobileDeviceLinkSession` automatically.
                 showDeviceLinkSheet = true
             case .startBackupImport:
-                showImportBackupSheet = true
+                // Phase 2B retired StartBackupImport emission on core —
+                // backup-restore now goes through Onboarding's
+                // `restore_backup` action which emits FilePickFromUser.
+                // Variant kept in the enum as a chrome hint per problem
+                // record G2; this no-op handles legacy emitters until
+                // Phase 4 retires the variant entirely.
+                break
             case let .exchangeCommands(commands):
                 dispatchExchangeCommands(commands)
                 loadScreen()
