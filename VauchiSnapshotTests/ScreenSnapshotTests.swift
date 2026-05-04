@@ -140,12 +140,12 @@ final class ScreenSnapshotTests: XCTestCase {
             title: "Your Card",
             subtitle: "Alice",
             components: [
-                .cardPreview(CardPreviewComponent(
+                .preview(PreviewComponent(
                     name: "Alice",
                     avatarData: nil,
                     fields: [],
-                    groupViews: [],
-                    selectedGroup: nil
+                    variants: [],
+                    selectedVariant: nil
                 )),
             ],
             actions: [
@@ -157,21 +157,21 @@ final class ScreenSnapshotTests: XCTestCase {
 
     func testHomeScreenWithFields() {
         let fields = [
-            FieldDisplay(
+            Field(
                 id: "f1",
                 fieldType: "email",
                 label: "Personal Email",
                 value: "alice@example.com",
                 visibility: .shown
             ),
-            FieldDisplay(
+            Field(
                 id: "f2",
                 fieldType: "phone",
                 label: "Mobile",
                 value: "+41 79 123 45 67",
                 visibility: .shown
             ),
-            FieldDisplay(
+            Field(
                 id: "f3",
                 fieldType: "website",
                 label: "Website",
@@ -184,12 +184,12 @@ final class ScreenSnapshotTests: XCTestCase {
             title: "Your Card",
             subtitle: "Alice",
             components: [
-                .cardPreview(CardPreviewComponent(
+                .preview(PreviewComponent(
                     name: "Alice",
                     avatarData: nil,
                     fields: fields,
-                    groupViews: [],
-                    selectedGroup: nil,
+                    variants: [],
+                    selectedVariant: nil,
                     visibleFields: fields
                 )),
             ],
@@ -206,7 +206,7 @@ final class ScreenSnapshotTests: XCTestCase {
             title: "Contacts",
             subtitle: "No contacts yet. Exchange cards in person to get started.",
             components: [
-                .contactList(ContactListComponent(
+                .list(ListComponent(
                     id: "contact_list",
                     contacts: [],
                     searchable: false
@@ -224,24 +224,24 @@ final class ScreenSnapshotTests: XCTestCase {
             screenId: "contacts",
             title: "Contacts",
             components: [
-                .contactList(ContactListComponent(
+                .list(ListComponent(
                     id: "contact_list",
                     contacts: [
-                        ContactItem(
+                        Item(
                             id: "c1",
                             name: "Bob",
                             subtitle: "Last updated 2h ago",
                             avatarInitials: "B",
                             status: nil
                         ),
-                        ContactItem(
+                        Item(
                             id: "c2",
                             name: "Charlie",
                             subtitle: "3 fields shared",
                             avatarInitials: "C",
                             status: nil
                         ),
-                        ContactItem(
+                        Item(
                             id: "c3",
                             name: "Diana",
                             subtitle: "Pending verification",
@@ -405,7 +405,7 @@ final class ScreenSnapshotTests: XCTestCase {
             title: "Your Card",
             subtitle: "Alice",
             components: [
-                .cardPreview(makeDarkHomeCardPreview()),
+                .preview(makeDarkHomeCardPreview()),
             ],
             actions: [
                 ScreenAction(id: "edit_card", label: "Edit Card", style: .secondary, enabled: true),
@@ -414,16 +414,16 @@ final class ScreenSnapshotTests: XCTestCase {
         assertDarkScreenSnapshot(of: screen, record: isRecording)
     }
 
-    private func makeDarkHomeCardPreview() -> CardPreviewComponent {
+    private func makeDarkHomeCardPreview() -> PreviewComponent {
         let fields = [
-            FieldDisplay(
+            Field(
                 id: "f1",
                 fieldType: "email",
                 label: "Email",
                 value: "alice@example.com",
                 visibility: .shown
             ),
-            FieldDisplay(
+            Field(
                 id: "f2",
                 fieldType: "phone",
                 label: "Mobile",
@@ -431,12 +431,12 @@ final class ScreenSnapshotTests: XCTestCase {
                 visibility: .shown
             ),
         ]
-        return CardPreviewComponent(
+        return PreviewComponent(
             name: "Alice",
             avatarData: nil,
             fields: fields,
-            groupViews: [],
-            selectedGroup: nil,
+            variants: [],
+            selectedVariant: nil,
             visibleFields: fields
         )
     }
@@ -446,17 +446,17 @@ final class ScreenSnapshotTests: XCTestCase {
             screenId: "contacts",
             title: "Contacts",
             components: [
-                .contactList(ContactListComponent(
+                .list(ListComponent(
                     id: "contact_list",
                     contacts: [
-                        ContactItem(
+                        Item(
                             id: "c1",
                             name: "Bob",
                             subtitle: "Last updated 2h ago",
                             avatarInitials: "B",
                             status: nil
                         ),
-                        ContactItem(id: "c2", name: "Charlie", subtitle: nil, avatarInitials: "C", status: nil),
+                        Item(id: "c2", name: "Charlie", subtitle: nil, avatarInitials: "C", status: nil),
                     ],
                     searchable: true
                 )),

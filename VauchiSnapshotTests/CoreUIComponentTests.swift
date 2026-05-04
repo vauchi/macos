@@ -150,14 +150,14 @@ final class CoreUIComponentTests: XCTestCase {
         let component = FieldListComponent(
             id: "fields",
             fields: [
-                FieldDisplay(
+                Field(
                     id: "f1",
                     fieldType: "email",
                     label: "Email",
                     value: "alice@example.com",
                     visibility: .shown
                 ),
-                FieldDisplay(
+                Field(
                     id: "f2",
                     fieldType: "phone",
                     label: "Mobile",
@@ -176,14 +176,14 @@ final class CoreUIComponentTests: XCTestCase {
         let component = FieldListComponent(
             id: "fields",
             fields: [
-                FieldDisplay(
+                Field(
                     id: "f1",
                     fieldType: "email",
                     label: "Email",
                     value: "alice@example.com",
                     visibility: .groups(["Family", "Friends"])
                 ),
-                FieldDisplay(
+                Field(
                     id: "f2",
                     fieldType: "phone",
                     label: "Mobile",
@@ -201,12 +201,12 @@ final class CoreUIComponentTests: XCTestCase {
     // MARK: - PreviewComponentView
 
     func testCardPreviewMinimal() {
-        let component = CardPreviewComponent(
+        let component = PreviewComponent(
             name: "Alice",
             avatarData: nil,
             fields: [],
-            groupViews: [],
-            selectedGroup: nil
+            variants: [],
+            selectedVariant: nil
         )
         let view = PreviewComponentView(component: component, onAction: noOp)
         assertComponentSnapshot(of: view, height: 300, record: isRecording)
@@ -214,14 +214,14 @@ final class CoreUIComponentTests: XCTestCase {
 
     func testCardPreviewWithFields() {
         let fields = [
-            FieldDisplay(
+            Field(
                 id: "f1",
                 fieldType: "email",
                 label: "Email",
                 value: "alice@example.com",
                 visibility: .shown
             ),
-            FieldDisplay(
+            Field(
                 id: "f2",
                 fieldType: "phone",
                 label: "Mobile",
@@ -229,12 +229,12 @@ final class CoreUIComponentTests: XCTestCase {
                 visibility: .shown
             ),
         ]
-        let component = CardPreviewComponent(
+        let component = PreviewComponent(
             name: "Alice",
             avatarData: nil,
             fields: fields,
-            groupViews: [],
-            selectedGroup: nil,
+            variants: [],
+            selectedVariant: nil,
             // Match what core's `build_visible_fields` emits when no group
             // is selected: every field with `.shown` or `.groups` visibility.
             visibleFields: fields
@@ -245,7 +245,7 @@ final class CoreUIComponentTests: XCTestCase {
 
     func testCardPreviewWithGroups() {
         let fields = [
-            FieldDisplay(
+            Field(
                 id: "f1",
                 fieldType: "email",
                 label: "Email",
@@ -253,16 +253,16 @@ final class CoreUIComponentTests: XCTestCase {
                 visibility: .groups(["Family", "Friends"])
             ),
         ]
-        let component = CardPreviewComponent(
+        let component = PreviewComponent(
             name: "Alice",
             avatarData: nil,
             fields: fields,
-            groupViews: [
-                GroupCardView(
-                    groupName: "Family",
+            variants: [
+                PreviewVariant(
+                    variantId: "Family",
                     displayName: "Alice",
                     visibleFields: [
-                        FieldDisplay(
+                        Field(
                             id: "f1",
                             fieldType: "email",
                             label: "Email",
@@ -271,11 +271,11 @@ final class CoreUIComponentTests: XCTestCase {
                         ),
                     ]
                 ),
-                GroupCardView(
-                    groupName: "Friends",
+                PreviewVariant(
+                    variantId: "Friends",
                     displayName: "Ali",
                     visibleFields: [
-                        FieldDisplay(
+                        Field(
                             id: "f1",
                             fieldType: "email",
                             label: "Email",
@@ -285,7 +285,7 @@ final class CoreUIComponentTests: XCTestCase {
                     ]
                 ),
             ],
-            selectedGroup: nil,
+            selectedVariant: nil,
             // Field has `.groups` visibility, so the no-group-selected
             // path through `build_visible_fields` keeps it.
             visibleFields: fields
@@ -467,7 +467,7 @@ final class CoreUIComponentTests: XCTestCase {
     // MARK: - ListComponentView
 
     func testContactListEmpty() {
-        let component = ContactListComponent(
+        let component = ListComponent(
             id: "contacts",
             contacts: [],
             searchable: false
@@ -477,12 +477,12 @@ final class CoreUIComponentTests: XCTestCase {
     }
 
     func testContactListWithContacts() {
-        let component = ContactListComponent(
+        let component = ListComponent(
             id: "contacts",
             contacts: [
-                ContactItem(id: "c1", name: "Bob", subtitle: "Last updated 2h ago", avatarInitials: "B", status: nil),
-                ContactItem(id: "c2", name: "Charlie", subtitle: nil, avatarInitials: "C", status: "pending"),
-                ContactItem(id: "c3", name: "Diana", subtitle: "3 fields shared", avatarInitials: "D", status: nil),
+                Item(id: "c1", name: "Bob", subtitle: "Last updated 2h ago", avatarInitials: "B", status: nil),
+                Item(id: "c2", name: "Charlie", subtitle: nil, avatarInitials: "C", status: "pending"),
+                Item(id: "c3", name: "Diana", subtitle: "3 fields shared", avatarInitials: "D", status: nil),
             ],
             searchable: true
         )
@@ -575,14 +575,14 @@ final class CoreUIComponentTests: XCTestCase {
 
     func testCardPreviewDark() {
         let fields = [
-            FieldDisplay(
+            Field(
                 id: "f1",
                 fieldType: "email",
                 label: "Email",
                 value: "alice@example.com",
                 visibility: .shown
             ),
-            FieldDisplay(
+            Field(
                 id: "f2",
                 fieldType: "phone",
                 label: "Mobile",
@@ -590,12 +590,12 @@ final class CoreUIComponentTests: XCTestCase {
                 visibility: .shown
             ),
         ]
-        let component = CardPreviewComponent(
+        let component = PreviewComponent(
             name: "Alice",
             avatarData: nil,
             fields: fields,
-            groupViews: [],
-            selectedGroup: nil,
+            variants: [],
+            selectedVariant: nil,
             visibleFields: fields
         )
         assertDarkComponentSnapshot(
