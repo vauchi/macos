@@ -3,7 +3,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 // PreviewComponentView.swift
-// Renders a CardPreview component from core UI (macOS)
+// Renders a Preview component from core UI (macOS, Wire Humble — variants
+// replace the old contact-specific group views).
 
 import CoreUIModels
 import SwiftUI
@@ -11,9 +12,13 @@ import SwiftUI
     import VauchiPlatform
 #endif
 
-/// Renders a core `Component::CardPreview` as a styled card with group views.
+/// Renders a core `Component::Preview` as a styled card with optional
+/// variant tabs. The renderer doesn't know what kind of thing the
+/// preview represents — engines populate `variants` with whatever
+/// alternate looks make sense (group views today; per-locale, per-
+/// relationship, etc. tomorrow).
 struct PreviewComponentView: View {
-    let component: CardPreviewComponent
+    let component: PreviewComponent
     let onAction: (UserAction) -> Void
 
     @Environment(\.designTokens) private var tokens
@@ -22,9 +27,9 @@ struct PreviewComponentView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            // Group selector (if groups exist)
-            if !component.groupViews.isEmpty {
-                groupSelector
+            // Variant selector (if alternate views exist)
+            if !component.variants.isEmpty {
+                variantSelector
             }
 
             // Card
@@ -36,23 +41,23 @@ struct PreviewComponentView: View {
         ))
     }
 
-    private var groupSelector: some View {
+    private var variantSelector: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
                 // "All" tab
-                groupTab(
+                variantTab(
                     name: localizationService.t("card_preview.all_groups"),
-                    isSelected: component.selectedGroup == nil
+                    isSelected: component.selectedVariant == nil
                 ) {
                     onAction(.groupViewSelected(groupName: nil))
                 }
 
-                ForEach(component.groupViews) { groupView in
-                    groupTab(
-                        name: groupView.groupName,
-                        isSelected: component.selectedGroup == groupView.groupName
+                ForEach(component.variants) { variant in
+                    variantTab(
+                        name: variant.displayName,
+                        isSelected: component.selectedVariant == variant.variantId
                     ) {
-                        onAction(.groupViewSelected(groupName: groupView.groupName))
+                        onAction(.groupViewSelected(groupName: variant.variantId))
                     }
                 }
             }
@@ -60,7 +65,7 @@ struct PreviewComponentView: View {
         }
     }
 
-    private func groupTab(name: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
+    private func variantTab(name: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Text(name)
                 .font(.subheadline.weight(isSelected ? .semibold : .regular))
@@ -107,7 +112,7 @@ struct PreviewComponentView: View {
                         .padding()
                 } else {
                     ForEach(fields) { field in
-                        CardFieldRow(field: field)
+                        PreviewFieldRow(field: field)
                     }
                 }
             }
@@ -143,16 +148,16 @@ struct PreviewComponentView: View {
     }
 
     private var currentDisplayName: String {
-        if let selectedGroup = component.selectedGroup,
-           let groupView = component.groupViews.first(where: { $0.groupName == selectedGroup })
+        if let selectedVariant = component.selectedVariant,
+           let variant = component.variants.first(where: { $0.variantId == selectedVariant })
         {
-            return groupView.displayName
+            return variant.displayName
         }
         return component.name
     }
 
-    private var currentFields: [FieldDisplay] {
-        // Core's `build_visible_fields` does the selectedGroup branch + the
+    private var currentFields: [Field] {
+        // Core's `build_visible_fields` does the selectedVariant branch + the
         // visibility filter identically across frontends. Render the
         // pre-computed list directly — no fallback. Test fixtures are part
         // of the contract: they must populate `visibleFields:` matching
@@ -161,8 +166,8 @@ struct PreviewComponentView: View {
     }
 }
 
-struct CardFieldRow: View {
-    let field: FieldDisplay
+struct PreviewFieldRow: View {
+    let field: Field
 
     @Environment(\.designTokens) private var tokens
     @ObservedObject private var localizationService = LocalizationService.shared

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 // ListComponentView.swift
-// Renders a ContactList component from core UI (macOS)
+// Renders a List component from core UI (macOS, Wire Humble — domain-agnostic).
 
 import CoreUIModels
 import SwiftUI
@@ -11,9 +11,11 @@ import SwiftUI
     import VauchiPlatform
 #endif
 
-/// Renders a core `Component::ContactList` as a searchable list of contacts.
+/// Renders a core `Component::List` as a searchable list of items. The
+/// renderer doesn't know what kind of items it's rendering — engines
+/// produce UI-shaped `Item`s from any domain (contacts, decoys, members).
 struct ListComponentView: View {
-    let component: ContactListComponent
+    let component: ListComponent
     let onAction: (UserAction) -> Void
 
     @Environment(\.designTokens) private var tokens
@@ -32,12 +34,12 @@ struct ListComponentView: View {
             }
 
             VStack(spacing: 0) {
-                ForEach(component.contacts) { contact in
-                    ContactItemRow(contact: contact) {
-                        onAction(.listItemSelected(componentId: component.id, itemId: contact.id))
+                ForEach(component.items) { item in
+                    ItemRow(item: item) {
+                        onAction(.listItemSelected(componentId: component.id, itemId: item.id))
                     }
 
-                    if contact.id != component.contacts.last?.id {
+                    if item.id != component.items.last?.id {
                         Divider()
                             .padding(.leading, 60)
                     }
@@ -50,8 +52,8 @@ struct ListComponentView: View {
     }
 }
 
-struct ContactItemRow: View {
-    let contact: ContactItem
+struct ItemRow: View {
+    let item: Item
     let onTap: () -> Void
 
     @Environment(\.designTokens) private var tokens
@@ -61,7 +63,7 @@ struct ContactItemRow: View {
         Button(action: onTap) {
             HStack(spacing: 12) {
                 // Avatar circle with initials
-                Text(contact.avatarInitials)
+                Text(item.avatarInitials)
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(.white)
                     .frame(width: 40, height: 40)
@@ -69,11 +71,11 @@ struct ContactItemRow: View {
                     .clipShape(Circle())
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(contact.name)
+                    Text(item.name)
                         .font(.body)
                         .foregroundColor(.primary)
 
-                    if let subtitle = contact.subtitle {
+                    if let subtitle = item.subtitle {
                         Text(subtitle)
                             .font(.caption)
                             .foregroundColor(.secondary)
@@ -82,7 +84,7 @@ struct ContactItemRow: View {
 
                 Spacer()
 
-                if let status = contact.status {
+                if let status = item.status {
                     Text(status)
                         .font(.caption)
                         .foregroundColor(.secondary)
@@ -98,8 +100,8 @@ struct ContactItemRow: View {
         }
         .buttonStyle(.plain)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel(contact.a11y?.label ?? contact.name)
-        .accessibilityHint(contact.a11y?.hint ?? contact.subtitle ?? "")
+        .accessibilityLabel(item.a11y?.label ?? item.name)
+        .accessibilityHint(item.a11y?.hint ?? item.subtitle ?? "")
         .accessibilityAddTraits(.isButton)
     }
 }
