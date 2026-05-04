@@ -405,6 +405,11 @@ import UniformTypeIdentifiers
                     sendHardwareUnavailable(transport: "PhotoLibrary")
                 case .imageCaptureFromCamera:
                     sendHardwareUnavailable(transport: "Camera")
+                case .filePickFromUser:
+                    // Stub: real NSOpenPanel handler ships with the macOS arm
+                    // of 2026-05-03-core-file-picker-command. Reporting
+                    // cancellation lets core's restore/import flows fall back.
+                    sendHardwareEvent(.filePickCancelledByUser)
                 case .unknown:
                     // ADR-031: report unsupported commands so core can handle fallback
                     sendHardwareUnavailable(transport: "unsupported-command")
