@@ -53,8 +53,14 @@ struct PreviewComponentView: View {
                 }
 
                 ForEach(component.variants) { variant in
+                    // Tab label uses `variantId` (the stable engine
+                    // identifier — for contact-card variants today
+                    // this is the group name, e.g. "Family").
+                    // `displayName` is the contact's per-variant name
+                    // and is rendered in `cardView`'s header below,
+                    // not on the tab. Preserves pre-Wire-Humble UX.
                     variantTab(
-                        name: variant.displayName,
+                        name: variant.variantId,
                         isSelected: component.selectedVariant == variant.variantId
                     ) {
                         onAction(.groupViewSelected(groupName: variant.variantId))
