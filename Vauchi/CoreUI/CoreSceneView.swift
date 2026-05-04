@@ -118,8 +118,9 @@ import SwiftUI
                 break
             case .startDeviceLink:
                 // Sheet content (`CoreSheetView` for `"DeviceLinking"`)
-                // navigates the engine on appear; `after_screen_transition`
-                // creates the `MobileDeviceLinkSession` automatically.
+                // navigates the engine on appear; core's
+                // `after_screen_transition` hook owns the orchestrator
+                // session lifecycle, so the view just flips the sheet flag.
                 appState.viewModel?.showDeviceLinkSheet = true
             default:
                 // Other results (alerts, urls, …) — reload the scene so
