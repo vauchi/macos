@@ -24,4 +24,3 @@ LockScreenView.swift
 # call site (VauchiApp). The remaining 2 sheets need core to expose
 # file-picker via the ExchangeCommand pattern (analogous to camera).
 ImportBackupSheet.swift
-ImportContactsSheet.swift

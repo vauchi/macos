@@ -21,7 +21,6 @@ import UniformTypeIdentifiers
         @Published var toastMessage: String?
         @Published var toastUndoActionId: String?
         @Published var showImportBackupSheet = false
-        @Published var showImportContactsSheet = false
         @Published var showDeviceLinkSheet = false
         /// Core-owned top-level sidebar entries. Each element carries
         /// the screen_id (snake_case), a locale-resolved label, the

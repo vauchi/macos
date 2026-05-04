@@ -144,7 +144,6 @@
 		B563E7C8C786433BB4392AF3 /* testSettingsView.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 9ED684F1F87BD46FD5FFE578 /* testSettingsView.1.png */; };
 		B7538752D99FA9DB91BC9FF9 /* FieldListComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8193F0DBE26DA2026C2A4D5E /* FieldListComponentView.swift */; };
 		B7FF1459323990242EB469DC /* EditableTextComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98DF34CD2C6C3C8226D07C0B /* EditableTextComponentView.swift */; };
-		BA8A3D0B4F34B09A478F5F3D /* ImportContactsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D0794038A208C991C3D1CF7 /* ImportContactsSheet.swift */; };
 		BB6505CC618DB35AC542A1AB /* testTextInputWithValue.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 0314EC94F504540A5BF02139 /* testTextInputWithValue.1.png */; };
 		C02CAD8B0F82B366CD4428D4 /* testSettingsGroupDark.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 3CCDAF85FAFC1F03E0E5EF5D /* testSettingsGroupDark.1.png */; };
 		C0AB5B4A5DA1F0977B52C55E /* testEditableTextWithError.1.png in Resources */ = {isa = PBXBuildFile; fileRef = EA5E442564907FA7A15240F0 /* testEditableTextWithError.1.png */; };
@@ -247,7 +246,6 @@
 		19EC7C6A8625C6F0A1F5D307 /* testTextInputPhoneType.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testTextInputPhoneType.1.png; sourceTree = "<group>"; };
 		1A1C1FABFE041B08E41B4276 /* preview_card.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = preview_card.json; sourceTree = "<group>"; };
 		1A85B8272FE7B284D215644A /* testInfoPanelWithIcon.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testInfoPanelWithIcon.1.png; sourceTree = "<group>"; };
-		1D0794038A208C991C3D1CF7 /* ImportContactsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportContactsSheet.swift; sourceTree = "<group>"; };
 		1DDB8A091A24E66931A46D88 /* testScreenRendererAccessibility.1.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = testScreenRendererAccessibility.1.txt; sourceTree = "<group>"; };
 		1EE116FC8484DF9F6D73F91F /* testContactDetailView.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testContactDetailView.1.png; sourceTree = "<group>"; };
 		200902ADA24D8C97BC83DA08 /* testHomeViewEmpty.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testHomeViewEmpty.1.png; sourceTree = "<group>"; };
@@ -696,7 +694,6 @@
 			isa = PBXGroup;
 			children = (
 				68E43EEC0A45AF35EDBE794E /* ImportBackupSheet.swift */,
-				1D0794038A208C991C3D1CF7 /* ImportContactsSheet.swift */,
 				644F12D83413B334E234F4AC /* LockScreenView.swift */,
 			);
 			path = Views;
@@ -1120,7 +1117,6 @@
 				B7FF1459323990242EB469DC /* EditableTextComponentView.swift in Sources */,
 				B7538752D99FA9DB91BC9FF9 /* FieldListComponentView.swift in Sources */,
 				E95CE36219FD61DB87D693CB /* ImportBackupSheet.swift in Sources */,
-				BA8A3D0B4F34B09A478F5F3D /* ImportContactsSheet.swift in Sources */,
 				9C2069849249523C53C667F3 /* InfoPanelComponentView.swift in Sources */,
 				C7EC0C6E4ABED52AB382351A /* InlineConfirmComponentView.swift in Sources */,
 				9BA83E0C812D194A0C94FC64 /* KeyboardShortcuts.swift in Sources */,

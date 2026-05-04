@@ -349,12 +349,23 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 ImportBackupSheet()
                     .environmentObject(viewModel)
             }
+            // Phase 3 retirement of `2026-05-02-macos-humble-ui-retirement` G1:
+            // emit core's `import_contacts` action instead of opening
+            // the bespoke ImportContactsSheet. Sequence:
+            //   1. navigate the engine to AppScreen::More so MoreEngine
+            //      is the active engine
+            //   2. emit `import_contacts` action_id, which MoreEngine
+            //      maps to ExchangeCommand::FilePickFromUser
+            //   3. AppViewModel.dispatchExchangeCommands triggers the
+            //      Phase 3 NSOpenPanel via presentFilePickFromUser
+            //   4. picker resolves → FilePickedFromUser routes via
+            //      AppScreen::More → Vauchi::import_contacts_from_vcf
+            //      → toast with imported / skipped counts
+            // Engine state moves; the user's currently-rendered scene
+            // stays put (CoreSceneView only opens on Settings nav).
             .onReceive(NotificationCenter.default.publisher(for: .vauchiMenuImportContacts)) { _ in
-                viewModel.showImportContactsSheet = true
-            }
-            .sheet(isPresented: $viewModel.showImportContactsSheet) {
-                ImportContactsSheet()
-                    .environmentObject(viewModel)
+                viewModel.navigateTo(screenJson: "\"More\"")
+                viewModel.handleAction(.actionPressed(actionId: "import_contacts"))
             }
         }
 
