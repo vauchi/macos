@@ -405,11 +405,17 @@ import UniformTypeIdentifiers
                     sendHardwareUnavailable(transport: "PhotoLibrary")
                 case .imageCaptureFromCamera:
                     sendHardwareUnavailable(transport: "Camera")
-                case .filePickFromUser:
-                    // Stub: real NSOpenPanel handler ships with the macOS arm
-                    // of 2026-05-03-core-file-picker-command. Reporting
-                    // cancellation lets core's restore/import flows fall back.
-                    sendHardwareEvent(.filePickCancelledByUser)
+                // File picker (ADR-031, Phase 3 of
+                // 2026-05-03-core-file-picker-command). Delegates to
+                // NSOpenPanel; replaces the prior `filePickCancelledByUser`
+                // stub and the bespoke .fileImporter inside
+                // ImportContactsSheet / ImportBackupSheet (those sheets
+                // are retired in a follow-up commit).
+                case let .filePickFromUser(acceptedMimeTypes, purpose):
+                    presentFilePickFromUser(
+                        acceptedMimeTypes: acceptedMimeTypes,
+                        purpose: purpose
+                    )
                 case .unknown:
                     // ADR-031: report unsupported commands so core can handle fallback
                     sendHardwareUnavailable(transport: "unsupported-command")
@@ -463,6 +469,62 @@ import UniformTypeIdentifiers
                     }
                 }
             }
+        }
+
+        /// Present NSOpenPanel for the ADR-031 file-picker protocol. The
+        /// returned bytes are forwarded as
+        /// `MobileExchangeHardwareEvent::FilePickedFromUser`; cancel /
+        /// read-failure paths surface as
+        /// `MobileExchangeHardwareEvent::FilePickCancelledByUser` so core
+        /// never sits waiting for a hardware event.
+        private func presentFilePickFromUser(
+            acceptedMimeTypes: [String],
+            purpose: FilePickPurpose
+        ) {
+            let panel = NSOpenPanel()
+            panel.title = filePickPanelTitle(for: purpose)
+            panel.allowedContentTypes = filePickContentTypes(from: acceptedMimeTypes)
+            panel.allowsMultipleSelection = false
+            panel.canChooseDirectories = false
+
+            panel.begin { [weak self] response in
+                guard let self else { return }
+                DispatchQueue.main.async {
+                    if response == .OK, let url = panel.url {
+                        // Hold security-scoped access while we read the
+                        // file — sandboxed builds raise EACCES otherwise.
+                        let didStart = url.startAccessingSecurityScopedResource()
+                        defer { if didStart { url.stopAccessingSecurityScopedResource() } }
+                        if let data = try? Data(contentsOf: url) {
+                            self.sendHardwareEvent(.filePickedFromUser(
+                                bytes: data,
+                                filename: url.lastPathComponent
+                            ))
+                            return
+                        }
+                    }
+                    self.sendHardwareEvent(.filePickCancelledByUser)
+                }
+            }
+        }
+
+        /// Map a `FilePickPurpose` to a localized panel title. Falls back
+        /// to a generic "Select File" so any future purpose still opens
+        /// the picker (advisory per ADR-031).
+        private func filePickPanelTitle(for purpose: FilePickPurpose) -> String {
+            switch purpose {
+            case .importContacts: return "Import Contacts"
+            case .importBackup: return "Import Backup"
+            default: return "Select File"
+            }
+        }
+
+        /// Translate core's advisory MIME types into UTTypes for
+        /// NSOpenPanel. Falls back to `.data` (any file) so unfamiliar
+        /// MIME strings still let the panel open.
+        private func filePickContentTypes(from mimeTypes: [String]) -> [UTType] {
+            let types = mimeTypes.compactMap { UTType(mimeType: $0) }
+            return types.isEmpty ? [.data] : types
         }
 
         /// ADR-031: Route QR scan data through the hardware event path.
