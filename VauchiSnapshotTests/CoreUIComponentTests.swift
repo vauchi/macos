@@ -469,7 +469,7 @@ final class CoreUIComponentTests: XCTestCase {
     func testContactListEmpty() {
         let component = ListComponent(
             id: "contacts",
-            contacts: [],
+            items: [],
             searchable: false
         )
         let view = ListComponentView(component: component, onAction: noOp)
@@ -479,7 +479,7 @@ final class CoreUIComponentTests: XCTestCase {
     func testContactListWithContacts() {
         let component = ListComponent(
             id: "contacts",
-            contacts: [
+            items: [
                 Item(id: "c1", name: "Bob", subtitle: "Last updated 2h ago", avatarInitials: "B", status: nil),
                 Item(id: "c2", name: "Charlie", subtitle: nil, avatarInitials: "C", status: "pending"),
                 Item(id: "c3", name: "Diana", subtitle: "3 fields shared", avatarInitials: "D", status: nil),

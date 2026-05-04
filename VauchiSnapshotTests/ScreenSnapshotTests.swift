@@ -208,7 +208,7 @@ final class ScreenSnapshotTests: XCTestCase {
             components: [
                 .list(ListComponent(
                     id: "contact_list",
-                    contacts: [],
+                    items: [],
                     searchable: false
                 )),
             ],
@@ -226,7 +226,7 @@ final class ScreenSnapshotTests: XCTestCase {
             components: [
                 .list(ListComponent(
                     id: "contact_list",
-                    contacts: [
+                    items: [
                         Item(
                             id: "c1",
                             name: "Bob",
@@ -448,7 +448,7 @@ final class ScreenSnapshotTests: XCTestCase {
             components: [
                 .list(ListComponent(
                     id: "contact_list",
-                    contacts: [
+                    items: [
                         Item(
                             id: "c1",
                             name: "Bob",

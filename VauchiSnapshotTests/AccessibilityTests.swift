@@ -120,7 +120,7 @@ final class AccessibilityTests: XCTestCase {
     func testContactListAccessibility() {
         let component = ListComponent(
             id: "contacts",
-            contacts: [
+            items: [
                 Item(id: "c1", name: "Bob", subtitle: "Last updated 2h ago", avatarInitials: "B", status: nil),
                 Item(id: "c2", name: "Charlie", subtitle: nil, avatarInitials: "C", status: "pending"),
             ],
