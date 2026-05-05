@@ -114,8 +114,16 @@ import UniformTypeIdentifiers
                     return
                 }
 
-                let result = try coreJSONDecoder.decode(ActionResult.self, from: resultData)
-                applyResult(result)
+                // Phase 2b: handleActionJson now returns
+                // `{"action_result": <ActionResult>, "commands": [<CommandDTO>]}`.
+                let envelope = try coreJSONDecoder.decode(
+                    ActionResultEnvelope.self,
+                    from: resultData
+                )
+                applyResult(envelope.actionResult)
+                if !envelope.commands.isEmpty {
+                    dispatchExchangeCommands(envelope.commands)
+                }
             } catch {
                 print("AppViewModel: failed to handle action: \(error)")
             }
@@ -126,10 +134,15 @@ import UniformTypeIdentifiers
             do {
                 let json = try appEngine.navigateToJson(screenJson: screenJson)
                 guard let data = json.data(using: .utf8) else { return }
-                currentScreen = try coreJSONDecoder.decode(ScreenModel.self, from: data)
+                // Phase 2b envelope shape: `{"screen": ..., "commands": [...]}`.
+                let envelope = try coreJSONDecoder.decode(ScreenEnvelope.self, from: data)
+                currentScreen = envelope.screen
                 validationErrors = [:]
                 loadSidebarItems()
                 updateSelectedScreen()
+                if !envelope.commands.isEmpty {
+                    dispatchExchangeCommands(envelope.commands)
+                }
             } catch {
                 print("AppViewModel: failed to navigate: \(error)")
             }
@@ -140,8 +153,12 @@ import UniformTypeIdentifiers
             do {
                 let json = try appEngine.navigateBackJson()
                 guard let data = json.data(using: .utf8) else { return }
-                currentScreen = try coreJSONDecoder.decode(ScreenModel.self, from: data)
+                let envelope = try coreJSONDecoder.decode(ScreenEnvelope.self, from: data)
+                currentScreen = envelope.screen
                 validationErrors = [:]
+                if !envelope.commands.isEmpty {
+                    dispatchExchangeCommands(envelope.commands)
+                }
             } catch {
                 print("AppViewModel: failed to navigate back: \(error)")
             }
@@ -301,7 +318,7 @@ import UniformTypeIdentifiers
                 // navigates the engine on appear; `after_screen_transition`
                 // creates the `MobileDeviceLinkSession` automatically.
                 showDeviceLinkSheet = true
-            case let .exchangeCommands(commands):
+            case let .commands(commands):
                 dispatchExchangeCommands(commands)
                 loadScreen()
             case .showFormDialog, .previewAs:
@@ -356,7 +373,7 @@ import UniformTypeIdentifiers
         }()
 
         /// Dispatch exchange commands to platform hardware services.
-        private func dispatchExchangeCommands(_ commands: [ExchangeCommandDTO]) {
+        private func dispatchExchangeCommands(_ commands: [CommandDTO]) {
             for command in commands {
                 switch command {
                 // QR — handled by view layer (screen model contains QR data)
