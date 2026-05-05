@@ -469,9 +469,9 @@ import UniformTypeIdentifiers
 
         /// Present NSOpenPanel for the ADR-031 file-picker protocol. The
         /// returned bytes are forwarded as
-        /// `MobileExchangeHardwareEvent::FilePickedFromUser`; cancel /
+        /// `MobileEvent::FilePickedFromUser`; cancel /
         /// read-failure paths surface as
-        /// `MobileExchangeHardwareEvent::FilePickCancelledByUser` so core
+        /// `MobileEvent::FilePickCancelledByUser` so core
         /// never sits waiting for a hardware event.
         private func presentFilePickFromUser(
             acceptedMimeTypes: [String],
@@ -529,7 +529,7 @@ import UniformTypeIdentifiers
         }
 
         /// Send a hardware event back to core and apply the result.
-        private func sendHardwareEvent(_ event: MobileExchangeHardwareEvent) {
+        private func sendHardwareEvent(_ event: MobileEvent) {
             do {
                 if let resultJson = try appEngine.handleHardwareEvent(event: event) {
                     guard let data = resultJson.data(using: .utf8) else { return }
