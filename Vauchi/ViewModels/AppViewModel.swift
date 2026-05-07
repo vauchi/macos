@@ -379,21 +379,12 @@ import UniformTypeIdentifiers
                 // QR — handled by view layer (screen model contains QR data)
                 case .qrDisplay, .qrRequestScan:
                     break
-                // BLE — delegate to CoreBluetooth service
-                case let .bleStartScanning(serviceUuid):
-                    bleService.startScanning(serviceUuid: serviceUuid)
-                case .bleStopScanning:
-                    bleService.stopScanning()
-                case let .bleStartAdvertising(serviceUuid, payload):
-                    bleService.startAdvertising(serviceUuid: serviceUuid, payload: Data(payload))
-                case let .bleConnect(deviceId):
-                    bleService.connect(deviceId: deviceId)
-                case let .bleWriteCharacteristic(uuid, data):
-                    bleService.writeCharacteristic(uuid: uuid, data: Data(data))
-                case let .bleReadCharacteristic(uuid):
-                    bleService.readCharacteristic(uuid: uuid)
-                case .bleDisconnect:
-                    bleService.disconnect()
+                // BLE — delegate to CoreBluetooth service via helper
+                // (`dispatchBleCommand` does the typed re-switch).
+                case .bleStartScanning, .bleStopScanning, .bleStartAdvertising,
+                     .bleConnect, .bleWriteCharacteristic, .bleReadCharacteristic,
+                     .bleDisconnect:
+                    dispatchBleCommand(command)
                 // Audio — delegate to helper (runs on background queue)
                 case let .audioEmitChallenge(data):
                     dispatchAudioEmit(data: data)
@@ -408,16 +399,9 @@ import UniformTypeIdentifiers
                         payload: payload,
                         isInitiator: isInitiator
                     )
-                // NFC — not available on macOS
-                case .nfcActivate, .nfcDeactivate:
-                    sendHardwareUnavailable(transport: "NFC")
                 // Image picking (ADR-042 avatar editor)
                 case .imagePickFromFile:
                     presentFileImagePicker()
-                case .imagePickFromLibrary:
-                    sendHardwareUnavailable(transport: "PhotoLibrary")
-                case .imageCaptureFromCamera:
-                    sendHardwareUnavailable(transport: "Camera")
                 // File picker (ADR-031, Phase 3 of
                 // 2026-05-03-core-file-picker-command). Delegates to
                 // NSOpenPanel; replaces the prior `filePickCancelledByUser`
@@ -429,10 +413,54 @@ import UniformTypeIdentifiers
                         acceptedMimeTypes: acceptedMimeTypes,
                         purpose: purpose
                     )
-                case .unknown:
-                    // ADR-031: report unsupported commands so core can handle fallback
-                    sendHardwareUnavailable(transport: "unsupported-command")
+                // Platform-unavailable on macOS (NFC, photo library,
+                // camera, Phase 2b lifecycle, unsupported). Reported so
+                // core can pick its fallback path per ADR-031.
+                case .nfcActivate, .nfcDeactivate, .imagePickFromLibrary,
+                     .imageCaptureFromCamera, .setScreenBrightness,
+                     .setIdleTimerDisabled, .switchCamera, .showShareSheet,
+                     .unknown:
+                    sendHardwareUnavailable(transport: macOSUnavailableLabel(command))
                 }
+            }
+        }
+
+        /// Re-dispatch BLE-shaped commands to `bleService`.
+        private func dispatchBleCommand(_ command: CommandDTO) {
+            switch command {
+            case let .bleStartScanning(serviceUuid):
+                bleService.startScanning(serviceUuid: serviceUuid)
+            case .bleStopScanning:
+                bleService.stopScanning()
+            case let .bleStartAdvertising(serviceUuid, payload):
+                bleService.startAdvertising(serviceUuid: serviceUuid, payload: Data(payload))
+            case let .bleConnect(deviceId):
+                bleService.connect(deviceId: deviceId)
+            case let .bleWriteCharacteristic(uuid, data):
+                bleService.writeCharacteristic(uuid: uuid, data: Data(data))
+            case let .bleReadCharacteristic(uuid):
+                bleService.readCharacteristic(uuid: uuid)
+            case .bleDisconnect:
+                bleService.disconnect()
+            default:
+                break
+            }
+        }
+
+        /// Map platform-unavailable commands to the transport label core
+        /// uses to pick its fallback. Display sleep is OS-managed; the
+        /// front/back camera distinction doesn't apply on desktop;
+        /// ShareSheet would map to NSSharingServicePicker but is unwired
+        /// pending a UI host.
+        private func macOSUnavailableLabel(_ command: CommandDTO) -> String {
+            switch command {
+            case .nfcActivate, .nfcDeactivate: return "NFC"
+            case .imagePickFromLibrary: return "PhotoLibrary"
+            case .imageCaptureFromCamera, .switchCamera: return "Camera"
+            case .setScreenBrightness: return "ScreenBrightness"
+            case .setIdleTimerDisabled: return "IdleTimer"
+            case .showShareSheet: return "ShareSheet"
+            default: return "unsupported-command"
             }
         }
 
