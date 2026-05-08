@@ -84,28 +84,60 @@ default:
 # DerivedData contains compiled swift-syntax which takes >60min to build
 # from source. Cache key includes swift-syntax version so major bumps
 # get a fresh cache instead of silently invalidating.
+#
+# Two caches, split by what they contain and how they invalidate:
+#
+# 1. `.spm-packages/` is keyed on the SHA256 of project.yml, which is
+#    the XcodeGen source the platform-swift version pin lives in.
+#    When a chore-bump MR changes project.yml the cache key rolls
+#    automatically, the new branch starts from an empty cache, and
+#    `build:debug`'s SPM-resolve script populates it from the freshly
+#    re-cloned mirror. No fallback, by design — fallbacks were the
+#    vector for the corruption recorded in
+#    `_private/docs/problems/2026-05-08-nell-runner-spm-mirror-corruption/`,
+#    where a chore-bump MR pulled `macos-spm-ss603-main` (still on
+#    the old pin) and inherited a `workspace-state.json` that pinned
+#    a force-tag-aside revision.
+#
+# 2. `.derived-data/` stays branch-keyed with main → bare-branch
+#    fallback. It contains compiled swift-syntax + Xcode build
+#    intermediates that are independent of the platform-swift
+#    version, so a cold start here would cost ≥60 min of swift-syntax
+#    rebuild. The fallback chain is preserved.
 .spm-cache:
   cache:
-    key: macos-spm-ss603-${CI_COMMIT_REF_SLUG}
-    fallback_keys:
-      - macos-spm-ss603-${CI_DEFAULT_BRANCH}
-      - macos-spm-ss603
-    paths:
-      - .spm-packages/
-      - .derived-data/
-    policy: pull-push
+    - key:
+        prefix: macos-spm-ss603-${CI_COMMIT_REF_SLUG}
+        files:
+          - project.yml
+      paths:
+        - .spm-packages/
+      policy: pull-push
+    - key: macos-derived-ss603-${CI_COMMIT_REF_SLUG}
+      fallback_keys:
+        - macos-derived-ss603-${CI_DEFAULT_BRANCH}
+        - macos-derived-ss603
+      paths:
+        - .derived-data/
+      policy: pull-push
 
 # Read-only SPM cache for jobs that don't need to update it
 .spm-cache-readonly:
   cache:
-    key: macos-spm-ss603-${CI_COMMIT_REF_SLUG}
-    fallback_keys:
-      - macos-spm-ss603-${CI_DEFAULT_BRANCH}
-      - macos-spm-ss603
-    paths:
-      - .spm-packages/
-      - .derived-data/
-    policy: pull
+    - key:
+        prefix: macos-spm-ss603-${CI_COMMIT_REF_SLUG}
+        files:
+          - project.yml
+      paths:
+        - .spm-packages/
+      policy: pull
+    - key: macos-derived-ss603-${CI_COMMIT_REF_SLUG}
+      fallback_keys:
+        - macos-derived-ss603-${CI_DEFAULT_BRANCH}
+        - macos-derived-ss603
+      paths:
+        - .derived-data/
+      policy: pull
 
 # ============================================================
 # Update Stage (triggered by upstream vauchi-platform-swift release)
