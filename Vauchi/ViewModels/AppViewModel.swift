@@ -418,7 +418,8 @@ import UniformTypeIdentifiers
                 // core can pick its fallback path per ADR-031.
                 case .nfcActivate, .nfcDeactivate, .imagePickFromLibrary,
                      .imageCaptureFromCamera, .setScreenBrightness,
-                     .setIdleTimerDisabled, .switchCamera, .showShareSheet,
+                     .setIdleTimerDisabled, .setOrientationLock,
+                     .switchCamera, .showShareSheet,
                      .unknown:
                     sendHardwareUnavailable(transport: macOSUnavailableLabel(command))
                 }
@@ -459,6 +460,7 @@ import UniformTypeIdentifiers
             case .imageCaptureFromCamera, .switchCamera: return "Camera"
             case .setScreenBrightness: return "ScreenBrightness"
             case .setIdleTimerDisabled: return "IdleTimer"
+            case .setOrientationLock: return "OrientationLock"
             case .showShareSheet: return "ShareSheet"
             default: return "unsupported-command"
             }
