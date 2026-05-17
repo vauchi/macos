@@ -89,7 +89,7 @@ import SwiftUI
                 viewModel = appViewModel
                 isAuthenticationRequired = false
                 error = nil
-                checkContentUpdates(vauchi: repo.vauchi)
+                checkContentUpdates(appEngine: repo.appEngine)
             } catch VauchiRepositoryError.deviceLocked {
                 isAuthenticationRequired = true
                 print("VauchiApp: device locked, authentication required")
@@ -100,14 +100,41 @@ import SwiftUI
         }
 
         /// Check for content updates (locales, themes) in the background after startup.
-        private func checkContentUpdates(vauchi: VauchiPlatform) {
-            guard vauchi.isContentUpdatesSupported() else { return }
+        ///
+        /// Slice 32g-B Phase 2 (core 0.51.2) retired the
+        /// `vauchi.isContentUpdatesSupported` / `checkContentUpdates` /
+        /// `applyContentUpdates` direct VauchiPlatform methods. The
+        /// three calls now route through `appEngine.X()` typed wrappers
+        /// defined in `PlatformAppEngine+DomainDispatch.swift`, which
+        /// dispatch through `DomainCommand` and unwrap the result
+        /// variants (`.bool`, `.updateStatus`, `.applyResult`). The
+        /// outer call became `throws`; failures fall through to a
+        /// debug log without disrupting startup.
+        private func checkContentUpdates(appEngine: PlatformAppEngine) {
+            do {
+                guard try appEngine.isContentUpdatesSupported() else { return }
+            } catch {
+                print("AppState: isContentUpdatesSupported failed: \(error)")
+                return
+            }
 
             Task.detached(priority: .utility) { [weak self] in
-                let status = vauchi.checkContentUpdates()
+                let status: MobileUpdateStatus
+                do {
+                    status = try appEngine.checkContentUpdates()
+                } catch {
+                    print("AppState: checkContentUpdates dispatch failed: \(error)")
+                    return
+                }
                 guard case .updatesAvailable = status else { return }
 
-                let result = vauchi.applyContentUpdates()
+                let result: MobileApplyResult
+                do {
+                    result = try appEngine.applyContentUpdates()
+                } catch {
+                    print("AppState: applyContentUpdates dispatch failed: \(error)")
+                    return
+                }
                 if case let .applied(applied, _) = result {
                     if applied.contains(.themes) {
                         await MainActor.run {
