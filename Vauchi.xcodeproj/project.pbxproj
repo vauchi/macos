@@ -176,6 +176,7 @@
 		DA673F09635BBBF9871092A8 /* VauchiUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773C796EDEEFF9B928C04229 /* VauchiUITests.swift */; };
 		DAA7E3E65B458C1A5E235354 /* lock_screen.json in Resources */ = {isa = PBXBuildFile; fileRef = 2802DD443EEBA48D15EAF359 /* lock_screen.json */; };
 		DB6A58ECD9CC3C501D1CF697 /* delivery_empty.json in Resources */ = {isa = PBXBuildFile; fileRef = 3E7B642257C4005F82A40BCF /* delivery_empty.json */; };
+		DCB3E583D86FF3A15C6BE915 /* PlatformAppEngine+DomainDispatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8809B70A6BEDF6B35461415B /* PlatformAppEngine+DomainDispatch.swift */; };
 		DEE606B56ADE8E72560BF538 /* testTextInputEmailType.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 21E325007F4C69CC6F55675D /* testTextInputEmailType.1.png */; };
 		E0642E4014C2147EBDC4FFF3 /* testContactListWithContacts.1.png in Resources */ = {isa = PBXBuildFile; fileRef = EDE8371E9A0D88B92DA2E683 /* testContactListWithContacts.1.png */; };
 		E1D1F36025544FD43BEEEB83 /* BannerComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDAC67C5337AAC5560D74DDD /* BannerComponentView.swift */; };
@@ -342,6 +343,7 @@
 		84CF989EA84DBE8A9F43E05D /* ThemeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeService.swift; sourceTree = "<group>"; };
 		852C63EED95011422DDDDB76 /* link_choice.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = link_choice.json; sourceTree = "<group>"; };
 		8776D2F72715F9C93486FE18 /* ToggleListComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleListComponentView.swift; sourceTree = "<group>"; };
+		8809B70A6BEDF6B35461415B /* PlatformAppEngine+DomainDispatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PlatformAppEngine+DomainDispatch.swift"; sourceTree = "<group>"; };
 		8C92250DB74883B6DE9A0792 /* settings.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = settings.json; sourceTree = "<group>"; };
 		8C9F616A82E64818C7D1BEB4 /* testInfoPanelSingleItem.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testInfoPanelSingleItem.1.png; sourceTree = "<group>"; };
 		8CD3FC943884B00F74F1EA32 /* device_linking.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = device_linking.json; sourceTree = "<group>"; };
@@ -793,6 +795,7 @@
 				B31DFE6F23CEA01F0437957B /* KeychainService.swift */,
 				6C859B6215BADD6A45480D9F /* LocalizationService.swift */,
 				BDB1CEDFBA5AE37F12D5BE39 /* NotificationService.swift */,
+				8809B70A6BEDF6B35461415B /* PlatformAppEngine+DomainDispatch.swift */,
 				40B52514F7B6CC866BDD778D /* ScreenCaptureProtection.swift */,
 				84CF989EA84DBE8A9F43E05D /* ThemeService.swift */,
 				95373D9E6440FED4B532EBDD /* VauchiRepository.swift */,
@@ -1142,6 +1145,7 @@
 				138BEFDCC908871EDE97D333 /* NotificationService.swift in Sources */,
 				2F5E5E0A77045722958E6979 /* PinInputComponentView.swift in Sources */,
 				072615DEAAD0650CF34C6B6E /* PlaceholderContentView.swift in Sources */,
+				DCB3E583D86FF3A15C6BE915 /* PlatformAppEngine+DomainDispatch.swift in Sources */,
 				7F1D652A8FCD24A51F20D3D0 /* PreviewComponentView.swift in Sources */,
 				E522CA915372F8B514733D6B /* QrCodeComponentView.swift in Sources */,
 				3202529BECD6DFEEB2B2BECF /* ScreenCaptureProtection.swift in Sources */,
@@ -1510,7 +1514,7 @@
 			repositoryURL = "https://gitlab.com/vauchi/vauchi-platform-swift.git";
 			requirement = {
 				kind = exactVersion;
-				version = 0.51.2;
+				version = 0.51.3;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
