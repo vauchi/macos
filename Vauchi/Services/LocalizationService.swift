@@ -18,10 +18,17 @@
     }
 
     /// Service for managing app localization via core i18n system.
+    ///
+    /// Source of truth is `UserDefaults` (OS-native, Category 1 —
+    /// render-context). Core's `RenderContext` is informed of changes via
+    /// `setRenderContextJson` so the Settings dropdown's `selected` value
+    /// and locale-aware string lookup stay in sync (S4 of
+    /// `2026-05-16-settings-storage-by-sensitivity`).
     final class LocalizationService: ObservableObject {
         static let shared = LocalizationService()
 
         private let defaults: UserDefaults
+        private var appEngine: PlatformAppEngine?
 
         @Published var currentLocale: MobileLocale = .english
         @Published var availableLocales: [MobileLocaleInfo] = []
@@ -35,6 +42,19 @@
             self.defaults = defaults
             registerDefaults()
             loadLocales()
+        }
+
+        // MARK: - Engine attachment
+
+        /// Wire this service to the live [PlatformAppEngine] so subsequent
+        /// locale changes propagate to core's `RenderContext`. Called
+        /// once from `VauchiRepository` after the engine finishes
+        /// initialization. Re-applies the locale and pushes it to core so
+        /// the Settings dropdown reflects what's on disk.
+        func attachAppEngine(_ engine: PlatformAppEngine) {
+            appEngine = engine
+            applySelectedLocale()
+            pushRenderContext(engine: engine)
         }
 
         private func registerDefaults() {
@@ -89,6 +109,7 @@
         func selectLocale(code: String) {
             followSystem = false
             selectedLocaleCode = code
+            pushRenderContext(engine: appEngine)
         }
 
         /// Select a locale directly.
@@ -102,6 +123,7 @@
             followSystem = true
             selectedLocaleCode = nil
             applySelectedLocale()
+            pushRenderContext(engine: appEngine)
         }
 
         // MARK: - String Lookup

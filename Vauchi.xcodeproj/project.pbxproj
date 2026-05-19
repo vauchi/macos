@@ -26,6 +26,7 @@
 		12BC56BA1BF270125C3DADB6 /* testTextInputAccessibility.1.txt in Resources */ = {isa = PBXBuildFile; fileRef = 677E67E216D48E378A773CD8 /* testTextInputAccessibility.1.txt */; };
 		138BEFDCC908871EDE97D333 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDB1CEDFBA5AE37F12D5BE39 /* NotificationService.swift */; };
 		13C034F74BC375883A7F5751 /* testContactsScreenWithContacts.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 9B2136E121C827A50A107948 /* testContactsScreenWithContacts.1.png */; };
+		14F136822861093402A2A51D /* RenderContextPusher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A594A2A3929ED3F36E46FBD /* RenderContextPusher.swift */; };
 		17ACE0E08EFAC15CC31E8DC4 /* help.json in Resources */ = {isa = PBXBuildFile; fileRef = 50561F5946E3F79CA66C0BDE /* help.json */; };
 		18DFBC47BE88310909350859 /* CoreUIModels in Frameworks */ = {isa = PBXBuildFile; productRef = B2C60C8C920018E8C7CF99BE /* CoreUIModels */; };
 		191B895266678FE7D88D7FF1 /* testContactsViewWithContacts.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 73C57002D4EAE39D0378F9F4 /* testContactsViewWithContacts.1.png */; };
@@ -242,6 +243,7 @@
 		075A43D13266E824544C1089 /* ready.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ready.json; sourceTree = "<group>"; };
 		07F69D47DBE79635FE185938 /* contact_edit_fields.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = contact_edit_fields.json; sourceTree = "<group>"; };
 		09D79E0645FD89F4223BD160 /* testEditableTextDark.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testEditableTextDark.1.png; sourceTree = "<group>"; };
+		0A594A2A3929ED3F36E46FBD /* RenderContextPusher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderContextPusher.swift; sourceTree = "<group>"; };
 		0B50587B7EC6319B106FB462 /* testToggleListSingleItem.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testToggleListSingleItem.1.png; sourceTree = "<group>"; };
 		0D3497B12DDDF10370069F86 /* Vauchi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Vauchi.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0ED4420CCDFCB527415741E4 /* testToggleListDefault.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testToggleListDefault.1.png; sourceTree = "<group>"; };
@@ -802,6 +804,7 @@
 				6C859B6215BADD6A45480D9F /* LocalizationService.swift */,
 				BDB1CEDFBA5AE37F12D5BE39 /* NotificationService.swift */,
 				8809B70A6BEDF6B35461415B /* PlatformAppEngine+DomainDispatch.swift */,
+				0A594A2A3929ED3F36E46FBD /* RenderContextPusher.swift */,
 				40B52514F7B6CC866BDD778D /* ScreenCaptureProtection.swift */,
 				84CF989EA84DBE8A9F43E05D /* ThemeService.swift */,
 				95373D9E6440FED4B532EBDD /* VauchiRepository.swift */,
@@ -1156,6 +1159,7 @@
 				DCB3E583D86FF3A15C6BE915 /* PlatformAppEngine+DomainDispatch.swift in Sources */,
 				7F1D652A8FCD24A51F20D3D0 /* PreviewComponentView.swift in Sources */,
 				E522CA915372F8B514733D6B /* QrCodeComponentView.swift in Sources */,
+				14F136822861093402A2A51D /* RenderContextPusher.swift in Sources */,
 				3202529BECD6DFEEB2B2BECF /* ScreenCaptureProtection.swift in Sources */,
 				C2AA1DC7FD7FA22C155F70BD /* ScreenRendererView.swift in Sources */,
 				09004B0A2E938952E9D267FC /* SettingsGroupComponentView.swift in Sources */,
