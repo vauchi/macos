@@ -53,8 +53,8 @@ import Foundation
         return "{" + parts.joined(separator: ",") + "}"
     }
 
-    private func jsonString(_ s: String) -> String {
-        let escaped = s
+    private func jsonString(_ value: String) -> String {
+        let escaped = value
             .replacingOccurrences(of: "\\", with: "\\\\")
             .replacingOccurrences(of: "\"", with: "\\\"")
         return "\"\(escaped)\""

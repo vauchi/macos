@@ -63,6 +63,17 @@ import Foundation
             } catch {
                 throw VauchiRepositoryError.initialization("\(error)")
             }
+
+            // S4 — wire `ThemeService` + `LocalizationService` to the live
+            // engine so subsequent theme/locale changes propagate to core
+            // via `setRenderContextJson`. No vault → OS-native migration
+            // is needed: the 2026-05-16 audit confirmed zero hand-written
+            // `appPreferences()` callers on macOS, so the legacy vault
+            // `app_preferences` row was never populated on this platform.
+            // (Android needed a migration because its pre-S4 ThemeManager +
+            // LocalizationManager read from the vault — see `android!407`.)
+            ThemeService.shared.attachAppEngine(appEngine)
+            LocalizationService.shared.attachAppEngine(appEngine)
         }
 
         // MARK: - Storage Key Management
