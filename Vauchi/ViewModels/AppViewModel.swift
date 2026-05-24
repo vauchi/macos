@@ -326,6 +326,11 @@ import UniformTypeIdentifiers
                 // Desktop (macOS) has no UI for them yet; ignore to stay
                 // forward-compatible with cross-platform ActionResult.
                 break
+            case .biometricUnlockOutcome:
+                // ADR-031 biometric-unlock duress flow is a mobile
+                // concern; macOS has no biometric-unlock UI. No-op for
+                // switch exhaustiveness.
+                break
             case .unknown:
                 // Unknown action result from newer core — ignore
                 break
