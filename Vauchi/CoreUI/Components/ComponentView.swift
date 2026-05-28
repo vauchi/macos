@@ -83,6 +83,23 @@ struct ComponentView: View {
             // screen starts using it.
             EmptyView()
 
+        case .indicator:
+            // `Component.indicator` joined in core 0.51.21 (core !990).
+            // No production engine emits it on a macOS-reachable screen
+            // today. Render empty so the switch stays exhaustive; port
+            // `ios/Vauchi/CoreUI/Components/IndicatorView.swift` (ios!466)
+            // once a screen starts using it.
+            EmptyView()
+
+        case .sectionedActionList:
+            // `Component.sectionedActionList` joined in core 0.51.21
+            // (core !990). No production engine emits it on a macOS-
+            // reachable screen today. Render empty so the switch stays
+            // exhaustive; port
+            // `ios/Vauchi/CoreUI/Components/SectionedActionListView.swift`
+            // (ios!466) once a screen starts using it.
+            EmptyView()
+
         case let .avatarPreview(avatarComponent):
             AvatarPreviewComponentView(component: avatarComponent, onAction: onAction)
 
