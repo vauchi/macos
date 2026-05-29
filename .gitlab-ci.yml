@@ -587,13 +587,31 @@ build:debug:
         echo "  Mirror built ($(du -sh "$MIRROR" | cut -f1), $(git -C "$MIRROR" ls-tree -r "v$V" --name-only | grep -c '^VauchiPlatformFFI.xcframework/') xcframework files)"
       fi
 
-      # 3. Wire SPM to the local mirror.
-      # Write mirror config to BOTH project-local AND user-level paths.
-      # Project-local works for raw `swift build`, but Xcode's SPM
-      # consults the user-level config (`~/Library/org.swift.swiftpm/
-      # configuration/mirrors.json`). On the runner, the trace
-      # `Fetching from https://gitlab.com/... (cached)` confirmed the
-      # project-local mirror was ignored.
+      # 3. Wire SPM to the local mirror — project-local config only.
+      #
+      # Earlier this script also wrote
+      # `~/Library/org.swift.swiftpm/configuration/mirrors.json` because
+      # an earlier observation on the runner (trace
+      # `Fetching from https://gitlab.com/... (cached)`) suggested
+      # xcodebuild was ignoring the project-local mirror config.
+      #
+      # The user-level path is shared mutable state across every
+      # pipeline on the host. macos/ios bump jobs running side-by-side
+      # (each writing its own version's mirror path) overwrite each
+      # other, then readonly downstream jobs (test:snapshots, test:unit)
+      # read whatever version was last written and fail with
+      # `Couldn't check out revision ... of package 'v<other-version>'`.
+      # Verified on macos!248 (bump 0.51.24→0.51.25) racing the
+      # concurrent ios main pipeline that ran with ios still on
+      # v0.51.22: macos test:snapshots read v0.51.22 from user-level
+      # config and tried to satisfy 0.51.25 against it.
+      #
+      # Macos CI uses xcodebuild CLI only (no Xcode.app interactive —
+      # 29 xcodebuild invocations, 0 `open -a Xcode`), so the
+      # project-local config is the right scope. If a future regression
+      # shows xcodebuild ignoring `.swiftpm/configuration/mirrors.json`
+      # again, the appropriate fix is to serialise the user-level write
+      # via flock — not to re-introduce the unsynchronised race.
       MIRROR_JSON=$(printf '%s\n' \
         '{' \
         '  "version": 1,' \
@@ -604,8 +622,6 @@ build:debug:
         '}')
       mkdir -p .swiftpm/configuration
       printf '%s' "$MIRROR_JSON" > .swiftpm/configuration/mirrors.json
-      mkdir -p ~/Library/org.swift.swiftpm/configuration
-      printf '%s' "$MIRROR_JSON" > ~/Library/org.swift.swiftpm/configuration/mirrors.json
 
       # 4. Drop derived data + Xcode's shared module cache so the FFI
       # swiftmodule is re-emitted from fresh C headers. Without this,
