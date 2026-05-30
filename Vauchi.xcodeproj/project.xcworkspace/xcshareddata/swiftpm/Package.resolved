@@ -33,8 +33,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://gitlab.com/vauchi/vauchi-platform-swift.git",
       "state" : {
-        "revision" : "403220da46d4613c84232ce8e2906e3878bb9137",
-        "version" : "0.51.27"
+        "revision" : "be3cce6f433924ccebd11b2347fdbfc327924d8a",
+        "version" : "0.51.28"
       }
     },
     {
