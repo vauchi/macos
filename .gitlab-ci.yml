@@ -647,6 +647,21 @@ build:debug:
       rm -rf ~/Library/Caches/org.swift.swiftpm/repositories/vauchi-platform-swift-* 2>/dev/null || true
       rm -rf ~/Library/org.swift.swiftpm/repositories/vauchi-platform-swift-* 2>/dev/null || true
       rm -rf ~/Library/Developer/Xcode/DerivedData/Vauchi-*/SourcePackages 2>/dev/null || true
+      # Stale user-level mirror CONFIG (not just the caches above). macos
+      # writes only the project-local `.swiftpm/configuration/mirrors.json`
+      # (§3 below, macos!249), but a user-level mirrors.json left on the
+      # shared runner by an older/ios pipeline still on the previous version
+      # SHADOWS the project-local redirect: xcodebuild then resolves the
+      # wrong mirror. Observed on the 0.51.30 bump — project-local pointed at
+      # the v0.51.30 mirror yet resolve fetched `…/v0.51.29 (cached)` and
+      # failed "no versions of v0.51.29 match the requirement 0.51.30".
+      # Remove the shared config so the project-local one is authoritative.
+      # (Cross-repo serialisation via host flock is the longer-term fix the
+      # §3 note describes; this removal is the minimal, design-consistent
+      # guard.)
+      rm -f ~/Library/org.swift.swiftpm/configuration/mirrors.json 2>/dev/null || true
+      rm -f ~/.swiftpm/configuration/mirrors.json 2>/dev/null || true
+      rm -f ~/Library/Caches/org.swift.swiftpm/configuration/mirrors.json 2>/dev/null || true
       rm -f  Vauchi.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
       # SwiftPM TOFU fingerprint storage: when a tag is force-moved
       # (v0.24.0 → Fix C, v0.25.0 → restored Package.swift), the
