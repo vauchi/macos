@@ -464,7 +464,8 @@ import UniformTypeIdentifiers
                 // Platform-unavailable on macOS (NFC, photo library,
                 // camera, Phase 2b lifecycle, unsupported). Reported so
                 // core can pick its fallback path per ADR-031.
-                case .nfcActivate, .nfcDeactivate, .imagePickFromLibrary,
+                case .nfcActivate, .nfcDeactivate, .nfcSendApdu,
+                     .imagePickFromLibrary,
                      .imageCaptureFromCamera, .setScreenBrightness,
                      .setIdleTimerDisabled, .setOrientationLock,
                      .switchCamera, .showShareSheet,
@@ -503,7 +504,7 @@ import UniformTypeIdentifiers
         /// pending a UI host.
         private func macOSUnavailableLabel(_ command: CommandDTO) -> String {
             switch command {
-            case .nfcActivate, .nfcDeactivate: return "NFC"
+            case .nfcActivate, .nfcDeactivate, .nfcSendApdu: return "NFC"
             case .imagePickFromLibrary: return "PhotoLibrary"
             case .imageCaptureFromCamera, .switchCamera: return "Camera"
             case .setScreenBrightness: return "ScreenBrightness"
