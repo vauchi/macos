@@ -628,7 +628,8 @@ build:debug:
       rmdir "$LOCKDIR" 2>/dev/null || true
       trap - EXIT
 
-      # 3. Wire SPM to the local mirror — project-local config only.
+      # 3. Wire SPM to the local mirror (project-local here; the user-level
+      # config xcodebuild actually reads is written under lock in §6).
       #
       # Earlier this script also wrote
       # `~/Library/org.swift.swiftpm/configuration/mirrors.json` because
@@ -648,11 +649,15 @@ build:debug:
       # config and tried to satisfy 0.51.25 against it.
       #
       # Macos CI uses xcodebuild CLI only (no Xcode.app interactive —
-      # 29 xcodebuild invocations, 0 `open -a Xcode`), so the
-      # project-local config is the right scope. If a future regression
-      # shows xcodebuild ignoring `.swiftpm/configuration/mirrors.json`
-      # again, the appropriate fix is to serialise the user-level write
-      # via flock — not to re-introduce the unsynchronised race.
+      # 29 xcodebuild invocations, 0 `open -a Xcode`). Only build:debug
+      # resolves — every other xcodebuild call uses
+      # -disableAutomaticPackageResolution and reuses build:debug's cached
+      # .spm-packages — so the test:snapshots/test:unit clobber race above
+      # can no longer fire; those jobs never read the user-level config.
+      # But build:debug DOES need it: xcodebuild ignores the project-local
+      # config, so §6 writes the correct current-version user-level config
+      # and serialises the write→resolve window under a host-wide lock —
+      # the flock fix this note used to defer to.
       MIRROR_JSON=$(printf '%s\n' \
         '{' \
         '  "version": 1,' \
@@ -688,19 +693,15 @@ build:debug:
       rm -rf ~/Library/Caches/org.swift.swiftpm/repositories/vauchi-platform-swift-* 2>/dev/null || true
       rm -rf ~/Library/org.swift.swiftpm/repositories/vauchi-platform-swift-* 2>/dev/null || true
       rm -rf ~/Library/Developer/Xcode/DerivedData/Vauchi-*/SourcePackages 2>/dev/null || true
-      # Stale user-level mirror CONFIG (not just the caches above). macos
-      # writes only the project-local `.swiftpm/configuration/mirrors.json`
-      # (§3 below, macos!249), but a user-level mirrors.json left on the
-      # shared runner by an older/ios pipeline still on the previous version
-      # SHADOWS the project-local redirect: xcodebuild then resolves the
-      # wrong mirror. Observed on the 0.51.30 bump — project-local pointed at
-      # the v0.51.30 mirror yet resolve fetched `…/v0.51.29 (cached)` and
-      # failed "no versions of v0.51.29 match the requirement 0.51.30".
-      # Remove the shared config so the project-local one is authoritative.
-      # (Cross-repo serialisation via host flock is the longer-term fix the
-      # §3 note describes; this removal is the minimal, design-consistent
-      # guard.)
-      rm -f ~/Library/org.swift.swiftpm/configuration/mirrors.json 2>/dev/null || true
+      # The user-level mirror config that xcodebuild actually reads
+      # (~/Library/org.swift.swiftpm/configuration/mirrors.json) is WRITTEN
+      # — under a host-wide lock — in §6 below, not removed here. macos!256
+      # first tried *deleting* it (to kill the stale-version shadow macos!249
+      # describes), but that left xcodebuild with no redirect at all, so it
+      # cloned the upstream tag (no xcframework) and failed "does not contain
+      # a binary artifact". Writing the correct current-version config under
+      # lock fixes both the redirect and the stale shadow. Still clear the
+      # alternate-path configs that nothing writes, so they can't shadow.
       rm -f ~/.swiftpm/configuration/mirrors.json 2>/dev/null || true
       rm -f ~/Library/Caches/org.swift.swiftpm/configuration/mirrors.json 2>/dev/null || true
       rm -f  Vauchi.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
@@ -719,13 +720,54 @@ build:debug:
       rm -rf ~/Library/org.swift.swiftpm/security/fingerprints 2>/dev/null || true
       rm -rf ~/Library/Caches/org.swift.swiftpm/security/fingerprints 2>/dev/null || true
 
-      # 6. Resolve. Env var triggers `path:` binaryTarget; mirror has
-      # the xcframework. No URLSession download path is reachable.
+      # 6. Write the user-level mirror config + resolve, under a host-wide
+      # config lock.
+      #
+      # xcodebuild reads the *user-level*
+      # ~/Library/org.swift.swiftpm/configuration/mirrors.json — NOT the
+      # project-local `.swiftpm/configuration/mirrors.json` written in §3.
+      # Verified by the green/red package-identity split: a working resolve
+      # logs `Checking out … of package 'v$V'` (the file:// mirror identity);
+      # a broken one logs `… of package 'vauchi-platform-swift'` (the upstream
+      # gitlab tag, which gitignores the xcframework → "does not contain a
+      # binary artifact"). The shared user-level file is clobbered by
+      # concurrent ios/macos bump pipelines (macos!249), so serialise the
+      # write→resolve window under a host-wide lock — no other pipeline can
+      # overwrite the config between our write and our resolve. ios writes the
+      # same file under the same lock; the two ship together. mkdir(1) is the
+      # POSIX-atomic primitive (no flock on macOS). The section is just
+      # write+resolve (~1–2 min), so the 600s stale threshold never
+      # false-reclaims.
+      CFGLOCK="$HOME/.cache/vauchi-platform-swift-mirror/.cfg-lock"
+      mkdir -p "$(dirname "$CFGLOCK")"
+      CFG_WAIT=0
+      while ! mkdir "$CFGLOCK" 2>/dev/null; do
+        if [ "$CFG_WAIT" -ge 600 ]; then
+          echo "  Config lock held >600s — treating as stale and reclaiming."
+          rmdir "$CFGLOCK" 2>/dev/null || true
+          continue
+        fi
+        echo "  Waiting for config lock at $CFGLOCK (${CFG_WAIT}s)…"
+        sleep 5
+        CFG_WAIT=$((CFG_WAIT + 5))
+      done
+      trap 'rmdir "$CFGLOCK" 2>/dev/null || true' EXIT
+
+      mkdir -p ~/Library/org.swift.swiftpm/configuration
+      printf '%s' "$MIRROR_JSON" > ~/Library/org.swift.swiftpm/configuration/mirrors.json
+
+      # Resolve. Env var triggers `path:` binaryTarget; mirror has the
+      # xcframework. No URLSession download path is reachable.
       xcodebuild -project Vauchi.xcodeproj -scheme Vauchi \
         -clonedSourcePackagesDirPath .spm-packages \
         -derivedDataPath .derived-data \
         -resolvePackageDependencies
       echo "  SPM resolve OK (file:// mirror, no URLSession)"
+
+      # Resolve done — SPM cloned the mirror into project-local .spm-packages,
+      # so the user-level config is no longer needed. Release the lock.
+      rmdir "$CFGLOCK" 2>/dev/null || true
+      trap - EXIT
     # Pre-compile diagnostic: confirm the xcframework Xcode will
     # consume actually matches the checked-out Swift bindings. If the
     # header at $CHECKOUT is stale (earlier binding version), compile
