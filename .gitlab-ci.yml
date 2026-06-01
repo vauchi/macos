@@ -466,9 +466,25 @@ build:debug:
       done
       trap 'rmdir "$LOCKDIR" 2>/dev/null || true' EXIT
 
-      if [ -f "$MIRROR_READY" ]; then
+      # The macOS binary artifact the xcframework must contain. Used both
+      # to validate a cache-hit mirror (the guard below) and to fail-fast
+      # after a fresh build (Sanity check further down). A mirror can be
+      # stamped MIRROR_READY yet be missing this binary if a concurrent
+      # same-version bump job reclaimed the lock at the 600s stale
+      # threshold and tore the mirror mid-build — observed on macos!256
+      # racing ios!482, both bumping 0.51.30: `rm -rf "$MIRROR"` + re-clone
+      # of the upstream tag (which gitignores the xcframework) leaves a
+      # valid-version checkout with no binary, and SPM resolve fails
+      # "does not contain a binary artifact". The cache-hit guard treats a
+      # binary-less mirror as a miss and rebuilds, so a torn cache
+      # self-heals instead of failing every consumer that hits it.
+      BIN_PATH="VauchiPlatformFFI.xcframework/macos-arm64_x86_64/VauchiPlatformFFI.framework/Versions/A/VauchiPlatformFFI"
+      if [ -f "$MIRROR_READY" ] && git -C "$MIRROR" cat-file -e "v$V:$BIN_PATH" 2>/dev/null; then
         echo "  Mirror cache hit at $MIRROR"
       else
+        if [ -f "$MIRROR_READY" ]; then
+          echo "  Mirror cache STALE (xcframework binary missing) — rebuilding"
+        fi
         echo "  Building mirror at $MIRROR"
         rm -rf "$MIRROR"
         mkdir -p "$(dirname "$MIRROR")"
@@ -571,11 +587,10 @@ build:debug:
         git -C "$MIRROR" tag -f "v$V"
 
         # Sanity: the commit must contain the macOS binary artifact path
-        # listed in the xcframework Info.plist. If the binary is missing
-        # (e.g. `git add -f` didn't recurse into the gitignored dir, or
-        # the unzip failed silently), SPM resolve will fail with
+        # ($BIN_PATH, defined above the cache-hit guard). If the binary is
+        # missing (e.g. `git add -f` didn't recurse into the gitignored
+        # dir, or the unzip failed silently), SPM resolve will fail with
         # "does not contain a binary artifact" — fail fast here instead.
-        BIN_PATH="VauchiPlatformFFI.xcframework/macos-arm64_x86_64/VauchiPlatformFFI.framework/Versions/A/VauchiPlatformFFI"
         if ! git -C "$MIRROR" cat-file -e "v$V:$BIN_PATH" 2>/dev/null; then
           echo "  ERROR: mirror commit missing $BIN_PATH"
           echo "  Files captured in mirror commit:"
