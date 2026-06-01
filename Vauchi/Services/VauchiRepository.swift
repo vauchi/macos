@@ -64,6 +64,13 @@ import Foundation
                 throw VauchiRepositoryError.initialization("\(error)")
             }
 
+            // B7 Phase 2: wire the keychain to PlatformAppEngine so the
+            // core-driven shred DomainCommands (SoftShred / CancelShred /
+            // HardShred / PanicShred) can reach the platform keychain.
+            // Unlike iOS/Android, macOS has no widget/panic-shred path
+            // through VauchiPlatform, so only the engine slot is wired.
+            appEngine.setPlatformKeychain(keychain: VauchiKeychainBridge())
+
             // S4 — wire `ThemeService` + `LocalizationService` to the live
             // engine so subsequent theme/locale changes propagate to core
             // via `setRenderContextJson`. No vault → OS-native migration
@@ -143,6 +150,39 @@ import Foundation
                 #endif
                 return nil
             }
+        }
+    }
+
+    /// Bridges core's `MobilePlatformKeychain` callback to the macOS
+    /// `KeychainService`, so the `PlatformAppEngine` shred `DomainCommand`s
+    /// (B7) can clear key material from the login keychain.
+    ///
+    /// Unlike iOS, macOS cannot re-wrap failures into the binding's
+    /// `KeychainError` type: macOS declares a *local* `KeychainError` (in
+    /// `KeychainService`) that shadows the unqualified name, and the binding
+    /// type can't be module-qualified because the module name `VauchiPlatform`
+    /// collides with the engine class of the same name. We therefore let the
+    /// local `KeychainError` propagate — UniFFI's callback shim marshals any
+    /// non-matching error as a descriptive `CALL_UNEXPECTED_ERROR` string, so
+    /// core still sees a meaningful failure. `loadKey` maps the not-found case
+    /// to `nil` as the protocol expects.
+    class VauchiKeychainBridge: MobilePlatformKeychain {
+        private let keychain = KeychainService.shared
+
+        func saveKey(name: String, key: Data) throws {
+            try keychain.save(key: name, data: key)
+        }
+
+        func loadKey(name: String) throws -> Data? {
+            do {
+                return try keychain.load(key: name)
+            } catch KeychainError.notFound {
+                return nil
+            }
+        }
+
+        func deleteKey(name: String) throws {
+            try keychain.delete(key: name)
         }
     }
 #endif
