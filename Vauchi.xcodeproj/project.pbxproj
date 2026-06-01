@@ -144,6 +144,7 @@
 		A9453CE67AC4031A9DA729EE /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95FC0B5B9D3918ADE8F9FF31 /* AppState.swift */; };
 		AABC39234A780149080C84AB /* testSettingsViewGerman.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 754BD6DA5325E71B6D09BAAB /* testSettingsViewGerman.1.png */; };
 		AC5905716421EF0493923556 /* testExchangeShowQrDark.1.png in Resources */ = {isa = PBXBuildFile; fileRef = D51F85BE507FC3741AFF9FE2 /* testExchangeShowQrDark.1.png */; };
+		ACB5D66C9DC53BB3DEC7044E /* VauchiKeychainBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE32C32136CEB8811C89778C /* VauchiKeychainBridgeTests.swift */; };
 		AD3A83D552E25C7A50441AE1 /* testHomeScreenEmpty.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C33C5B250ED22834663E64B /* testHomeScreenEmpty.1.png */; };
 		ADB778BBA40707BAD3F8B21A /* AppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554291CB7224022A54BC954F /* AppViewModel.swift */; };
 		AE6ED32C72587A0283C520D2 /* VauchiRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95373D9E6440FED4B532EBDD /* VauchiRepository.swift */; };
@@ -402,6 +403,7 @@
 		B8027B69C9794DDF7044A016 /* testContactListEmpty.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testContactListEmpty.1.png; sourceTree = "<group>"; };
 		BD52706224375EBB9227ECF4 /* testCreateIdentityStepFilled.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testCreateIdentityStepFilled.1.png; sourceTree = "<group>"; };
 		BDB1CEDFBA5AE37F12D5BE39 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		BE32C32136CEB8811C89778C /* VauchiKeychainBridgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VauchiKeychainBridgeTests.swift; sourceTree = "<group>"; };
 		BF21CF300C61D81BBA57F040 /* testTextComponentBody.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testTextComponentBody.1.png; sourceTree = "<group>"; };
 		BFB533E7A5279BAE43E57029 /* testFieldListWithFieldsShowHide.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testFieldListWithFieldsShowHide.1.png; sourceTree = "<group>"; };
 		C29DE27FD4421553D034E37A /* contact_edit_preview.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = contact_edit_preview.json; sourceTree = "<group>"; };
@@ -543,6 +545,7 @@
 				EAAC6746EE9A836506EE5B00 /* MultiStagePollTimerTests.swift */,
 				AA16E627E566CF0467CBDC18 /* SmokeTests.swift */,
 				4BF7BC594414EE931756CE54 /* ThemeServiceSettingsTests.swift */,
+				BE32C32136CEB8811C89778C /* VauchiKeychainBridgeTests.swift */,
 				0551E4C6C31A1EF46B1DE22E /* CoreUI */,
 			);
 			path = VauchiTests;
@@ -1112,6 +1115,7 @@
 				D512E887B388D4EF5F53216C /* MultiStagePollTimerTests.swift in Sources */,
 				3AB3684BA26BB47BF80BB933 /* SmokeTests.swift in Sources */,
 				60D8E07B9EFB1F102D7518A0 /* ThemeServiceSettingsTests.swift in Sources */,
+				ACB5D66C9DC53BB3DEC7044E /* VauchiKeychainBridgeTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1538,7 +1542,7 @@
 			repositoryURL = "https://gitlab.com/vauchi/vauchi-platform-swift.git";
 			requirement = {
 				kind = exactVersion;
-				version = 0.51.32;
+				version = 0.51.33;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
