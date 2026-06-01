@@ -42,6 +42,16 @@ import UniformTypeIdentifiers
         private var qrFrameDecodeFailures = 0
         private static let maxConsecutiveQrDecodeFailures = 10 // ~1s at 10 fps
 
+        /// Timer that drives the multi-stage (Glance) exchange machine
+        /// (~5fps) while the `multi_stage_exchange` screen is visible. Post
+        /// slice-32m the core cycle thread is gone; the machine advances
+        /// only when the frontend calls `pollNotifications`, which also
+        /// fires `onScreensInvalidated` (→ `loadScreen`). Without this tick
+        /// the own-QR never appears (Bug 5,
+        /// `2026-05-30-exchange-screen-nav-visual-bugs`). Distinct from
+        /// `qrFrameTimer`, which drives the legacy `exchange_show_qr` path.
+        private var multiStagePollTimer: Timer?
+
         struct AlertMessage: Identifiable {
             let id = UUID()
             let title: String
@@ -208,6 +218,39 @@ import UniformTypeIdentifiers
         /// idempotent start/stop without reaching into the private Timer.
         var hasActiveQrFrameTimer: Bool {
             qrFrameTimer != nil
+        }
+
+        // MARK: - Multi-Stage Exchange Polling (Bug 5)
+
+        /// Start a ~5fps timer that drives the multi-stage exchange machine
+        /// by polling core. Each tick runs `advance_multi_stage_session`
+        /// inside the engine and fires `onScreensInvalidated`; the
+        /// invalidation listener refetches the screen so the cycling own-QR
+        /// + protocol progress surface. Idempotent. The view calls this when
+        /// `screenId` becomes `multi_stage_exchange` and stops it on exit.
+        func startMultiStagePollTimer() {
+            guard multiStagePollTimer == nil else { return }
+            let timer = Timer(timeInterval: 0.2, repeats: true) { [weak self] _ in
+                guard let self else { return }
+                // Side effect is the point — returned notifications are
+                // drained by the global poll; matches Android's
+                // `tickMultiStageExchange`.
+                _ = try? self.appEngine.pollNotifications()
+            }
+            RunLoop.main.add(timer, forMode: .common)
+            multiStagePollTimer = timer
+        }
+
+        /// Stop the multi-stage poll timer if running. The view calls this
+        /// when `screenId` leaves `multi_stage_exchange` (or on disappear).
+        func stopMultiStagePollTimer() {
+            multiStagePollTimer?.invalidate()
+            multiStagePollTimer = nil
+        }
+
+        /// Test-only accessor — true while the multi-stage poll timer is active.
+        var hasActiveMultiStagePollTimer: Bool {
+            multiStagePollTimer != nil
         }
 
         private func advanceQrFrame() {

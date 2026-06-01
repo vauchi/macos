@@ -88,6 +88,7 @@ import SwiftUI
             }
             .onDisappear {
                 viewModel.stopQrFrameTimer()
+                viewModel.stopMultiStagePollTimer()
             }
             .sheet(isPresented: $viewModel.showDeviceLinkSheet) {
                 CoreSheetView(
@@ -143,6 +144,16 @@ import SwiftUI
                 viewModel.startQrFrameTimer()
             } else {
                 viewModel.stopQrFrameTimer()
+            }
+            // Multi-stage (Glance) exchange advances via a separate
+            // poll-driven tick — its machine replaced the legacy
+            // `exchange_show_qr` engine and is driven by `pollNotifications`,
+            // not `advanceQrFrameJson` (Bug 5,
+            // `2026-05-30-exchange-screen-nav-visual-bugs`).
+            if screenId == "multi_stage_exchange" {
+                viewModel.startMultiStagePollTimer()
+            } else {
+                viewModel.stopMultiStagePollTimer()
             }
         }
     }
