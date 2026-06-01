@@ -438,10 +438,17 @@ build:debug:
       # pipeline (verified macos!207 bot bump + macos!208 file rename
       # MR both red). Bumping the stamp forces a fresh shallow clone
       # of `v$V` from gitlab.com, which sanity checks 1+2+3 below
-      # then validate. Prior bumps: v4 (gitlab eventual-consistency
-      # window after v0.25.0 force-tag-move), v3 (force-moved
-      # v0.25.0 tag), v2 (symlink-fix invalidation).
-      MIRROR_READY="$MIRROR/.ci-mirror-ready-v5"
+      # then validate. Prior bumps: v5→v6 (poisoned-mirror invalidation —
+      # the 600s lock-reclaim race let concurrent 0.51.30 bumps commit a
+      # torn xcframework: a valid Versions/A binary but no top-level
+      # framework symlink, which passed the old Versions/A-only sanity and
+      # poisoned the runner-shared cache so every consumer cache-hit it and
+      # failed "does not contain a binary artifact"; macos!256 / ios!482),
+      # v4 (gitlab eventual-consistency window after v0.25.0 force-tag-move),
+      # v3 (force-moved v0.25.0 tag), v2 (symlink-fix invalidation).
+      # NOTE: $MIRROR + this stamp are shared with ios CI — bump both repos
+      # in lockstep or the two will ping-pong rebuilds on the shared dir.
+      MIRROR_READY="$MIRROR/.ci-mirror-ready-v6"
 
       # Concurrency guard for the runner-shared mirror: ios + macos jobs
       # racing through the cache-miss path of the if/else below produced
@@ -466,24 +473,28 @@ build:debug:
       done
       trap 'rmdir "$LOCKDIR" 2>/dev/null || true' EXIT
 
-      # The macOS binary artifact the xcframework must contain. Used both
-      # to validate a cache-hit mirror (the guard below) and to fail-fast
-      # after a fresh build (Sanity check further down). A mirror can be
-      # stamped MIRROR_READY yet be missing this binary if a concurrent
-      # same-version bump job reclaimed the lock at the 600s stale
-      # threshold and tore the mirror mid-build — observed on macos!256
-      # racing ios!482, both bumping 0.51.30: `rm -rf "$MIRROR"` + re-clone
-      # of the upstream tag (which gitignores the xcframework) leaves a
-      # valid-version checkout with no binary, and SPM resolve fails
-      # "does not contain a binary artifact". The cache-hit guard treats a
-      # binary-less mirror as a miss and rebuilds, so a torn cache
-      # self-heals instead of failing every consumer that hits it.
-      BIN_PATH="VauchiPlatformFFI.xcframework/macos-arm64_x86_64/VauchiPlatformFFI.framework/Versions/A/VauchiPlatformFFI"
-      if [ -f "$MIRROR_READY" ] && git -C "$MIRROR" cat-file -e "v$V:$BIN_PATH" 2>/dev/null; then
+      # The macOS framework binary SPM actually resolves is the TOP-LEVEL
+      # symlink `…/VauchiPlatformFFI.framework/VauchiPlatformFFI` →
+      # `Versions/Current/VauchiPlatformFFI` → `Versions/A/…`. A torn mirror
+      # build (from the 600s lock-reclaim race) can commit the real
+      # `Versions/A` binary yet omit the top-level symlink; SPM then finds
+      # the xcframework but no usable binary and fails "does not contain a
+      # binary artifact" on the correct version (macos!256 / ios!482,
+      # 0.51.30). Validating only `Versions/A` — as the old guard and the
+      # post-build sanity did — rubber-stamps that torn state, so check BOTH
+      # the real binary and the top-level symlink the resolver reads.
+      # mirror_has_binary is reused by the post-build sanity below.
+      BIN_REAL="VauchiPlatformFFI.xcframework/macos-arm64_x86_64/VauchiPlatformFFI.framework/Versions/A/VauchiPlatformFFI"
+      BIN_LINK="VauchiPlatformFFI.xcframework/macos-arm64_x86_64/VauchiPlatformFFI.framework/VauchiPlatformFFI"
+      mirror_has_binary() {
+        git -C "$MIRROR" cat-file -e "v$V:$BIN_REAL" 2>/dev/null \
+          && git -C "$MIRROR" cat-file -e "v$V:$BIN_LINK" 2>/dev/null
+      }
+      if [ -f "$MIRROR_READY" ] && mirror_has_binary; then
         echo "  Mirror cache hit at $MIRROR"
       else
         if [ -f "$MIRROR_READY" ]; then
-          echo "  Mirror cache STALE (xcframework binary missing) — rebuilding"
+          echo "  Mirror cache STALE (xcframework binary/symlink missing) — rebuilding"
         fi
         echo "  Building mirror at $MIRROR"
         rm -rf "$MIRROR"
@@ -586,13 +597,14 @@ build:debug:
           commit -q -m "ci-mirror: bundle xcframework v$V"
         git -C "$MIRROR" tag -f "v$V"
 
-        # Sanity: the commit must contain the macOS binary artifact path
-        # ($BIN_PATH, defined above the cache-hit guard). If the binary is
-        # missing (e.g. `git add -f` didn't recurse into the gitignored
-        # dir, or the unzip failed silently), SPM resolve will fail with
-        # "does not contain a binary artifact" — fail fast here instead.
-        if ! git -C "$MIRROR" cat-file -e "v$V:$BIN_PATH" 2>/dev/null; then
-          echo "  ERROR: mirror commit missing $BIN_PATH"
+        # Sanity: the commit must contain BOTH the real macOS binary
+        # ($BIN_REAL) and the top-level framework symlink ($BIN_LINK) the
+        # resolver reads — see mirror_has_binary above. If either is missing
+        # (torn build, or `git add -f` didn't recurse into the gitignored
+        # dir, or the unzip failed silently), SPM resolve fails "does not
+        # contain a binary artifact" — fail fast here instead.
+        if ! mirror_has_binary; then
+          echo "  ERROR: mirror commit missing $BIN_REAL or $BIN_LINK"
           echo "  Files captured in mirror commit:"
           git -C "$MIRROR" ls-tree -r "v$V" --name-only | grep VauchiPlatformFFI | head -20
           exit 1
@@ -601,6 +613,20 @@ build:debug:
         touch "$MIRROR_READY"
         echo "  Mirror built ($(du -sh "$MIRROR" | cut -f1), $(git -C "$MIRROR" ls-tree -r "v$V" --name-only | grep -c '^VauchiPlatformFFI.xcframework/') xcframework files)"
       fi
+
+      # Release the mirror lock now: the critical section is the BUILD
+      # only. The EXIT-trap release (set at lock acquisition) otherwise
+      # held the lock through the multi-minute compile, so any second
+      # concurrent same-version job waited out the 600s stale threshold
+      # (a normal compile far exceeds it), reclaimed the still-live lock,
+      # and entered the build path alongside the holder — the collision
+      # that tore mirrors and poisoned the shared cache (macos!256 /
+      # ios!482, 0.51.30). Freeing it here shrinks the critical section to
+      # the ~90s build, so the stale-reclaim never fires under normal load;
+      # once READY-stamped the mirror is read-only for resolve, so
+      # concurrent jobs proceed in parallel against a stable dir.
+      rmdir "$LOCKDIR" 2>/dev/null || true
+      trap - EXIT
 
       # 3. Wire SPM to the local mirror — project-local config only.
       #
