@@ -47,7 +47,7 @@ struct VauchiApp: App {
 
         #if os(macOS) && canImport(VauchiPlatform)
             Settings {
-                CoreSceneView(screenName: "Settings")
+                CoreSceneView(actionId: "settings")
                     .environmentObject(appState)
                     .environmentObject(themeService)
                     .frame(minWidth: 400, minHeight: 500)

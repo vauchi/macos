@@ -28,8 +28,11 @@ import SwiftUI
     import VauchiPlatform
 
     struct CoreSheetView: View {
-        /// Core screen name to navigate to on appear (e.g. `"DeviceLinking"`).
-        let screenName: String
+        /// Opaque navigation token for the screen subtree to enter on
+        /// appear (the snake_case `screen_id`, e.g. `"device_linking"`).
+        /// Forwarded verbatim via `UserAction::NavigateToTab` — never a
+        /// domain screen-name (ADR-043 Am4).
+        let actionId: String
 
         /// Shared `AppViewModel` whose `appEngine` drives the flow.
         @ObservedObject var viewModel: AppViewModel
@@ -67,14 +70,30 @@ import SwiftUI
 
         private func loadScreen() {
             do {
-                let json = try viewModel.appEngine.navigateToJson(
-                    screenJson: "\"\(screenName)\""
-                )
-                guard let data = json.data(using: .utf8) else {
+                // Enter the subtree via the typed `NavigateToTab` path
+                // (the `navigate_to_json` UniFFI surface was retired,
+                // ADR-043 Am4 / core 0.51.35). Core resolves `actionId`
+                // to the target screen and returns it as a `navigateTo`
+                // result; we render it locally, isolated from the main
+                // window's `currentScreen`.
+                let action = UserAction.navigateToTab(actionId: actionId)
+                let actionData = try coreJSONEncoder.encode(action)
+                guard let actionJson = String(data: actionData, encoding: .utf8)
+                else {
                     error = "Invalid JSON"
                     return
                 }
-                screen = try coreJSONDecoder.decode(ScreenModel.self, from: data)
+                let resultJson = try viewModel.appEngine.handleActionJson(
+                    actionJson: actionJson
+                )
+                guard let resultData = resultJson.data(using: .utf8) else {
+                    error = "Invalid JSON"
+                    return
+                }
+                let envelope = try coreJSONDecoder.decode(
+                    ActionResultEnvelope.self, from: resultData
+                )
+                applyResult(envelope.actionResult)
             } catch {
                 self.error = error.localizedDescription
             }

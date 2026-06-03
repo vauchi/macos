@@ -92,7 +92,7 @@ import SwiftUI
             }
             .sheet(isPresented: $viewModel.showDeviceLinkSheet) {
                 CoreSheetView(
-                    screenName: "DeviceLinking",
+                    actionId: "device_linking",
                     viewModel: viewModel,
                     onComplete: { viewModel.showDeviceLinkSheet = false },
                     cancelIfScreenMatches: { $0.hasPrefix("link_") }
@@ -102,19 +102,19 @@ import SwiftUI
                 .frame(minHeight: 450)
             }
             .onReceive(NotificationCenter.default.publisher(for: .vauchiMenuExchange)) { _ in
-                viewModel.navigateTo(screenJson: "\"Exchange\"")
+                viewModel.navigateToTab(actionId: "exchange")
             }
             .onReceive(NotificationCenter.default.publisher(for: .vauchiMenuContacts)) { _ in
-                viewModel.navigateTo(screenJson: "\"Contacts\"")
+                viewModel.navigateToTab(actionId: "contacts")
             }
             .onReceive(NotificationCenter.default.publisher(for: .vauchiMenuGroups)) { _ in
-                viewModel.navigateTo(screenJson: "\"Groups\"")
+                viewModel.navigateToTab(actionId: "groups")
             }
             .onReceive(NotificationCenter.default.publisher(for: .vauchiMenuMyCard)) { _ in
-                viewModel.navigateTo(screenJson: "\"MyInfo\"")
+                viewModel.navigateToTab(actionId: "my_info")
             }
             .onReceive(NotificationCenter.default.publisher(for: .vauchiMenuMore)) { _ in
-                viewModel.navigateTo(screenJson: "\"More\"")
+                viewModel.navigateToTab(actionId: "more")
             }
             // Phase 3 retirement of `2026-05-02-macos-humble-ui-retirement` G1:
             // emit core's `import_contacts` action instead of opening
@@ -131,7 +131,7 @@ import SwiftUI
             // Engine state moves; the user's currently-rendered scene
             // stays put (CoreSceneView only opens on Settings nav).
             .onReceive(NotificationCenter.default.publisher(for: .vauchiMenuImportContacts)) { _ in
-                viewModel.navigateTo(screenJson: "\"More\"")
+                viewModel.navigateToTab(actionId: "more")
                 viewModel.handleAction(.actionPressed(actionId: "import_contacts"))
             }
         }
@@ -170,15 +170,21 @@ import SwiftUI
                         tab.label,
                         systemImage: sidebarIcon(forScreenId: tab.id)
                     )
-                    .tag(AppViewModel.appScreenName(fromScreenId: tab.id))
+                    // Tag with the opaque snake_case screen_id (== the
+                    // selection id surfaced by `currentTabId`); the tap
+                    // forwards `tab.actionId` via `navigateToTab`.
+                    .tag(tab.id)
                 }
             }
             .navigationTitle(LocalizationService.shared.t("app.name"))
             .onChange(of: sidebarSelection) { newValue in
-                guard let screen = newValue,
-                      screen != viewModel.selectedScreen
+                guard let selectedId = newValue,
+                      selectedId != viewModel.selectedScreen,
+                      let tab = viewModel.sidebarItems.first(where: { $0.id == selectedId })
                 else { return }
-                viewModel.navigateTo(screenJson: "\"\(screen)\"")
+                // Forward the opaque `actionId` — core resolves it to the
+                // canonical screen (zero-domain-vocab, ADR-043 Am4).
+                viewModel.navigateToTab(actionId: tab.actionId)
             }
             .onChange(of: viewModel.selectedScreen) { newValue in
                 sidebarSelection = newValue

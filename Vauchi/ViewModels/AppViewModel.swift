@@ -77,17 +77,6 @@ import UniformTypeIdentifiers
             }
         }
 
-        /// Convert a core screen_id ("my_info") to the AppScreen enum
-        /// variant name ("MyInfo") that `navigateToJson` expects. Only
-        /// handles non-parameterized screens — parameterized ones
-        /// (contact_detail, ...) go through `navigateToScreen` with
-        /// structured payloads instead.
-        static func appScreenName(fromScreenId id: String) -> String {
-            id.split(separator: "_")
-                .map { $0.prefix(1).uppercased() + $0.dropFirst() }
-                .joined()
-        }
-
         /// Loads the current screen from the core engine.
         func loadScreen() {
             do {
@@ -139,23 +128,34 @@ import UniformTypeIdentifiers
             }
         }
 
-        /// Navigate to a specific screen.
-        func navigateTo(screenJson: String) {
-            do {
-                let json = try appEngine.navigateToJson(screenJson: screenJson)
-                guard let data = json.data(using: .utf8) else { return }
-                // Phase 2b envelope shape: `{"screen": ..., "commands": [...]}`.
-                let envelope = try coreJSONDecoder.decode(ScreenEnvelope.self, from: data)
-                currentScreen = envelope.screen
-                validationErrors = [:]
-                loadSidebarItems()
-                updateSelectedScreen()
-                if !envelope.commands.isEmpty {
-                    dispatchExchangeCommands(envelope.commands)
-                }
-            } catch {
-                print("AppViewModel: failed to navigate: \(error)")
-            }
+        // `navigateTo(screenJson:)` (the `appEngine.navigateToJson` wrapper)
+        // was retired with core's `navigate_to_json` UniFFI surface
+        // (ADR-043 Am4 "dispatch inversion", core 0.51.35). Every macOS
+        // top-level / sidebar / menu destination now reaches core via the
+        // typed `navigateToTab(actionId:)` path; parameterized destinations
+        // (contact detail, edit, entry) are core-driven — `AppEngine.
+        // route_result` re-emits `OpenContact`/`EditContact`/`OpenEntryDetail`
+        // as `NavigateTo`, so the frontend only renders the engine's current
+        // screen and never constructs a navigation target.
+
+        /// Forward a sidebar / menu destination tap as
+        /// `UserAction::NavigateToTab { action_id }`.
+        ///
+        /// `actionId` is the opaque token core minted on
+        /// `MobileTabInfo.actionId` (== the snake_case `screen_id`, e.g.
+        /// "settings", "exchange"); core resolves it to the canonical screen
+        /// and returns `NavigateTo`. The frontend never parses or constructs
+        /// the domain variant — that is the zero-domain-vocab contract
+        /// (ADR-043 Am4). Dispatched through the typed `handleAction(_:)`
+        /// path (encode → `handleActionJson` → apply result + lifecycle
+        /// commands), then refreshes the sidebar + selection.
+        ///
+        /// Requires the `UserAction.navigateToTab` case from
+        /// vauchi-platform-swift (added in vauchi-platform-swift!59).
+        func navigateToTab(actionId: String) {
+            handleAction(.navigateToTab(actionId: actionId))
+            loadSidebarItems()
+            updateSelectedScreen()
         }
 
         /// Navigate back in the history stack.
@@ -285,40 +285,27 @@ import UniformTypeIdentifiers
             }
         }
 
-        /// Maps core screen_id prefixes to their AppScreen navigation name.
-        /// Screen IDs like "exchange_show_qr" map to "Exchange" via prefix match.
-        private static let screenIdPrefixToAppScreen: [(prefix: String, appScreen: String)] = [
-            ("my_info", "MyInfo"),
-            ("archived_contacts", "Contacts"),
-            ("contact", "Contacts"),
-            ("exchange", "Exchange"),
-            ("groups", "Groups"),
-            ("group_detail", "Groups"),
-            ("device_replacement", "More"),
-            ("more", "More"),
-        ]
-
-        /// Syncs `selectedScreen` from the core's current screen ID.
+        /// Syncs `selectedScreen` from core's current parent tab id.
+        ///
+        /// `currentTabId(layout: .desktop)` returns the opaque snake_case
+        /// `screen_id` of the sidebar entry the active screen belongs to
+        /// (e.g. "contacts" for `contact_detail`), matching the `id` /
+        /// `actionId` carried by `sidebarItems`. Replaces the per-frontend
+        /// `screenIdPrefixToAppScreen` PascalCase table (retired with the
+        /// `navigate_to_json` surface, ADR-043 Am4 / §1D pure-renderer
+        /// remediation) — the frontend no longer maps screen ids to domain
+        /// enum variant names.
         private func updateSelectedScreen() {
-            guard let screenId = currentScreen?.screenId else { return }
-            for mapping in Self.screenIdPrefixToAppScreen where screenId.hasPrefix(mapping.prefix) {
-                selectedScreen = mapping.appScreen
-                return
+            do {
+                if let tabId = try appEngine.currentTabId(layout: .desktop) {
+                    selectedScreen = tabId
+                }
+            } catch {
+                print("AppViewModel: failed to resolve current tab id: \(error)")
             }
         }
 
         // MARK: - Private
-
-        private func navigateToScreen(_ screenObject: [String: Any]) {
-            do {
-                let payload = try JSONSerialization.data(withJSONObject: screenObject)
-                if let screenJson = String(data: payload, encoding: .utf8) {
-                    navigateTo(screenJson: screenJson)
-                }
-            } catch {
-                print("AppViewModel: failed to encode screen navigation: \(error)")
-            }
-        }
 
         private func applyResult(_ result: ActionResult) {
             switch result {
@@ -332,21 +319,18 @@ import UniformTypeIdentifiers
                 validationErrors[componentId] = message
             case .complete, .wipeComplete:
                 loadScreen()
-            case .completeWith:
-                // CompleteWith is consumed by AppEngine.route_result in core,
-                // which re-emits NavigateTo to the destination screen — frontends
-                // never observe it during normal post-onboarding routing.
+            case .completeWith, .openContact, .editContact, .openEntryDetail:
+                // Resolved to NavigateTo by AppEngine.route_result in core —
+                // frontends never observe these raw (ADR-043 Am4). CompleteWith
+                // re-emits the post-onboarding destination; OpenContact /
+                // EditContact / OpenEntryDetail re-emit the contact / edit /
+                // entry screens. The frontend renders the engine's current
+                // screen and never constructs a navigation target.
                 break
             case let .openUrl(url):
                 if let nsUrl = URL(string: url) { NSWorkspace.shared.open(nsUrl) }
             case let .showAlert(title, message):
                 alertMessage = AlertMessage(title: title, message: message)
-            case let .openContact(contactId):
-                navigateToScreen(["ContactDetail": ["contact_id": contactId]])
-            case let .editContact(contactId):
-                navigateToScreen(["ContactEdit": ["contact_id": contactId]])
-            case let .openEntryDetail(fieldId):
-                navigateToScreen(["EntryDetail": ["field_id": fieldId]])
             case let .showToast(message, undoActionId):
                 // Reload screen — core may have navigated internally
                 // (e.g. archive_contact intercept calls navigate_back()
