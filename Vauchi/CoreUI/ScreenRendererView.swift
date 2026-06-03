@@ -56,30 +56,38 @@ struct ScreenRendererView: View {
                     .accessibilityValue(progress.label ?? "\(progress.currentStep) of \(progress.totalSteps)")
                 }
 
-                ScrollView {
-                    VStack(spacing: 24) {
-                        // Header
-                        VStack(spacing: 8) {
-                            Text(screen.title)
-                                .font(.title2.bold())
+                // Fixed-layout screens (e.g. the QR exchange) own their
+                // own sizing and must not be wrapped in a ScrollView, which
+                // would let the camera/QR preview grow unbounded. Scroll is
+                // the default; render the same content stack either way.
+                let content = VStack(spacing: 24) {
+                    // Header
+                    VStack(spacing: 8) {
+                        Text(screen.title)
+                            .font(.title2.bold())
+                            .multilineTextAlignment(.center)
+                            .accessibilityAddTraits(.isHeader)
+
+                        if let subtitle = screen.subtitle {
+                            Text(subtitle)
+                                .font(.body)
+                                .foregroundColor(.secondary)
                                 .multilineTextAlignment(.center)
-                                .accessibilityAddTraits(.isHeader)
-
-                            if let subtitle = screen.subtitle {
-                                Text(subtitle)
-                                    .font(.body)
-                                    .foregroundColor(.secondary)
-                                    .multilineTextAlignment(.center)
-                            }
-                        }
-                        .padding(.top, 24)
-
-                        // Components
-                        ForEach(Array(screen.components.enumerated()), id: \.offset) { _, component in
-                            ComponentView(component: component, onAction: onAction, onQrScanned: onQrScanned)
                         }
                     }
-                    .padding(.horizontal, 24)
+                    .padding(.top, 24)
+
+                    // Components
+                    ForEach(Array(screen.components.enumerated()), id: \.offset) { _, component in
+                        ComponentView(component: component, onAction: onAction, onQrScanned: onQrScanned)
+                    }
+                }
+                .padding(.horizontal, 24)
+
+                if screen.layout == .fixed {
+                    content
+                } else {
+                    ScrollView { content }
                 }
 
                 Spacer()

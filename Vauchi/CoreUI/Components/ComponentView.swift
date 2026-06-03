@@ -100,6 +100,21 @@ struct ComponentView: View {
             // (ios!466) once a screen starts using it.
             EmptyView()
 
+        case let .row(rowComponent):
+            // Horizontal container: render children left-to-right. The
+            // first child (e.g. a camera/QR preview) flexes; later children
+            // (e.g. an action list of buttons) take their share. Every
+            // child is bounded to an equal slice via maxWidth: .infinity so
+            // a child that fills its width internally (e.g. ActionList) only
+            // fills its slice instead of overflowing and overlapping the
+            // preview. Recurse through ComponentView for nesting.
+            HStack(alignment: .center, spacing: 12) {
+                ForEach(Array(rowComponent.items.enumerated()), id: \.offset) { _, child in
+                    ComponentView(component: child, onAction: onAction, onQrScanned: onQrScanned)
+                        .frame(maxWidth: .infinity)
+                }
+            }
+
         case let .avatarPreview(avatarComponent):
             AvatarPreviewComponentView(component: avatarComponent, onAction: onAction)
 
