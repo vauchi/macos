@@ -30,9 +30,9 @@ import Network
         }
 
         /// Execute a direct exchange over TCP.
-        func exchange(address: String, payload: [UInt8], isInitiator: Bool) {
+        func exchange(address: String, payload: [UInt8], isInitiator: Bool, cardLeg: Bool = false) {
             DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-                self?.performExchange(address: address, payload: payload, isInitiator: isInitiator)
+                self?.performExchange(address: address, payload: payload, isInitiator: isInitiator, cardLeg: cardLeg)
             }
         }
 
@@ -54,7 +54,7 @@ import Network
             return nil
         }
 
-        private func performExchange(address: String, payload: [UInt8], isInitiator: Bool) {
+        private func performExchange(address: String, payload: [UInt8], isInitiator: Bool, cardLeg: Bool) {
             // Try Bonjour discovery; fall back to the caller-supplied address
             // (typically 127.0.0.1 via usbmuxd port-forwarding).
             let resolvedAddress = discoverPhoneAddress() ?? address
@@ -106,7 +106,11 @@ import Network
                 }
 
                 DispatchQueue.main.async { [weak self] in
-                    self?.eventCallback?(.directPayloadReceived(data: Data(theirPayload)))
+                    // Card leg reports DirectCardReceived (the second wire leg);
+                    // the QR-payload leg reports DirectPayloadReceived.
+                    self?.eventCallback?(cardLeg
+                        ? .directCardReceived(ciphertext: Data(theirPayload))
+                        : .directPayloadReceived(data: Data(theirPayload)))
                 }
             } catch {
                 reportError("exchange failed: \(error.localizedDescription)")
