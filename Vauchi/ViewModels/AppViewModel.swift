@@ -158,6 +158,13 @@ import UniformTypeIdentifiers
             updateSelectedScreen()
         }
 
+        /// Whether the current screen offers a back step, per the engine's
+        /// nav state. Drives the core-driven toolbar back button so the
+        /// frontend no longer depends on a footer "Back" action.
+        func canGoBack() -> Bool {
+            (try? appEngine.canGoBack()) ?? false
+        }
+
         /// Navigate back in the history stack.
         func navigateBack() {
             do {

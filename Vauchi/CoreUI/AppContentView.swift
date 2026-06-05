@@ -49,6 +49,26 @@ import SwiftUI
                                 viewModel.handleQrScanned(data: data)
                             }
                         )
+                        // Core-driven back chrome: render a leading toolbar
+                        // back button on sub-screens (those the engine reports
+                        // `can_go_back` for), forwarding `navigateBack`. Roots
+                        // report false, so it only shows where a back step
+                        // exists. Replaces the per-screen footer "Back" action.
+                        .toolbar {
+                            if viewModel.canGoBack() {
+                                ToolbarItem(placement: .navigation) {
+                                    Button {
+                                        viewModel.navigateBack()
+                                    } label: {
+                                        Label(
+                                            LocalizationService.shared.t("action.back"),
+                                            systemImage: "chevron.left"
+                                        )
+                                    }
+                                    .help(LocalizationService.shared.t("action.back"))
+                                }
+                            }
+                        }
                     } else {
                         LoadingView()
                     }
