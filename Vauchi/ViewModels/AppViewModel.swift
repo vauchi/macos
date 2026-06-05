@@ -438,6 +438,20 @@ import UniformTypeIdentifiers
                         payload: payload,
                         isInitiator: isInitiator
                     )
+                // DirectSendCard — USB card-exchange second leg (send our
+                // encrypted card). New in core 0.51.42
+                // (2026-06-05-usb-card-exchange-protocol). macOS's
+                // DirectSendService only drives the first key-exchange leg
+                // today, so the card-send leg is not yet wired on desktop —
+                // stubbed so the exhaustive switch compiles. Wire when the
+                // desktop USB card-exchange flow ships.
+                case .directSendCard:
+                    break
+                // Accelerometer-proximity (shake / bump gesture) is a mobile
+                // feature; a Mac has no equivalent sensor, so these are
+                // no-ops. New CommandDTO variants in core 0.51.42.
+                case .accelerometerStart, .accelerometerStop:
+                    break
                 // Image picking (ADR-042 avatar editor)
                 case .imagePickFromFile:
                     presentFileImagePicker()
