@@ -630,10 +630,19 @@ import UniformTypeIdentifiers
         /// Send a hardware event back to core and apply the result.
         private func sendHardwareEvent(_ event: MobileEvent) {
             do {
-                if let resultJson = try appEngine.handleHardwareEvent(event: event) {
-                    guard let data = resultJson.data(using: .utf8) else { return }
-                    let result = try coreJSONDecoder.decode(ActionResult.self, from: data)
+                let resultJson = try appEngine.handleHardwareEvent(event: event)
+                guard let data = resultJson.data(using: .utf8) else { return }
+                // core 0.51.44+: handleHardwareEvent returns
+                // `{"action_result": <ActionResult>|null, "commands": [<CommandDTO>]}`
+                // so hardware events deliver the Commands they produce (previously
+                // stranded). action_result is null when the event only advanced an
+                // engine-held machine.
+                let envelope = try coreJSONDecoder.decode(HardwareEventEnvelope.self, from: data)
+                if let result = envelope.actionResult {
                     applyResult(result)
+                }
+                if !envelope.commands.isEmpty {
+                    dispatchExchangeCommands(envelope.commands)
                 }
             } catch {
                 print("AppViewModel: hardware event failed: \(error)")
@@ -643,6 +652,20 @@ import UniformTypeIdentifiers
         /// Report that a hardware transport is unavailable.
         private func sendHardwareUnavailable(transport: String) {
             sendHardwareEvent(.hardwareUnavailable(transport: transport))
+        }
+    }
+
+    /// Envelope returned by `PlatformAppEngine.handleHardwareEvent` (core 0.51.44+):
+    /// `{"action_result": <ActionResult>|null, "commands": [<CommandDTO>]}`.
+    /// `actionResult` is nil when the event only advanced an engine-held machine;
+    /// `commands` carries every `Command` the event produced for execution.
+    struct HardwareEventEnvelope: Decodable {
+        let actionResult: ActionResult?
+        let commands: [CommandDTO]
+
+        enum CodingKeys: String, CodingKey {
+            case actionResult = "action_result"
+            case commands
         }
     }
 #endif
