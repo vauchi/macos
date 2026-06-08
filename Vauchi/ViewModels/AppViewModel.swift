@@ -425,10 +425,10 @@ import UniformTypeIdentifiers
                      .bleDisconnect:
                     dispatchBleCommand(command)
                 // Audio — delegate to helper (runs on background queue)
-                case let .audioEmitChallenge(data):
-                    dispatchAudioEmit(data: data)
-                case let .audioListenForResponse(timeoutMs):
-                    dispatchAudioListen(timeoutMs: timeoutMs)
+                case let .audioEmitChallenge(samples, sampleRate):
+                    dispatchAudioEmit(samples: samples, sampleRate: sampleRate)
+                case let .audioListenForResponse(timeoutMs, sampleRate):
+                    dispatchAudioListen(timeoutMs: timeoutMs, sampleRate: sampleRate)
                 case .audioStop:
                     AudioProximityService.shared.stop()
                 // DirectSend — TCP cable exchange
@@ -519,24 +519,25 @@ import UniformTypeIdentifiers
         }
 
         /// Send a hardware event back to core and apply the result.
-        private func dispatchAudioEmit(data: [UInt8]) {
-            let samples = data.map { Float($0) / 255.0 }
+        private func dispatchAudioEmit(samples: [Float], sampleRate: UInt32) {
+            // Core sends real f32 PCM samples + the rate it synthesised them at
+            // (`AudioEmitChallenge { samples, sample_rate }`); play them as-is.
             DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-                let error = AudioProximityService.shared.emitSignal(samples: samples, sampleRate: 48000)
+                let error = AudioProximityService.shared.emitSignal(samples: samples, sampleRate: sampleRate)
                 if !error.isEmpty {
                     DispatchQueue.main.async { self?.sendHardwareUnavailable(transport: "Audio") }
                 }
             }
         }
 
-        private func dispatchAudioListen(timeoutMs: UInt64) {
+        private func dispatchAudioListen(timeoutMs: UInt64, sampleRate: UInt32) {
             DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-                let samples = AudioProximityService.shared.receiveSignal(timeoutMs: timeoutMs, sampleRate: 48000)
+                let samples = AudioProximityService.shared.receiveSignal(timeoutMs: timeoutMs, sampleRate: sampleRate)
                 DispatchQueue.main.async {
                     if samples.isEmpty {
                         self?.sendHardwareUnavailable(transport: "Audio")
                     } else {
-                        self?.sendHardwareEvent(.audioSamplesRecorded(samples: samples, sampleRate: 48000))
+                        self?.sendHardwareEvent(.audioSamplesRecorded(samples: samples, sampleRate: sampleRate))
                     }
                 }
             }
