@@ -6,3 +6,4 @@
 --exclude Vauchi/Libs/VauchiPlatformLocal/Sources/VauchiPlatform/vauchi_platform.swift
 --exclude Vauchi/Libs/VauchiPlatformLocal/.build
 --exclude DerivedData
+--exclude build
