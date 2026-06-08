@@ -470,6 +470,11 @@ import UniformTypeIdentifiers
                      .setIdleTimerDisabled, .setOrientationLock,
                      .switchCamera, .showShareSheet,
                      .accelerometerStart, .accelerometerStop,
+                     // Location (ADR-051 capture-at-exchange, core 0.51.48):
+                     // macOS has no CoreLocation provider wired, so report it
+                     // unavailable — core records no place and proceeds
+                     // gracefully (Command::LocationRequest, platform.rs:266).
+                     .locationRequest,
                      .unknown:
                     sendHardwareUnavailable(transport: macOSUnavailableLabel(command))
                 }
@@ -513,6 +518,7 @@ import UniformTypeIdentifiers
             case .setOrientationLock: return "OrientationLock"
             case .showShareSheet: return "ShareSheet"
             case .accelerometerStart, .accelerometerStop: return "Accelerometer"
+            case .locationRequest: return "Location"
             default: return "unsupported-command"
             }
         }
