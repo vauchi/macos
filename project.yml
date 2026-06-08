@@ -127,8 +127,9 @@ schemes:
     archive:
       config: Release
 
-# CI SPM cache-bust 2026-06-08: vauchi-platform-swift v0.51.46 tag was
-# re-pointed (old commit 85d5aebb GC.d, now cae47ebc); the per-branch SPM
-# runner cache pinned the dead commit. Touching project.yml changes the
-# cache key so the runner re-resolves v0.51.46 fresh. See problem record
+# vauchi-platform-swift bumped 0.51.46 -> 0.51.47 (2026-06-08): the 0.51.46
+# tag was force-moved upstream (old commit 85d5aebb GC.d) and the runner SPM
+# mirror kept serving the dead commit, breaking package resolution in CI
+# (build:debug resolved but test:snapshots did not). v0.51.47 (dc6d11b8) is a
+# fresh tag with no poisoned mirror entry. See problem record
 # 2026-05-08-nell-runner-spm-mirror-corruption.
