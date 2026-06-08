@@ -410,6 +410,20 @@ import UniformTypeIdentifiers
             return service
         }()
 
+        /// One-shot location capture for the exchange "where we met"
+        /// annotation (ADR-051).
+        private lazy var locationService = LocationService()
+
+        /// Start a one-shot location fix and report the resulting
+        /// `MobileEvent` back to core.
+        private func dispatchLocationRequest(timeoutMs: UInt32) {
+            locationService.requestOneShot(timeoutMs: timeoutMs) { [weak self] event in
+                DispatchQueue.main.async {
+                    self?.sendHardwareEvent(event)
+                }
+            }
+        }
+
         /// Dispatch exchange commands to platform hardware services.
         private func dispatchExchangeCommands(_ commands: [CommandDTO]) {
             for command in commands {
@@ -447,6 +461,10 @@ import UniformTypeIdentifiers
                         isInitiator: isInitiator,
                         cardLeg: true
                     )
+                // Location — one-shot CLLocationManager fix for the exchange
+                // "where we met" annotation (ADR-051 capture-at-exchange).
+                case let .locationRequest(timeoutMs):
+                    dispatchLocationRequest(timeoutMs: timeoutMs)
                 // Image picking (ADR-042 avatar editor)
                 case .imagePickFromFile:
                     presentFileImagePicker()

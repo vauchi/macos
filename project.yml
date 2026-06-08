@@ -63,6 +63,7 @@ targets:
         LSApplicationCategoryType: public.app-category.social-networking
         NSCameraUsageDescription: Vauchi uses the camera to scan QR codes during contact exchange.
         NSMicrophoneUsageDescription: Vauchi uses the microphone for ultrasonic proximity verification during contact exchange.
+        NSLocationWhenInUseUsageDescription: Vauchi can record where you met a contact during an in-person exchange. This is stored privately on your device and never shared.
 
   VauchiTests:
     type: bundle.unit-test
@@ -133,3 +134,7 @@ schemes:
 # (build:debug resolved but test:snapshots did not). v0.51.47 (dc6d11b8) is a
 # fresh tag with no poisoned mirror entry. See problem record
 # 2026-05-08-nell-runner-spm-mirror-corruption.
+#
+# 0.51.47 -> 0.51.48 (2026-06-08): adds CommandDTO.locationRequest for the
+# ADR-051 capture-at-exchange "where we met" annotation (handled by
+# LocationService via CLLocationManager).

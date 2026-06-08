@@ -24,6 +24,8 @@
 	<string>public.app-category.social-networking</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Vauchi uses the camera to scan QR codes during contact exchange.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Vauchi can record where you met a contact during an in-person exchange. This is stored privately on your device and never shared.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Vauchi uses the microphone for ultrasonic proximity verification during contact exchange.</string>
 </dict>
