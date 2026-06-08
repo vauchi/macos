@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// AppDelegate.swift
 // macOS-specific application lifecycle hooks (menu bar, system tray,
 // auto-lock notifications). Posts notifications that `AppState`
 // listens for so the app does not need a shared singleton.

@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// AppState.swift
 // Top-level @MainActor state object owning VauchiRepository + AppViewModel,
 // driving auth/lock state, and bridging app lifecycle notifications from
 // AppDelegate into core actions (background lock, foreground refresh,

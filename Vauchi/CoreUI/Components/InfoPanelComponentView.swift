@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// InfoPanelComponentView.swift
 // Renders an InfoPanel component from core UI (macOS)
 
 import CoreUIModels
@@ -17,7 +16,6 @@ struct InfoPanelComponentView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            // Panel header
             HStack(spacing: 12) {
                 if let icon = component.icon {
                     Image(systemName: sfSymbolForCoreIcon(icon))
@@ -32,7 +30,6 @@ struct InfoPanelComponentView: View {
                     .accessibilityAddTraits(.isHeader)
             }
 
-            // Items
             VStack(spacing: 12) {
                 ForEach(component.items) { item in
                     InfoItemRow(item: item)

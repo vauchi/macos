@@ -2,9 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// StatusIndicatorComponentView.swift
-// Renders a StatusIndicator component from core UI (macOS)
-
 import CoreUIModels
 import SwiftUI
 

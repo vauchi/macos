@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// DirectSendService.swift
 // TCP client for USB cable exchange (ADR-031).
 //
 // Connects to the phone's TCP listener, executes the VXCH framing
@@ -59,7 +58,6 @@ import Network
             // (typically 127.0.0.1 via usbmuxd port-forwarding).
             let resolvedAddress = discoverPhoneAddress() ?? address
 
-            // Parse address (host:port)
             let parts = resolvedAddress.split(separator: ":")
             let host = parts.count > 0 ? String(parts[0]) : "127.0.0.1"
             let port = parts.count > 1 ? UInt16(parts[1]) ?? Self.defaultPort : Self.defaultPort
@@ -84,7 +82,6 @@ import Network
             }
             defer { close(sock) }
 
-            // Set 10-second send/receive timeouts
             var timeout = timeval(tv_sec: 10, tv_usec: 0)
             setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, socklen_t(MemoryLayout<timeval>.size))
             setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, &timeout, socklen_t(MemoryLayout<timeval>.size))
@@ -94,7 +91,6 @@ import Network
                 return
             }
 
-            // VXCH framing exchange
             do {
                 let theirPayload: [UInt8]
                 if isInitiator {

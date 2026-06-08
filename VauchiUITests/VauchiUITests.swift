@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// VauchiUITests.swift
 // Automated UI tests for the macOS app.
 // Uses XCUITest for end-to-end interaction testing.
 // Based on: features/identity.feature, features/contact_exchange.feature

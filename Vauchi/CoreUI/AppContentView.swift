@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// AppContentView.swift
 // Core-driven content views: ContentView (auth/error/loading dispatch),
 // AppContentView (NavigationSplitView with sidebar + ScreenRendererView
 // detail + toast/alert/sheet hosts), and SidebarView.

@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// ScreenSnapshotTests.swift
 // Full-screen visual regression tests for macOS.
 // Based on: features/identity.feature, features/contact_exchange.feature, features/settings.feature
 //

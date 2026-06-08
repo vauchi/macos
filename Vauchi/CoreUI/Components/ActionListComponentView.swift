@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// ActionListComponentView.swift
 // Renders an ActionList component from core UI (macOS)
 
 import CoreUIModels

@@ -2,10 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// PreviewComponentView.swift
-// Renders a Preview component from core UI (macOS, Wire Humble — variants
-// replace the old contact-specific group views).
-
 import CoreUIModels
 import SwiftUI
 #if canImport(VauchiPlatform)
@@ -27,12 +23,10 @@ struct PreviewComponentView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            // Variant selector (if alternate views exist)
             if !component.variants.isEmpty {
                 variantSelector
             }
 
-            // Card
             cardView
         }
         .accessibilityLabel(component.a11y?.label ?? localizationService.t(
@@ -44,7 +38,6 @@ struct PreviewComponentView: View {
     private var variantSelector: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
-                // "All" tab
                 variantTab(
                     name: localizationService.t("card_preview.all_groups"),
                     isSelected: component.selectedVariant == nil
@@ -89,7 +82,6 @@ struct PreviewComponentView: View {
 
     private var cardView: some View {
         VStack(spacing: 0) {
-            // Card header
             VStack(spacing: 8) {
                 avatarCircle
                     .frame(width: 80, height: 80)
@@ -108,7 +100,6 @@ struct PreviewComponentView: View {
 
             Divider()
 
-            // Fields
             VStack(spacing: 0) {
                 let fields = currentFields
                 if fields.isEmpty {

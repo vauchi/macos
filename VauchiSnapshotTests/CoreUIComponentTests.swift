@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// CoreUIComponentTests.swift
 // Component-level snapshot tests for CoreUI views in isolation (macOS).
 // Based on: features/contact_exchange.feature, features/identity.feature
 //

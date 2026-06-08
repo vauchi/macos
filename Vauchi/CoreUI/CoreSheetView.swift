@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// CoreSheetView.swift
 // Generic SwiftUI Sheet shell that drives the core engine through a
 // named screen subtree, isolated from the main window's
 // `currentScreen`. macOS counterpart of iOS's `CoreScreenView`,

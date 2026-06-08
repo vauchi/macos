@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// VauchiApp.swift
 // macOS native desktop app entry point. The @main App struct is
 // intentionally thin — supporting types (AppDelegate, AppState,
 // ContentView, AppContentView, SidebarView, ErrorView, LoadingView,

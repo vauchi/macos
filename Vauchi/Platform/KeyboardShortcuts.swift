@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// KeyboardShortcuts.swift
 // macOS keyboard shortcut definitions
 
 import SwiftUI

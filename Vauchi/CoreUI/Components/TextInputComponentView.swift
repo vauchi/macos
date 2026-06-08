@@ -2,9 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// TextInputComponentView.swift
-// Renders a TextInput component from core UI (macOS)
-
 import CoreUIModels
 import SwiftUI
 #if canImport(VauchiPlatform)

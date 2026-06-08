@@ -2,9 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// ListComponentView.swift
-// Renders a List component from core UI (macOS, Wire Humble — domain-agnostic).
-
 import CoreUIModels
 import SwiftUI
 #if canImport(VauchiPlatform)
@@ -62,7 +59,6 @@ struct ItemRow: View {
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 12) {
-                // Avatar circle with initials
                 Text(item.avatarInitials)
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(.white)

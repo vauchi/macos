@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// SmokeTests.swift
 // Basic smoke tests for the macOS app
 
 import CoreUIModels

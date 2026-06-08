@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// AccessibilityTests.swift
 // Accessibility snapshot tests for macOS components and screens.
 // Verifies that all interactive elements have proper accessibility labels,
 // traits, and values for VoiceOver users.

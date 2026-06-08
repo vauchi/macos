@@ -149,7 +149,6 @@ final class BleExchangeService: NSObject {
     private func setupGattServiceAndAdvertise() {
         guard let serviceUuid = advertisingServiceUuid else { return }
 
-        // Create a characteristic that supports read, write, and notify
         let characteristicUuid = CBUUID(string: "00000001-" + serviceUuid.uuidString.dropFirst(8))
         let characteristic = CBMutableCharacteristic(
             type: characteristicUuid,
@@ -159,7 +158,6 @@ final class BleExchangeService: NSObject {
         )
         gattCharacteristic = characteristic
 
-        // Set initial value from payload
         if let payload = advertisingPayload, !payload.isEmpty {
             characteristic.value = payload
         }
@@ -209,7 +207,6 @@ extension BleExchangeService: CBCentralManagerDelegate {
 
     func centralManager(_: CBCentralManager, didConnect peripheral: CBPeripheral) {
         eventCallback?(.bleConnected(deviceId: peripheral.identifier.uuidString))
-        // Discover GATT services
         peripheral.discoverServices(nil)
     }
 
@@ -234,7 +231,6 @@ extension BleExchangeService: CBPeripheralDelegate {
             eventCallback?(.hardwareError(transport: "BLE", error: "Service discovery failed: \(error!)"))
             return
         }
-        // Discover characteristics for all services
         for service in peripheral.services ?? [] {
             peripheral.discoverCharacteristics(nil, for: service)
         }

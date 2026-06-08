@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// DeviceCapabilitiesPusherTests.swift
 // Pins the JSON wire shape that `DeviceCapabilitiesPusher` sends to
 // core's `setDeviceCapabilitiesJson` on macOS. The string must
 // deserialize into core's `DeviceCapabilities` (serde, snake_case keys,

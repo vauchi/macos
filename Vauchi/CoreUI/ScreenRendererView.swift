@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// ScreenRendererView.swift
 // Generic view that renders any ScreenModel from core
 //
 // macOS adaptation of ios/Vauchi/CoreUI/ScreenRendererView.swift.
@@ -37,7 +36,6 @@ struct ScreenRendererView: View {
     var body: some View {
         ZStack(alignment: .top) {
             VStack(spacing: 0) {
-                // Progress bar
                 if let progress = screen.progress {
                     ProgressView(
                         value: Double(progress.currentStep),
@@ -61,7 +59,6 @@ struct ScreenRendererView: View {
                 // would let the camera/QR preview grow unbounded. Scroll is
                 // the default; render the same content stack either way.
                 let content = VStack(spacing: 24) {
-                    // Header
                     VStack(spacing: 8) {
                         Text(screen.title)
                             .font(.title2.bold())
@@ -77,7 +74,6 @@ struct ScreenRendererView: View {
                     }
                     .padding(.top, 24)
 
-                    // Components
                     ForEach(Array(screen.components.enumerated()), id: \.offset) { _, component in
                         ComponentView(component: component, onAction: onAction, onQrScanned: onQrScanned)
                     }
@@ -92,7 +88,6 @@ struct ScreenRendererView: View {
 
                 Spacer()
 
-                // Action buttons
                 VStack(spacing: 12) {
                     ForEach(screen.actions) { action in
                         ActionButton(action: action) {
@@ -104,7 +99,6 @@ struct ScreenRendererView: View {
                 .padding(.bottom, 24)
             }
 
-            // Toast overlay
             if let message = toastMessage {
                 ToastOverlayView(
                     message: message,

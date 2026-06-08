@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// SnapshotHelpers.swift
 // Test helpers for macOS snapshot tests
 //
 // macOS adaptation of ios/VauchiSnapshotTests/SnapshotHelpers.swift.

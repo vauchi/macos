@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// KeychainService.swift
 // Secure storage using macOS Keychain
 
 import Foundation

@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// VauchiRepository.swift
 // Owns VauchiPlatform + PlatformAppEngine with shared storage key
 
 import Foundation

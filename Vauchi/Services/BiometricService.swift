@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// BiometricService.swift
 // Touch ID / biometric authentication using LocalAuthentication framework
 
 import Foundation

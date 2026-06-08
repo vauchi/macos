@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// LocalizationServiceTests.swift
 // Unit tests for the macOS LocalizationService wrapper over vauchi-platform i18n.
 
 @testable import Vauchi

@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// MenuBarManager.swift
 // macOS menu bar integration
 
 import AppKit

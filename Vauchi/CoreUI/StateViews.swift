@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// StateViews.swift
 // Native error / loading state views surfaced by `ContentView` while
 // `AppState` is initializing or a startup error is present. Both are
 // pure presentation — no state, no logic.

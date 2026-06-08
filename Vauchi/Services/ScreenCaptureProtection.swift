@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// ScreenCaptureProtection.swift
 // Marks every NSWindow with `sharingType = .none` so screen-recording
 // tools (QuickTime, OBS, screencapture(1), AirPlay mirroring, Universal
 // Control mirroring, AppleScript scriptable apps) can't capture the

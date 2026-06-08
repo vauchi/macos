@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// CoreSceneView.swift
 // Generic SwiftUI shell that drives the core engine through a named
 // screen subtree, isolated from the main window's `currentScreen`.
 // Used inside SwiftUI `Scene`s (Settings window, future About panel)

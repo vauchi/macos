@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// InlineConfirmComponentView.swift
 // Renders an InlineConfirm component from core UI (macOS)
 
 import CoreUIModels

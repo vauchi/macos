@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// AudioProximityService.swift
 // Ultrasonic audio proximity verification for Vauchi macOS
 // Audio proximity verification (inherent methods, PlatformAudioHandler removed in core 0.19.21)
 //
@@ -54,7 +53,6 @@ class AudioProximityService {
             return "none"
         }
 
-        // Check microphone permission
         let micStatus = AVCaptureDevice.authorizationStatus(for: .audio)
         let micAllowed = micStatus == .authorized
 
@@ -108,7 +106,6 @@ class AudioProximityService {
             }
             player.play()
 
-            // Wait for playback to complete
             let duration = Double(samples.count) / Double(sampleRate)
             Thread.sleep(forTimeInterval: duration + 0.1)
 
@@ -132,14 +129,12 @@ class AudioProximityService {
             let inputNode = audioEngine.inputNode
             let inputFormat = inputNode.outputFormat(forBus: 0)
 
-            // Clear previous samples
             sampleLock.lock()
             recordedSamples = []
             sampleLock.unlock()
 
             isRecording = true
 
-            // Install tap on input
             inputNode.installTap(onBus: 0, bufferSize: 4096, format: inputFormat) { [weak self] buffer, _ in
                 guard let self, isRecording else { return }
 
@@ -152,15 +147,12 @@ class AudioProximityService {
 
             try audioEngine.start()
 
-            // Record for timeout duration
             Thread.sleep(forTimeInterval: Double(timeoutMs) / 1000.0)
 
-            // Stop recording
             isRecording = false
             inputNode.removeTap(onBus: 0)
             audioEngine.stop()
 
-            // Get recorded samples
             sampleLock.lock()
             let result = recordedSamples
             recordedSamples = []

@@ -2,9 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// QrCodeComponentView.swift
-// Renders a QrCode component from core UI (macOS)
-
 import AVFoundation
 import CoreUIModels
 import SwiftUI

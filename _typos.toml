@@ -8,3 +8,4 @@ extend-exclude = [
 
 [default.extend-words]
 mappin = "mappin"
+writeable = "writeable"      # CoreBluetooth CBAttributePermissions.writeable (Apple API)

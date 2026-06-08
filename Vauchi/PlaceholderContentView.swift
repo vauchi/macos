@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// PlaceholderContentView.swift
 // Fallback content + view-model used when `VauchiPlatform` bindings
 // are not present (e.g. SwiftPM-only previews or test hosts running
 // without the native xcframework). Never rendered in production.

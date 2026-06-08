@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// LockScreenView.swift
 // Branded lock screen shown when device authentication is required (macOS)
 
 import SwiftUI

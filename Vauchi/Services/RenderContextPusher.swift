@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// RenderContextPusher.swift
 // Pushes the union of `ThemeService` + `LocalizationService` state to
 // core's `RenderContext` via `setRenderContextJson`. Mirrors Android's
 // `RenderContextPusher.kt`. S4 of `2026-05-16-settings-storage-by-sensitivity`.

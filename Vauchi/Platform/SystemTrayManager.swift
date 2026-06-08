@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// SystemTrayManager.swift
 // macOS status bar (system tray) integration
 
 import AppKit
