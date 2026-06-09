@@ -70,7 +70,7 @@ import UniformTypeIdentifiers
         func loadSidebarItems() {
             do {
                 let locale = LocalizationService.shared.currentLocale
-                sidebarItems = try appEngine.sidebarItems(locale: locale)
+                sidebarItems = try appEngine.navItems(layout: .desktop, locale: locale)
             } catch {
                 print("AppViewModel: failed to load sidebar items: \(error)")
             }
