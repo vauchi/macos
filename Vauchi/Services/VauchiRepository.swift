@@ -27,7 +27,6 @@ import Foundation
     }
 
     class VauchiRepository: ObservableObject {
-        let vauchi: VauchiPlatform
         let appEngine: PlatformAppEngine
 
         init(dataDir: String? = nil, relayUrl: String = "https://relay.vauchi.app") throws {
@@ -49,11 +48,6 @@ import Foundation
             }
 
             do {
-                vauchi = try VauchiPlatform.newWithSecureKey(
-                    dataDir: dir,
-                    relayUrl: relayUrl,
-                    storageKeyBytes: storageKeyData
-                )
                 appEngine = try PlatformAppEngine(
                     dataDir: dir,
                     relayUrl: relayUrl,
@@ -66,8 +60,8 @@ import Foundation
             // B7 Phase 2: wire the keychain to PlatformAppEngine so the
             // core-driven shred DomainCommands (SoftShred / CancelShred /
             // HardShred / PanicShred) can reach the platform keychain.
-            // Unlike iOS/Android, macOS has no widget/panic-shred path
-            // through VauchiPlatform, so only the engine slot is wired.
+            // Unlike iOS/Android, macOS has no widget/panic-shred path,
+            // so only the engine slot is wired.
             appEngine.setPlatformKeychain(keychain: VauchiKeychainBridge())
 
             // S4 — wire `ThemeService` + `LocalizationService` to the live

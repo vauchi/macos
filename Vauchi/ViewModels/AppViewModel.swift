@@ -27,7 +27,6 @@ import UniformTypeIdentifiers
         @Published var sidebarItems: [MobileTabInfo] = []
         @Published var selectedScreen: String?
         let appEngine: PlatformAppEngine
-        var vauchi: VauchiPlatform?
 
         /// Timer that drives animated-QR frame advancement (~10fps) while the
         /// "Share Your Code" screen is visible. Controlled by the view layer
@@ -180,7 +179,7 @@ import UniformTypeIdentifiers
             }
         }
 
-        /// Invalidate cached engines after VauchiPlatform mutations.
+        /// Invalidate cached engines after domain mutations.
         func invalidateAll() {
             do {
                 try appEngine.invalidateAll()

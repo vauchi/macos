@@ -63,16 +63,14 @@ import SwiftUI
                     print("[Vauchi] --reset-for-testing: no repository")
                     return
                 }
-                guard !repo.vauchi.hasIdentity() else {
+                guard !((try? repo.appEngine.hasIdentity()) ?? false) else {
                     print("[Vauchi] --reset-for-testing: identity exists")
                     return
                 }
                 do {
-                    try repo.vauchi.createIdentity(displayName: "Test User")
+                    try repo.appEngine.createIdentity(displayName: "Test User")
                     print("[Vauchi] --reset-for-testing: identity created")
-                    let appViewModel = AppViewModel(appEngine: repo.appEngine)
-                    appViewModel.vauchi = repo.vauchi
-                    viewModel = appViewModel
+                    viewModel = AppViewModel(appEngine: repo.appEngine)
                 } catch {
                     print("[Vauchi] --reset-for-testing: failed: \(error)")
                 }
@@ -83,9 +81,7 @@ import SwiftUI
             do {
                 let repo = try VauchiRepository()
                 repository = repo
-                let appViewModel = AppViewModel(appEngine: repo.appEngine)
-                appViewModel.vauchi = repo.vauchi
-                viewModel = appViewModel
+                viewModel = AppViewModel(appEngine: repo.appEngine)
                 isAuthenticationRequired = false
                 error = nil
                 checkContentUpdates(appEngine: repo.appEngine)

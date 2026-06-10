@@ -19,6 +19,12 @@ import VauchiPlatform
 /// Phase-B7 retirements; the file currently sits at exactly the
 /// surface macOS needs.
 extension PlatformAppEngine {
+    func createIdentity(displayName: String) throws {
+        _ = try dispatchDomainCommand(
+            command: .createIdentity(displayName: displayName)
+        )
+    }
+
     func isContentUpdatesSupported() throws -> Bool {
         let result = try dispatchDomainCommand(command: .isContentUpdatesSupported)
         guard case let .bool(value) = result else {
