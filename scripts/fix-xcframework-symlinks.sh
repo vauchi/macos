@@ -21,7 +21,10 @@
 
 set -euo pipefail
 
-DD=$(ls -d ~/Library/Developer/Xcode/DerivedData/Vauchi-* 2>/dev/null | head -1)
+# `|| true`: under `set -euo pipefail`, a no-match makes `ls` exit non-zero,
+# which pipefail propagates and kills the script BEFORE the skip-guard below.
+# Tolerate it so the guard handles "no DerivedData" cleanly.
+DD=$(ls -d ~/Library/Developer/Xcode/DerivedData/Vauchi-* 2>/dev/null | head -1 || true)
 if [ -z "$DD" ]; then
     echo "No Vauchi DerivedData found — skipping symlink fix"
     exit 0
