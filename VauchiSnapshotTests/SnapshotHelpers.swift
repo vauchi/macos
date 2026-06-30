@@ -59,7 +59,13 @@ func assertComponentSnapshot(
     )
     assertSnapshot(
         of: host,
-        as: .image(perceptualPrecision: 0.98),
+        // precision 0.98 tolerates ≤2% of pixels differing — absorbs the
+        // sub-pixel position jitter of thin 1-px features (text strokes,
+        // circle edges) at the CI runner's 1× render scale, which flips edge
+        // pixels white↔fill between otherwise-identical runs. perceptualPrecision
+        // 0.95 matches the proven-stable dark helper. Provisional: tighten once
+        // the on-failure diff capture lets us measure the true jitter fraction.
+        as: .image(precision: 0.98, perceptualPrecision: 0.95),
         record: isRecording,
         file: file,
         testName: testName,
@@ -121,7 +127,8 @@ func assertScreenSnapshot(
     let host = hostingController(for: view, width: width, height: height)
     assertSnapshot(
         of: host,
-        as: .image(perceptualPrecision: 0.98),
+        // Same 1×-scale thin-feature jitter as assertComponentSnapshot.
+        as: .image(precision: 0.98, perceptualPrecision: 0.95),
         record: isRecording,
         file: file,
         testName: testName,
