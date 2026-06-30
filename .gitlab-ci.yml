@@ -1104,12 +1104,22 @@ test:snapshots:
     - HOME="$CI_PROJECT_DIR/.spm-home" xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data -disableAutomaticPackageResolution -only-testing:VauchiSnapshotTests -resultBundlePath SnapshotTestResults test-without-building
   after_script:
     - !reference [.vrt-upload-script, script]
+    # Extract swift-snapshot-testing's reference/failure/difference images from
+    # the xcresult so a snapshot flake is diagnosable after the fact. Attachments
+    # are retained only on failure, so snapshot-diffs/ is near-empty on green
+    # runs. The old `SnapshotTestResults` artifact path was a dead absolute
+    # symlink that uploaded nothing usable.
+    - |
+      if [ -d SnapshotTestResults.xcresult ]; then
+        command -v xcparse >/dev/null 2>&1 || brew install chargepoint/xcparse/xcparse || true
+        xcparse attachments SnapshotTestResults.xcresult snapshot-diffs || true
+      fi
     - !reference [.macos-job, after_script]
   artifacts:
     when: always
     paths:
       - VauchiSnapshotTests/__Snapshots__/
-      - SnapshotTestResults
+      - snapshot-diffs/
     expire_in: 7 days
   rules:
     - if: ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "pipeline") && $BINDINGS_VERSION
