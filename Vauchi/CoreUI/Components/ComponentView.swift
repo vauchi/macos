@@ -74,30 +74,14 @@ struct ComponentView: View {
         case let .banner(bannerComponent):
             BannerComponentView(component: bannerComponent, onAction: onAction)
 
-        case .dropdown:
-            // `Component.dropdown` is defined in CoreUIModels but no
-            // production engine emits it on a macOS-reachable screen
-            // today. Render empty so the switch stays exhaustive; port
-            // `ios/Vauchi/CoreUI/Components/DropdownView.swift` once a
-            // screen starts using it.
-            EmptyView()
+        case let .dropdown(dropdownComponent):
+            DropdownComponentView(component: dropdownComponent, onAction: onAction)
 
-        case .indicator:
-            // `Component.indicator` joined in core 0.51.21 (core !990).
-            // No production engine emits it on a macOS-reachable screen
-            // today. Render empty so the switch stays exhaustive; port
-            // `ios/Vauchi/CoreUI/Components/IndicatorView.swift` (ios!466)
-            // once a screen starts using it.
-            EmptyView()
+        case let .indicator(indicatorComponent):
+            IndicatorComponentView(component: indicatorComponent, onAction: onAction)
 
-        case .sectionedActionList:
-            // `Component.sectionedActionList` joined in core 0.51.21
-            // (core !990). No production engine emits it on a macOS-
-            // reachable screen today. Render empty so the switch stays
-            // exhaustive; port
-            // `ios/Vauchi/CoreUI/Components/SectionedActionListView.swift`
-            // (ios!466) once a screen starts using it.
-            EmptyView()
+        case let .sectionedActionList(sectionedComponent):
+            SectionedActionListComponentView(component: sectionedComponent, onAction: onAction)
 
         case let .row(rowComponent):
             // Horizontal container: render children left-to-right. The

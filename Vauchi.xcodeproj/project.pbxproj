@@ -13,7 +13,9 @@
 		0378355005A83E0E4F086ED9 /* testFieldListEmpty.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 74400BE90CD802A95312C01B /* testFieldListEmpty.1.png */; };
 		061330DA32957211240D0384 /* default_name.json in Resources */ = {isa = PBXBuildFile; fileRef = 2A73AC43BC305CE2DFADE313 /* default_name.json */; };
 		072615DEAAD0650CF34C6B6E /* PlaceholderContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 234E756E782635B9AF9132F3 /* PlaceholderContentView.swift */; };
+		072CD65C1ED74161E0FBA6CF /* SectionedActionListComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FB715989E714A55CCCB5C68 /* SectionedActionListComponentView.swift */; };
 		09004B0A2E938952E9D267FC /* SettingsGroupComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19E25AFE32D45CA1C95DA590 /* SettingsGroupComponentView.swift */; };
+		098B27AAE3532082A01E9FA0 /* DropdownComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C94ADCE25F16385A5CE1F62D /* DropdownComponentView.swift */; };
 		0BF3BAD91800C40DD1EE0501 /* testToggleListDark.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 04898F36EF605FB293E24A7A /* testToggleListDark.1.png */; };
 		10D1448B9D41C32DDB95835C /* StateViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A06CC40359E668FF6C58451 /* StateViews.swift */; };
 		12582E8F80C463B7C877A8A9 /* testFieldListPerGroup.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 03E71A86E87D901D3FF80D72 /* testFieldListPerGroup.1.png */; };
@@ -32,6 +34,7 @@
 		223E748C35520305B8EB1AE1 /* TextComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63AE253E0DF71B38AAE856FB /* TextComponentView.swift */; };
 		2591B2C7493F02EE16A70906 /* duress_overview.json in Resources */ = {isa = PBXBuildFile; fileRef = A145FAE191703FB7CE06A212 /* duress_overview.json */; };
 		25F92258277228332EE69BEE /* testEditableTextDisplay.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 6A4D772FACC8B2FEB3D60DA8 /* testEditableTextDisplay.1.png */; };
+		2C1CEEDBBA7D26F7EFA808B1 /* IndicatorComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0B9BEFAB2AE19F9253EAA6F /* IndicatorComponentView.swift */; };
 		2C996CD80C42DEDB7C30B91E /* testContactsScreenDark.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 334AA464FB30E416B9A73537 /* testContactsScreenDark.1.png */; };
 		2D0728F99D4DBB3C8491C25B /* ThemeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CF989EA84DBE8A9F43E05D /* ThemeService.swift */; };
 		2D46271A4B586388DDF2A5A9 /* contact_list.json in Resources */ = {isa = PBXBuildFile; fileRef = 640EF3CDE75D016F2437C111 /* contact_list.json */; };
@@ -295,6 +298,7 @@
 		8C9F616A82E64818C7D1BEB4 /* testInfoPanelSingleItem.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testInfoPanelSingleItem.1.png; sourceTree = "<group>"; };
 		8CD3FC943884B00F74F1EA32 /* device_linking.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = device_linking.json; sourceTree = "<group>"; };
 		8D3CA9B99F37140B17344FDB /* testTextInputEmpty.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testTextInputEmpty.1.png; sourceTree = "<group>"; };
+		8FB715989E714A55CCCB5C68 /* SectionedActionListComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionedActionListComponentView.swift; sourceTree = "<group>"; };
 		8FDE9009AE079A27B82E5CB6 /* VauchiUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VauchiUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9075FCC3ED0182090E406725 /* StatusIndicatorComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusIndicatorComponentView.swift; sourceTree = "<group>"; };
 		91A78E60553610F7E79BD51C /* testSettingsGroup.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testSettingsGroup.1.png; sourceTree = "<group>"; };
@@ -333,6 +337,7 @@
 		BF21CF300C61D81BBA57F040 /* testTextComponentBody.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testTextComponentBody.1.png; sourceTree = "<group>"; };
 		BFB533E7A5279BAE43E57029 /* testFieldListWithFieldsShowHide.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testFieldListWithFieldsShowHide.1.png; sourceTree = "<group>"; };
 		C29DE27FD4421553D034E37A /* contact_edit_preview.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = contact_edit_preview.json; sourceTree = "<group>"; };
+		C94ADCE25F16385A5CE1F62D /* DropdownComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropdownComponentView.swift; sourceTree = "<group>"; };
 		CC0264A403A8FF8004269E87 /* testTextInputPassword.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testTextInputPassword.1.png; sourceTree = "<group>"; };
 		CDAC67C5337AAC5560D74DDD /* BannerComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerComponentView.swift; sourceTree = "<group>"; };
 		D43F20C31ED5CC6144EF6A27 /* AvatarPreviewComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarPreviewComponentView.swift; sourceTree = "<group>"; };
@@ -341,6 +346,7 @@
 		D618628DDEAEBAD0CE3FB0EC /* testActionButtonEnabledAccessibility.1.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = testActionButtonEnabledAccessibility.1.txt; sourceTree = "<group>"; };
 		D6E1FE2EE5B0C2CC821F5397 /* testInfoPanelDark.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testInfoPanelDark.1.png; sourceTree = "<group>"; };
 		DC20FCD1651B95E823A06410 /* LocationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationServiceTests.swift; sourceTree = "<group>"; };
+		E0B9BEFAB2AE19F9253EAA6F /* IndicatorComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndicatorComponentView.swift; sourceTree = "<group>"; };
 		E31A56C292E9073A8A07BAF0 /* testTextInputWithValidationError.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testTextInputWithValidationError.1.png; sourceTree = "<group>"; };
 		EA272578E81247FB65A5C145 /* ComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentView.swift; sourceTree = "<group>"; };
 		EA5E442564907FA7A15240F0 /* testEditableTextWithError.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testEditableTextWithError.1.png; sourceTree = "<group>"; };
@@ -620,14 +626,17 @@
 				EA272578E81247FB65A5C145 /* ComponentView.swift */,
 				AC15FD6D223D1A6700601767 /* ConfirmationDialogComponentView.swift */,
 				9764FE7904C8B94F71A1858D /* DividerComponentView.swift */,
+				C94ADCE25F16385A5CE1F62D /* DropdownComponentView.swift */,
 				98DF34CD2C6C3C8226D07C0B /* EditableTextComponentView.swift */,
 				8193F0DBE26DA2026C2A4D5E /* FieldListComponentView.swift */,
+				E0B9BEFAB2AE19F9253EAA6F /* IndicatorComponentView.swift */,
 				F74CD83060E72D770CBCEB21 /* InfoPanelComponentView.swift */,
 				442BA1AE531958F5AE130DEC /* InlineConfirmComponentView.swift */,
 				02A6A483C270D8C3E89C4F8D /* ListComponentView.swift */,
 				649B37B5A7280D282E65BC3F /* PinInputComponentView.swift */,
 				96CFFBD34199E4C67E5FA835 /* PreviewComponentView.swift */,
 				6EEEBB6EBF77701342433324 /* QrCodeComponentView.swift */,
+				8FB715989E714A55CCCB5C68 /* SectionedActionListComponentView.swift */,
 				19E25AFE32D45CA1C95DA590 /* SettingsGroupComponentView.swift */,
 				7068F2971F7C560EF2B884D8 /* SliderComponentView.swift */,
 				9075FCC3ED0182090E406725 /* StatusIndicatorComponentView.swift */,
@@ -982,8 +991,10 @@
 				4389AD09A1FCCD8661B98FE6 /* DeviceCapabilitiesPusher.swift in Sources */,
 				A20441612CDA08A586DADCC0 /* DirectSendService.swift in Sources */,
 				C1698574A9244D5FB1EC8EB9 /* DividerComponentView.swift in Sources */,
+				098B27AAE3532082A01E9FA0 /* DropdownComponentView.swift in Sources */,
 				B7FF1459323990242EB469DC /* EditableTextComponentView.swift in Sources */,
 				B7538752D99FA9DB91BC9FF9 /* FieldListComponentView.swift in Sources */,
+				2C1CEEDBBA7D26F7EFA808B1 /* IndicatorComponentView.swift in Sources */,
 				9C2069849249523C53C667F3 /* InfoPanelComponentView.swift in Sources */,
 				C7EC0C6E4ABED52AB382351A /* InlineConfirmComponentView.swift in Sources */,
 				9BA83E0C812D194A0C94FC64 /* KeyboardShortcuts.swift in Sources */,
@@ -1002,6 +1013,7 @@
 				14F136822861093402A2A51D /* RenderContextPusher.swift in Sources */,
 				3202529BECD6DFEEB2B2BECF /* ScreenCaptureProtection.swift in Sources */,
 				C2AA1DC7FD7FA22C155F70BD /* ScreenRendererView.swift in Sources */,
+				072CD65C1ED74161E0FBA6CF /* SectionedActionListComponentView.swift in Sources */,
 				09004B0A2E938952E9D267FC /* SettingsGroupComponentView.swift in Sources */,
 				C0C3AE19386A7C486E82B792 /* SliderComponentView.swift in Sources */,
 				10D1448B9D41C32DDB95835C /* StateViews.swift in Sources */,
