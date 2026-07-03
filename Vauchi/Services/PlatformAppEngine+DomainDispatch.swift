@@ -6,14 +6,13 @@ import VauchiPlatform
 /// Typed wrappers around `PlatformAppEngine.dispatchDomainCommand` for
 /// the macOS frontend.
 ///
-/// macOS goes through `vauchi-platform-swift` like iOS does. Core 0.51.2
-/// retired the direct content-updates methods on `VauchiPlatform`
-/// (`isContentUpdatesSupported`, `checkContentUpdates`,
-/// `applyContentUpdates`) in favour of `DomainCommand` dispatch (B7
-/// batch 2). The three wrappers below preserve the call shapes the
-/// `AppState` startup path used to call against `vauchi.X(...)`, so
-/// the migration is a `vauchi.X()` → `appEngine.X()` swap at the call
-/// site.
+/// macOS goes through `vauchi-platform-swift` like iOS does. The
+/// content-update cycle (check → apply → screen invalidation) runs
+/// entirely in core (`DomainCommand::RunContentUpdateCycle`, core
+/// 0.51.69); the frontend dispatches it and reads a presentation-only
+/// outcome. This replaced the per-step `isContentUpdatesSupported` /
+/// `checkContentUpdates` / `applyContentUpdates` wrappers, whose
+/// domain sequencing had been duplicated on the `AppState` side.
 ///
 /// More wrappers will be added here as macOS picks up further
 /// Phase-B7 retirements; the file currently sits at exactly the
@@ -25,33 +24,13 @@ extension PlatformAppEngine {
         )
     }
 
-    func isContentUpdatesSupported() throws -> Bool {
-        let result = try dispatchDomainCommand(command: .isContentUpdatesSupported)
-        guard case let .bool(value) = result else {
+    func runContentUpdateCycle() throws -> MobileContentCycleOutcome {
+        let result = try dispatchDomainCommand(command: .runContentUpdateCycle)
+        guard case let .contentUpdateCycle(outcome) = result else {
             throw MobileError.Other(
-                detail: "IsContentUpdatesSupported: unexpected result variant"
+                detail: "RunContentUpdateCycle: unexpected result variant"
             )
         }
-        return value
-    }
-
-    func checkContentUpdates() throws -> MobileUpdateStatus {
-        let result = try dispatchDomainCommand(command: .checkContentUpdates)
-        guard case let .updateStatus(status) = result else {
-            throw MobileError.Other(
-                detail: "CheckContentUpdates: unexpected result variant"
-            )
-        }
-        return status
-    }
-
-    func applyContentUpdates() throws -> MobileApplyResult {
-        let result = try dispatchDomainCommand(command: .applyContentUpdates)
-        guard case let .applyResult(value) = result else {
-            throw MobileError.Other(
-                detail: "ApplyContentUpdates: unexpected result variant"
-            )
-        }
-        return value
+        return outcome
     }
 }

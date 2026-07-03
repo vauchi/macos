@@ -84,7 +84,7 @@ import SwiftUI
                 viewModel = AppViewModel(appEngine: repo.appEngine)
                 isAuthenticationRequired = false
                 error = nil
-                checkContentUpdates(appEngine: repo.appEngine)
+                runContentUpdateCycle(appEngine: repo.appEngine)
             } catch VauchiRepositoryError.deviceLocked {
                 isAuthenticationRequired = true
                 print("VauchiApp: device locked, authentication required")
@@ -94,52 +94,44 @@ import SwiftUI
             }
         }
 
-        /// Check for content updates (locales, themes) in the background after startup.
-        ///
-        /// Slice 32g-B Phase 2 (core 0.51.2) retired the
-        /// `vauchi.isContentUpdatesSupported` / `checkContentUpdates` /
-        /// `applyContentUpdates` direct VauchiPlatform methods. The
-        /// three calls now route through `appEngine.X()` typed wrappers
-        /// defined in `PlatformAppEngine+DomainDispatch.swift`, which
-        /// dispatch through `DomainCommand` and unwrap the result
-        /// variants (`.bool`, `.updateStatus`, `.applyResult`). The
-        /// outer call became `throws`; failures fall through to a
-        /// debug log without disrupting startup.
-        private func checkContentUpdates(appEngine: PlatformAppEngine) {
-            do {
-                guard try appEngine.isContentUpdatesSupported() else { return }
-            } catch {
-                print("AppState: isContentUpdatesSupported failed: \(error)")
-                return
-            }
+        /// Native follow-ups for a content-update cycle outcome. Pure so
+        /// the decision is unit-testable (`ContentUpdateCycleTests`)
+        /// without an engine; the domain check→apply sequencing lives in
+        /// core (`RunContentUpdateCycle`). `refreshAppearance` implies
+        /// `applied` (core invariant), so the `applied` guard alone gates
+        /// both follow-ups.
+        nonisolated static func contentCycleActions(
+            _ outcome: MobileContentCycleOutcome
+        ) -> (refreshTheme: Bool, reloadUI: Bool) {
+            guard outcome.applied else { return (false, false) }
+            return (outcome.refreshAppearance, true)
+        }
 
+        /// Run the remote content-update cycle in the background after
+        /// startup. Core owns the whole check→apply→invalidate sequence
+        /// (`RunContentUpdateCycle`); macOS only performs the native
+        /// consequences — re-applying the theme when the appearance
+        /// changed and reloading the UI when anything was applied. Best
+        /// effort: fired once on launch, no retry; failures return a
+        /// no-op outcome, logged in debug without disrupting startup.
+        private func runContentUpdateCycle(appEngine: PlatformAppEngine) {
             Task.detached(priority: .utility) { [weak self] in
-                let status: MobileUpdateStatus
+                let outcome: MobileContentCycleOutcome
                 do {
-                    status = try appEngine.checkContentUpdates()
+                    outcome = try appEngine.runContentUpdateCycle()
                 } catch {
-                    print("AppState: checkContentUpdates dispatch failed: \(error)")
+                    print("AppState: runContentUpdateCycle dispatch failed: \(error)")
                     return
                 }
-                guard case .updatesAvailable = status else { return }
-
-                let result: MobileApplyResult
-                do {
-                    result = try appEngine.applyContentUpdates()
-                } catch {
-                    print("AppState: applyContentUpdates dispatch failed: \(error)")
-                    return
-                }
-                if case let .applied(applied, _) = result {
-                    if applied.contains(.themes) {
-                        await MainActor.run {
-                            ThemeService.shared.applySelectedTheme()
-                        }
+                let actions = AppState.contentCycleActions(outcome)
+                guard actions.reloadUI else { return }
+                await MainActor.run {
+                    if actions.refreshTheme {
+                        ThemeService.shared.applySelectedTheme()
                     }
-                    // Locale store is hot-reloaded by core — no action needed
-                    await MainActor.run {
-                        self?.viewModel?.invalidateAll()
-                    }
+                    // Locale store is hot-reloaded by core — reload picks
+                    // up any new social-network labels / locale strings.
+                    self?.viewModel?.invalidateAll()
                 }
             }
         }
