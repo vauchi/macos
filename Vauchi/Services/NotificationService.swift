@@ -77,6 +77,10 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
             content.categoryIdentifier = "emergencyAlert"
         case .contactAdded:
             content.categoryIdentifier = "contactAdded"
+        case .cardUpdate:
+            content.categoryIdentifier = "cardUpdated"
+        case .duressAlert:
+            content.categoryIdentifier = "duressAlert"
         }
 
         let request = UNNotificationRequest(
