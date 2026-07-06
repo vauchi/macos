@@ -312,6 +312,9 @@ import UniformTypeIdentifiers
 
         // MARK: - Private
 
+        // TODO(HUMBLE): W — exhaustively names ignored ActionResult domain
+        // variants (see _private problem record
+        // 2026-07-06-desktop-tui-web-domain-shell-violations).
         private func applyResult(_ result: ActionResult) {
             switch result {
             case let .updateScreen(screen):

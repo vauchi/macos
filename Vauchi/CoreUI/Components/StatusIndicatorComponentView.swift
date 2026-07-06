@@ -59,6 +59,9 @@ struct StatusIndicatorComponentView: View {
         }
     }
 
+    // TODO(HUMBLE): W — statusLabel hardcodes English status strings (see
+    // _private problem record
+    // 2026-07-06-desktop-tui-web-domain-shell-violations).
     private func statusLabel(for status: Status) -> String {
         switch status {
         case .pending: "Pending"

@@ -31,6 +31,9 @@ struct FieldListComponentView: View {
                 }
             }
         }
+        // TODO(HUMBLE): W — uses fields.a11y_contact_fields domain vocabulary
+        // (see _private problem record
+        // 2026-07-06-desktop-tui-web-domain-shell-violations).
         .accessibilityLabel(component.a11y?.label ?? localizationService.t("fields.a11y_contact_fields"))
     }
 
@@ -167,6 +170,9 @@ struct FieldListRow: View {
         }
     }
 
+    // TODO(HUMBLE): T — iconForFieldType maps domain field_type strings
+    // ("phone", "email", etc.) to SF Symbols (see _private problem record
+    // 2026-07-06-desktop-tui-web-domain-shell-violations).
     private func iconForFieldType(_ type: String) -> String {
         switch type.lowercased() {
         case "phone": "phone"

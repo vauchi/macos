@@ -35,6 +35,9 @@ struct PreviewComponentView: View {
         ))
     }
 
+    // TODO(HUMBLE): W — variantSelector uses groupViewSelected(groupName:) and
+    // card_preview.all_groups domain vocabulary (see _private problem record
+    // 2026-07-06-desktop-tui-web-domain-shell-violations).
     private var variantSelector: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
@@ -196,6 +199,9 @@ struct PreviewFieldRow: View {
         ))
     }
 
+    // TODO(HUMBLE): T — iconForFieldType maps domain field_type strings to SF
+    // Symbols (duplicate of FieldListComponentView) (see _private problem
+    // record 2026-07-06-desktop-tui-web-domain-shell-violations).
     private func iconForFieldType(_ type: String) -> String {
         switch type.lowercased() {
         case "phone": "phone"

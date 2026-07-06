@@ -109,6 +109,9 @@ import SwiftUI
                 viewModel.stopQrFrameTimer()
                 viewModel.stopMultiStagePollTimer()
             }
+            // TODO(HUMBLE): D — cancelIfScreenMatches checks "link_" prefix to
+            // decide device-link cancellation (see _private problem record
+            // 2026-07-06-desktop-tui-web-domain-shell-violations).
             .sheet(isPresented: $viewModel.showDeviceLinkSheet) {
                 CoreSheetView(
                     actionId: "device_linking",
@@ -120,6 +123,10 @@ import SwiftUI
                 .frame(width: 400)
                 .frame(minHeight: 450)
             }
+            // TODO(HUMBLE): W — hardcodes tab/action IDs
+            // ("exchange", "contacts", "groups", "my_info", "more",
+            // "import_contacts") for menu shortcuts (see _private problem
+            // record 2026-07-06-desktop-tui-web-domain-shell-violations).
             .onReceive(NotificationCenter.default.publisher(for: .vauchiMenuExchange)) { _ in
                 viewModel.navigateToTab(actionId: "exchange")
             }
@@ -159,6 +166,9 @@ import SwiftUI
         /// it everywhere else. Cheap to call unconditionally — both methods are
         /// idempotent.
         private func syncQrFrameTimer(for screenId: String?) {
+            // TODO(HUMBLE): D — syncQrFrameTimer gates timers on domain screen
+            // IDs "exchange_show_qr" / "multi_stage_exchange" (see _private
+            // problem record 2026-07-06-desktop-tui-web-domain-shell-violations).
             if screenId == "exchange_show_qr" {
                 viewModel.startQrFrameTimer()
             } else {
@@ -219,6 +229,9 @@ import SwiftUI
         /// `AppEngine::sidebar_items(locale)`; see §6 of the
         /// pure-renderer audit for rationale.
         private func sidebarIcon(forScreenId id: String) -> String {
+            // TODO(HUMBLE): W — sidebarIcon maps domain screen IDs to SF
+            // Symbols (see _private problem record
+            // 2026-07-06-desktop-tui-web-domain-shell-violations).
             switch id {
             case "my_info": "person.crop.rectangle.fill"
             case "contacts": "person.2.fill"

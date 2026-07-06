@@ -27,6 +27,9 @@ struct ListComponentView: View {
                     .onChange(of: searchQuery) { newValue in
                         onAction(.searchChanged(componentId: component.id, query: newValue))
                     }
+                    // TODO(HUMBLE): W — uses a11y.search_contacts domain
+                    // vocabulary (see _private problem record
+                    // 2026-07-06-desktop-tui-web-domain-shell-violations).
                     .accessibilityLabel(localizationService.t("a11y.search_contacts"))
             }
 

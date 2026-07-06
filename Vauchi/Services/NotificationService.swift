@@ -32,6 +32,9 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
 
     /// Register notification categories and actions.
     func registerCategories() {
+        // TODO(HUMBLE): T — maps NotificationCategory to OS category IDs and
+        // builds userInfo payload (see _private problem record
+        // 2026-07-06-desktop-tui-web-domain-shell-violations).
         let center = UNUserNotificationCenter.current()
 
         let emergencyCategory = UNNotificationCategory(
