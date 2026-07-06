@@ -492,6 +492,10 @@ import UniformTypeIdentifiers
                      // unavailable — core records no place and proceeds
                      // gracefully (Command::LocationRequest, platform.rs:266).
                      .locationRequest,
+                     // Celebrate (M2 S5 ceremony): iOS-only haptic/animation
+                     // flourish. macOS reports unavailable so the exchange
+                     // completes without the UI beat; no functional impact.
+                     .celebrate,
                      .unknown:
                     sendHardwareUnavailable(transport: macOSUnavailableLabel(command))
                 }
