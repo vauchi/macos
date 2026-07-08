@@ -151,17 +151,21 @@ final class CoreUIComponentTests: XCTestCase {
             fields: [
                 Field(
                     id: "f1",
-                    fieldType: "email", icon: "envelope",
+                    fieldType: "email",
                     label: "Email",
                     value: "alice@example.com",
-                    visibility: .shown
+                    icon: "envelope",
+                    visibility: .shown,
+                    a11y: nil
                 ),
                 Field(
                     id: "f2",
-                    fieldType: "phone", icon: "phone",
+                    fieldType: "phone",
                     label: "Mobile",
                     value: "+41 79 123 45 67",
-                    visibility: .hidden
+                    icon: "phone",
+                    visibility: .hidden,
+                    a11y: nil
                 ),
             ],
             visibilityMode: .showHide,
@@ -177,17 +181,21 @@ final class CoreUIComponentTests: XCTestCase {
             fields: [
                 Field(
                     id: "f1",
-                    fieldType: "email", icon: "envelope",
+                    fieldType: "email",
                     label: "Email",
                     value: "alice@example.com",
-                    visibility: .groups(["Family", "Friends"])
+                    icon: "envelope",
+                    visibility: .groups(["Family", "Friends"]),
+                    a11y: nil
                 ),
                 Field(
                     id: "f2",
-                    fieldType: "phone", icon: "phone",
+                    fieldType: "phone",
                     label: "Mobile",
                     value: "+41 79 123 45 67",
-                    visibility: .groups(["Family"])
+                    icon: "phone",
+                    visibility: .groups(["Family"]),
+                    a11y: nil
                 ),
             ],
             visibilityMode: .perGroup,
@@ -215,17 +223,21 @@ final class CoreUIComponentTests: XCTestCase {
         let fields = [
             Field(
                 id: "f1",
-                fieldType: "email", icon: "envelope",
+                fieldType: "email",
                 label: "Email",
                 value: "alice@example.com",
-                visibility: .shown
+                icon: "envelope",
+                visibility: .shown,
+                a11y: nil
             ),
             Field(
                 id: "f2",
-                fieldType: "phone", icon: "phone",
+                fieldType: "phone",
                 label: "Mobile",
                 value: "+41 79 123 45 67",
-                visibility: .shown
+                icon: "phone",
+                visibility: .shown,
+                a11y: nil
             ),
         ]
         let component = PreviewComponent(
@@ -243,15 +255,9 @@ final class CoreUIComponentTests: XCTestCase {
     }
 
     func testCardPreviewWithGroups() {
-        let fields = [
-            Field(
-                id: "f1",
-                fieldType: "email", icon: "envelope",
-                label: "Email",
-                value: "alice@example.com",
-                visibility: .groups(["Family", "Friends"])
-            ),
-        ]
+        let groupField = makeTestField(visibility: .groups(["Family", "Friends"]))
+        let shownField = makeTestField(visibility: .shown)
+        let fields = [groupField]
         let component = PreviewComponent(
             name: "Alice",
             avatarData: nil,
@@ -260,28 +266,12 @@ final class CoreUIComponentTests: XCTestCase {
                 PreviewVariant(
                     variantId: "Family",
                     displayName: "Alice",
-                    visibleFields: [
-                        Field(
-                            id: "f1",
-                            fieldType: "email", icon: "envelope",
-                            label: "Email",
-                            value: "alice@example.com",
-                            visibility: .shown
-                        ),
-                    ]
+                    visibleFields: [shownField]
                 ),
                 PreviewVariant(
                     variantId: "Friends",
                     displayName: "Ali",
-                    visibleFields: [
-                        Field(
-                            id: "f1",
-                            fieldType: "email", icon: "envelope",
-                            label: "Email",
-                            value: "alice@example.com",
-                            visibility: .shown
-                        ),
-                    ]
+                    visibleFields: [shownField]
                 ),
             ],
             selectedVariant: nil,
@@ -291,6 +281,18 @@ final class CoreUIComponentTests: XCTestCase {
         )
         let view = PreviewComponentView(component: component, onAction: noOp)
         assertComponentSnapshot(of: view, height: 450, record: isRecording)
+    }
+
+    private func makeTestField(visibility: UiFieldVisibility) -> Field {
+        Field(
+            id: "f1",
+            fieldType: "email",
+            label: "Email",
+            value: "alice@example.com",
+            icon: "envelope",
+            visibility: visibility,
+            a11y: nil
+        )
     }
 
     // MARK: - InfoPanelComponentView
@@ -576,17 +578,21 @@ final class CoreUIComponentTests: XCTestCase {
         let fields = [
             Field(
                 id: "f1",
-                fieldType: "email", icon: "envelope",
+                fieldType: "email",
                 label: "Email",
                 value: "alice@example.com",
-                visibility: .shown
+                icon: "envelope",
+                visibility: .shown,
+                a11y: nil
             ),
             Field(
                 id: "f2",
-                fieldType: "phone", icon: "phone",
+                fieldType: "phone",
                 label: "Mobile",
                 value: "+41 79 123 45 67",
-                visibility: .shown
+                icon: "phone",
+                visibility: .shown,
+                a11y: nil
             ),
         ]
         let component = PreviewComponent(

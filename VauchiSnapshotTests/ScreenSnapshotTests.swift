@@ -158,24 +158,30 @@ final class ScreenSnapshotTests: XCTestCase {
         let fields = [
             Field(
                 id: "f1",
-                fieldType: "email", icon: "envelope",
+                fieldType: "email",
                 label: "Personal Email",
                 value: "alice@example.com",
-                visibility: .shown
+                icon: "envelope",
+                visibility: .shown,
+                a11y: nil
             ),
             Field(
                 id: "f2",
-                fieldType: "phone", icon: "phone",
+                fieldType: "phone",
                 label: "Mobile",
                 value: "+41 79 123 45 67",
-                visibility: .shown
+                icon: "phone",
+                visibility: .shown,
+                a11y: nil
             ),
             Field(
                 id: "f3",
-                fieldType: "website", icon: "globe",
+                fieldType: "website",
                 label: "Website",
                 value: "https://alice.example.com",
-                visibility: .shown
+                icon: "globe",
+                visibility: .shown,
+                a11y: nil
             ),
         ]
         let screen = makeScreen(
@@ -417,17 +423,21 @@ final class ScreenSnapshotTests: XCTestCase {
         let fields = [
             Field(
                 id: "f1",
-                fieldType: "email", icon: "envelope",
+                fieldType: "email",
                 label: "Email",
                 value: "alice@example.com",
-                visibility: .shown
+                icon: "envelope",
+                visibility: .shown,
+                a11y: nil
             ),
             Field(
                 id: "f2",
-                fieldType: "phone", icon: "phone",
+                fieldType: "phone",
                 label: "Mobile",
                 value: "+41 79 123 45 67",
-                visibility: .shown
+                icon: "phone",
+                visibility: .shown,
+                a11y: nil
             ),
         ]
         return PreviewComponent(
