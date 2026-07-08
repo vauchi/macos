@@ -158,21 +158,21 @@ final class ScreenSnapshotTests: XCTestCase {
         let fields = [
             Field(
                 id: "f1",
-                fieldType: "email",
+                fieldType: "email", icon: "envelope",
                 label: "Personal Email",
                 value: "alice@example.com",
                 visibility: .shown
             ),
             Field(
                 id: "f2",
-                fieldType: "phone",
+                fieldType: "phone", icon: "phone",
                 label: "Mobile",
                 value: "+41 79 123 45 67",
                 visibility: .shown
             ),
             Field(
                 id: "f3",
-                fieldType: "website",
+                fieldType: "website", icon: "globe",
                 label: "Website",
                 value: "https://alice.example.com",
                 visibility: .shown
@@ -417,14 +417,14 @@ final class ScreenSnapshotTests: XCTestCase {
         let fields = [
             Field(
                 id: "f1",
-                fieldType: "email",
+                fieldType: "email", icon: "envelope",
                 label: "Email",
                 value: "alice@example.com",
                 visibility: .shown
             ),
             Field(
                 id: "f2",
-                fieldType: "phone",
+                fieldType: "phone", icon: "phone",
                 label: "Mobile",
                 value: "+41 79 123 45 67",
                 visibility: .shown

@@ -93,6 +93,14 @@ func sfSymbolForCoreIcon(_ name: String) -> String {
     case "card": "person.crop.rectangle"
     case "eye": "eye.fill"
     case "visibility_off": "eye.slash.fill"
+    // Contact field glyphs (core `Field.icon` tokens).
+    case "phone": "phone"
+    case "envelope": "envelope"
+    case "globe": "globe"
+    case "mappin": "mappin"
+    case "at": "at"
+    case "gift": "gift"
+    case "tag": "tag"
     default: "info.circle"
     }
 }

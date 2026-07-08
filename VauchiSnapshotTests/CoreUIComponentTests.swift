@@ -151,14 +151,14 @@ final class CoreUIComponentTests: XCTestCase {
             fields: [
                 Field(
                     id: "f1",
-                    fieldType: "email",
+                    fieldType: "email", icon: "envelope",
                     label: "Email",
                     value: "alice@example.com",
                     visibility: .shown
                 ),
                 Field(
                     id: "f2",
-                    fieldType: "phone",
+                    fieldType: "phone", icon: "phone",
                     label: "Mobile",
                     value: "+41 79 123 45 67",
                     visibility: .hidden
@@ -177,14 +177,14 @@ final class CoreUIComponentTests: XCTestCase {
             fields: [
                 Field(
                     id: "f1",
-                    fieldType: "email",
+                    fieldType: "email", icon: "envelope",
                     label: "Email",
                     value: "alice@example.com",
                     visibility: .groups(["Family", "Friends"])
                 ),
                 Field(
                     id: "f2",
-                    fieldType: "phone",
+                    fieldType: "phone", icon: "phone",
                     label: "Mobile",
                     value: "+41 79 123 45 67",
                     visibility: .groups(["Family"])
@@ -215,14 +215,14 @@ final class CoreUIComponentTests: XCTestCase {
         let fields = [
             Field(
                 id: "f1",
-                fieldType: "email",
+                fieldType: "email", icon: "envelope",
                 label: "Email",
                 value: "alice@example.com",
                 visibility: .shown
             ),
             Field(
                 id: "f2",
-                fieldType: "phone",
+                fieldType: "phone", icon: "phone",
                 label: "Mobile",
                 value: "+41 79 123 45 67",
                 visibility: .shown
@@ -246,7 +246,7 @@ final class CoreUIComponentTests: XCTestCase {
         let fields = [
             Field(
                 id: "f1",
-                fieldType: "email",
+                fieldType: "email", icon: "envelope",
                 label: "Email",
                 value: "alice@example.com",
                 visibility: .groups(["Family", "Friends"])
@@ -263,7 +263,7 @@ final class CoreUIComponentTests: XCTestCase {
                     visibleFields: [
                         Field(
                             id: "f1",
-                            fieldType: "email",
+                            fieldType: "email", icon: "envelope",
                             label: "Email",
                             value: "alice@example.com",
                             visibility: .shown
@@ -276,7 +276,7 @@ final class CoreUIComponentTests: XCTestCase {
                     visibleFields: [
                         Field(
                             id: "f1",
-                            fieldType: "email",
+                            fieldType: "email", icon: "envelope",
                             label: "Email",
                             value: "alice@example.com",
                             visibility: .shown
@@ -576,14 +576,14 @@ final class CoreUIComponentTests: XCTestCase {
         let fields = [
             Field(
                 id: "f1",
-                fieldType: "email",
+                fieldType: "email", icon: "envelope",
                 label: "Email",
                 value: "alice@example.com",
                 visibility: .shown
             ),
             Field(
                 id: "f2",
-                fieldType: "phone",
+                fieldType: "phone", icon: "phone",
                 label: "Mobile",
                 value: "+41 79 123 45 67",
                 visibility: .shown

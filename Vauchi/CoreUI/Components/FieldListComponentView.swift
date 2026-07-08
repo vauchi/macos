@@ -71,7 +71,7 @@ struct FieldListRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Image(systemName: iconForFieldType(field.fieldType))
+                Image(systemName: sfSymbolForCoreIcon(field.icon))
                     .foregroundColor(themeService.accent)
                     .frame(width: 24)
                     .accessibilityHidden(true)
@@ -167,21 +167,6 @@ struct FieldListRow: View {
                     ))
                 }
             }
-        }
-    }
-
-    // TODO(HUMBLE): T — iconForFieldType maps domain field_type strings
-    // ("phone", "email", etc.) to SF Symbols (see _private problem record
-    // 2026-07-06-desktop-tui-web-domain-shell-violations).
-    private func iconForFieldType(_ type: String) -> String {
-        switch type.lowercased() {
-        case "phone": "phone"
-        case "email": "envelope"
-        case "website": "globe"
-        case "address": "mappin"
-        case "social": "at"
-        case "birthday": "gift"
-        default: "doc.text"
         }
     }
 }
