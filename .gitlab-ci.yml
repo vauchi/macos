@@ -5,7 +5,7 @@ include:
   - template: Security/SAST.gitlab-ci.yml
   - template: Security/Secret-Detection.gitlab-ci.yml
   - project: 'vauchi/scripts'
-    ref: main
+    ref: ci-templates-v2026.07.1
     file:
       - '/ci-templates/timeouts.yml'
       - '/ci-templates/reuse.yml'
@@ -17,6 +17,7 @@ include:
       - '/ci-templates/vrt-upload.yml'
 
 variables:
+  VAUCHI_SCRIPTS_REF: "ci-templates-v2026.07.1"
   SAST_EXCLUDED_PATHS: "build/, DerivedData/, .spm-packages/"
   SECRET_DETECTION_EXCLUDED_PATHS: "build/, DerivedData/, .spm-packages/"
   SAST_ANALYZER_IMAGE_TAG: "5"
@@ -315,7 +316,7 @@ check:humble-ui-ratchets:
           check-domain-named-views.sh \
           check-text-literal-count.sh; do
         curl --silent --fail \
-          "${CI_API_V4_URL}/projects/vauchi%2Fscripts/repository/files/scripts%2F${script}/raw?ref=main" \
+          "${CI_API_V4_URL}/projects/vauchi%2Fscripts/repository/files/scripts%2F${script}/raw?ref=${VAUCHI_SCRIPTS_REF}" \
           -o ".ratchet-scripts/${script}"
         chmod +x ".ratchet-scripts/${script}"
       done
@@ -349,13 +350,13 @@ lint:humble:
     - mkdir -p .ratchet-scripts
     - |
       curl --silent --fail \
-        "${CI_API_V4_URL}/projects/vauchi%2Fscripts/repository/files/scripts%2Fhumble_check.py/raw?ref=main" \
+        "${CI_API_V4_URL}/projects/vauchi%2Fscripts/repository/files/scripts%2Fhumble_check.py/raw?ref=${VAUCHI_SCRIPTS_REF}" \
         -o .ratchet-scripts/humble_check.py
       curl --silent --fail \
-        "${CI_API_V4_URL}/projects/vauchi%2Fscripts/repository/files/scripts%2Fhumble_check_rules.json/raw?ref=main" \
+        "${CI_API_V4_URL}/projects/vauchi%2Fscripts/repository/files/scripts%2Fhumble_check_rules.json/raw?ref=${VAUCHI_SCRIPTS_REF}" \
         -o .ratchet-scripts/humble_check_rules.json
       curl --silent --fail \
-        "${CI_API_V4_URL}/projects/vauchi%2Fscripts/repository/files/scripts%2Fhumble_check.baseline.json/raw?ref=main" \
+        "${CI_API_V4_URL}/projects/vauchi%2Fscripts/repository/files/scripts%2Fhumble_check.baseline.json/raw?ref=${VAUCHI_SCRIPTS_REF}" \
         -o .ratchet-scripts/humble_check.baseline.json
   script:
     - python3 .ratchet-scripts/humble_check.py --repo "${CI_PROJECT_NAME}" --repo-path "${CI_PROJECT_DIR}" --config .ratchet-scripts/humble_check_rules.json --check .ratchet-scripts/humble_check.baseline.json
@@ -1055,7 +1056,7 @@ coverage:unit:
     - xcresultparser --output-format cobertura coverage_result.xcresult > cobertura.xml
     - |
       curl --silent --fail \
-        "${CI_API_V4_URL}/projects/vauchi%2Fscripts/repository/files/scripts%2Fci%2Fpush-coverage.sh/raw?ref=main" \
+        "${CI_API_V4_URL}/projects/vauchi%2Fscripts/repository/files/scripts%2Fci%2Fpush-coverage.sh/raw?ref=${VAUCHI_SCRIPTS_REF}" \
         -o push-coverage.sh
       chmod +x push-coverage.sh
     - ./push-coverage.sh cobertura.xml macos || true
@@ -1074,20 +1075,6 @@ coverage:unit:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: $CI_PIPELINE_SOURCE == "schedule"
 
-
-# Committed baselines must map to live test functions — orphans from
-# deleted tests/classes masquerade as current UI (2026-06-11: 44 found,
-# 33 of them from the deleted VisualRegressionTests class).
-check:orphan-baselines:
-  extends: .check-orphan-baselines
-  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/alpine:3.21
-  tags: [docker]
-  before_script:
-    - apk add --no-cache bash findutils grep curl
-  variables:
-    ORPHAN_STYLE: swift
-    ORPHAN_BASELINE_ROOT: VauchiSnapshotTests/__Snapshots__
-    ORPHAN_TEST_SRC: VauchiSnapshotTests
 
 test:snapshots:
   extends: [.macos-job, .spm-cache-readonly]
@@ -1269,9 +1256,34 @@ security:swift-analysis:
     - macos
     - self-hosted
   script:
-    - 'grep -r "NSAllowsArbitraryLoads" . && echo "WARNING: App Transport Security disabled" || true'
-    - 'grep -r "allowsBackup.*true" . && echo "WARNING: Backup enabled" || true'
-    - 'grep -r "NSCameraUsageDescription\|NSPhotoLibraryUsageDescription\|NSLocationWhenInUseUsageDescription" Info.plist || echo "INFO: No privacy permissions declared"'
+    # Check for common macOS security issues. Fail on forbidden patterns unless the
+    # matching file is listed in .swift-security-exemptions (one path per line).
+    - |
+      set -euo pipefail
+      EXEMPTIONS_FILE=".swift-security-exemptions"
+      check_forbidden() {
+        local pattern="$1" message="$2"
+        local hits
+        hits=$(grep -R -l "$pattern" --exclude-dir=.git --exclude-dir=build --exclude-dir=.build --exclude="$EXEMPTIONS_FILE" . 2>/dev/null || true)
+        if [ -z "$hits" ]; then return 0; fi
+        local offending=""
+        while IFS= read -r file; do
+          [ -z "$file" ] && continue
+          if ! grep -qxF "$file" "$EXEMPTIONS_FILE" 2>/dev/null; then
+            offending="$offending$file\n"
+          fi
+        done <<< "$hits"
+        if [ -n "$offending" ]; then
+          echo "ERROR: $message" >&2
+          printf '%b' "$offending" >&2
+          echo "Add intentional exemptions to $EXEMPTIONS_FILE (one path per line)." >&2
+          exit 1
+        fi
+      }
+      check_forbidden 'NSAllowsArbitraryLoads' 'App Transport Security disabled in:'
+      check_forbidden 'allowsBackup.*true' 'Backup enabled in:'
+      echo 'Checking privacy permission declarations...'
+      grep -R "NSCameraUsageDescription\|NSPhotoLibraryUsageDescription\|NSLocationWhenInUseUsageDescription" Info.plist 2>/dev/null || echo 'INFO: No privacy permissions declared'
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       changes:
@@ -1289,9 +1301,10 @@ security:dependencies:
     - self-hosted
   script:
     - |
+      set -euo pipefail
       if [ -f "Package.resolved" ]; then
         echo "Checking Swift Package dependencies..."
-        swift package show-dependencies || true
+        swift package show-dependencies >/dev/null
       fi
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
@@ -1303,35 +1316,54 @@ security:dependencies:
           - ".gitlab-ci.yml"
 
 # ============================================================
-# Design Drift Check
+# Cross-cutting docker lint checks
 # ============================================================
 
-# Design drift: verify all design-spec components are implemented
-check:design-drift:
-  extends: .design-drift-job
-  allow_failure: false
-  variables:
-    DESIGN_DRIFT_COMPONENT_DIR: "Vauchi/CoreUI/Components"
-    DESIGN_DRIFT_FILE_EXT: ".swift"
-    DESIGN_DRIFT_CASE: "pascal"
-
-# Removed symbols: detect stale references to removed features
-check:removed-symbols:
-  extends: .removed-symbols-job
-  variables:
-    SEARCH_DIRS: "Vauchi/"
-
-# CoreUIModels drift guard — fails if anyone re-introduces a local
-# `Vauchi/CoreUI/Models.swift` file. The canonical types moved to the
-# `CoreUIModels` SPM product in `vauchi-platform-swift v0.21.11+`
-# (problem: 2026-04-22-shared-coreui-models-package). A local copy would
-# silently shadow the shared package and drift on every core release.
-check:coreuimodels-drift:
+# Combined blocking lint/validate checks that run on the docker runner.
+# Sequential execution inside one job removes per-job container overhead
+# while keeping each check's original logic intact.
+lint:cross-cutting-blocking:
+  extends: .timeout-standard
   stage: lint
   image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/alpine:3.21
   tags: [docker]
   needs: []
+  allow_failure: false
+  variables:
+    # check:orphan-baselines
+    ORPHAN_STYLE: swift
+    ORPHAN_BASELINE_ROOT: VauchiSnapshotTests/__Snapshots__
+    ORPHAN_TEST_SRC: VauchiSnapshotTests
+    GIT_DEPTH: "1"
+    # check:design-drift
+    DESIGN_DRIFT_COMPONENT_DIR: "Vauchi/CoreUI/Components"
+    DESIGN_DRIFT_FILE_EXT: ".swift"
+    DESIGN_DRIFT_CASE: "pascal"
+    # check:removed-symbols
+    SEARCH_DIRS: "Vauchi/"
+    ROOT_PROJECT_ID: "77851901"
+  before_script:
+    # Merged installs from the original per-job before_scripts:
+    #   - design-drift: curl openssh-client bash grep git
+    #   - orphan-baselines: bash findutils grep curl
+    - apk add --no-cache bash curl findutils git grep openssh-client
+    # Shared helper used by orphan-baselines and design-drift metrics push.
+    - |
+      fetch_vauchi_script() {
+        local src_path="$1" dest="$2"
+        local encoded_path
+        encoded_path=$(printf '%s' "$src_path" | sed 's|/|%2F|g')
+        curl -fsSL -u "gitlab-ci-token:${CI_JOB_TOKEN}" \
+          "${CI_API_V4_URL}/projects/77957857/repository/files/${encoded_path}/raw?ref=${VAUCHI_SCRIPTS_REF}" \
+          -o "$dest"
+        chmod +x "$dest"
+      }
   script:
+    # Original checks, run sequentially in file order.
+    - !reference [.check-orphan-baselines, script]
+    - !reference [.design-drift-job, script]
+    - !reference [.removed-symbols-job, script]
+    # check:coreuimodels-drift
     - |
       if [ -e Vauchi/CoreUI/Models.swift ]; then
         echo "ERROR: Vauchi/CoreUI/Models.swift re-introduced."
@@ -1340,6 +1372,12 @@ check:coreuimodels-drift:
         exit 1
       fi
       echo "OK: no local Vauchi/CoreUI/Models.swift present."
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
+      - unknown_failure
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == "main"
@@ -1347,6 +1385,7 @@ check:coreuimodels-drift:
 # Design token drift: warn on hardcoded colors/spacing that bypass tokens.json.
 # Script lives in vauchi/scripts — fetched via API to avoid duplicating it here.
 # allow_failure: true makes this a visibility gate, not a merge blocker.
+# Kept separate because it is the only advisory docker lint check in this repo.
 check:design-tokens:
   stage: lint
   image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/alpine:3.21
@@ -1358,7 +1397,7 @@ check:design-tokens:
   script:
     - |
       curl --silent --fail \
-        "${CI_API_V4_URL}/projects/vauchi%2Fscripts/repository/files/scripts%2Fcheck-design-tokens.sh/raw?ref=main" \
+        "${CI_API_V4_URL}/projects/vauchi%2Fscripts/repository/files/scripts%2Fcheck-design-tokens.sh/raw?ref=${VAUCHI_SCRIPTS_REF}" \
         -o check-design-tokens.sh
       chmod +x check-design-tokens.sh
     - ./check-design-tokens.sh Vauchi/
