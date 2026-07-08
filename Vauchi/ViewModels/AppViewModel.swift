@@ -10,6 +10,7 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 #if canImport(VauchiPlatform)
+    import VauchiHardware
     import VauchiPlatform
 
     @MainActor

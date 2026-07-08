@@ -12,7 +12,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://gitlab.com/vauchi/vauchi-platform-swift.git",
-            from: "0.1.0"
+            from: "0.52.5"
         ),
     ],
     targets: [
@@ -20,6 +20,7 @@ let package = Package(
             name: "Vauchi",
             dependencies: [
                 .product(name: "VauchiPlatform", package: "vauchi-platform-swift"),
+                .product(name: "VauchiHardware", package: "vauchi-platform-swift"),
                 .product(name: "CoreUIModels", package: "vauchi-platform-swift"),
             ],
             path: "Vauchi"
