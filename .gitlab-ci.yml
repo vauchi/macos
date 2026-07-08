@@ -1339,6 +1339,7 @@ lint:cross-cutting-blocking:
     DESIGN_DRIFT_COMPONENT_DIR: "Vauchi/CoreUI/Components"
     DESIGN_DRIFT_FILE_EXT: ".swift"
     DESIGN_DRIFT_CASE: "pascal"
+    DESIGN_DRIFT_MATCH_MODE: "file"
     # check:removed-symbols
     SEARCH_DIRS: "Vauchi/"
     ROOT_PROJECT_ID: "77851901"
