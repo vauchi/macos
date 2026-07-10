@@ -99,11 +99,11 @@ import SwiftUI
                     dismissButton: .default(Text(LocalizationService.shared.t("action.ok")))
                 )
             }
-            .onChange(of: viewModel.currentScreen?.screenId) { newId in
-                syncQrFrameTimer(for: newId)
+            .onChange(of: viewModel.currentScreen) { newScreen in
+                syncLifecycleTimers(for: newScreen)
             }
             .onAppear {
-                syncQrFrameTimer(for: viewModel.currentScreen?.screenId)
+                syncLifecycleTimers(for: viewModel.currentScreen)
             }
             .onDisappear {
                 viewModel.stopQrFrameTimer()
@@ -162,24 +162,17 @@ import SwiftUI
             }
         }
 
-        /// Start the animated-QR timer while the ShowQr screen is visible; stop
-        /// it everywhere else. Cheap to call unconditionally — both methods are
-        /// idempotent.
-        private func syncQrFrameTimer(for screenId: String?) {
-            // TODO(HUMBLE): D — syncQrFrameTimer gates timers on domain screen
-            // IDs "exchange_show_qr" / "multi_stage_exchange" (see _private
-            // problem record 2026-07-06-desktop-tui-web-domain-shell-violations).
-            if screenId == "exchange_show_qr" {
+        /// Start/stop hardware-timer side-effects based on the rendered
+        /// screen's lifecycle hints. Core owns the decision; the shell never
+        /// matches a domain `screen_id` to decide timer ownership
+        /// (`2026-07-06-mobile-domain-shell-violations` I4).
+        private func syncLifecycleTimers(for screen: ScreenModel?) {
+            if screen?.requiresAnimatedQr == true {
                 viewModel.startQrFrameTimer()
             } else {
                 viewModel.stopQrFrameTimer()
             }
-            // Multi-stage (Glance) exchange advances via a separate
-            // poll-driven tick — its machine replaced the legacy
-            // `exchange_show_qr` engine and is driven by `pollNotifications`,
-            // not `advanceQrFrameJson` (Bug 5,
-            // `2026-05-30-exchange-screen-nav-visual-bugs`).
-            if screenId == "multi_stage_exchange" {
+            if screen?.requiresPoll == true {
                 viewModel.startMultiStagePollTimer()
             } else {
                 viewModel.stopMultiStagePollTimer()
