@@ -328,10 +328,18 @@ import UniformTypeIdentifiers
                 validationErrors[componentId] = message
             case .complete, .wipeComplete:
                 loadScreen()
+            case let .onboardingComplete(destination):
+                // Core has finished onboarding and navigated to the chosen
+                // destination. Refresh the sidebar so it switches from the
+                // single Onboarding entry to the full post-identity set, and
+                // reload the current screen
+                // (`2026-07-06-mobile-domain-shell-violations` I7).
+                loadSidebarItems()
+                loadScreen()
             case .completeWith, .openContact, .editContact, .openEntryDetail:
                 // Resolved to NavigateTo by AppEngine.route_result in core —
                 // frontends never observe these raw (ADR-043 Am4). CompleteWith
-                // re-emits the post-onboarding destination; OpenContact /
+                // is kept for backward compatibility; OpenContact /
                 // EditContact / OpenEntryDetail re-emit the contact / edit /
                 // entry screens. The frontend renders the engine's current
                 // screen and never constructs a navigation target.
