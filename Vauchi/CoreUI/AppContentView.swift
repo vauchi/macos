@@ -99,8 +99,14 @@ import SwiftUI
                     dismissButton: .default(Text(LocalizationService.shared.t("action.ok")))
                 )
             }
-            .onChange(of: viewModel.currentScreen) { newScreen in
-                syncLifecycleTimers(for: newScreen)
+            // ScreenModel is not Equatable; the timers only depend on these
+            // two flags, and start/stop are idempotent, so watching the
+            // flags is equivalent to watching the whole screen.
+            .onChange(of: viewModel.currentScreen?.requiresAnimatedQr) { _ in
+                syncLifecycleTimers(for: viewModel.currentScreen)
+            }
+            .onChange(of: viewModel.currentScreen?.requiresPoll) { _ in
+                syncLifecycleTimers(for: viewModel.currentScreen)
             }
             .onAppear {
                 syncLifecycleTimers(for: viewModel.currentScreen)

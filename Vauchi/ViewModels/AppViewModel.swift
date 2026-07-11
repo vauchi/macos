@@ -328,7 +328,7 @@ import UniformTypeIdentifiers
                 validationErrors[componentId] = message
             case .complete, .wipeComplete:
                 loadScreen()
-            case let .onboardingComplete(destination):
+            case .onboardingComplete:
                 // Core has finished onboarding and navigated to the chosen
                 // destination. Refresh the sidebar so it switches from the
                 // single Onboarding entry to the full post-identity set, and
