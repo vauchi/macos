@@ -55,6 +55,12 @@ import SwiftUI
             ) { [weak self] _ in
                 self?.viewModel?.loadScreen()
             }
+
+            // A tapped notification forwards its core-supplied deep link to core
+            // as `LinkOpened`; core owns the destination.
+            NotificationService.shared.onDeepLinkTapped = { [weak self] uri in
+                Task { @MainActor in self?.openDeepLink(uri) }
+            }
         }
 
         #if DEBUG
@@ -164,6 +170,14 @@ import SwiftUI
         /// Poll for and display OS notifications (E).
         func pollNotifications() {
             NotificationService.shared.pollAndDisplayNotifications(repository: repository)
+        }
+
+        /// Relays an opaque `vauchi://` URI to core as `LinkOpened`. Core owns
+        /// the destination (contact detail, exchange consent, device-link join,
+        /// or a core-owned error). Dropped while locked — the tap has already
+        /// foregrounded the app for the user to unlock.
+        func openDeepLink(_ uri: String) {
+            viewModel?.handleAction(.linkOpened(uri: uri))
         }
     }
 #endif

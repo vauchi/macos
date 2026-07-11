@@ -16,6 +16,26 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
         registerCategories()
     }
 
+    /// Relays a tapped notification's core-supplied deep-link URI to the app,
+    /// which forwards it to core as `UserAction::LinkOpened`. Humble: the service
+    /// never interprets the URI — core owns routing. Buffers a cold-launch tap
+    /// until the app wires the handler.
+    var onDeepLinkTapped: ((String) -> Void)? {
+        didSet {
+            guard let uri = pendingDeepLinkUri, let handler = onDeepLinkTapped else { return }
+            pendingDeepLinkUri = nil
+            handler(uri)
+        }
+    }
+
+    private var pendingDeepLinkUri: String?
+
+    /// Extracts the deep-link URI stashed in `userInfo` at display time. Pure so
+    /// it is unit-testable without a live `UNUserNotificationCenter`.
+    static func deepLinkUri(from userInfo: [AnyHashable: Any]) -> String? {
+        userInfo["deep_link_uri"] as? String
+    }
+
     /// Request notification permissions from the user.
     func requestPermissions(completion: @escaping (Bool) -> Void) {
         let center = UNUserNotificationCenter.current()
@@ -70,10 +90,16 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
         content.title = notification.title
         content.body = notification.body
         content.sound = .default
-        content.userInfo = [
+        var userInfo: [String: Any] = [
             "contact_id": notification.contactId,
             "event_key": notification.eventKey,
         ]
+        // Core supplies the tap target (`vauchi://contact/<id>`); stash it so
+        // `didReceive` can relay it back to core as `LinkOpened`.
+        if let deepLinkUri = notification.deepLinkUri {
+            userInfo["deep_link_uri"] = deepLinkUri
+        }
+        content.userInfo = userInfo
 
         switch notification.category {
         case .emergencyAlert:
@@ -115,11 +141,13 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
         didReceive response: UNNotificationResponse,
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
-        #if DEBUG
-            let userInfo = response.notification.request.content.userInfo
-            let contactId = userInfo["contact_id"] as? String
-            print("NotificationService: User tapped notification for contact: \(contactId ?? "nil")")
-        #endif
+        if let uri = Self.deepLinkUri(from: response.notification.request.content.userInfo) {
+            if let handler = onDeepLinkTapped {
+                handler(uri)
+            } else {
+                pendingDeepLinkUri = uri // cold launch: flush once the app wires the handler
+            }
+        }
 
         completionHandler()
     }
