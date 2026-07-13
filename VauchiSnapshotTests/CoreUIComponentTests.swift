@@ -681,4 +681,30 @@ final class CoreUIComponentTests: XCTestCase {
             record: isRecording
         )
     }
+
+    func testStatusIndicatorUsesLocalizedStatusLabel() {
+        let component = StatusIndicatorComponent(
+            id: "status",
+            icon: "checkmark.circle.fill",
+            title: "Exchange Complete",
+            detail: "Contact card saved successfully",
+            status: .success,
+            statusLabel: "Synchronisiert"
+        )
+        let view = StatusIndicatorComponentView(component: component)
+        let hostingView = NSHostingView(rootView: view)
+        hostingView.layoutSubtreeIfNeeded()
+
+        XCTAssertTrue(
+            accessibilityLabelContains("Synchronisiert", in: hostingView),
+            "Expected view hierarchy to contain accessibility label 'Synchronisiert'"
+        )
+    }
+
+    private func accessibilityLabelContains(_ substring: String, in view: NSView) -> Bool {
+        if let label = view.accessibilityLabel(), label.contains(substring) {
+            return true
+        }
+        return view.subviews.contains { accessibilityLabelContains(substring, in: $0) }
+    }
 }
