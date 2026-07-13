@@ -208,7 +208,6 @@
 		07586629234DE4E7F2551F5E /* AccessibilityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityTests.swift; sourceTree = "<group>"; };
 		075A43D13266E824544C1089 /* ready.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ready.json; sourceTree = "<group>"; };
 		07F69D47DBE79635FE185938 /* contact_edit_fields.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = contact_edit_fields.json; sourceTree = "<group>"; };
-		0865680DBF6F2E5D0939A1D3 /* vauchi-platform-swift */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "vauchi-platform-swift"; path = "../vauchi-platform-swift"; sourceTree = SOURCE_ROOT; };
 		0A594A2A3929ED3F36E46FBD /* RenderContextPusher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderContextPusher.swift; sourceTree = "<group>"; };
 		0D3497B12DDDF10370069F86 /* Vauchi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Vauchi.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0ED4420CCDFCB527415741E4 /* testToggleListDefault.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testToggleListDefault.1.png; sourceTree = "<group>"; };
@@ -392,7 +391,6 @@
 		01344AB2D3CDD59B4D0E3149 = {
 			isa = PBXGroup;
 			children = (
-				D969E888C287758A8083FF87 /* Packages */,
 				CE3F5B89773435D1670DD40B /* Vauchi */,
 				B703A0DE1FDBFC69D604E07F /* VauchiSnapshotTests */,
 				5B9EAC8491A990983095623D /* VauchiTests */,
@@ -655,14 +653,6 @@
 			path = Components;
 			sourceTree = "<group>";
 		};
-		D969E888C287758A8083FF87 /* Packages */ = {
-			isa = PBXGroup;
-			children = (
-				0865680DBF6F2E5D0939A1D3 /* vauchi-platform-swift */,
-			);
-			name = Packages;
-			sourceTree = "<group>";
-		};
 		DE4003224F0F48BD0A224CE5 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
@@ -824,7 +814,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				40CC95CA915CE0C8360D71CD /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */,
-				78F0337780F6ACBADDE1EBA0 /* XCLocalSwiftPackageReference "../vauchi-platform-swift" */,
+				8B834B486889A4518835FD33 /* XCRemoteSwiftPackageReference "vauchi-platform-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 6044B0E63DE2F73C5FDC8885 /* Products */;
@@ -1381,13 +1371,6 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCLocalSwiftPackageReference section */
-		78F0337780F6ACBADDE1EBA0 /* XCLocalSwiftPackageReference "../vauchi-platform-swift" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = "../vauchi-platform-swift";
-		};
-/* End XCLocalSwiftPackageReference section */
-
 /* Begin XCRemoteSwiftPackageReference section */
 		40CC95CA915CE0C8360D71CD /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -1397,11 +1380,20 @@
 				minimumVersion = 1.17.0;
 			};
 		};
+		8B834B486889A4518835FD33 /* XCRemoteSwiftPackageReference "vauchi-platform-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://gitlab.com/vauchi/vauchi-platform-swift.git";
+			requirement = {
+				kind = exactVersion;
+				version = 0.53.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		0AB22D05ABC258D050086FBF /* VauchiHardware */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 8B834B486889A4518835FD33 /* XCRemoteSwiftPackageReference "vauchi-platform-swift" */;
 			productName = VauchiHardware;
 		};
 		584E70B43E05BAC9ADA1DC81 /* SnapshotTesting */ = {
@@ -1411,10 +1403,12 @@
 		};
 		B2C60C8C920018E8C7CF99BE /* CoreUIModels */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 8B834B486889A4518835FD33 /* XCRemoteSwiftPackageReference "vauchi-platform-swift" */;
 			productName = CoreUIModels;
 		};
 		BE415B866BE8E26F05791810 /* VauchiPlatform */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 8B834B486889A4518835FD33 /* XCRemoteSwiftPackageReference "vauchi-platform-swift" */;
 			productName = VauchiPlatform;
 		};
 /* End XCSwiftPackageProductDependency section */
