@@ -16,123 +16,7 @@
             "value": "+1-555-0100",
             "icon": "phone",
             "visibility": {
-              "Groups": [
-                "Family"
-              ]
-            },
-            "a11y": {
-              "label": "Mobile: +1-555-0100",
-              "hint": "Visible to specific groups",
-              "role": null
-            },
-            "icon": "phone"
-          },
-          {
-            "id": "f2",
-            "field_type": "Email",
-            "label": "Work",
-            "value": "alice@example.com",
-            "icon": "envelope",
-            "visibility": {
-              "Groups": [
-                "Friends",
-                "Work"
-              ]
-            },
-            "a11y": {
-              "label": "Work: alice@example.com",
-              "hint": "Visible to specific groups",
-              "role": null
-            },
-            "icon": "envelope"
-          }
-        ],
-        "variants": [
-          {
-            "variant_id": "Family",
-            "display_name": "Alice",
-            "visible_fields": [
-              {
-                "id": "f1",
-                "field_type": "Phone",
-                "label": "Mobile",
-                "value": "+1-555-0100",
-                "icon": "phone",
-                "visibility": {
-                  "Groups": [
-                    "Family"
-                  ]
-                },
-                "a11y": {
-                  "label": "Mobile: +1-555-0100",
-                  "hint": "Visible to specific groups",
-                  "role": null
-                },
-                "icon": "phone"
-              }
-            ]
-          },
-          {
-            "variant_id": "Friends",
-            "display_name": "Alice",
-            "visible_fields": [
-              {
-                "id": "f2",
-                "field_type": "Email",
-                "label": "Work",
-                "value": "alice@example.com",
-                "icon": "envelope",
-                "visibility": {
-                  "Groups": [
-                    "Friends",
-                    "Work"
-                  ]
-                },
-                "a11y": {
-                  "label": "Work: alice@example.com",
-                  "hint": "Visible to specific groups",
-                  "role": null
-                },
-                "icon": "envelope"
-              }
-            ]
-          },
-          {
-            "variant_id": "Work",
-            "display_name": "Alice",
-            "visible_fields": [
-              {
-                "id": "f2",
-                "field_type": "Email",
-                "label": "Work",
-                "value": "alice@example.com",
-                "icon": "envelope",
-                "visibility": {
-                  "Groups": [
-                    "Friends",
-                    "Work"
-                  ]
-                },
-                "a11y": {
-                  "label": "Work: alice@example.com",
-                  "hint": "Visible to specific groups",
-                  "role": null
-                },
-                "icon": "envelope"
-              }
-            ]
-          }
-        ],
-        "selected_variant": null,
-        "visible_fields": [
-          {
-            "id": "f1",
-            "field_type": "Phone",
-            "label": "Mobile",
-            "value": "+1-555-0100",
-            "icon": "phone",
-            "visibility": {
-              "Groups": [
+              "Scopes": [
                 "Family"
               ]
             },
@@ -149,7 +33,118 @@
             "value": "alice@example.com",
             "icon": "envelope",
             "visibility": {
-              "Groups": [
+              "Scopes": [
+                "Friends",
+                "Work"
+              ]
+            },
+            "a11y": {
+              "label": "Work: alice@example.com",
+              "hint": "Visible to specific groups",
+              "role": null
+            }
+          }
+        ],
+        "variants": [
+          {
+            "variant_id": "Family",
+            "display_name": "Alice",
+            "visible_fields": [
+              {
+                "id": "f1",
+                "field_type": "Phone",
+                "label": "Mobile",
+                "value": "+1-555-0100",
+                "icon": "phone",
+                "visibility": {
+                  "Scopes": [
+                    "Family"
+                  ]
+                },
+                "a11y": {
+                  "label": "Mobile: +1-555-0100",
+                  "hint": "Visible to specific groups",
+                  "role": null
+                }
+              }
+            ]
+          },
+          {
+            "variant_id": "Friends",
+            "display_name": "Alice",
+            "visible_fields": [
+              {
+                "id": "f2",
+                "field_type": "Email",
+                "label": "Work",
+                "value": "alice@example.com",
+                "icon": "envelope",
+                "visibility": {
+                  "Scopes": [
+                    "Friends",
+                    "Work"
+                  ]
+                },
+                "a11y": {
+                  "label": "Work: alice@example.com",
+                  "hint": "Visible to specific groups",
+                  "role": null
+                }
+              }
+            ]
+          },
+          {
+            "variant_id": "Work",
+            "display_name": "Alice",
+            "visible_fields": [
+              {
+                "id": "f2",
+                "field_type": "Email",
+                "label": "Work",
+                "value": "alice@example.com",
+                "icon": "envelope",
+                "visibility": {
+                  "Scopes": [
+                    "Friends",
+                    "Work"
+                  ]
+                },
+                "a11y": {
+                  "label": "Work: alice@example.com",
+                  "hint": "Visible to specific groups",
+                  "role": null
+                }
+              }
+            ]
+          }
+        ],
+        "selected_variant": null,
+        "visible_fields": [
+          {
+            "id": "f1",
+            "field_type": "Phone",
+            "label": "Mobile",
+            "value": "+1-555-0100",
+            "icon": "phone",
+            "visibility": {
+              "Scopes": [
+                "Family"
+              ]
+            },
+            "a11y": {
+              "label": "Mobile: +1-555-0100",
+              "hint": "Visible to specific groups",
+              "role": null
+            }
+          },
+          {
+            "id": "f2",
+            "field_type": "Email",
+            "label": "Work",
+            "value": "alice@example.com",
+            "icon": "envelope",
+            "visibility": {
+              "Scopes": [
                 "Friends",
                 "Work"
               ]
