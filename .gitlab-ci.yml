@@ -1121,7 +1121,33 @@ test:snapshots:
     # (problem 2026-06-29-spm-mirror-config-race).
     - ./scripts/ci-spm-isolate-config.sh
     - HOME="$CI_PROJECT_DIR/.spm-home" xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data -disableAutomaticPackageResolution CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
-    - HOME="$CI_PROJECT_DIR/.spm-home" xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data -disableAutomaticPackageResolution -only-testing:VauchiSnapshotTests -resultBundlePath SnapshotTestResults test-without-building
+    # xcodebuild exit 65 can be a false positive from logarchive errors (error 13,
+    # "failed to read version.plist"). Capture exit code and check actual test results.
+    - |
+      set +e
+      export HOME="$CI_PROJECT_DIR/.spm-home"
+      xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" \
+        -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data \
+        -disableAutomaticPackageResolution \
+        -only-testing:VauchiSnapshotTests -resultBundlePath SnapshotTestResults test-without-building
+      XCODE_EXIT=$?
+      set -e
+    - command -v xcresultparser >/dev/null 2>&1 || brew install a7ex/homebrew-formulae/xcresultparser
+    - xcresultparser --output-format junit SnapshotTestResults > test-results.xml || true
+    # Evaluate actual test results from xcresult, not xcodebuild exit code
+    - |
+      if [ -f test-results.xml ]; then
+        FAILURES=$(grep -c 'failures="[1-9]' test-results.xml || true)
+        ERRORS=$(grep -c 'errors="[1-9]' test-results.xml || true)
+        if [ "$FAILURES" -gt 0 ] || [ "$ERRORS" -gt 0 ]; then
+          echo "❌ Snapshot tests failed (${FAILURES} failure suites, ${ERRORS} error suites)"
+          exit 1
+        fi
+        echo "✅ All snapshot tests passed (xcodebuild exit ${XCODE_EXIT} was logarchive noise)"
+      elif [ "$XCODE_EXIT" -ne 0 ]; then
+        echo "❌ Snapshot tests failed and no results produced (exit code ${XCODE_EXIT})"
+        exit 1
+      fi
   after_script:
     - !reference [.vrt-upload-script, script]
     # Extract swift-snapshot-testing's reference/failure/difference images from
@@ -1141,6 +1167,9 @@ test:snapshots:
     paths:
       - VauchiSnapshotTests/__Snapshots__/
       - snapshot-diffs/
+      - SnapshotTestResults
+    reports:
+      junit: test-results.xml
     expire_in: 7 days
   rules:
     - if: ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "pipeline") && $BINDINGS_VERSION
