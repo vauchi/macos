@@ -38,7 +38,9 @@ struct StatusIndicatorComponentView: View {
             Circle()
                 .fill(statusColor(for: component.status))
                 .frame(width: 12, height: 12)
-                .accessibilityLabel(statusLabel(for: component.status))
+                .accessibilityLabel(
+                    component.statusLabel.isEmpty ? statusLabel(for: component.status) : component.statusLabel
+                )
         }
         .padding(CGFloat(tokens.spacing.md))
         .background(Color(nsColor: .controlBackgroundColor))
@@ -59,9 +61,8 @@ struct StatusIndicatorComponentView: View {
         }
     }
 
-    // TODO(HUMBLE): W — statusLabel hardcodes English status strings (see
-    // _private problem record
-    // 2026-07-06-desktop-tui-web-domain-shell-violations).
+    // TODO(HUMBLE): fallback until binding pin carries core!1355 statusLabel.
+    // Remove once vauchi-platform-swift!82 is pinned.
     private func statusLabel(for status: Status) -> String {
         switch status {
         case .pending: "Pending"
