@@ -1122,30 +1122,34 @@ test:snapshots:
     - ./scripts/ci-spm-isolate-config.sh
     - HOME="$CI_PROJECT_DIR/.spm-home" xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data -disableAutomaticPackageResolution CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
     # xcodebuild exit 65 can be a false positive from logarchive errors (error 13,
-    # "failed to read version.plist"). Capture exit code and check actual test results.
+    # "failed to read version.plist"). It can also restart after a transient launch
+    # crash, leaving stale failure entries in the xcresult. Use the final console
+    # summary as the source of truth and capture the result bundle for JUnit only.
     - |
       set +e
       export HOME="$CI_PROJECT_DIR/.spm-home"
       xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" \
         -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data \
         -disableAutomaticPackageResolution \
-        -only-testing:VauchiSnapshotTests -resultBundlePath SnapshotTestResults test-without-building
-      XCODE_EXIT=$?
+        -only-testing:VauchiSnapshotTests -resultBundlePath SnapshotTestResults \
+        test-without-building | tee xcodebuild.log
+      XCODE_EXIT=${PIPESTATUS[0]}
       set -e
     - command -v xcresultparser >/dev/null 2>&1 || brew install a7ex/homebrew-formulae/xcresultparser
     - xcresultparser --output-format junit SnapshotTestResults > test-results.xml || true
-    # Evaluate actual test results from xcresult, not xcodebuild exit code
+    # Evaluate the final "Executed N tests, with M failures" summary. This ignores
+    # logarchive exit codes and transient first-launch crashes that retry cleanly.
     - |
-      if [ -f test-results.xml ]; then
-        FAILURES=$(grep -c 'failures="[1-9]' test-results.xml || true)
-        ERRORS=$(grep -c 'errors="[1-9]' test-results.xml || true)
-        if [ "$FAILURES" -gt 0 ] || [ "$ERRORS" -gt 0 ]; then
-          echo "❌ Snapshot tests failed (${FAILURES} failure suites, ${ERRORS} error suites)"
+      FINAL_LINE=$(grep -E '^\s*Executed [0-9]+ tests?, with [0-9]+ failure' xcodebuild.log | tail -1 || true)
+      if [ -n "$FINAL_LINE" ]; then
+        FAILURES=$(echo "$FINAL_LINE" | sed -E 's/.*with ([0-9]+) failure.*/\1/')
+        if [ "$FAILURES" -gt 0 ]; then
+          echo "❌ Snapshot tests failed: ${FINAL_LINE}"
           exit 1
         fi
-        echo "✅ All snapshot tests passed (xcodebuild exit ${XCODE_EXIT} was logarchive noise)"
+        echo "✅ All snapshot tests passed: ${FINAL_LINE} (xcodebuild exit ${XCODE_EXIT} was noise)"
       elif [ "$XCODE_EXIT" -ne 0 ]; then
-        echo "❌ Snapshot tests failed and no results produced (exit code ${XCODE_EXIT})"
+        echo "❌ Snapshot tests failed and no summary produced (exit code ${XCODE_EXIT})"
         exit 1
       fi
   after_script:
@@ -1168,6 +1172,7 @@ test:snapshots:
       - VauchiSnapshotTests/__Snapshots__/
       - snapshot-diffs/
       - SnapshotTestResults
+      - xcodebuild.log
     reports:
       junit: test-results.xml
     expire_in: 7 days
