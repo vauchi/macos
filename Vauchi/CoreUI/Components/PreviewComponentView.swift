@@ -35,8 +35,8 @@ struct PreviewComponentView: View {
         ))
     }
 
-    // TODO(HUMBLE): W — variantSelector uses groupViewSelected(groupName:) and
-    // card_preview.all_groups domain vocabulary (see _private problem record
+    // TODO(HUMBLE): W — variantSelector uses card_preview.all_groups domain
+    // vocabulary (see _private problem record
     // 2026-07-06-desktop-tui-web-domain-shell-violations).
     private var variantSelector: some View {
         ScrollView(.horizontal, showsIndicators: false) {
@@ -45,7 +45,7 @@ struct PreviewComponentView: View {
                     name: localizationService.t("card_preview.all_groups"),
                     isSelected: component.selectedVariant == nil
                 ) {
-                    onAction(.groupViewSelected(groupName: nil))
+                    onAction(.variantSelected(variantId: nil))
                 }
 
                 ForEach(component.variants) { variant in
@@ -59,7 +59,7 @@ struct PreviewComponentView: View {
                         name: variant.variantId,
                         isSelected: component.selectedVariant == variant.variantId
                     ) {
-                        onAction(.groupViewSelected(groupName: variant.variantId))
+                        onAction(.variantSelected(variantId: variant.variantId))
                     }
                 }
             }
@@ -122,29 +122,20 @@ struct PreviewComponentView: View {
         .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 4)
     }
 
-    @ViewBuilder
     private var avatarCircle: some View {
-        if let avatarData = component.avatarData,
-           let nsImage = NSImage(data: Data(avatarData))
-        {
-            Image(nsImage: nsImage)
-                .resizable()
-                .scaledToFill()
-        } else {
-            Circle()
-                .fill(
-                    LinearGradient(
-                        colors: [themeService.accent, themeService.accent.opacity(0.6)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
+        Circle()
+            .fill(
+                LinearGradient(
+                    colors: [themeService.accent, themeService.accent.opacity(0.6)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
                 )
-                .overlay(
-                    Text(currentDisplayName.prefix(1).uppercased())
-                        .font(.system(size: 36, weight: .bold))
-                        .foregroundColor(.white)
-                )
-        }
+            )
+            .overlay(
+                Text(currentDisplayName.prefix(1).uppercased())
+                    .font(.system(size: 36, weight: .bold))
+                    .foregroundColor(.white)
+            )
     }
 
     private var currentDisplayName: String {

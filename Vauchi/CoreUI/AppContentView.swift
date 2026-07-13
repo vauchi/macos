@@ -32,6 +32,7 @@ import SwiftUI
 
     struct AppContentView: View {
         @ObservedObject var viewModel: AppViewModel
+        @State private var keyEventMonitor: Any?
 
         var body: some View {
             ZStack(alignment: .top) {
@@ -48,23 +49,34 @@ import SwiftUI
                                 viewModel.handleQrScanned(data: data)
                             }
                         )
-                        // Core-driven back chrome: render a leading toolbar
-                        // back button on sub-screens (those the engine reports
-                        // `can_go_back` for), forwarding `navigateBack`. Roots
-                        // report false, so it only shows where a back step
-                        // exists. Replaces the per-screen footer "Back" action.
+                        // Core-driven nav chrome: render actions from
+                        // `ScreenModel.navActions`. The "go_back" action becomes
+                        // the leading toolbar back button; other nav actions are
+                        // rendered as automatic toolbar items. The frontend no
+                        // longer consults `can_go_back` or matches domain
+                        // `screen_id`s to decide chrome (ADR-044 Am2a).
                         .toolbar {
-                            if viewModel.canGoBack() {
+                            if let backAction = screen.navActions.first(where: { $0.id == "go_back" }) {
                                 ToolbarItem(placement: .navigation) {
                                     Button {
                                         viewModel.navigateBack()
                                     } label: {
                                         Label(
-                                            LocalizationService.shared.t("action.back"),
+                                            backAction.a11y?.label ?? backAction.label,
                                             systemImage: "chevron.left"
                                         )
                                     }
-                                    .help(LocalizationService.shared.t("action.back"))
+                                    .help(backAction.a11y?.hint ?? backAction.label)
+                                    .disabled(!backAction.enabled)
+                                }
+                            }
+
+                            ToolbarItemGroup(placement: .automatic) {
+                                ForEach(screen.navActions.filter { $0.id != "go_back" }) { action in
+                                    Button(action.label) {
+                                        viewModel.handleAction(.actionPressed(actionId: action.id))
+                                    }
+                                    .disabled(!action.enabled)
                                 }
                             }
                         }
@@ -99,21 +111,27 @@ import SwiftUI
                     dismissButton: .default(Text(LocalizationService.shared.t("action.ok")))
                 )
             }
-            // ScreenModel is not Equatable; the timers only depend on these
-            // two flags, and start/stop are idempotent, so watching the
-            // flags is equivalent to watching the whole screen.
-            .onChange(of: viewModel.currentScreen?.requiresAnimatedQr) { _ in
-                syncLifecycleTimers(for: viewModel.currentScreen)
-            }
-            .onChange(of: viewModel.currentScreen?.requiresPoll) { _ in
-                syncLifecycleTimers(for: viewModel.currentScreen)
-            }
+            // Keyboard back shortcuts: Cmd+[ and Escape forward
+            // `UserAction.navigateBack` unconditionally. Core decides whether
+            // to pop or emit `ActionResult.performNativeBack`; the frontend
+            // never gates on `can_go_back` (ADR-044 Amendment 2a).
             .onAppear {
-                syncLifecycleTimers(for: viewModel.currentScreen)
+                keyEventMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+                    if event.keyCode == 53 || // Escape
+                        (event.keyCode == 33 && event.modifierFlags.contains(.command)) // Cmd+[
+                    {
+                        viewModel.navigateBack()
+                        return nil
+                    }
+                    return event
+                }
             }
             .onDisappear {
-                viewModel.stopQrFrameTimer()
-                viewModel.stopMultiStagePollTimer()
+                if let monitor = keyEventMonitor {
+                    NSEvent.removeMonitor(monitor)
+                    keyEventMonitor = nil
+                }
+                viewModel.cancelWakeupTimer()
             }
             // TODO(HUMBLE): D — cancelIfScreenMatches checks "link_" prefix to
             // decide device-link cancellation (see _private problem record
@@ -167,23 +185,6 @@ import SwiftUI
                 viewModel.handleAction(.actionPressed(actionId: "import_contacts"))
             }
         }
-
-        /// Start/stop hardware-timer side-effects based on the rendered
-        /// screen's lifecycle hints. Core owns the decision; the shell never
-        /// matches a domain `screen_id` to decide timer ownership
-        /// (`2026-07-06-mobile-domain-shell-violations` I4).
-        private func syncLifecycleTimers(for screen: ScreenModel?) {
-            if screen?.requiresAnimatedQr == true {
-                viewModel.startQrFrameTimer()
-            } else {
-                viewModel.stopQrFrameTimer()
-            }
-            if screen?.requiresPoll == true {
-                viewModel.startMultiStagePollTimer()
-            } else {
-                viewModel.stopMultiStagePollTimer()
-            }
-        }
     }
 
     /// Sidebar listing available navigation screens from core.
@@ -199,7 +200,7 @@ import SwiftUI
                         systemImage: sidebarIcon(forScreenId: tab.id)
                     )
                     // Tag with the opaque snake_case screen_id (== the
-                    // selection id surfaced by `currentTabId`); the tap
+                    // selection id surfaced by `ScreenModel.navTabId`); the tap
                     // forwards `tab.actionId` via `navigateToTab`.
                     .tag(tab.id)
                 }

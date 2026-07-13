@@ -62,7 +62,7 @@ struct ItemRow: View {
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 12) {
-                Text(item.avatarInitials)
+                Text(item.initials)
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(.white)
                     .frame(width: 40, height: 40)

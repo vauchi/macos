@@ -167,11 +167,6 @@ import SwiftUI
             viewModel?.loadScreen()
         }
 
-        /// Poll for and display OS notifications (E).
-        func pollNotifications() {
-            NotificationService.shared.pollAndDisplayNotifications(repository: repository)
-        }
-
         /// Relays an opaque `vauchi://` URI to core as `LinkOpened`. Core owns
         /// the destination (contact detail, exchange consent, device-link join,
         /// or a core-owned error). Dropped while locked — the tap has already

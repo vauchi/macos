@@ -15,8 +15,6 @@ import SwiftUI
     import VauchiPlatform
 #endif
 
-private let timer = Timer.publish(every: 30, on: .main, in: .common).autoconnect()
-
 @main
 struct VauchiApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
@@ -32,9 +30,6 @@ struct VauchiApp: App {
                 ContentView()
                     .environmentObject(appState)
                     .environmentObject(themeService)
-                    .onReceive(timer) { _ in
-                        appState.pollNotifications()
-                    }
             #else
                 PlaceholderContentView()
             #endif

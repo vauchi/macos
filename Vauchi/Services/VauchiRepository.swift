@@ -121,18 +121,6 @@ import Foundation
                 .path
         }
 
-        /// Poll for OS notifications produced by the app engine.
-        func pollNotifications() -> [MobilePendingNotification] {
-            do {
-                return try appEngine.pollNotifications()
-            } catch {
-                #if DEBUG
-                    print("VauchiRepository: pollNotifications failed: \(error)")
-                #endif
-                return []
-            }
-        }
-
         /// Handle app backgrounded event (C1 auto-lock)
         func handleAppBackgrounded() -> String? {
             do {

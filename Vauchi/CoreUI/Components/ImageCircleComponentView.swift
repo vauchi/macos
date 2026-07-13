@@ -2,31 +2,31 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// Renders an AvatarPreview component from core UI (macOS)
+// Renders an ImageCircle component from core UI (macOS)
 
 import CoreUIModels
 import SwiftUI
 
-/// Renders a core `Component::AvatarPreview` as a circular avatar with
-/// optional brightness adjustment. When editable, tapping emits
-/// `ActionPressed("edit_avatar")`.
-struct AvatarPreviewComponentView: View {
-    let component: AvatarPreviewComponent
+/// Renders a core `Component::ImageCircle` as a circular avatar with
+/// optional brightness adjustment. When editable, tapping emits the
+/// core-provided `editActionId`.
+struct ImageCircleComponentView: View {
+    let component: ImageCircleComponent
     let onAction: (UserAction) -> Void
 
     @EnvironmentObject private var themeService: ThemeService
 
     var body: some View {
-        let content = avatarContent
+        let content = circleContent
             .frame(width: 120, height: 120)
             .clipShape(Circle())
             .brightness(Double(component.brightness))
             .accessibilityLabel(component.a11y?.label ?? "Avatar: \(component.initials)")
             .accessibilityHint(component.a11y?.hint ?? (component.editable ? "Tap to edit" : ""))
 
-        if component.editable {
+        if component.editable, let editActionId = component.editActionId {
             Button {
-                onAction(.actionPressed(actionId: "edit_avatar"))
+                onAction(.actionPressed(actionId: editActionId))
             } label: {
                 content
                     .overlay(editOverlay)
@@ -38,7 +38,7 @@ struct AvatarPreviewComponentView: View {
     }
 
     @ViewBuilder
-    private var avatarContent: some View {
+    private var circleContent: some View {
         if let imageData = component.imageData,
            let nsImage = NSImage(data: Data(imageData))
         {

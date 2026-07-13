@@ -1,5 +1,4 @@
 {
-  "originHash" : "ef18cfe39d345a8054ee8dfe9ed5831480aa043bc9f6a262e83092210108e7dd",
   "pins" : [
     {
       "identity" : "swift-custom-dump",
@@ -29,15 +28,6 @@
       }
     },
     {
-      "identity" : "vauchi-platform-swift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://gitlab.com/vauchi/vauchi-platform-swift.git",
-      "state" : {
-        "revision" : "a82a18c0b1748cbcc6882a0aada1f18c9ab49b0e",
-        "version" : "0.52.7"
-      }
-    },
-    {
       "identity" : "xctest-dynamic-overlay",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/xctest-dynamic-overlay",
@@ -47,5 +37,5 @@
       }
     }
   ],
-  "version" : 3
+  "version" : 2
 }

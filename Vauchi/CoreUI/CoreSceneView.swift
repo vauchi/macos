@@ -126,6 +126,10 @@ import SwiftUI
                 // Setting changed — reload to reflect new state. Scenes
                 // (unlike sheets) stay open after `.complete`.
                 loadScreen()
+            case .performNativeBack:
+                // Settings / scene windows have no further back navigation
+                // surface; native back is a no-op here.
+                break
             case .startDeviceLink:
                 // Sheet content (`CoreSheetView` for `"DeviceLinking"`)
                 // navigates the engine on appear; core's

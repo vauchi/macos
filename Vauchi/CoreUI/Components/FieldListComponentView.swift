@@ -25,7 +25,7 @@ struct FieldListComponentView: View {
                     FieldListRow(
                         field: field,
                         visibilityMode: component.visibilityMode,
-                        availableGroups: component.availableGroups,
+                        availableScopes: component.availableScopes,
                         onAction: onAction
                     )
                 }
@@ -61,7 +61,7 @@ struct FieldListComponentView: View {
 struct FieldListRow: View {
     let field: Field
     let visibilityMode: VisibilityMode
-    let availableGroups: [String]
+    let availableScopes: [String]
     let onAction: (UserAction) -> Void
 
     @Environment(\.designTokens) private var tokens
@@ -89,8 +89,8 @@ struct FieldListRow: View {
                 visibilityControl
             }
 
-            if case .perGroup = visibilityMode, !availableGroups.isEmpty {
-                groupChips
+            if case .perGroup = visibilityMode, !availableScopes.isEmpty {
+                scopeChips
             }
         }
         .padding(.horizontal, 16)
@@ -126,26 +126,26 @@ struct FieldListRow: View {
         }
     }
 
-    private var groupChips: some View {
-        let visibleGroups: [String] = {
-            if case let .groups(groups) = field.visibility {
-                return groups
+    private var scopeChips: some View {
+        let visibleScopes: [String] = {
+            if case let .scopes(scopes) = field.visibility {
+                return scopes
             }
             return []
         }()
 
         return ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
-                ForEach(availableGroups, id: \.self) { group in
-                    let isVisible = visibleGroups.contains(group)
+                ForEach(availableScopes, id: \.self) { scope in
+                    let isVisible = visibleScopes.contains(scope)
                     Button {
                         onAction(.fieldVisibilityChanged(
                             fieldId: field.id,
-                            groupId: group,
+                            groupId: scope,
                             visible: !isVisible
                         ))
                     } label: {
-                        Text(group)
+                        Text(scope)
                             .font(.caption)
                             .padding(.horizontal, CGFloat(tokens.spacing.sm))
                             .padding(.vertical, 4)
@@ -161,7 +161,7 @@ struct FieldListRow: View {
                     .accessibilityLabel(localizationService.t(
                         "a11y.field_status",
                         args: [
-                            "group": group,
+                            "group": scope,
                             "status": localizationService.t(isVisible ? "fields.a11y_visible" : "fields.a11y_hidden"),
                         ]
                     ))

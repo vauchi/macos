@@ -74,16 +74,6 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
         center.setNotificationCategories([emergencyCategory, updateCategory])
     }
 
-    /// Poll for and display OS notifications (E).
-    func pollAndDisplayNotifications(repository: VauchiRepository?) {
-        guard UserDefaults.standard.object(forKey: "vauchi.notificationsEnabled") as? Bool ?? true else { return }
-        guard let notifications = repository?.pollNotifications(), !notifications.isEmpty else { return }
-
-        for notification in notifications {
-            showNotification(notification)
-        }
-    }
-
     /// Display a single notification.
     func showNotification(_ notification: MobilePendingNotification) {
         let content = UNMutableNotificationContent()

@@ -122,6 +122,9 @@ import SwiftUI
                 self.screen = screen
             case .complete, .wipeComplete:
                 onComplete()
+            case .performNativeBack:
+                // Back at a sheet root: dismiss the sheet as the native back default.
+                onComplete()
             default:
                 // Other variants (showAlert, openContact, …) belong to
                 // the main window's flow, not the sheet subtree.

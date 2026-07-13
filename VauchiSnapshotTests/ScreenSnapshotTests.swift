@@ -141,7 +141,7 @@ final class ScreenSnapshotTests: XCTestCase {
             components: [
                 .preview(PreviewComponent(
                     name: "Alice",
-                    avatarData: nil,
+                    imageData: nil,
                     fields: [],
                     variants: [],
                     selectedVariant: nil
@@ -191,7 +191,7 @@ final class ScreenSnapshotTests: XCTestCase {
             components: [
                 .preview(PreviewComponent(
                     name: "Alice",
-                    avatarData: nil,
+                    imageData: nil,
                     fields: fields,
                     variants: [],
                     selectedVariant: nil,
@@ -236,21 +236,21 @@ final class ScreenSnapshotTests: XCTestCase {
                             id: "c1",
                             name: "Bob",
                             subtitle: "Last updated 2h ago",
-                            avatarInitials: "B",
+                            initials: "B",
                             status: nil
                         ),
                         Item(
                             id: "c2",
                             name: "Charlie",
                             subtitle: "3 fields shared",
-                            avatarInitials: "C",
+                            initials: "C",
                             status: nil
                         ),
                         Item(
                             id: "c3",
                             name: "Diana",
                             subtitle: "Pending verification",
-                            avatarInitials: "D",
+                            initials: "D",
                             status: "pending"
                         ),
                     ],
@@ -442,7 +442,7 @@ final class ScreenSnapshotTests: XCTestCase {
         ]
         return PreviewComponent(
             name: "Alice",
-            avatarData: nil,
+            imageData: nil,
             fields: fields,
             variants: [],
             selectedVariant: nil,
@@ -462,10 +462,10 @@ final class ScreenSnapshotTests: XCTestCase {
                             id: "c1",
                             name: "Bob",
                             subtitle: "Last updated 2h ago",
-                            avatarInitials: "B",
+                            initials: "B",
                             status: nil
                         ),
-                        Item(id: "c2", name: "Charlie", subtitle: nil, avatarInitials: "C", status: nil),
+                        Item(id: "c2", name: "Charlie", subtitle: nil, initials: "C", status: nil),
                     ],
                     searchable: true
                 )),

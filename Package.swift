@@ -12,7 +12,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://gitlab.com/vauchi/vauchi-platform-swift.git",
-            from: "0.52.5"
+            branch: "feature/adr044-am2a-models"
         ),
     ],
     targets: [

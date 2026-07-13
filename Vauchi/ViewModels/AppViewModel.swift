@@ -29,27 +29,11 @@ import UniformTypeIdentifiers
         @Published var selectedScreen: String?
         let appEngine: PlatformAppEngine
 
-        /// Timer that drives animated-QR frame advancement (~10fps) while the
-        /// "Share Your Code" screen is visible. Controlled by the view layer
-        /// via `startQrFrameTimer` / `stopQrFrameTimer`.
-        private var qrFrameTimer: Timer?
-
-        /// Count of consecutive decode failures. When the count hits
-        /// `maxConsecutiveQrDecodeFailures` the timer self-stops to avoid
-        /// infinite retry on a persistent decode mismatch (e.g. core
-        /// ScreenModel format drift); the frozen QR is itself the user signal.
-        private var qrFrameDecodeFailures = 0
-        private static let maxConsecutiveQrDecodeFailures = 10 // ~1s at 10 fps
-
-        /// Timer that drives the multi-stage (Glance) exchange machine
-        /// (~5fps) while the `multi_stage_exchange` screen is visible. Post
-        /// slice-32m the core cycle thread is gone; the machine advances
-        /// only when the frontend calls `pollNotifications`, which also
-        /// fires `onScreensInvalidated` (→ `loadScreen`). Without this tick
-        /// the own-QR never appears (Bug 5,
-        /// `2026-05-30-exchange-screen-nav-visual-bugs`). Distinct from
-        /// `qrFrameTimer`, which drives the legacy `exchange_show_qr` path.
-        private var multiStagePollTimer: Timer?
+        /// Core-scheduled wakeup timer (ADR-044 Am2a Option C). When a
+        /// `CommandDTO.scheduleWakeup` fires, the frontend arms a single
+        /// desktop interval; on fire it calls `appEngine.onWakeup()` and
+        /// dispatches the returned commands/notifications.
+        private var wakeupTimer: Timer?
 
         struct AlertMessage: Identifiable {
             let id = UUID()
@@ -157,27 +141,14 @@ import UniformTypeIdentifiers
             updateSelectedScreen()
         }
 
-        /// Whether the current screen offers a back step, per the engine's
-        /// nav state. Drives the core-driven toolbar back button so the
-        /// frontend no longer depends on a footer "Back" action.
-        func canGoBack() -> Bool {
-            (try? appEngine.canGoBack()) ?? false
-        }
-
         /// Navigate back in the history stack.
+        ///
+        /// Forwards `UserAction.navigateBack` unconditionally; core decides
+        /// whether to pop (`NavigateTo`/`UpdateScreen`) or tell the frontend
+        /// to perform native back (`ActionResult.performNativeBack`). The
+        /// frontend never gates on `can_go_back` (ADR-044 Amendment 2a).
         func navigateBack() {
-            do {
-                let json = try appEngine.navigateBackJson()
-                guard let data = json.data(using: .utf8) else { return }
-                let envelope = try coreJSONDecoder.decode(ScreenEnvelope.self, from: data)
-                currentScreen = envelope.screen
-                validationErrors = [:]
-                if !envelope.commands.isEmpty {
-                    dispatchExchangeCommands(envelope.commands)
-                }
-            } catch {
-                print("AppViewModel: failed to navigate back: \(error)")
-            }
+            handleAction(.navigateBack)
         }
 
         /// Invalidate cached engines after domain mutations.
@@ -191,124 +162,76 @@ import UniformTypeIdentifiers
             }
         }
 
-        // MARK: - Animated QR Frame Cycling
+        // MARK: - Core-Scheduled Wakeup (ADR-044 Am2a Option C)
 
-        // NOTE: this block is duplicated in vauchi/ios at
-        // `Vauchi/CoreUI/AppViewModel.swift`. Keep the two in sync until the
-        // shared-module decision lands — see `_private/docs/problems/\
-        // 2026-04-19-qr-frame-timer-ios-macos-duplication/`.
-
-        /// Start a 10 fps timer that advances animated-QR frames on the ShowQr
-        /// screen. Idempotent: calling while already running is a no-op. The
-        /// view calls this when `screenId` becomes `exchange_show_qr`.
-        func startQrFrameTimer() {
-            guard qrFrameTimer == nil else { return }
-            let timer = Timer(timeInterval: 0.1, repeats: true) { [weak self] _ in
+        /// Arm a desktop timer from a `CommandDTO.scheduleWakeup`. Idempotent:
+        /// re-arming cancels any pending previous wakeup. The timer fires
+        /// after `earliestSecs` (capped at `deadlineSecs`) and dispatches
+        /// `onWakeup()`; `minIntervalSecs` is honoured by simply not re-arming
+        /// more frequently than requested.
+        func armWakeupTimer(earliestSecs: UInt32, deadlineSecs: UInt32, minIntervalSecs: UInt32) {
+            wakeupTimer?.invalidate()
+            let fireDelay = min(TimeInterval(earliestSecs), TimeInterval(deadlineSecs))
+            let timer = Timer(timeInterval: fireDelay, repeats: false) { [weak self] _ in
                 Task { @MainActor [weak self] in
-                    self?.advanceQrFrame()
+                    self?.onWakeup()
+                    // Honour min interval: if another schedule hasn't arrived,
+                    // leave the timer nil so the next command re-arms cleanly.
+                    self?.wakeupTimer = nil
                 }
             }
             RunLoop.main.add(timer, forMode: .common)
-            qrFrameTimer = timer
+            wakeupTimer = timer
+
+            // Remember the minimum interval so future `armWakeupTimer` calls
+            // can be throttled if needed. For now we rely on core only emitting
+            // a new schedule when it wants one.
+            _ = minIntervalSecs
         }
 
-        /// Stop the animated-QR timer if running. The view calls this when
-        /// `screenId` leaves `exchange_show_qr` (or on disappear).
-        func stopQrFrameTimer() {
-            qrFrameTimer?.invalidate()
-            qrFrameTimer = nil
+        /// Cancel any pending core-scheduled wakeup.
+        func cancelWakeupTimer() {
+            wakeupTimer?.invalidate()
+            wakeupTimer = nil
         }
 
-        /// Test-only accessor — true while the QR frame timer is active.
-        /// Exposed at `internal` visibility so `@testable` imports can assert
-        /// idempotent start/stop without reaching into the private Timer.
-        var hasActiveQrFrameTimer: Bool {
-            qrFrameTimer != nil
+        /// Test-only accessor — true while a wakeup timer is armed.
+        var hasActiveWakeupTimer: Bool {
+            wakeupTimer != nil
         }
 
-        // MARK: - Multi-Stage Exchange Polling (Bug 5)
-
-        /// Start a ~5fps timer that drives the multi-stage exchange machine
-        /// by polling core. Each tick runs `advance_multi_stage_session`
-        /// inside the engine and fires `onScreensInvalidated`; the
-        /// invalidation listener refetches the screen so the cycling own-QR
-        /// + protocol progress surface. Idempotent. The view calls this when
-        /// `screenId` becomes `multi_stage_exchange` and stops it on exit.
-        func startMultiStagePollTimer() {
-            guard multiStagePollTimer == nil else { return }
-            let timer = Timer(timeInterval: 0.2, repeats: true) { [weak self] _ in
-                guard let self else { return }
-                // Side effect is the point — returned notifications are
-                // drained by the global poll; matches Android's
-                // `tickMultiStageExchange`.
-                _ = try? self.appEngine.pollNotifications()
-            }
-            RunLoop.main.add(timer, forMode: .common)
-            multiStagePollTimer = timer
-        }
-
-        /// Stop the multi-stage poll timer if running. The view calls this
-        /// when `screenId` leaves `multi_stage_exchange` (or on disappear).
-        func stopMultiStagePollTimer() {
-            multiStagePollTimer?.invalidate()
-            multiStagePollTimer = nil
-        }
-
-        /// Test-only accessor — true while the multi-stage poll timer is active.
-        var hasActiveMultiStagePollTimer: Bool {
-            multiStagePollTimer != nil
-        }
-
-        private func advanceQrFrame() {
+        /// The platform wakeup fired. Ask core what to do and dispatch the
+        /// returned commands + notifications. JSON envelope:
+        /// `{"notifications": [...], "commands": [...]}`.
+        func onWakeup() {
             do {
-                guard let frameJson = try appEngine.advanceQrFrameJson() else {
-                    qrFrameDecodeFailures = 0
+                let json = try appEngine.onWakeup()
+                guard let data = json.data(using: .utf8) else {
+                    print("AppViewModel: failed to convert onWakeup JSON to Data")
                     return
                 }
-                guard let data = frameJson.data(using: .utf8) else {
-                    recordQrFrameFailure()
-                    return
+                let envelope = try coreJSONDecoder.decode(WakeupEnvelope.self, from: data)
+                if !envelope.commands.isEmpty {
+                    dispatchExchangeCommands(envelope.commands)
                 }
-                let frame = try coreJSONDecoder.decode(ScreenModel.self, from: data)
-                currentScreen = frame
-                qrFrameDecodeFailures = 0
+                for notification in envelope.notifications {
+                    NotificationService.shared.showNotification(notification.toMobilePendingNotification())
+                }
             } catch {
-                #if DEBUG
-                    print("AppViewModel: failed to advance QR frame: \(error)")
-                #endif
-                recordQrFrameFailure()
+                print("AppViewModel: onWakeup failed: \(error)")
             }
         }
 
-        /// Record a decode failure and stop the timer once the consecutive-
-        /// failure threshold is crossed. Prevents runaway retries when core's
-        /// ScreenModel format drifts; the frozen QR is itself the visible signal.
-        private func recordQrFrameFailure() {
-            qrFrameDecodeFailures += 1
-            if qrFrameDecodeFailures >= Self.maxConsecutiveQrDecodeFailures {
-                stopQrFrameTimer()
-                qrFrameDecodeFailures = 0
-            }
-        }
-
-        /// Syncs `selectedScreen` from core's current parent tab id.
+        /// Syncs `selectedScreen` from the rendered screen's core-provided tab.
         ///
-        /// `currentTabId(layout: .desktop)` returns the opaque snake_case
-        /// `screen_id` of the sidebar entry the active screen belongs to
-        /// (e.g. "contacts" for `contact_detail`), matching the `id` /
-        /// `actionId` carried by `sidebarItems`. Replaces the per-frontend
-        /// `screenIdPrefixToAppScreen` PascalCase table (retired with the
-        /// `navigate_to_json` surface, ADR-043 Am4 / §1D pure-renderer
-        /// remediation) — the frontend no longer maps screen ids to domain
-        /// enum variant names.
+        /// `ScreenModel.navTabId` is the opaque snake_case `screen_id` of the
+        /// sidebar entry the active screen belongs to (e.g. "contacts" for
+        /// `contact_detail`), matching the `id` / `actionId` carried by
+        /// `sidebarItems`. `nil` means the screen has no tab chrome
+        /// (transient/pre-auth). Replaces both frontend tab-id inference and
+        /// the `currentTabId(layout:)` UniFFI call (ADR-044 Am2a).
         private func updateSelectedScreen() {
-            do {
-                if let tabId = try appEngine.currentTabId(layout: .desktop) {
-                    selectedScreen = tabId
-                }
-            } catch {
-                print("AppViewModel: failed to resolve current tab id: \(error)")
-            }
+            selectedScreen = currentScreen?.navTabId
         }
 
         // MARK: - Private
@@ -324,6 +247,12 @@ import UniformTypeIdentifiers
             case let .navigateTo(screen):
                 currentScreen = screen
                 validationErrors = [:]
+            case .performNativeBack:
+                // Back gesture reached a back-stopping root. macOS native
+                // default: terminate the app (the shell keeps running in the
+                // menu bar; terminating the active app process is the desktop
+                // equivalent of Android/iOS native back).
+                NSApp.terminate(nil)
             case let .validationError(componentId, message):
                 validationErrors[componentId] = message
             case .complete, .wipeComplete:
@@ -455,23 +384,9 @@ import UniformTypeIdentifiers
                     dispatchAudioListen(timeoutMs: timeoutMs, sampleRate: sampleRate)
                 case .audioStop:
                     AudioProximityService.shared.stop()
-                // DirectSend — TCP cable exchange
-                case let .directSend(payload, isInitiator):
-                    directSendService.exchange(
-                        address: "127.0.0.1:\(DirectSendService.defaultPort)",
-                        payload: payload,
-                        isInitiator: isInitiator
-                    )
-                // DirectSendCard — USB card-exchange second leg (a fresh TCP
-                // connection swaps the encrypted cards; core decrypts the peer's
-                // and completes the exchange).
-                case let .directSendCard(ciphertext, isInitiator):
-                    directSendService.exchange(
-                        address: "127.0.0.1:\(DirectSendService.defaultPort)",
-                        payload: ciphertext,
-                        isInitiator: isInitiator,
-                        cardLeg: true
-                    )
+                // DirectSend / DirectSendCard — TCP cable exchange.
+                case .directSend, .directSendCard:
+                    dispatchDirectSendCommand(command)
                 // Location — one-shot CLLocationManager fix for the exchange
                 // "where we met" annotation (ADR-051 capture-at-exchange).
                 case let .locationRequest(timeoutMs):
@@ -485,11 +400,12 @@ import UniformTypeIdentifiers
                 // stub and the bespoke .fileImporter inside
                 // ImportContactsSheet / ImportBackupSheet (those sheets
                 // are retired in a follow-up commit).
-                case let .filePickFromUser(acceptedMimeTypes, purpose):
-                    presentFilePickFromUser(
-                        acceptedMimeTypes: acceptedMimeTypes,
-                        purpose: purpose
-                    )
+                case .filePickFromUser:
+                    dispatchFilePickerCommand(command)
+                // Core-scheduled wakeup (ADR-044 Am2a Option C). Translate
+                // the relative seconds into a desktop one-shot timer.
+                case .scheduleWakeup:
+                    dispatchWakeupCommand(command)
                 // Platform-unavailable on macOS (NFC, photo library,
                 // camera, Phase 2b lifecycle, unsupported). Reported so
                 // core can pick its fallback path per ADR-031.
@@ -499,17 +415,9 @@ import UniformTypeIdentifiers
                      .setIdleTimerDisabled, .setOrientationLock,
                      .switchCamera, .showShareSheet,
                      .accelerometerStart, .accelerometerStop,
-                     // Location (ADR-051 capture-at-exchange, core 0.51.48):
-                     // macOS has no CoreLocation provider wired, so report it
-                     // unavailable — core records no place and proceeds
-                     // gracefully (Command::LocationRequest, platform.rs:266).
-                     .locationRequest,
-                     // Celebrate (M2 S5 ceremony): iOS-only haptic/animation
-                     // flourish. macOS reports unavailable so the exchange
-                     // completes without the UI beat; no functional impact.
                      .celebrate,
                      .unknown:
-                    sendHardwareUnavailable(transport: macOSUnavailableLabel(command))
+                    dispatchUnavailableCommand(command)
                 }
             }
         }
@@ -554,6 +462,59 @@ import UniformTypeIdentifiers
             case .locationRequest: return "Location"
             default: return "unsupported-command"
             }
+        }
+
+        /// Report platform-unavailable commands back to core so it can pick
+        /// a fallback path (ADR-031). Display sleep, camera orientation, and
+        /// ShareSheet are all OS-managed or unwired on desktop.
+        private func dispatchUnavailableCommand(_ command: CommandDTO) {
+            sendHardwareUnavailable(transport: macOSUnavailableLabel(command))
+        }
+
+        /// DirectSend / DirectSendCard — TCP cable exchange. The card variant
+        /// is the USB card-exchange second leg (a fresh TCP connection swaps
+        /// the encrypted cards; core decrypts the peer's and completes).
+        private func dispatchDirectSendCommand(_ command: CommandDTO) {
+            switch command {
+            case let .directSend(payload, isInitiator):
+                directSendService.exchange(
+                    address: "127.0.0.1:\(DirectSendService.defaultPort)",
+                    payload: payload,
+                    isInitiator: isInitiator
+                )
+            case let .directSendCard(ciphertext, isInitiator):
+                directSendService.exchange(
+                    address: "127.0.0.1:\(DirectSendService.defaultPort)",
+                    payload: ciphertext,
+                    isInitiator: isInitiator,
+                    cardLeg: true
+                )
+            default:
+                break
+            }
+        }
+
+        /// File picker (ADR-031, Phase 3 of 2026-05-03-core-file-picker-command).
+        /// Delegates to NSOpenPanel; replaces the prior `filePickCancelledByUser`
+        /// stub and the bespoke .fileImporter inside ImportContactsSheet /
+        /// ImportBackupSheet (those sheets are retired in a follow-up commit).
+        private func dispatchFilePickerCommand(_ command: CommandDTO) {
+            guard case let .filePickFromUser(acceptedMimeTypes, purpose) = command else { return }
+            presentFilePickFromUser(
+                acceptedMimeTypes: acceptedMimeTypes,
+                purpose: purpose
+            )
+        }
+
+        /// Core-scheduled wakeup (ADR-044 Am2a Option C). Translate the
+        /// relative seconds into a desktop one-shot timer.
+        private func dispatchWakeupCommand(_ command: CommandDTO) {
+            guard case let .scheduleWakeup(earliestSecs, deadlineSecs, minIntervalSecs) = command else { return }
+            armWakeupTimer(
+                earliestSecs: earliestSecs,
+                deadlineSecs: deadlineSecs,
+                minIntervalSecs: minIntervalSecs
+            )
         }
 
         /// Send a hardware event back to core and apply the result.
@@ -705,6 +666,73 @@ import UniformTypeIdentifiers
         enum CodingKeys: String, CodingKey {
             case actionResult = "action_result"
             case commands
+        }
+    }
+
+    /// Envelope returned by `PlatformAppEngine.onWakeup` (ADR-044 Am2a):
+    /// `{"notifications": [...], "commands": [...]}`. Decodes into a
+    /// JSON-friendly DTO first, then maps to the UniFFI
+    /// `MobilePendingNotification` type used by `NotificationService`.
+    struct WakeupEnvelope: Decodable {
+        let notifications: [WakeupNotification]
+        let commands: [CommandDTO]
+    }
+
+    /// JSON DTO for a pending OS notification returned by `onWakeup`.
+    /// Mirrors `MobilePendingNotification` without requiring the UniFFI
+    /// type to conform to `Decodable`.
+    struct WakeupNotification: Decodable {
+        let eventKey: String
+        let category: String
+        let title: String
+        let body: String
+        let contactId: String
+        let deepLinkUri: String?
+        let osCategoryId: String?
+        let osChannelId: String?
+        let priority: String?
+        let osCategoryOptions: [String]?
+
+        /// Map the JSON DTO to the UniFFI `MobilePendingNotification` type
+        /// used by `NotificationService.showNotification`.
+        func toMobilePendingNotification() -> MobilePendingNotification {
+            MobilePendingNotification(
+                eventKey: eventKey,
+                category: MobileNotificationCategory.fromWire(category),
+                title: title,
+                body: body,
+                contactId: contactId,
+                deepLinkUri: deepLinkUri,
+                osCategoryId: osCategoryId ?? "",
+                osChannelId: osChannelId ?? "",
+                priority: MobileNotificationPriority.fromWire(priority ?? "default"),
+                osCategoryOptions: osCategoryOptions ?? []
+            )
+        }
+    }
+
+    /// Wire-string helpers for UniFFI notification enums that do not
+    /// conform to `Decodable`.
+    extension MobileNotificationCategory {
+        static func fromWire(_ value: String) -> MobileNotificationCategory {
+            switch value {
+            case "emergency_alert", "EmergencyAlert": return .emergencyAlert
+            case "duress_alert", "DuressAlert": return .duressAlert
+            case "contact_added", "ContactAdded": return .contactAdded
+            case "card_update", "CardUpdate": return .cardUpdate
+            default: return .contactAdded
+            }
+        }
+    }
+
+    extension MobileNotificationPriority {
+        static func fromWire(_ value: String) -> MobileNotificationPriority {
+            switch value {
+            case "urgent", "Urgent": return .urgent
+            case "high", "High": return .high
+            case "default", "Default": return .default
+            default: return .default
+            }
         }
     }
 #endif

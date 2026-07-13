@@ -139,7 +139,7 @@ final class CoreUIComponentTests: XCTestCase {
             id: "fields",
             fields: [],
             visibilityMode: .showHide,
-            availableGroups: []
+            availableScopes: []
         )
         let view = FieldListComponentView(component: component, onAction: noOp)
         assertComponentSnapshot(of: view, record: isRecording)
@@ -169,7 +169,7 @@ final class CoreUIComponentTests: XCTestCase {
                 ),
             ],
             visibilityMode: .showHide,
-            availableGroups: []
+            availableScopes: []
         )
         let view = FieldListComponentView(component: component, onAction: noOp)
         assertComponentSnapshot(of: view, height: 250, record: isRecording)
@@ -185,7 +185,7 @@ final class CoreUIComponentTests: XCTestCase {
                     label: "Email",
                     value: "alice@example.com",
                     icon: "envelope",
-                    visibility: .groups(["Family", "Friends"]),
+                    visibility: .scopes(["Family", "Friends"]),
                     a11y: nil
                 ),
                 Field(
@@ -194,12 +194,12 @@ final class CoreUIComponentTests: XCTestCase {
                     label: "Mobile",
                     value: "+41 79 123 45 67",
                     icon: "phone",
-                    visibility: .groups(["Family"]),
+                    visibility: .scopes(["Family"]),
                     a11y: nil
                 ),
             ],
             visibilityMode: .perGroup,
-            availableGroups: ["Family", "Friends", "Coworkers"]
+            availableScopes: ["Family", "Friends", "Coworkers"]
         )
         let view = FieldListComponentView(component: component, onAction: noOp)
         assertComponentSnapshot(of: view, height: 350, record: isRecording)
@@ -210,7 +210,7 @@ final class CoreUIComponentTests: XCTestCase {
     func testCardPreviewMinimal() {
         let component = PreviewComponent(
             name: "Alice",
-            avatarData: nil,
+            imageData: nil,
             fields: [],
             variants: [],
             selectedVariant: nil
@@ -242,12 +242,12 @@ final class CoreUIComponentTests: XCTestCase {
         ]
         let component = PreviewComponent(
             name: "Alice",
-            avatarData: nil,
+            imageData: nil,
             fields: fields,
             variants: [],
             selectedVariant: nil,
             // Match what core's `build_visible_fields` emits when no group
-            // is selected: every field with `.shown` or `.groups` visibility.
+            // is selected: every field with `.shown` or `.scopes` visibility.
             visibleFields: fields
         )
         let view = PreviewComponentView(component: component, onAction: noOp)
@@ -255,12 +255,12 @@ final class CoreUIComponentTests: XCTestCase {
     }
 
     func testCardPreviewWithGroups() {
-        let groupField = makeTestField(visibility: .groups(["Family", "Friends"]))
+        let groupField = makeTestField(visibility: .scopes(["Family", "Friends"]))
         let shownField = makeTestField(visibility: .shown)
         let fields = [groupField]
         let component = PreviewComponent(
             name: "Alice",
-            avatarData: nil,
+            imageData: nil,
             fields: fields,
             variants: [
                 PreviewVariant(
@@ -275,7 +275,7 @@ final class CoreUIComponentTests: XCTestCase {
                 ),
             ],
             selectedVariant: nil,
-            // Field has `.groups` visibility, so the no-group-selected
+            // Field has `.scopes` visibility, so the no-group-selected
             // path through `build_visible_fields` keeps it.
             visibleFields: fields
         )
@@ -481,9 +481,9 @@ final class CoreUIComponentTests: XCTestCase {
         let component = ListComponent(
             id: "contacts",
             items: [
-                Item(id: "c1", name: "Bob", subtitle: "Last updated 2h ago", avatarInitials: "B", status: nil),
-                Item(id: "c2", name: "Charlie", subtitle: nil, avatarInitials: "C", status: "pending"),
-                Item(id: "c3", name: "Diana", subtitle: "3 fields shared", avatarInitials: "D", status: nil),
+                Item(id: "c1", name: "Bob", subtitle: "Last updated 2h ago", initials: "B", status: nil),
+                Item(id: "c2", name: "Charlie", subtitle: nil, initials: "C", status: "pending"),
+                Item(id: "c3", name: "Diana", subtitle: "3 fields shared", initials: "D", status: nil),
             ],
             searchable: true
         )
@@ -597,7 +597,7 @@ final class CoreUIComponentTests: XCTestCase {
         ]
         let component = PreviewComponent(
             name: "Alice",
-            avatarData: nil,
+            imageData: nil,
             fields: fields,
             variants: [],
             selectedVariant: nil,
