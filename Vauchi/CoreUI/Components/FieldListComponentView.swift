@@ -31,10 +31,7 @@ struct FieldListComponentView: View {
                 }
             }
         }
-        // TODO(HUMBLE): W — uses fields.a11y_contact_fields domain vocabulary
-        // (see _private problem record
-        // 2026-07-06-desktop-tui-web-domain-shell-violations).
-        .accessibilityLabel(component.a11y?.label ?? localizationService.t("fields.a11y_contact_fields"))
+        .accessibilityLabel(component.a11y?.label ?? component.title)
     }
 
     private var emptyState: some View {

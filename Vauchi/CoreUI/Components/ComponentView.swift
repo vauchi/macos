@@ -55,16 +55,6 @@ struct ComponentView: View {
                 onQrScanned: onQrScanned
             )
 
-        case let .confirmationDialog(dialogComponent):
-            ConfirmationDialogComponentView(component: dialogComponent, onAction: onAction)
-
-        case let .showToast(toastComponent):
-            // Toast rendering is handled at the screen level, not inline
-            EmptyView()
-                .onAppear {
-                    print("ComponentView: ShowToast should be handled at screen level: \(toastComponent.message)")
-                }
-
         case let .inlineConfirm(confirmComponent):
             InlineConfirmComponentView(component: confirmComponent, onAction: onAction)
 
@@ -98,11 +88,11 @@ struct ComponentView: View {
                 }
             }
 
+        case let .imageCircle(imageComponent):
+            ImageCircleComponentView(component: imageComponent, onAction: onAction)
+
         case let .slider(sliderComponent):
             SliderComponentView(component: sliderComponent, onAction: onAction)
-
-        case let .imageCircle(imageCircleComponent):
-            ImageCircleComponentView(component: imageCircleComponent, onAction: onAction)
 
         case .divider:
             DividerComponentView()

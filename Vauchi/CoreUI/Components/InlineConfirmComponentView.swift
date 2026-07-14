@@ -24,7 +24,7 @@ struct InlineConfirmComponentView: View {
 
             HStack(spacing: 12) {
                 Button {
-                    onAction(.actionPressed(actionId: "\(component.id):cancel"))
+                    onAction(.actionPressed(actionId: component.cancelActionId))
                 } label: {
                     Text(component.cancelText)
                         .font(.body.weight(.medium))
@@ -38,7 +38,7 @@ struct InlineConfirmComponentView: View {
                 .accessibilityLabel(component.cancelText)
 
                 Button {
-                    onAction(.actionPressed(actionId: "\(component.id):confirm"))
+                    onAction(.actionPressed(actionId: component.confirmActionId))
                 } label: {
                     Text(component.confirmText)
                         .font(.body.weight(.semibold))

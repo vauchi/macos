@@ -1,5 +1,5 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "screen_id": "identity_check",
   "title": "Welcome to Vauchi",
   "subtitle": "Privacy-focused contact cards.",
@@ -132,5 +132,6 @@
       "ring_offset": 2
     }
   },
-  "presentation_kind": "Page"
+  "presentation_kind": "Page",
+  "is_bootstrap": true
 }

@@ -20,7 +20,6 @@ import SwiftUI
 /// - Title and subtitle
 /// - All components via `ComponentView`
 /// - Action buttons at the bottom
-/// - Toast overlay for `ShowToast` components
 ///
 /// User interactions are forwarded via `onAction`.
 struct ScreenRendererView: View {
@@ -30,9 +29,6 @@ struct ScreenRendererView: View {
 
     @Environment(\.designTokens) private var tokens
     @ObservedObject private var localizationService = LocalizationService.shared
-    @State private var toastMessage: String?
-    @State private var toastUndoActionId: String?
-
     var body: some View {
         ZStack(alignment: .top) {
             VStack(spacing: 0) {
@@ -98,58 +94,8 @@ struct ScreenRendererView: View {
                 .padding(.horizontal, 24)
                 .padding(.bottom, 24)
             }
-
-            if let message = toastMessage {
-                ToastOverlayView(
-                    message: message,
-                    undoActionId: toastUndoActionId,
-                    onAction: onAction,
-                    onDismiss: {
-                        withAnimation {
-                            toastMessage = nil
-                            toastUndoActionId = nil
-                        }
-                    }
-                )
-                .transition(.move(edge: .top).combined(with: .opacity))
-                .padding(.top, 8)
-                .padding(.horizontal, 24)
-                .zIndex(100)
-            }
-        }
-        .onChange(of: screen.screenId) { _ in
-            checkForToastComponent()
-        }
-        .onChange(of: screen.components.count) { _ in
-            checkForToastComponent()
-        }
-        .onAppear {
-            checkForToastComponent()
         }
         .environment(\.designTokens, screen.tokens)
-    }
-
-    private func checkForToastComponent() {
-        for component in screen.components {
-            if case let .showToast(toast) = component {
-                let message = toast.message
-                withAnimation {
-                    toastMessage = message
-                    toastUndoActionId = toast.undoActionId
-                }
-                let dismissDelay = Double(toast.durationMs) / 1000.0
-                DispatchQueue.main.asyncAfter(deadline: .now() + dismissDelay) {
-                    // Only dismiss if this is still the same toast
-                    if self.toastMessage == message {
-                        withAnimation {
-                            self.toastMessage = nil
-                            self.toastUndoActionId = nil
-                        }
-                    }
-                }
-                break
-            }
-        }
     }
 }
 
@@ -157,6 +103,7 @@ struct ScreenRendererView: View {
 struct ToastOverlayView: View {
     let message: String
     let undoActionId: String?
+    let undoLabel: String?
     let onAction: (UserAction) -> Void
     let onDismiss: () -> Void
 
@@ -171,8 +118,8 @@ struct ToastOverlayView: View {
                 .foregroundColor(.white)
                 .lineLimit(2)
 
-            if let undoId = undoActionId {
-                Button(localizationService.t("action.undo")) {
+            if let undoId = undoActionId, let undoLabel {
+                Button(undoLabel) {
                     onAction(.undoPressed(actionId: undoId))
                     onDismiss()
                 }

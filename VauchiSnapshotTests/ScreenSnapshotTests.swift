@@ -298,7 +298,8 @@ final class ScreenSnapshotTests: XCTestCase {
                     icon: "checkmark.circle.fill",
                     title: "Card Exchanged",
                     detail: "You and Bob have exchanged contact cards.",
-                    status: .success
+                    status: .success,
+                    statusLabel: "Success"
                 )),
             ],
             actions: [
@@ -366,6 +367,8 @@ final class ScreenSnapshotTests: XCTestCase {
                     warning: "Type DELETE to confirm.",
                     confirmText: "Delete Everything",
                     cancelText: "Cancel",
+                    confirmActionId: "opaque.confirm.wipe",
+                    cancelActionId: "opaque.cancel.wipe",
                     destructive: true
                 )),
             ]

@@ -20,6 +20,7 @@ import UniformTypeIdentifiers
         @Published var alertMessage: AlertMessage?
         @Published var toastMessage: String?
         @Published var toastUndoActionId: String?
+        @Published var toastUndoLabel: String?
         @Published var showDeviceLinkSheet = false
         /// Core-owned top-level sidebar entries. Each element carries
         /// the screen_id (snake_case), a locale-resolved label, the
@@ -277,12 +278,12 @@ import UniformTypeIdentifiers
                 if let nsUrl = URL(string: url) { NSWorkspace.shared.open(nsUrl) }
             case let .showAlert(title, message):
                 alertMessage = AlertMessage(title: title, message: message)
-            case let .showToast(message, undoActionId):
+            case let .showToast(message, undoActionId, undoLabel):
                 // Reload screen — core may have navigated internally
                 // (e.g. archive_contact intercept calls navigate_back()
                 // before returning ShowToast).
                 loadScreen()
-                showToast(message, undoActionId: undoActionId)
+                showToast(message, undoActionId: undoActionId, undoLabel: undoLabel)
             case .requestCamera:
                 // Load the scan screen — it has camera QR scanning with paste fallback
                 loadScreen()
@@ -313,10 +314,16 @@ import UniformTypeIdentifiers
         // MARK: - Toast
 
         /// Show a toast overlay that auto-dismisses after the given duration.
-        func showToast(_ message: String, undoActionId: String? = nil, durationMs: UInt32 = 3000) {
+        func showToast(
+            _ message: String,
+            undoActionId: String? = nil,
+            undoLabel: String? = nil,
+            durationMs: UInt32 = 3000
+        ) {
             withAnimation {
                 toastMessage = message
                 toastUndoActionId = undoActionId
+                toastUndoLabel = undoLabel
             }
             let duration = max(Double(durationMs) / 1000.0, 1.0)
             DispatchQueue.main.asyncAfter(deadline: .now() + duration) { [weak self] in
@@ -324,6 +331,7 @@ import UniformTypeIdentifiers
                 withAnimation {
                     self.toastMessage = nil
                     self.toastUndoActionId = nil
+                    self.toastUndoLabel = nil
                 }
             }
         }

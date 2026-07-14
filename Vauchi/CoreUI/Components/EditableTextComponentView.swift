@@ -15,16 +15,7 @@ struct EditableTextComponentView: View {
     let component: EditableTextComponent
     let onAction: (UserAction) -> Void
 
-    @ObservedObject private var localizationService = LocalizationService.shared
     @EnvironmentObject private var themeService: ThemeService
-
-    // Display<->edit is presentation state the frontend owns (matches the
-    // web-demo renderer); core is never asked to flip `editing` and receives
-    // only the resulting TextChanged. `draft` holds the in-progress text —
-    // the previous `.constant(component.value)` binding was read-only, so
-    // keystrokes were silently discarded.
-    @State private var isEditing = false
-    @State private var draft = ""
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -32,13 +23,27 @@ struct EditableTextComponentView: View {
                 .font(.caption)
                 .foregroundColor(.secondary)
 
-            if isEditing || component.editing {
-                TextField(component.label, text: $draft)
-                    .textFieldStyle(.roundedBorder)
-                    .onChange(of: draft) { _, newValue in
-                        onAction(.textChanged(componentId: component.id, value: newValue))
+            if component.editing {
+                TextField(
+                    component.label,
+                    text: Binding(
+                        get: { component.value },
+                        set: { onAction(.textChanged(componentId: component.id, value: $0)) }
+                    )
+                )
+                .textFieldStyle(.roundedBorder)
+
+                HStack {
+                    Button(component.cancelText) {
+                        onAction(.actionPressed(actionId: component.cancelActionId))
                     }
-                    .onAppear { draft = component.value }
+                    .buttonStyle(.bordered)
+
+                    Button(component.saveText) {
+                        onAction(.actionPressed(actionId: component.saveActionId))
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
 
                 if let error = component.validationError {
                     Text(error)
@@ -53,16 +58,13 @@ struct EditableTextComponentView: View {
                     Spacer()
 
                     Button {
-                        isEditing = true
+                        onAction(.actionPressed(actionId: component.editActionId))
                     } label: {
                         Image(systemName: "pencil")
                             .foregroundColor(themeService.accent)
                     }
                     .buttonStyle(.plain)
-                    .accessibilityLabel(localizationService.t(
-                        "a11y.edit_field",
-                        args: ["label": component.label]
-                    ))
+                    .accessibilityLabel(component.editText)
                 }
             }
         }

@@ -98,7 +98,8 @@ final class AccessibilityTests: XCTestCase {
             icon: "checkmark.circle.fill",
             title: "Exchange Complete",
             detail: "Contact card saved successfully",
-            status: .success
+            status: .success,
+            statusLabel: "Success"
         )
         let view = StatusIndicatorComponentView(component: component)
         assertAccessibilitySnapshot(of: view, height: 120, record: isRecording)
@@ -110,6 +111,8 @@ final class AccessibilityTests: XCTestCase {
             warning: "Are you sure you want to delete this contact?",
             confirmText: "Delete",
             cancelText: "Cancel",
+            confirmActionId: "opaque.confirm.delete",
+            cancelActionId: "opaque.cancel.delete",
             destructive: true
         )
         let view = InlineConfirmComponentView(component: component, onAction: noOp)

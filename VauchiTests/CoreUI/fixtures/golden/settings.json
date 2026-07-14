@@ -1,5 +1,5 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "screen_id": "settings",
   "title": "Settings",
   "subtitle": null,
@@ -70,6 +70,20 @@
             "a11y": {
               "label": "Suppress Presence toggle",
               "hint": "When enabled, hides your online status from contacts",
+              "role": null
+            }
+          },
+          {
+            "id": "new_field_default",
+            "label": "New Entries Start Visible",
+            "kind": {
+              "Toggle": {
+                "enabled": false
+              }
+            },
+            "a11y": {
+              "label": "Toggle whether new contact card entries start visible",
+              "hint": "When on, new contact card entries are shared with all contacts. When off, they stay hidden until you share them.",
               "role": null
             }
           },

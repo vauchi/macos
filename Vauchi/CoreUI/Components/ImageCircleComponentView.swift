@@ -2,29 +2,30 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// Renders an ImageCircle component from core UI (macOS)
-
 import CoreUIModels
 import SwiftUI
 
-/// Renders a core `Component::ImageCircle` as a circular avatar with
-/// optional brightness adjustment. When editable, tapping emits the
-/// core-provided `editActionId`.
+/// Renders core's domain-agnostic `Component::ImageCircle`.
 struct ImageCircleComponentView: View {
     let component: ImageCircleComponent
     let onAction: (UserAction) -> Void
 
     @EnvironmentObject private var themeService: ThemeService
 
+    private var editActionId: String? {
+        guard component.editable else { return nil }
+        return component.editActionId
+    }
+
     var body: some View {
-        let content = circleContent
+        let content = imageContent
             .frame(width: 120, height: 120)
             .clipShape(Circle())
             .brightness(Double(component.brightness))
-            .accessibilityLabel(component.a11y?.label ?? "Avatar: \(component.initials)")
-            .accessibilityHint(component.a11y?.hint ?? (component.editable ? "Tap to edit" : ""))
+            .accessibilityLabel(component.a11y?.label ?? component.initials)
+            .accessibilityHint(component.a11y?.hint ?? "")
 
-        if component.editable, let editActionId = component.editActionId {
+        if let editActionId {
             Button {
                 onAction(.actionPressed(actionId: editActionId))
             } label: {
@@ -38,7 +39,7 @@ struct ImageCircleComponentView: View {
     }
 
     @ViewBuilder
-    private var circleContent: some View {
+    private var imageContent: some View {
         if let imageData = component.imageData,
            let nsImage = NSImage(data: Data(imageData))
         {

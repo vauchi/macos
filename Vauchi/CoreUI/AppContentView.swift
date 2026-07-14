@@ -90,11 +90,13 @@ import SwiftUI
                     ToastOverlayView(
                         message: message,
                         undoActionId: viewModel.toastUndoActionId,
+                        undoLabel: viewModel.toastUndoLabel,
                         onAction: { action in viewModel.handleAction(action) },
                         onDismiss: {
                             withAnimation {
                                 viewModel.toastMessage = nil
                                 viewModel.toastUndoActionId = nil
+                                viewModel.toastUndoLabel = nil
                             }
                         }
                     )

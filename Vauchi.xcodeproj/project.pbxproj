@@ -26,7 +26,6 @@
 		17ACE0E08EFAC15CC31E8DC4 /* help.json in Resources */ = {isa = PBXBuildFile; fileRef = 50561F5946E3F79CA66C0BDE /* help.json */; };
 		18DFBC47BE88310909350859 /* VauchiHardware in Frameworks */ = {isa = PBXBuildFile; productRef = 0AB22D05ABC258D050086FBF /* VauchiHardware */; };
 		1ABCC26C203868ABD7EB9255 /* testCardPreviewDark.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 5A2DFACA328F9C9EBEF5C3A2 /* testCardPreviewDark.1.png */; };
-		1ACE579015129CE4204CAFA8 /* ConfirmationDialogComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC15FD6D223D1A6700601767 /* ConfirmationDialogComponentView.swift */; };
 		1BDCB504628325339F237DBB /* CoreUIComponentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273DE3DDCB1F1D595DEF1B92 /* CoreUIComponentTests.swift */; };
 		210728BC90BEA9A5F3360DDF /* testExchangeShowQrScreen.1.png in Resources */ = {isa = PBXBuildFile; fileRef = EF0789970BCC03D30F84E3D6 /* testExchangeShowQrScreen.1.png */; };
 		212AB32D3E869C855E9C8B39 /* testInfoPanelDark.1.png in Resources */ = {isa = PBXBuildFile; fileRef = D6E1FE2EE5B0C2CC821F5397 /* testInfoPanelDark.1.png */; };
@@ -63,6 +62,7 @@
 		51F789E9AED63A62D45C4539 /* skip_gate.json in Resources */ = {isa = PBXBuildFile; fileRef = EE2F2878EEA849795B242248 /* skip_gate.json */; };
 		52DC12F76B99B041E9446B00 /* testEditableTextEditing.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B4F37ED41BEFBB54770AB27 /* testEditableTextEditing.1.png */; };
 		566C2C33F23B683B8CB8226F /* DeviceCapabilitiesPusherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 653B68CB3B3D86B13D52E63E /* DeviceCapabilitiesPusherTests.swift */; };
+		56D435261071600F426F3ABE /* ImageCircleComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D43F20C31ED5CC6144EF6A27 /* ImageCircleComponentView.swift */; };
 		59AD4D4BBA7C8F368C95B7CE /* link_choice.json in Resources */ = {isa = PBXBuildFile; fileRef = 852C63EED95011422DDDDB76 /* link_choice.json */; };
 		5D2702086C792C92874D64EF /* testWipeConfirmScreen.1.png in Resources */ = {isa = PBXBuildFile; fileRef = AA5DDD4269C94CD90ACEF692 /* testWipeConfirmScreen.1.png */; };
 		5DA3EA7403695F0525D83C16 /* testStatusIndicatorSuccess.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C58EE1A7DE8486716704A8C /* testStatusIndicatorSuccess.1.png */; };
@@ -325,7 +325,6 @@
 		A9B2E4869C364BD948FF569E /* backup_choose.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = backup_choose.json; sourceTree = "<group>"; };
 		AA16E627E566CF0467CBDC18 /* SmokeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmokeTests.swift; sourceTree = "<group>"; };
 		AA5DDD4269C94CD90ACEF692 /* testWipeConfirmScreen.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testWipeConfirmScreen.1.png; sourceTree = "<group>"; };
-		AC15FD6D223D1A6700601767 /* ConfirmationDialogComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmationDialogComponentView.swift; sourceTree = "<group>"; };
 		ACA09646545409433783D687 /* testContactsScreenEmpty.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testContactsScreenEmpty.1.png; sourceTree = "<group>"; };
 		AF0F088CC55F4D96F34D113B /* testStatusIndicatorFailed.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testStatusIndicatorFailed.1.png; sourceTree = "<group>"; };
 		AF2AD205AD1B75A514B7C2D9 /* identity_check.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = identity_check.json; sourceTree = "<group>"; };
@@ -343,6 +342,7 @@
 		CC0264A403A8FF8004269E87 /* testTextInputPassword.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testTextInputPassword.1.png; sourceTree = "<group>"; };
 		CDAC67C5337AAC5560D74DDD /* BannerComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerComponentView.swift; sourceTree = "<group>"; };
 		D27024D23B51068555626E23 /* Am2aBooleanRetirementMacOSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Am2aBooleanRetirementMacOSTests.swift; sourceTree = "<group>"; };
+		D43F20C31ED5CC6144EF6A27 /* ImageCircleComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCircleComponentView.swift; sourceTree = "<group>"; };
 		D51F85BE507FC3741AFF9FE2 /* testExchangeShowQrDark.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testExchangeShowQrDark.1.png; sourceTree = "<group>"; };
 		D591A9D83EA84F2E2EBCE827 /* testTextComponentTitle.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testTextComponentTitle.1.png; sourceTree = "<group>"; };
 		D618628DDEAEBAD0CE3FB0EC /* testActionButtonEnabledAccessibility.1.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = testActionButtonEnabledAccessibility.1.txt; sourceTree = "<group>"; };
@@ -627,9 +627,9 @@
 			isa = PBXGroup;
 			children = (
 				517370E68C1DA4C66CD5E3BA /* ActionListComponentView.swift */,
+				D43F20C31ED5CC6144EF6A27 /* ImageCircleComponentView.swift */,
 				CDAC67C5337AAC5560D74DDD /* BannerComponentView.swift */,
 				EA272578E81247FB65A5C145 /* ComponentView.swift */,
-				AC15FD6D223D1A6700601767 /* ConfirmationDialogComponentView.swift */,
 				9764FE7904C8B94F71A1858D /* DividerComponentView.swift */,
 				C94ADCE25F16385A5CE1F62D /* DropdownComponentView.swift */,
 				98DF34CD2C6C3C8226D07C0B /* EditableTextComponentView.swift */,
@@ -988,11 +988,11 @@
 				A9453CE67AC4031A9DA729EE /* AppState.swift in Sources */,
 				ADB778BBA40707BAD3F8B21A /* AppViewModel.swift in Sources */,
 				D65905F3E8A6B191F4611470 /* AudioProximityService.swift in Sources */,
+				56D435261071600F426F3ABE /* ImageCircleComponentView.swift in Sources */,
 				E1D1F36025544FD43BEEEB83 /* BannerComponentView.swift in Sources */,
 				D53ADA09532F5A59A7BF3D75 /* BiometricService.swift in Sources */,
 				EC30F92B5A66058CF9972C27 /* BleExchangeService.swift in Sources */,
 				8F1D5438434B846475597477 /* ComponentView.swift in Sources */,
-				1ACE579015129CE4204CAFA8 /* ConfirmationDialogComponentView.swift in Sources */,
 				45685E44E7BFD33F3E76E4FC /* CoreSceneView.swift in Sources */,
 				E86EA35921647177C60EB7B2 /* CoreSheetView.swift in Sources */,
 				4389AD09A1FCCD8661B98FE6 /* DeviceCapabilitiesPusher.swift in Sources */,

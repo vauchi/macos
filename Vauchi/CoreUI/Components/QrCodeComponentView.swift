@@ -14,8 +14,6 @@ struct QrCodeComponentView: View {
     var onQrScanned: ((String) -> Void)?
 
     @Environment(\.designTokens) private var tokens
-    @ObservedObject private var localizationService = LocalizationService.shared
-
     var body: some View {
         VStack(spacing: 16) {
             switch component.mode {
@@ -44,7 +42,7 @@ struct QrCodeComponentView: View {
         .background(Color(nsColor: .controlBackgroundColor))
         .cornerRadius(CGFloat(tokens.borderRadius.mdLg))
         .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
-        .accessibilityLabel(component.a11y?.label ?? component.label ?? localizationService.t("qr.a11y_label"))
+        .accessibilityLabel(component.a11y?.label ?? component.label ?? "")
         .accessibilityHint(component.a11y?.hint ?? "")
     }
 
@@ -56,11 +54,11 @@ struct QrCodeComponentView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(maxWidth: 250, maxHeight: 250)
-                .accessibilityLabel(localizationService.t("qr.a11y_label"))
+                .accessibilityLabel(component.a11y?.label ?? component.label ?? "")
         } else {
-            Text(localizationService.t("qr.failed_to_generate"))
-                .font(.caption)
+            Image(systemName: "exclamationmark.triangle.fill")
                 .foregroundColor(.secondary)
+                .accessibilityLabel(component.a11y?.label ?? component.label ?? "")
         }
     }
 
