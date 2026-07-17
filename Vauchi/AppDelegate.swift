@@ -9,12 +9,24 @@
 import AppKit
 import Foundation
 
+#if canImport(VauchiPlatform)
+    import VauchiPlatform
+#endif
+
 /// App delegate for macOS-specific lifecycle hooks (menu bar, system tray).
 class AppDelegate: NSObject, NSApplicationDelegate {
     let systemTrayManager = SystemTrayManager()
     let menuBarManager = MenuBarManager()
 
     func applicationDidFinishLaunching(_: Notification) {
+        // Before anything else: BLE/exchange/sync log::warn!/error! calls
+        // in vauchi-app are silent until this installs the os_log backend
+        // (2026-06-08-magic-audio-proximity-driver deferred this
+        // permanent version).
+        #if canImport(VauchiPlatform)
+            initMobileLogging()
+        #endif
+
         ScreenCaptureProtection.enable()
         systemTrayManager.setup()
         menuBarManager.setupMenuBar()
