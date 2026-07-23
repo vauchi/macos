@@ -206,7 +206,10 @@ extension BleExchangeService: CBCentralManagerDelegate {
     }
 
     func centralManager(_: CBCentralManager, didConnect peripheral: CBPeripheral) {
-        eventCallback?(.bleConnected(deviceId: peripheral.identifier.uuidString))
+        eventCallback?(.bleConnected(
+            deviceId: peripheral.identifier.uuidString,
+            direction: .outbound
+        ))
         peripheral.discoverServices(nil)
     }
 
@@ -373,7 +376,10 @@ extension BleExchangeService: CBPeripheralManagerDelegate {
     ) {
         guard let gatt = gattCharacteristic, characteristic.uuid == gatt.uuid else { return }
         subscribedCentrals.append(central)
-        eventCallback?(.bleConnected(deviceId: central.identifier.uuidString))
+        eventCallback?(.bleConnected(
+            deviceId: central.identifier.uuidString,
+            direction: .inbound
+        ))
     }
 
     func peripheralManager(
