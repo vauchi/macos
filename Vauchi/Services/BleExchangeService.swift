@@ -220,8 +220,11 @@ extension BleExchangeService: CBCentralManagerDelegate {
         ))
     }
 
-    func centralManager(_: CBCentralManager, didDisconnectPeripheral _: CBPeripheral, error: Error?) {
-        eventCallback?(.bleDisconnected(reason: error?.localizedDescription ?? "disconnected"))
+    func centralManager(_: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
+        eventCallback?(.bleDisconnected(
+            deviceId: peripheral.identifier.uuidString, direction: .outbound,
+            reason: error?.localizedDescription ?? "disconnected"
+        ))
         cleanup()
     }
 }
@@ -262,14 +265,19 @@ extension BleExchangeService: CBPeripheralDelegate {
         }
     }
 
-    func peripheral(_: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
+    func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
         guard error == nil, let value = characteristic.value else { return }
         let uuid = characteristic.uuid.uuidString.lowercased()
+        let deviceId = peripheral.identifier.uuidString
 
         if characteristic.isNotifying {
-            eventCallback?(.bleCharacteristicNotified(uuid: uuid, data: value))
+            eventCallback?(.bleCharacteristicNotified(
+                deviceId: deviceId, direction: .outbound, uuid: uuid, data: value
+            ))
         } else {
-            eventCallback?(.bleCharacteristicRead(uuid: uuid, data: value))
+            eventCallback?(.bleCharacteristicRead(
+                deviceId: deviceId, direction: .outbound, uuid: uuid, data: value
+            ))
         }
     }
 
@@ -366,7 +374,10 @@ extension BleExchangeService: CBPeripheralManagerDelegate {
             peripheralManager?.respond(to: request, withResult: .success)
 
             let uuid = characteristic.uuid.uuidString.lowercased()
-            eventCallback?(.bleCharacteristicNotified(uuid: uuid, data: data))
+            eventCallback?(.bleCharacteristicNotified(
+                deviceId: request.central.identifier.uuidString, direction: .inbound,
+                uuid: uuid, data: data
+            ))
         }
     }
 
@@ -388,6 +399,9 @@ extension BleExchangeService: CBPeripheralManagerDelegate {
     ) {
         guard let gatt = gattCharacteristic, characteristic.uuid == gatt.uuid else { return }
         subscribedCentrals.removeAll { $0.identifier == central.identifier }
-        eventCallback?(.bleDisconnected(reason: "central unsubscribed"))
+        eventCallback?(.bleDisconnected(
+            deviceId: central.identifier.uuidString, direction: .inbound,
+            reason: "central unsubscribed"
+        ))
     }
 }
