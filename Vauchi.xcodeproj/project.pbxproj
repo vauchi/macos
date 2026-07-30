@@ -8,148 +8,82 @@
 
 /* Begin PBXBuildFile section */
 		005213318097B2B07D0DC261 /* groups_setup.json in Resources */ = {isa = PBXBuildFile; fileRef = 5C08923CE347C900704BB61D /* groups_setup.json */; };
-		026DB000674E288B730DC91E /* testSettingsGroupAccessibility.1.txt in Resources */ = {isa = PBXBuildFile; fileRef = B105C9E0FF90D826631320D7 /* testSettingsGroupAccessibility.1.txt */; };
-		02A162826FF93F15BB8C9E35 /* testToggleListDefault.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 0ED4420CCDFCB527415741E4 /* testToggleListDefault.1.png */; };
-		0378355005A83E0E4F086ED9 /* testFieldListEmpty.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 74400BE90CD802A95312C01B /* testFieldListEmpty.1.png */; };
 		061330DA32957211240D0384 /* default_name.json in Resources */ = {isa = PBXBuildFile; fileRef = 2A73AC43BC305CE2DFADE313 /* default_name.json */; };
 		072615DEAAD0650CF34C6B6E /* PlaceholderContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 234E756E782635B9AF9132F3 /* PlaceholderContentView.swift */; };
-		0BF3BAD91800C40DD1EE0501 /* testToggleListDark.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 04898F36EF605FB293E24A7A /* testToggleListDark.1.png */; };
 		0FFD629BBC8B0715F130EB94 /* device_link_instructions.json in Resources */ = {isa = PBXBuildFile; fileRef = DEFE11572512A14B0F37D7BA /* device_link_instructions.json */; };
 		10D1448B9D41C32DDB95835C /* StateViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A06CC40359E668FF6C58451 /* StateViews.swift */; };
-		12582E8F80C463B7C877A8A9 /* testFieldListPerGroup.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 03E71A86E87D901D3FF80D72 /* testFieldListPerGroup.1.png */; };
-		12BC56BA1BF270125C3DADB6 /* testTextInputAccessibility.1.txt in Resources */ = {isa = PBXBuildFile; fileRef = 677E67E216D48E378A773CD8 /* testTextInputAccessibility.1.txt */; };
 		138BEFDCC908871EDE97D333 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDB1CEDFBA5AE37F12D5BE39 /* NotificationService.swift */; };
-		13C034F74BC375883A7F5751 /* testContactsScreenWithContacts.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 9B2136E121C827A50A107948 /* testContactsScreenWithContacts.1.png */; };
 		14F136822861093402A2A51D /* RenderContextPusher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A594A2A3929ED3F36E46FBD /* RenderContextPusher.swift */; };
 		17ACE0E08EFAC15CC31E8DC4 /* help.json in Resources */ = {isa = PBXBuildFile; fileRef = 50561F5946E3F79CA66C0BDE /* help.json */; };
 		18DFBC47BE88310909350859 /* VauchiHardware in Frameworks */ = {isa = PBXBuildFile; productRef = 0AB22D05ABC258D050086FBF /* VauchiHardware */; };
-		1ABCC26C203868ABD7EB9255 /* testCardPreviewDark.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 5A2DFACA328F9C9EBEF5C3A2 /* testCardPreviewDark.1.png */; };
-		210728BC90BEA9A5F3360DDF /* testExchangeShowQrScreen.1.png in Resources */ = {isa = PBXBuildFile; fileRef = EF0789970BCC03D30F84E3D6 /* testExchangeShowQrScreen.1.png */; };
-		212AB32D3E869C855E9C8B39 /* testInfoPanelDark.1.png in Resources */ = {isa = PBXBuildFile; fileRef = D6E1FE2EE5B0C2CC821F5397 /* testInfoPanelDark.1.png */; };
-		2183BF09BDD4F4226A01DA1B /* testStatusIndicatorAccessibility.1.txt in Resources */ = {isa = PBXBuildFile; fileRef = 444EB6E932C6BF9631AEE4D3 /* testStatusIndicatorAccessibility.1.txt */; };
 		2591B2C7493F02EE16A70906 /* duress_overview.json in Resources */ = {isa = PBXBuildFile; fileRef = A145FAE191703FB7CE06A212 /* duress_overview.json */; };
-		25F92258277228332EE69BEE /* testEditableTextDisplay.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 6A4D772FACC8B2FEB3D60DA8 /* testEditableTextDisplay.1.png */; };
 		28ABEAE77D5BC15063202DCC /* PresentationEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F0B112148ABCC1933D659A4 /* PresentationEvent.swift */; };
-		2C996CD80C42DEDB7C30B91E /* testContactsScreenDark.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 334AA464FB30E416B9A73537 /* testContactsScreenDark.1.png */; };
 		2D0728F99D4DBB3C8491C25B /* ThemeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CF989EA84DBE8A9F43E05D /* ThemeService.swift */; };
 		2D46271A4B586388DDF2A5A9 /* contact_list.json in Resources */ = {isa = PBXBuildFile; fileRef = 640EF3CDE75D016F2437C111 /* contact_list.json */; };
 		2F7D817E60BDE6223F5E0484 /* VauchiApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71E5FB136BF29B1F9D9B7F04 /* VauchiApp.swift */; };
 		2F880F6CCE185990EACF77B9 /* identity_check.json in Resources */ = {isa = PBXBuildFile; fileRef = AF2AD205AD1B75A514B7C2D9 /* identity_check.json */; };
 		3202529BECD6DFEEB2B2BECF /* ScreenCaptureProtection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40B52514F7B6CC866BDD778D /* ScreenCaptureProtection.swift */; };
-		32FBE38BDB7CA389EEDAD910 /* testStatusIndicatorDark.1.png in Resources */ = {isa = PBXBuildFile; fileRef = FA5DBF1C3713F1E055BA292C /* testStatusIndicatorDark.1.png */; };
 		37B0045C32255AE32005F23B /* PresentationNodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7944347EE6E209E80A5CF30 /* PresentationNodeView.swift */; };
 		3D1CBC0C00C370BCFAA0D7A8 /* NotificationServiceDeepLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C515EE1804FDB78832CA0D /* NotificationServiceDeepLinkTests.swift */; };
 		3EB480ED2753884CE2DBA982 /* contact_limit.json in Resources */ = {isa = PBXBuildFile; fileRef = C1F55713677327E69AF771F8 /* contact_limit.json */; };
 		3FEEF96814D965F74AD0A42D /* PresentationHostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A437D369672857F52C06E24 /* PresentationHostView.swift */; };
-		4235EDCB7DC3862C3F48F194 /* testInfoPanelWithIcon.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 1A85B8272FE7B284D215644A /* testInfoPanelWithIcon.1.png */; };
 		42E8C0D44725B88DB18845CB /* LocationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC20FCD1651B95E823A06410 /* LocationServiceTests.swift */; };
-		431503ADA7BCDB0CA94FBDEE /* testWelcomeScreen.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 962C13D56F463655E00BA233 /* testWelcomeScreen.1.png */; };
-		43631E8778F64B024498C964 /* testTextComponentBody.1.png in Resources */ = {isa = PBXBuildFile; fileRef = BF21CF300C61D81BBA57F040 /* testTextComponentBody.1.png */; };
 		4389AD09A1FCCD8661B98FE6 /* DeviceCapabilitiesPusher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A01546D222F8024BB3E0009 /* DeviceCapabilitiesPusher.swift */; };
 		43C1CA8B82165DF3F5841401 /* privacy_settings.json in Resources */ = {isa = PBXBuildFile; fileRef = FC65E03A5DC0CF895251666C /* privacy_settings.json */; };
-		448378F56DA9D463363E5A7C /* testActionButtonDisabledAccessibility.1.txt in Resources */ = {isa = PBXBuildFile; fileRef = 7661570C00E05D693455F344 /* testActionButtonDisabledAccessibility.1.txt */; };
 		45EB912C9310E6DC89131A5F /* ContextCommandBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24602CA31C0CE84313D9F229 /* ContextCommandBarView.swift */; };
-		45EDBC6D5526AD94E96F8033 /* testHomeScreenDark.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 07158D127A67F8535723755C /* testHomeScreenDark.1.png */; };
-		4718BCB4E146E4166FA5C099 /* testTextComponentSubtitle.1.png in Resources */ = {isa = PBXBuildFile; fileRef = A3A0DA0F1F9BF466F1D07D6E /* testTextComponentSubtitle.1.png */; };
 		478EA49E96D2582348C820EC /* settings.json in Resources */ = {isa = PBXBuildFile; fileRef = 8C92250DB74883B6DE9A0792 /* settings.json */; };
 		47C1E3ED0F5525C7C0B866F2 /* PresentationSurfaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49B374973D50CCCC7F0EF6DA /* PresentationSurfaceView.swift */; };
-		4C83DCE0B4528CD31E112988 /* testTextInputEmpty.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 8D3CA9B99F37140B17344FDB /* testTextInputEmpty.1.png */; };
 		4EAEBFCF75EC10C4B544735E /* PresentationNodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB75683BE92B1B2E80EF559D /* PresentationNodes.swift */; };
-		513D9801820C9578CAF7C97C /* testTextComponentCaption.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 4F819ABA85249C6394AE116A /* testTextComponentCaption.1.png */; };
-		52DC12F76B99B041E9446B00 /* testEditableTextEditing.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B4F37ED41BEFBB54770AB27 /* testEditableTextEditing.1.png */; };
 		566C2C33F23B683B8CB8226F /* DeviceCapabilitiesPusherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 653B68CB3B3D86B13D52E63E /* DeviceCapabilitiesPusherTests.swift */; };
 		589B61CEF67EA8B5B38933F4 /* PresentationPrimitives.swift in Sources */ = {isa = PBXBuildFile; fileRef = 007F08BF348F3C0C5BA74B92 /* PresentationPrimitives.swift */; };
-		5D2702086C792C92874D64EF /* testWipeConfirmScreen.1.png in Resources */ = {isa = PBXBuildFile; fileRef = AA5DDD4269C94CD90ACEF692 /* testWipeConfirmScreen.1.png */; };
-		5DA3EA7403695F0525D83C16 /* testStatusIndicatorSuccess.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C58EE1A7DE8486716704A8C /* testStatusIndicatorSuccess.1.png */; };
 		60021558675886238772EAF6 /* home_empty.json in Resources */ = {isa = PBXBuildFile; fileRef = A75DABB058471CE8E0587E20 /* home_empty.json */; };
 		60D8E07B9EFB1F102D7518A0 /* ThemeServiceSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BF7BC594414EE931756CE54 /* ThemeServiceSettingsTests.swift */; };
-		652D44BD2148FA55AA835812 /* testInfoPanelSingleItem.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C9F616A82E64818C7D1BEB4 /* testInfoPanelSingleItem.1.png */; };
-		675C6A3151B41B2B192C9A38 /* testSettingsScreenDark.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 609B02226C8115A54FBEFAB5 /* testSettingsScreenDark.1.png */; };
 		681DD8495C7A92ACA59606DE /* archived_contacts.json in Resources */ = {isa = PBXBuildFile; fileRef = 719D658EA486E5CCB963F46E /* archived_contacts.json */; };
-		6B4BCD6611BD2A2CF4C3C116 /* testContactsScreenEmpty.1.png in Resources */ = {isa = PBXBuildFile; fileRef = ACA09646545409433783D687 /* testContactsScreenEmpty.1.png */; };
 		6E92A916EC67234553ED4D85 /* LocalizationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C859B6215BADD6A45480D9F /* LocalizationService.swift */; };
 		6FBFE80D49835D23A8DF1034 /* CoreUIModels in Frameworks */ = {isa = PBXBuildFile; productRef = B2C60C8C920018E8C7CF99BE /* CoreUIModels */; };
-		72989B5EB5FC96F172CB1C49 /* testAddFieldsScreen.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 22CBF2E4029854CB3051D98A /* testAddFieldsScreen.1.png */; };
 		750231F789BE3B2634B7B5FD /* PresentationStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFFE40C221022DBDBD034AF3 /* PresentationStateTests.swift */; };
 		755BA76BEB53C92E9D8CF9AB /* what_next.json in Resources */ = {isa = PBXBuildFile; fileRef = 01D43AF714F7FE26DB36D5DD /* what_next.json */; };
-		7596A973F4CBE39E516B5EBF /* testSettingsScreen.1.png in Resources */ = {isa = PBXBuildFile; fileRef = EBA2E942944A9B0DF10E7D44 /* testSettingsScreen.1.png */; };
 		7772D1C511B50A9433DC27DA /* change_password.json in Resources */ = {isa = PBXBuildFile; fileRef = 6FB831346BC8B7B4A94748FD /* change_password.json */; };
 		78DEE11DBBB312E894650FBF /* LocalizationServiceSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812EEE5AF140DB98855AF442 /* LocalizationServiceSettingsTests.swift */; };
-		7C752A3331298ADB01A6DDF9 /* testCardPreviewWithGroups.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F9346F7C59019E0E90B13BF /* testCardPreviewWithGroups.1.png */; };
-		7DD186FEB97D2385E15B8293 /* testInlineConfirmDestructive.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 6994C561A843EE3A785246A5 /* testInlineConfirmDestructive.1.png */; };
-		86B371D3BFB2EDE95D642173 /* testStatusIndicatorFailed.1.png in Resources */ = {isa = PBXBuildFile; fileRef = AF0F088CC55F4D96F34D113B /* testStatusIndicatorFailed.1.png */; };
 		8CD4D48FC7E49B0DA82AD497 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B31DFE6F23CEA01F0437957B /* KeychainService.swift */; };
-		8EAFADC7FD9B053DE04551E5 /* testTextInputDark.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 74945D0AD48A22730D842AA2 /* testTextInputDark.1.png */; };
-		904F29C70542F6760875A1A8 /* testTextComponentTitle.1.png in Resources */ = {isa = PBXBuildFile; fileRef = D591A9D83EA84F2E2EBCE827 /* testTextComponentTitle.1.png */; };
 		92298947313F6DDD98944A43 /* contact_edit_visibility.json in Resources */ = {isa = PBXBuildFile; fileRef = 66948B6E4E0E10C56A794B44 /* contact_edit_visibility.json */; };
 		95059CD23364AD90FB35ACCB /* more.json in Resources */ = {isa = PBXBuildFile; fileRef = 8809B0BDF71D796688C38250 /* more.json */; };
 		99944BA751677899052C05DA /* WakeupTimerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE2CCF76CCD81A822601D43D /* WakeupTimerTests.swift */; };
-		9B0047F7A798FE0F300562CC /* testInlineConfirmDark.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 23946ECA0684070AFB40D2FA /* testInlineConfirmDark.1.png */; };
-		9B37E421D497D0041517566A /* testDivider.1.png in Resources */ = {isa = PBXBuildFile; fileRef = EE36127CE5C1D4AC425BF1D5 /* testDivider.1.png */; };
 		9C9A5E8876CAFA84118E8DBF /* LockScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 644F12D83413B334E234F4AC /* LockScreenView.swift */; };
 		9CA8DD6871E91F814D81FED6 /* LocalizationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FBC9B875F77F7D59BA26DC7 /* LocalizationServiceTests.swift */; };
-		9CF23C4022ADB5366AD67245 /* testActionButtonEnabledAccessibility.1.txt in Resources */ = {isa = PBXBuildFile; fileRef = D618628DDEAEBAD0CE3FB0EC /* testActionButtonEnabledAccessibility.1.txt */; };
 		9D3AA48B67B4BBCBFBA6A33C /* ContentUpdateCycleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C42CA0EEF4243C65EE1FDAF /* ContentUpdateCycleTests.swift */; };
 		A20441612CDA08A586DADCC0 /* DirectSendService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A701A0C348B6758EED1D949 /* DirectSendService.swift */; };
-		A2C2F1EA2AE9566A3880EA6E /* testCreateIdentityScreen.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 7DE23F7F336DC77627DE3D0E /* testCreateIdentityScreen.1.png */; };
-		A31D3B2C12974FDE021C599E /* testWelcomeScreenDark.1.png in Resources */ = {isa = PBXBuildFile; fileRef = A96F7230AD994FA18A53A544 /* testWelcomeScreenDark.1.png */; };
-		A387A34BD2E5E95169ADB6B7 /* testCardPreviewWithFields.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 011D4844DB2996A933073BC0 /* testCardPreviewWithFields.1.png */; };
-		A3EBC8A0E02A1F7518211E81 /* testHomeScreenWithFields.1.png in Resources */ = {isa = PBXBuildFile; fileRef = EB02FA7773C641BA05A1BF79 /* testHomeScreenWithFields.1.png */; };
-		A3F2970F6C5C9A67FDB86A9A /* testSettingsGroup.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 91A78E60553610F7E79BD51C /* testSettingsGroup.1.png */; };
-		A417B542159AB8BB11E7B7DD /* testExchangeSuccessScreen.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 5F315425F795BD9D8DB6CCA1 /* testExchangeSuccessScreen.1.png */; };
 		A9144CF4AB6167C5D8DEB9E1 /* delivery_status.json in Resources */ = {isa = PBXBuildFile; fileRef = 3FF0727A90972B41385E4C9B /* delivery_status.json */; };
 		A9453CE67AC4031A9DA729EE /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95FC0B5B9D3918ADE8F9FF31 /* AppState.swift */; };
-		AC5905716421EF0493923556 /* testExchangeShowQrDark.1.png in Resources */ = {isa = PBXBuildFile; fileRef = D51F85BE507FC3741AFF9FE2 /* testExchangeShowQrDark.1.png */; };
 		AC9349C352911F4679B8948F /* PresentationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B834D827B063CB9F17CFA86 /* PresentationState.swift */; };
 		ACB5D66C9DC53BB3DEC7044E /* VauchiKeychainBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE32C32136CEB8811C89778C /* VauchiKeychainBridgeTests.swift */; };
-		AD3A83D552E25C7A50441AE1 /* testHomeScreenEmpty.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C33C5B250ED22834663E64B /* testHomeScreenEmpty.1.png */; };
 		ADB778BBA40707BAD3F8B21A /* AppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554291CB7224022A54BC954F /* AppViewModel.swift */; };
 		AE6ED32C72587A0283C520D2 /* VauchiRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95373D9E6440FED4B532EBDD /* VauchiRepository.swift */; };
-		B222B3B7B7404F7BDF034ECF /* testToggleListAllSelected.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 7BDCD05EC305C6B51CC0DF9E /* testToggleListAllSelected.1.png */; };
-		BB6505CC618DB35AC542A1AB /* testTextInputWithValue.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 0314EC94F504540A5BF02139 /* testTextInputWithValue.1.png */; };
 		BF2293836C1D7191166FCE07 /* AppContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E5799FBB45272E5CCF4CEED /* AppContentView.swift */; };
-		C02CAD8B0F82B366CD4428D4 /* testSettingsGroupDark.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 3CCDAF85FAFC1F03E0E5EF5D /* testSettingsGroupDark.1.png */; };
 		C041D751F823A021E52DA876 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331706A539BC8824C9067EF5 /* AppDelegate.swift */; };
-		C0AB5B4A5DA1F0977B52C55E /* testEditableTextWithError.1.png in Resources */ = {isa = PBXBuildFile; fileRef = EA5E442564907FA7A15240F0 /* testEditableTextWithError.1.png */; };
-		C122C622C69B289031EB8186 /* testActionList.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F8C1DD1586172CF870953F9 /* testActionList.1.png */; };
 		C2BF1FC510A65D73DD722C95 /* VauchiPlatform in Frameworks */ = {isa = PBXBuildFile; productRef = BE415B866BE8E26F05791810 /* VauchiPlatform */; };
 		C48401965743DD70C01F2F95 /* SystemTrayManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5438036805D34A0588FAE1C3 /* SystemTrayManager.swift */; };
 		C75EB92B4999209BD75CCBD3 /* PresentationSmokeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAEF5BAE3E1BDBC31DED21D2 /* PresentationSmokeTests.swift */; };
-		C8BAE6814208A1BBB189E5C8 /* testInlineConfirmNonDestructive.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 388BCB8B838F2D5C9858C087 /* testInlineConfirmNonDestructive.1.png */; };
 		C8C4DCDB890AEB912C9440F3 /* PresentationOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F9A4DAC6D203C61E58BF054 /* PresentationOverlayView.swift */; };
-		D03CDFB9D57985CBD50D9C98 /* testTextInputWithValidationError.1.png in Resources */ = {isa = PBXBuildFile; fileRef = E31A56C292E9073A8A07BAF0 /* testTextInputWithValidationError.1.png */; };
-		D334DA4F74B2FD458729763E /* testCardPreviewMinimal.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 79B16A2E56FA9B8FA0C9F628 /* testCardPreviewMinimal.1.png */; };
 		D4B02C10C1D54ACAFCD61E42 /* set_password.json in Resources */ = {isa = PBXBuildFile; fileRef = C95EBFF60D170C179E3DB61F /* set_password.json */; };
-		D51F9490703B77CD5FC79AB5 /* testInfoPanelAccessibility.1.txt in Resources */ = {isa = PBXBuildFile; fileRef = B5C3AC067DAD006C8E3956CA /* testInfoPanelAccessibility.1.txt */; };
 		D53ADA09532F5A59A7BF3D75 /* BiometricService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F9D4D1B77DDD1226B84C5C /* BiometricService.swift */; };
-		D585242288C2785DC2A788B6 /* testTextInputWithErrorAccessibility.1.txt in Resources */ = {isa = PBXBuildFile; fileRef = 549D880176A65B3914B77EAC /* testTextInputWithErrorAccessibility.1.txt */; };
 		D65905F3E8A6B191F4611470 /* AudioProximityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49509AE0DF70B880F977B015 /* AudioProximityService.swift */; };
-		D75D5C3AB0DED61B6D4FA056 /* testTextInputPassword.1.png in Resources */ = {isa = PBXBuildFile; fileRef = CC0264A403A8FF8004269E87 /* testTextInputPassword.1.png */; };
-		D760BC32033DC33902E254D8 /* testContactListAccessibility.1.txt in Resources */ = {isa = PBXBuildFile; fileRef = 55B70A19F1E750FF86294C16 /* testContactListAccessibility.1.txt */; };
 		D82762676BDCD473E65FA5CA /* backup_choose.json in Resources */ = {isa = PBXBuildFile; fileRef = A9B2E4869C364BD948FF569E /* backup_choose.json */; };
 		DA11CA91FA50658BC8E1A3A7 /* device_linking.json in Resources */ = {isa = PBXBuildFile; fileRef = 8CD3FC943884B00F74F1EA32 /* device_linking.json */; };
 		DA673F09635BBBF9871092A8 /* VauchiUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773C796EDEEFF9B928C04229 /* VauchiUITests.swift */; };
 		DAA7E3E65B458C1A5E235354 /* lock_screen.json in Resources */ = {isa = PBXBuildFile; fileRef = 2802DD443EEBA48D15EAF359 /* lock_screen.json */; };
 		DB6A58ECD9CC3C501D1CF697 /* delivery_empty.json in Resources */ = {isa = PBXBuildFile; fileRef = 3E7B642257C4005F82A40BCF /* delivery_empty.json */; };
 		DCB3E583D86FF3A15C6BE915 /* PlatformAppEngine+DomainDispatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8809B70A6BEDF6B35461415B /* PlatformAppEngine+DomainDispatch.swift */; };
-		DEE606B56ADE8E72560BF538 /* testTextInputEmailType.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 21E325007F4C69CC6F55675D /* testTextInputEmailType.1.png */; };
-		E0642E4014C2147EBDC4FFF3 /* testContactListWithContacts.1.png in Resources */ = {isa = PBXBuildFile; fileRef = EDE8371E9A0D88B92DA2E683 /* testContactListWithContacts.1.png */; };
 		E48B85C4088FE7CA877DAB25 /* contact_edit_fields.json in Resources */ = {isa = PBXBuildFile; fileRef = 07F69D47DBE79635FE185938 /* contact_edit_fields.json */; };
 		E544D67D5C73DC535A0D4F68 /* contact_edit_preview.json in Resources */ = {isa = PBXBuildFile; fileRef = C29DE27FD4421553D034E37A /* contact_edit_preview.json */; };
 		E5E3CB99966C49B90D004159 /* emergency_shred.json in Resources */ = {isa = PBXBuildFile; fileRef = 3FC1E2FF696B02B2B79363C3 /* emergency_shred.json */; };
-		E77805599DCC9EDD5AFD644B /* testInlineConfirmAccessibility.1.txt in Resources */ = {isa = PBXBuildFile; fileRef = A5E222C3D79E971771915FC6 /* testInlineConfirmAccessibility.1.txt */; };
-		E9866D4AE388DC57B562ADDB /* testContactListEmpty.1.png in Resources */ = {isa = PBXBuildFile; fileRef = B8027B69C9794DDF7044A016 /* testContactListEmpty.1.png */; };
-		EBDF43BF0E850A5D4345CA75 /* testScreenRendererAccessibility.1.txt in Resources */ = {isa = PBXBuildFile; fileRef = 1DDB8A091A24E66931A46D88 /* testScreenRendererAccessibility.1.txt */; };
 		EC30F92B5A66058CF9972C27 /* BleExchangeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418F950D6541F912A27DA57D /* BleExchangeService.swift */; };
 		EF20861679F1C93AE235E958 /* home.json in Resources */ = {isa = PBXBuildFile; fileRef = 00A1D1339DD9CF0DE2BCBEB3 /* home.json */; };
 		F05A78B995EB8456A4B310F3 /* PresentationContractTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE718E95F174F15A52F1FCEC /* PresentationContractTests.swift */; };
 		F2C20680C86836126BBC054E /* support.json in Resources */ = {isa = PBXBuildFile; fileRef = A5B1F3E2C807A45D48F2FA85 /* support.json */; };
 		F504ED5A5FBA1C8AEDB7B074 /* recovery_help.json in Resources */ = {isa = PBXBuildFile; fileRef = AE3689C54AF81B63E43986AD /* recovery_help.json */; };
-		F831303CE3FCE9DBE6E2319E /* testFieldListWithFieldsShowHide.1.png in Resources */ = {isa = PBXBuildFile; fileRef = BFB533E7A5279BAE43E57029 /* testFieldListWithFieldsShowHide.1.png */; };
-		F835B561DD3F9802AF7163FC /* testToggleListAccessibility.1.txt in Resources */ = {isa = PBXBuildFile; fileRef = 33A0048E8A2E34AA58D84E4A /* testToggleListAccessibility.1.txt */; };
 		F8818B9E78A3E1A875E04227 /* PresentationCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A6BB9A87C49A6D79E266DFD /* PresentationCommand.swift */; };
 		FDEE93990E0D194E2D7BD828 /* contact_info.json in Resources */ = {isa = PBXBuildFile; fileRef = 0F85E4838465BB8A1A9CB4F2 /* contact_info.json */; };
-		FFA654F0756CA4D7C564AB0F /* testStatusIndicatorPending.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 6376B531DB29A29598D9D0F6 /* testStatusIndicatorPending.1.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -179,80 +113,46 @@
 /* Begin PBXFileReference section */
 		007F08BF348F3C0C5BA74B92 /* PresentationPrimitives.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationPrimitives.swift; sourceTree = "<group>"; };
 		00A1D1339DD9CF0DE2BCBEB3 /* home.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = home.json; sourceTree = "<group>"; };
-		011D4844DB2996A933073BC0 /* testCardPreviewWithFields.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testCardPreviewWithFields.1.png; sourceTree = "<group>"; };
 		01D43AF714F7FE26DB36D5DD /* what_next.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = what_next.json; sourceTree = "<group>"; };
-		0314EC94F504540A5BF02139 /* testTextInputWithValue.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testTextInputWithValue.1.png; sourceTree = "<group>"; };
-		03E71A86E87D901D3FF80D72 /* testFieldListPerGroup.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testFieldListPerGroup.1.png; sourceTree = "<group>"; };
-		04898F36EF605FB293E24A7A /* testToggleListDark.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testToggleListDark.1.png; sourceTree = "<group>"; };
-		07158D127A67F8535723755C /* testHomeScreenDark.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testHomeScreenDark.1.png; sourceTree = "<group>"; };
 		07F69D47DBE79635FE185938 /* contact_edit_fields.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = contact_edit_fields.json; sourceTree = "<group>"; };
 		0A594A2A3929ED3F36E46FBD /* RenderContextPusher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderContextPusher.swift; sourceTree = "<group>"; };
 		0D3497B12DDDF10370069F86 /* Vauchi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Vauchi.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		0ED4420CCDFCB527415741E4 /* testToggleListDefault.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testToggleListDefault.1.png; sourceTree = "<group>"; };
 		0F85E4838465BB8A1A9CB4F2 /* contact_info.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = contact_info.json; sourceTree = "<group>"; };
-		1A85B8272FE7B284D215644A /* testInfoPanelWithIcon.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testInfoPanelWithIcon.1.png; sourceTree = "<group>"; };
-		1DDB8A091A24E66931A46D88 /* testScreenRendererAccessibility.1.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = testScreenRendererAccessibility.1.txt; sourceTree = "<group>"; };
-		21E325007F4C69CC6F55675D /* testTextInputEmailType.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testTextInputEmailType.1.png; sourceTree = "<group>"; };
-		22CBF2E4029854CB3051D98A /* testAddFieldsScreen.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testAddFieldsScreen.1.png; sourceTree = "<group>"; };
 		234E756E782635B9AF9132F3 /* PlaceholderContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceholderContentView.swift; sourceTree = "<group>"; };
-		23946ECA0684070AFB40D2FA /* testInlineConfirmDark.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testInlineConfirmDark.1.png; sourceTree = "<group>"; };
 		24602CA31C0CE84313D9F229 /* ContextCommandBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextCommandBarView.swift; sourceTree = "<group>"; };
 		2802DD443EEBA48D15EAF359 /* lock_screen.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = lock_screen.json; sourceTree = "<group>"; };
 		2A06CC40359E668FF6C58451 /* StateViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateViews.swift; sourceTree = "<group>"; };
 		2A73AC43BC305CE2DFADE313 /* default_name.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = default_name.json; sourceTree = "<group>"; };
-		2B4F37ED41BEFBB54770AB27 /* testEditableTextEditing.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testEditableTextEditing.1.png; sourceTree = "<group>"; };
 		2FBC9B875F77F7D59BA26DC7 /* LocalizationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationServiceTests.swift; sourceTree = "<group>"; };
 		331706A539BC8824C9067EF5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		334AA464FB30E416B9A73537 /* testContactsScreenDark.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testContactsScreenDark.1.png; sourceTree = "<group>"; };
-		33A0048E8A2E34AA58D84E4A /* testToggleListAccessibility.1.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = testToggleListAccessibility.1.txt; sourceTree = "<group>"; };
 		3741052F03E3274B5C209EF6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		388BCB8B838F2D5C9858C087 /* testInlineConfirmNonDestructive.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testInlineConfirmNonDestructive.1.png; sourceTree = "<group>"; };
-		3CCDAF85FAFC1F03E0E5EF5D /* testSettingsGroupDark.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testSettingsGroupDark.1.png; sourceTree = "<group>"; };
 		3E7B642257C4005F82A40BCF /* delivery_empty.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = delivery_empty.json; sourceTree = "<group>"; };
 		3FC1E2FF696B02B2B79363C3 /* emergency_shred.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = emergency_shred.json; sourceTree = "<group>"; };
 		3FF0727A90972B41385E4C9B /* delivery_status.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = delivery_status.json; sourceTree = "<group>"; };
 		40B52514F7B6CC866BDD778D /* ScreenCaptureProtection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenCaptureProtection.swift; sourceTree = "<group>"; };
 		418F950D6541F912A27DA57D /* BleExchangeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BleExchangeService.swift; sourceTree = "<group>"; };
-		444EB6E932C6BF9631AEE4D3 /* testStatusIndicatorAccessibility.1.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = testStatusIndicatorAccessibility.1.txt; sourceTree = "<group>"; };
 		49509AE0DF70B880F977B015 /* AudioProximityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioProximityService.swift; sourceTree = "<group>"; };
 		49B374973D50CCCC7F0EF6DA /* PresentationSurfaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationSurfaceView.swift; sourceTree = "<group>"; };
 		4BF7BC594414EE931756CE54 /* ThemeServiceSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeServiceSettingsTests.swift; sourceTree = "<group>"; };
-		4C33C5B250ED22834663E64B /* testHomeScreenEmpty.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testHomeScreenEmpty.1.png; sourceTree = "<group>"; };
-		4F819ABA85249C6394AE116A /* testTextComponentCaption.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testTextComponentCaption.1.png; sourceTree = "<group>"; };
 		50561F5946E3F79CA66C0BDE /* help.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = help.json; sourceTree = "<group>"; };
 		5438036805D34A0588FAE1C3 /* SystemTrayManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemTrayManager.swift; sourceTree = "<group>"; };
-		549D880176A65B3914B77EAC /* testTextInputWithErrorAccessibility.1.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = testTextInputWithErrorAccessibility.1.txt; sourceTree = "<group>"; };
 		554291CB7224022A54BC954F /* AppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewModel.swift; sourceTree = "<group>"; };
-		55B70A19F1E750FF86294C16 /* testContactListAccessibility.1.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = testContactListAccessibility.1.txt; sourceTree = "<group>"; };
-		5A2DFACA328F9C9EBEF5C3A2 /* testCardPreviewDark.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testCardPreviewDark.1.png; sourceTree = "<group>"; };
 		5C08923CE347C900704BB61D /* groups_setup.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = groups_setup.json; sourceTree = "<group>"; };
-		5F315425F795BD9D8DB6CCA1 /* testExchangeSuccessScreen.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testExchangeSuccessScreen.1.png; sourceTree = "<group>"; };
-		609B02226C8115A54FBEFAB5 /* testSettingsScreenDark.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testSettingsScreenDark.1.png; sourceTree = "<group>"; };
-		6376B531DB29A29598D9D0F6 /* testStatusIndicatorPending.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testStatusIndicatorPending.1.png; sourceTree = "<group>"; };
 		640EF3CDE75D016F2437C111 /* contact_list.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = contact_list.json; sourceTree = "<group>"; };
 		644F12D83413B334E234F4AC /* LockScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockScreenView.swift; sourceTree = "<group>"; };
 		653B68CB3B3D86B13D52E63E /* DeviceCapabilitiesPusherTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceCapabilitiesPusherTests.swift; sourceTree = "<group>"; };
 		66948B6E4E0E10C56A794B44 /* contact_edit_visibility.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = contact_edit_visibility.json; sourceTree = "<group>"; };
-		677E67E216D48E378A773CD8 /* testTextInputAccessibility.1.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = testTextInputAccessibility.1.txt; sourceTree = "<group>"; };
-		6994C561A843EE3A785246A5 /* testInlineConfirmDestructive.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testInlineConfirmDestructive.1.png; sourceTree = "<group>"; };
 		6A437D369672857F52C06E24 /* PresentationHostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationHostView.swift; sourceTree = "<group>"; };
-		6A4D772FACC8B2FEB3D60DA8 /* testEditableTextDisplay.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testEditableTextDisplay.1.png; sourceTree = "<group>"; };
 		6C859B6215BADD6A45480D9F /* LocalizationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationService.swift; sourceTree = "<group>"; };
 		6F0B112148ABCC1933D659A4 /* PresentationEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationEvent.swift; sourceTree = "<group>"; };
 		6FB831346BC8B7B4A94748FD /* change_password.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = change_password.json; sourceTree = "<group>"; };
 		719D658EA486E5CCB963F46E /* archived_contacts.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = archived_contacts.json; sourceTree = "<group>"; };
 		71E5FB136BF29B1F9D9B7F04 /* VauchiApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VauchiApp.swift; sourceTree = "<group>"; };
-		74400BE90CD802A95312C01B /* testFieldListEmpty.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testFieldListEmpty.1.png; sourceTree = "<group>"; };
-		74945D0AD48A22730D842AA2 /* testTextInputDark.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testTextInputDark.1.png; sourceTree = "<group>"; };
-		7661570C00E05D693455F344 /* testActionButtonDisabledAccessibility.1.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = testActionButtonDisabledAccessibility.1.txt; sourceTree = "<group>"; };
 		773C796EDEEFF9B928C04229 /* VauchiUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VauchiUITests.swift; sourceTree = "<group>"; };
-		79B16A2E56FA9B8FA0C9F628 /* testCardPreviewMinimal.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testCardPreviewMinimal.1.png; sourceTree = "<group>"; };
 		7A01546D222F8024BB3E0009 /* DeviceCapabilitiesPusher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceCapabilitiesPusher.swift; sourceTree = "<group>"; };
 		7A701A0C348B6758EED1D949 /* DirectSendService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectSendService.swift; sourceTree = "<group>"; };
-		7BDCD05EC305C6B51CC0DF9E /* testToggleListAllSelected.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testToggleListAllSelected.1.png; sourceTree = "<group>"; };
 		7C42CA0EEF4243C65EE1FDAF /* ContentUpdateCycleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentUpdateCycleTests.swift; sourceTree = "<group>"; };
 		7D255A687EB281C01D297ED7 /* VauchiSnapshotTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VauchiSnapshotTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		7DE23F7F336DC77627DE3D0E /* testCreateIdentityScreen.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testCreateIdentityScreen.1.png; sourceTree = "<group>"; };
 		7E5799FBB45272E5CCF4CEED /* AppContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppContentView.swift; sourceTree = "<group>"; };
 		7ECC96545C3966B83B1D1AC7 /* VauchiTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VauchiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		812EEE5AF140DB98855AF442 /* LocalizationServiceSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationServiceSettingsTests.swift; sourceTree = "<group>"; };
@@ -261,67 +161,35 @@
 		8809B70A6BEDF6B35461415B /* PlatformAppEngine+DomainDispatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PlatformAppEngine+DomainDispatch.swift"; sourceTree = "<group>"; };
 		8A6BB9A87C49A6D79E266DFD /* PresentationCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationCommand.swift; sourceTree = "<group>"; };
 		8C92250DB74883B6DE9A0792 /* settings.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = settings.json; sourceTree = "<group>"; };
-		8C9F616A82E64818C7D1BEB4 /* testInfoPanelSingleItem.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testInfoPanelSingleItem.1.png; sourceTree = "<group>"; };
 		8CD3FC943884B00F74F1EA32 /* device_linking.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = device_linking.json; sourceTree = "<group>"; };
-		8D3CA9B99F37140B17344FDB /* testTextInputEmpty.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testTextInputEmpty.1.png; sourceTree = "<group>"; };
 		8F9A4DAC6D203C61E58BF054 /* PresentationOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationOverlayView.swift; sourceTree = "<group>"; };
 		8FDE9009AE079A27B82E5CB6 /* VauchiUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VauchiUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		91A78E60553610F7E79BD51C /* testSettingsGroup.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testSettingsGroup.1.png; sourceTree = "<group>"; };
 		92F9D4D1B77DDD1226B84C5C /* BiometricService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricService.swift; sourceTree = "<group>"; };
 		95373D9E6440FED4B532EBDD /* VauchiRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VauchiRepository.swift; sourceTree = "<group>"; };
 		95FC0B5B9D3918ADE8F9FF31 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
-		962C13D56F463655E00BA233 /* testWelcomeScreen.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testWelcomeScreen.1.png; sourceTree = "<group>"; };
-		9B2136E121C827A50A107948 /* testContactsScreenWithContacts.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testContactsScreenWithContacts.1.png; sourceTree = "<group>"; };
 		9B834D827B063CB9F17CFA86 /* PresentationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationState.swift; sourceTree = "<group>"; };
-		9C58EE1A7DE8486716704A8C /* testStatusIndicatorSuccess.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testStatusIndicatorSuccess.1.png; sourceTree = "<group>"; };
-		9F8C1DD1586172CF870953F9 /* testActionList.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testActionList.1.png; sourceTree = "<group>"; };
-		9F9346F7C59019E0E90B13BF /* testCardPreviewWithGroups.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testCardPreviewWithGroups.1.png; sourceTree = "<group>"; };
 		A145FAE191703FB7CE06A212 /* duress_overview.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = duress_overview.json; sourceTree = "<group>"; };
-		A3A0DA0F1F9BF466F1D07D6E /* testTextComponentSubtitle.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testTextComponentSubtitle.1.png; sourceTree = "<group>"; };
 		A5B1F3E2C807A45D48F2FA85 /* support.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = support.json; sourceTree = "<group>"; };
-		A5E222C3D79E971771915FC6 /* testInlineConfirmAccessibility.1.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = testInlineConfirmAccessibility.1.txt; sourceTree = "<group>"; };
 		A75DABB058471CE8E0587E20 /* home_empty.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = home_empty.json; sourceTree = "<group>"; };
 		A7C515EE1804FDB78832CA0D /* NotificationServiceDeepLinkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationServiceDeepLinkTests.swift; sourceTree = "<group>"; };
-		A96F7230AD994FA18A53A544 /* testWelcomeScreenDark.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testWelcomeScreenDark.1.png; sourceTree = "<group>"; };
 		A9B2E4869C364BD948FF569E /* backup_choose.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = backup_choose.json; sourceTree = "<group>"; };
-		AA5DDD4269C94CD90ACEF692 /* testWipeConfirmScreen.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testWipeConfirmScreen.1.png; sourceTree = "<group>"; };
 		AAEF5BAE3E1BDBC31DED21D2 /* PresentationSmokeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationSmokeTests.swift; sourceTree = "<group>"; };
-		ACA09646545409433783D687 /* testContactsScreenEmpty.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testContactsScreenEmpty.1.png; sourceTree = "<group>"; };
 		AE3689C54AF81B63E43986AD /* recovery_help.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = recovery_help.json; sourceTree = "<group>"; };
 		AE718E95F174F15A52F1FCEC /* PresentationContractTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationContractTests.swift; sourceTree = "<group>"; };
-		AF0F088CC55F4D96F34D113B /* testStatusIndicatorFailed.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testStatusIndicatorFailed.1.png; sourceTree = "<group>"; };
 		AF2AD205AD1B75A514B7C2D9 /* identity_check.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = identity_check.json; sourceTree = "<group>"; };
-		B105C9E0FF90D826631320D7 /* testSettingsGroupAccessibility.1.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = testSettingsGroupAccessibility.1.txt; sourceTree = "<group>"; };
 		B31DFE6F23CEA01F0437957B /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
-		B5C3AC067DAD006C8E3956CA /* testInfoPanelAccessibility.1.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = testInfoPanelAccessibility.1.txt; sourceTree = "<group>"; };
-		B8027B69C9794DDF7044A016 /* testContactListEmpty.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testContactListEmpty.1.png; sourceTree = "<group>"; };
 		BB75683BE92B1B2E80EF559D /* PresentationNodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationNodes.swift; sourceTree = "<group>"; };
 		BDB1CEDFBA5AE37F12D5BE39 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		BE32C32136CEB8811C89778C /* VauchiKeychainBridgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VauchiKeychainBridgeTests.swift; sourceTree = "<group>"; };
-		BF21CF300C61D81BBA57F040 /* testTextComponentBody.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testTextComponentBody.1.png; sourceTree = "<group>"; };
-		BFB533E7A5279BAE43E57029 /* testFieldListWithFieldsShowHide.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testFieldListWithFieldsShowHide.1.png; sourceTree = "<group>"; };
 		C1F55713677327E69AF771F8 /* contact_limit.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = contact_limit.json; sourceTree = "<group>"; };
 		C29DE27FD4421553D034E37A /* contact_edit_preview.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = contact_edit_preview.json; sourceTree = "<group>"; };
 		C95EBFF60D170C179E3DB61F /* set_password.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = set_password.json; sourceTree = "<group>"; };
-		CC0264A403A8FF8004269E87 /* testTextInputPassword.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testTextInputPassword.1.png; sourceTree = "<group>"; };
-		D51F85BE507FC3741AFF9FE2 /* testExchangeShowQrDark.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testExchangeShowQrDark.1.png; sourceTree = "<group>"; };
-		D591A9D83EA84F2E2EBCE827 /* testTextComponentTitle.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testTextComponentTitle.1.png; sourceTree = "<group>"; };
-		D618628DDEAEBAD0CE3FB0EC /* testActionButtonEnabledAccessibility.1.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = testActionButtonEnabledAccessibility.1.txt; sourceTree = "<group>"; };
-		D6E1FE2EE5B0C2CC821F5397 /* testInfoPanelDark.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testInfoPanelDark.1.png; sourceTree = "<group>"; };
 		DC20FCD1651B95E823A06410 /* LocationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationServiceTests.swift; sourceTree = "<group>"; };
 		DE2CCF76CCD81A822601D43D /* WakeupTimerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WakeupTimerTests.swift; sourceTree = "<group>"; };
 		DEFE11572512A14B0F37D7BA /* device_link_instructions.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = device_link_instructions.json; sourceTree = "<group>"; };
 		DFFE40C221022DBDBD034AF3 /* PresentationStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationStateTests.swift; sourceTree = "<group>"; };
-		E31A56C292E9073A8A07BAF0 /* testTextInputWithValidationError.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testTextInputWithValidationError.1.png; sourceTree = "<group>"; };
 		E7944347EE6E209E80A5CF30 /* PresentationNodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationNodeView.swift; sourceTree = "<group>"; };
-		EA5E442564907FA7A15240F0 /* testEditableTextWithError.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testEditableTextWithError.1.png; sourceTree = "<group>"; };
-		EB02FA7773C641BA05A1BF79 /* testHomeScreenWithFields.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testHomeScreenWithFields.1.png; sourceTree = "<group>"; };
-		EBA2E942944A9B0DF10E7D44 /* testSettingsScreen.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testSettingsScreen.1.png; sourceTree = "<group>"; };
-		EDE8371E9A0D88B92DA2E683 /* testContactListWithContacts.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testContactListWithContacts.1.png; sourceTree = "<group>"; };
-		EE36127CE5C1D4AC425BF1D5 /* testDivider.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testDivider.1.png; sourceTree = "<group>"; };
-		EF0789970BCC03D30F84E3D6 /* testExchangeShowQrScreen.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testExchangeShowQrScreen.1.png; sourceTree = "<group>"; };
 		F0A9E6EDE9C2286CB574E056 /* .version */ = {isa = PBXFileReference; path = .version; sourceTree = "<group>"; };
-		FA5DBF1C3713F1E055BA292C /* testStatusIndicatorDark.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testStatusIndicatorDark.1.png; sourceTree = "<group>"; };
 		FC65E03A5DC0CF895251666C /* privacy_settings.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = privacy_settings.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -441,52 +309,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		9C2B7188F6985C46DEF78FB2 /* CoreUIComponentTests */ = {
-			isa = PBXGroup;
-			children = (
-				9F8C1DD1586172CF870953F9 /* testActionList.1.png */,
-				5A2DFACA328F9C9EBEF5C3A2 /* testCardPreviewDark.1.png */,
-				79B16A2E56FA9B8FA0C9F628 /* testCardPreviewMinimal.1.png */,
-				011D4844DB2996A933073BC0 /* testCardPreviewWithFields.1.png */,
-				9F9346F7C59019E0E90B13BF /* testCardPreviewWithGroups.1.png */,
-				B8027B69C9794DDF7044A016 /* testContactListEmpty.1.png */,
-				EDE8371E9A0D88B92DA2E683 /* testContactListWithContacts.1.png */,
-				EE36127CE5C1D4AC425BF1D5 /* testDivider.1.png */,
-				6A4D772FACC8B2FEB3D60DA8 /* testEditableTextDisplay.1.png */,
-				2B4F37ED41BEFBB54770AB27 /* testEditableTextEditing.1.png */,
-				EA5E442564907FA7A15240F0 /* testEditableTextWithError.1.png */,
-				74400BE90CD802A95312C01B /* testFieldListEmpty.1.png */,
-				03E71A86E87D901D3FF80D72 /* testFieldListPerGroup.1.png */,
-				BFB533E7A5279BAE43E57029 /* testFieldListWithFieldsShowHide.1.png */,
-				D6E1FE2EE5B0C2CC821F5397 /* testInfoPanelDark.1.png */,
-				8C9F616A82E64818C7D1BEB4 /* testInfoPanelSingleItem.1.png */,
-				1A85B8272FE7B284D215644A /* testInfoPanelWithIcon.1.png */,
-				23946ECA0684070AFB40D2FA /* testInlineConfirmDark.1.png */,
-				6994C561A843EE3A785246A5 /* testInlineConfirmDestructive.1.png */,
-				388BCB8B838F2D5C9858C087 /* testInlineConfirmNonDestructive.1.png */,
-				91A78E60553610F7E79BD51C /* testSettingsGroup.1.png */,
-				3CCDAF85FAFC1F03E0E5EF5D /* testSettingsGroupDark.1.png */,
-				FA5DBF1C3713F1E055BA292C /* testStatusIndicatorDark.1.png */,
-				AF0F088CC55F4D96F34D113B /* testStatusIndicatorFailed.1.png */,
-				6376B531DB29A29598D9D0F6 /* testStatusIndicatorPending.1.png */,
-				9C58EE1A7DE8486716704A8C /* testStatusIndicatorSuccess.1.png */,
-				BF21CF300C61D81BBA57F040 /* testTextComponentBody.1.png */,
-				4F819ABA85249C6394AE116A /* testTextComponentCaption.1.png */,
-				A3A0DA0F1F9BF466F1D07D6E /* testTextComponentSubtitle.1.png */,
-				D591A9D83EA84F2E2EBCE827 /* testTextComponentTitle.1.png */,
-				74945D0AD48A22730D842AA2 /* testTextInputDark.1.png */,
-				21E325007F4C69CC6F55675D /* testTextInputEmailType.1.png */,
-				8D3CA9B99F37140B17344FDB /* testTextInputEmpty.1.png */,
-				CC0264A403A8FF8004269E87 /* testTextInputPassword.1.png */,
-				E31A56C292E9073A8A07BAF0 /* testTextInputWithValidationError.1.png */,
-				0314EC94F504540A5BF02139 /* testTextInputWithValue.1.png */,
-				7BDCD05EC305C6B51CC0DF9E /* testToggleListAllSelected.1.png */,
-				04898F36EF605FB293E24A7A /* testToggleListDark.1.png */,
-				0ED4420CCDFCB527415741E4 /* testToggleListDefault.1.png */,
-			);
-			path = CoreUIComponentTests;
-			sourceTree = "<group>";
-		};
 		A9A5EC2572980F7E8930C6E3 /* CoreUI */ = {
 			isa = PBXGroup;
 			children = (
@@ -507,41 +329,12 @@
 			path = CoreUI;
 			sourceTree = "<group>";
 		};
-		B54523183BC34AB4ECD05D5D /* AccessibilityTests */ = {
-			isa = PBXGroup;
-			children = (
-				7661570C00E05D693455F344 /* testActionButtonDisabledAccessibility.1.txt */,
-				D618628DDEAEBAD0CE3FB0EC /* testActionButtonEnabledAccessibility.1.txt */,
-				55B70A19F1E750FF86294C16 /* testContactListAccessibility.1.txt */,
-				B5C3AC067DAD006C8E3956CA /* testInfoPanelAccessibility.1.txt */,
-				A5E222C3D79E971771915FC6 /* testInlineConfirmAccessibility.1.txt */,
-				1DDB8A091A24E66931A46D88 /* testScreenRendererAccessibility.1.txt */,
-				B105C9E0FF90D826631320D7 /* testSettingsGroupAccessibility.1.txt */,
-				444EB6E932C6BF9631AEE4D3 /* testStatusIndicatorAccessibility.1.txt */,
-				677E67E216D48E378A773CD8 /* testTextInputAccessibility.1.txt */,
-				549D880176A65B3914B77EAC /* testTextInputWithErrorAccessibility.1.txt */,
-				33A0048E8A2E34AA58D84E4A /* testToggleListAccessibility.1.txt */,
-			);
-			path = AccessibilityTests;
-			sourceTree = "<group>";
-		};
 		B703A0DE1FDBFC69D604E07F /* VauchiSnapshotTests */ = {
 			isa = PBXGroup;
 			children = (
 				AE718E95F174F15A52F1FCEC /* PresentationContractTests.swift */,
-				C47178C9D12004A395652BD9 /* __Snapshots__ */,
 			);
 			path = VauchiSnapshotTests;
-			sourceTree = "<group>";
-		};
-		C47178C9D12004A395652BD9 /* __Snapshots__ */ = {
-			isa = PBXGroup;
-			children = (
-				B54523183BC34AB4ECD05D5D /* AccessibilityTests */,
-				9C2B7188F6985C46DEF78FB2 /* CoreUIComponentTests */,
-				E03B9BB31C3111CD9935E740 /* ScreenSnapshotTests */,
-			);
-			path = __Snapshots__;
 			sourceTree = "<group>";
 		};
 		C9DFA1127C049CB0C36BDF57 /* VauchiUITests */ = {
@@ -582,29 +375,6 @@
 				554291CB7224022A54BC954F /* AppViewModel.swift */,
 			);
 			path = ViewModels;
-			sourceTree = "<group>";
-		};
-		E03B9BB31C3111CD9935E740 /* ScreenSnapshotTests */ = {
-			isa = PBXGroup;
-			children = (
-				22CBF2E4029854CB3051D98A /* testAddFieldsScreen.1.png */,
-				334AA464FB30E416B9A73537 /* testContactsScreenDark.1.png */,
-				ACA09646545409433783D687 /* testContactsScreenEmpty.1.png */,
-				9B2136E121C827A50A107948 /* testContactsScreenWithContacts.1.png */,
-				7DE23F7F336DC77627DE3D0E /* testCreateIdentityScreen.1.png */,
-				D51F85BE507FC3741AFF9FE2 /* testExchangeShowQrDark.1.png */,
-				EF0789970BCC03D30F84E3D6 /* testExchangeShowQrScreen.1.png */,
-				5F315425F795BD9D8DB6CCA1 /* testExchangeSuccessScreen.1.png */,
-				07158D127A67F8535723755C /* testHomeScreenDark.1.png */,
-				4C33C5B250ED22834663E64B /* testHomeScreenEmpty.1.png */,
-				EB02FA7773C641BA05A1BF79 /* testHomeScreenWithFields.1.png */,
-				EBA2E942944A9B0DF10E7D44 /* testSettingsScreen.1.png */,
-				609B02226C8115A54FBEFAB5 /* testSettingsScreenDark.1.png */,
-				962C13D56F463655E00BA233 /* testWelcomeScreen.1.png */,
-				A96F7230AD994FA18A53A544 /* testWelcomeScreenDark.1.png */,
-				AA5DDD4269C94CD90ACEF692 /* testWipeConfirmScreen.1.png */,
-			);
-			path = ScreenSnapshotTests;
 			sourceTree = "<group>";
 		};
 		F9FC793A89B3CAD3083ACA25 /* Services */ = {
@@ -674,7 +444,6 @@
 			buildConfigurationList = 572C838FA86B126CA380BA94 /* Build configuration list for PBXNativeTarget "VauchiSnapshotTests" */;
 			buildPhases = (
 				9E0AD1E18A293EA54C5115CE /* Sources */,
-				B1481DC68744A5E5111CA39F /* Resources */,
 			);
 			buildRules = (
 			);
@@ -750,79 +519,6 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		B1481DC68744A5E5111CA39F /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				448378F56DA9D463363E5A7C /* testActionButtonDisabledAccessibility.1.txt in Resources */,
-				9CF23C4022ADB5366AD67245 /* testActionButtonEnabledAccessibility.1.txt in Resources */,
-				C122C622C69B289031EB8186 /* testActionList.1.png in Resources */,
-				72989B5EB5FC96F172CB1C49 /* testAddFieldsScreen.1.png in Resources */,
-				1ABCC26C203868ABD7EB9255 /* testCardPreviewDark.1.png in Resources */,
-				D334DA4F74B2FD458729763E /* testCardPreviewMinimal.1.png in Resources */,
-				A387A34BD2E5E95169ADB6B7 /* testCardPreviewWithFields.1.png in Resources */,
-				7C752A3331298ADB01A6DDF9 /* testCardPreviewWithGroups.1.png in Resources */,
-				D760BC32033DC33902E254D8 /* testContactListAccessibility.1.txt in Resources */,
-				E9866D4AE388DC57B562ADDB /* testContactListEmpty.1.png in Resources */,
-				E0642E4014C2147EBDC4FFF3 /* testContactListWithContacts.1.png in Resources */,
-				2C996CD80C42DEDB7C30B91E /* testContactsScreenDark.1.png in Resources */,
-				6B4BCD6611BD2A2CF4C3C116 /* testContactsScreenEmpty.1.png in Resources */,
-				13C034F74BC375883A7F5751 /* testContactsScreenWithContacts.1.png in Resources */,
-				A2C2F1EA2AE9566A3880EA6E /* testCreateIdentityScreen.1.png in Resources */,
-				9B37E421D497D0041517566A /* testDivider.1.png in Resources */,
-				25F92258277228332EE69BEE /* testEditableTextDisplay.1.png in Resources */,
-				52DC12F76B99B041E9446B00 /* testEditableTextEditing.1.png in Resources */,
-				C0AB5B4A5DA1F0977B52C55E /* testEditableTextWithError.1.png in Resources */,
-				AC5905716421EF0493923556 /* testExchangeShowQrDark.1.png in Resources */,
-				210728BC90BEA9A5F3360DDF /* testExchangeShowQrScreen.1.png in Resources */,
-				A417B542159AB8BB11E7B7DD /* testExchangeSuccessScreen.1.png in Resources */,
-				0378355005A83E0E4F086ED9 /* testFieldListEmpty.1.png in Resources */,
-				12582E8F80C463B7C877A8A9 /* testFieldListPerGroup.1.png in Resources */,
-				F831303CE3FCE9DBE6E2319E /* testFieldListWithFieldsShowHide.1.png in Resources */,
-				45EDBC6D5526AD94E96F8033 /* testHomeScreenDark.1.png in Resources */,
-				AD3A83D552E25C7A50441AE1 /* testHomeScreenEmpty.1.png in Resources */,
-				A3EBC8A0E02A1F7518211E81 /* testHomeScreenWithFields.1.png in Resources */,
-				D51F9490703B77CD5FC79AB5 /* testInfoPanelAccessibility.1.txt in Resources */,
-				212AB32D3E869C855E9C8B39 /* testInfoPanelDark.1.png in Resources */,
-				652D44BD2148FA55AA835812 /* testInfoPanelSingleItem.1.png in Resources */,
-				4235EDCB7DC3862C3F48F194 /* testInfoPanelWithIcon.1.png in Resources */,
-				E77805599DCC9EDD5AFD644B /* testInlineConfirmAccessibility.1.txt in Resources */,
-				9B0047F7A798FE0F300562CC /* testInlineConfirmDark.1.png in Resources */,
-				7DD186FEB97D2385E15B8293 /* testInlineConfirmDestructive.1.png in Resources */,
-				C8BAE6814208A1BBB189E5C8 /* testInlineConfirmNonDestructive.1.png in Resources */,
-				EBDF43BF0E850A5D4345CA75 /* testScreenRendererAccessibility.1.txt in Resources */,
-				A3F2970F6C5C9A67FDB86A9A /* testSettingsGroup.1.png in Resources */,
-				026DB000674E288B730DC91E /* testSettingsGroupAccessibility.1.txt in Resources */,
-				C02CAD8B0F82B366CD4428D4 /* testSettingsGroupDark.1.png in Resources */,
-				7596A973F4CBE39E516B5EBF /* testSettingsScreen.1.png in Resources */,
-				675C6A3151B41B2B192C9A38 /* testSettingsScreenDark.1.png in Resources */,
-				2183BF09BDD4F4226A01DA1B /* testStatusIndicatorAccessibility.1.txt in Resources */,
-				32FBE38BDB7CA389EEDAD910 /* testStatusIndicatorDark.1.png in Resources */,
-				86B371D3BFB2EDE95D642173 /* testStatusIndicatorFailed.1.png in Resources */,
-				FFA654F0756CA4D7C564AB0F /* testStatusIndicatorPending.1.png in Resources */,
-				5DA3EA7403695F0525D83C16 /* testStatusIndicatorSuccess.1.png in Resources */,
-				43631E8778F64B024498C964 /* testTextComponentBody.1.png in Resources */,
-				513D9801820C9578CAF7C97C /* testTextComponentCaption.1.png in Resources */,
-				4718BCB4E146E4166FA5C099 /* testTextComponentSubtitle.1.png in Resources */,
-				904F29C70542F6760875A1A8 /* testTextComponentTitle.1.png in Resources */,
-				12BC56BA1BF270125C3DADB6 /* testTextInputAccessibility.1.txt in Resources */,
-				8EAFADC7FD9B053DE04551E5 /* testTextInputDark.1.png in Resources */,
-				DEE606B56ADE8E72560BF538 /* testTextInputEmailType.1.png in Resources */,
-				4C83DCE0B4528CD31E112988 /* testTextInputEmpty.1.png in Resources */,
-				D75D5C3AB0DED61B6D4FA056 /* testTextInputPassword.1.png in Resources */,
-				D585242288C2785DC2A788B6 /* testTextInputWithErrorAccessibility.1.txt in Resources */,
-				D03CDFB9D57985CBD50D9C98 /* testTextInputWithValidationError.1.png in Resources */,
-				BB6505CC618DB35AC542A1AB /* testTextInputWithValue.1.png in Resources */,
-				F835B561DD3F9802AF7163FC /* testToggleListAccessibility.1.txt in Resources */,
-				B222B3B7B7404F7BDF034ECF /* testToggleListAllSelected.1.png in Resources */,
-				0BF3BAD91800C40DD1EE0501 /* testToggleListDark.1.png in Resources */,
-				02A162826FF93F15BB8C9E35 /* testToggleListDefault.1.png in Resources */,
-				431503ADA7BCDB0CA94FBDEE /* testWelcomeScreen.1.png in Resources */,
-				A31D3B2C12974FDE021C599E /* testWelcomeScreenDark.1.png in Resources */,
-				5D2702086C792C92874D64EF /* testWipeConfirmScreen.1.png in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		BA1091392C838747B6CA78FE /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
