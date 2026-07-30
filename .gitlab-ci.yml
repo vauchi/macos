@@ -5,7 +5,7 @@ include:
   - template: Security/SAST.gitlab-ci.yml
   - template: Security/Secret-Detection.gitlab-ci.yml
   - project: 'vauchi/scripts'
-    ref: feature/contextual-command-surface
+    ref: main
     file:
       - '/ci-templates/timeouts.yml'
       - '/ci-templates/reuse.yml'
@@ -1379,7 +1379,7 @@ lint:cross-cutting-blocking:
     DESIGN_DRIFT_MATCH_MODE: "grep"
     DESIGN_DRIFT_GREP_FILE: "Vauchi/CoreUI"
     DESIGN_DRIFT_PROTOCOL: "presentation"
-    CORE_REF: "feature/contextual-command-surface"
+    CORE_REF: "main"
     DESIGN_DRIFT_REPO_LABEL: ""
     # check:removed-symbols
     SEARCH_DIRS: "Vauchi/"
@@ -1431,8 +1431,8 @@ check:parser-parity:
     FRONTEND_NAME: "macos"
     PARSER_FILE: "Vauchi/CoreUI/PresentationNodes.swift"
     PARSER_PROTOCOL: "presentation"
-    PARSER_SCRIPT_REF: "feature/contextual-command-surface"
-    CORE_REF: "feature/contextual-command-surface"
+    PARSER_SCRIPT_REF: "main"
+    CORE_REF: "main"
 
 # Design token drift: warn on hardcoded colors/spacing that bypass tokens.json.
 # Script lives in vauchi/scripts — fetched via API to avoid duplicating it here.
