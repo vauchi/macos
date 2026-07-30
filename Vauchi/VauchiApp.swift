@@ -4,7 +4,7 @@
 
 // macOS native desktop app entry point. The @main App struct is
 // intentionally thin — supporting types (AppDelegate, AppState,
-// ContentView, AppContentView, SidebarView, ErrorView, LoadingView,
+// ContentView, AppContentView, ErrorView, LoadingView, and
 // PlaceholderContentView) live in sibling files so this entry stays
 // auditable at a glance. See `_private/docs/planning/todo/2026-05-02-
 // macos-humble-ui-retirement-plan.md` G3.
@@ -34,18 +34,6 @@ struct VauchiApp: App {
                 PlaceholderContentView()
             #endif
         }
-        .defaultSize(width: 400, height: 700)
-        .commands {
-            VauchiMenuCommands()
-        }
-
-        #if os(macOS) && canImport(VauchiPlatform)
-            Settings {
-                CoreSceneView(actionId: "settings")
-                    .environmentObject(appState)
-                    .environmentObject(themeService)
-                    .frame(minWidth: 400, minHeight: 500)
-            }
-        #endif
+        .defaultSize(width: 960, height: 680)
     }
 }

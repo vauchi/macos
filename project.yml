@@ -27,9 +27,6 @@ packages:
     # mirror dir. Use exact-version pin (not `from:`) to match
     # ios/project.yml and prevent SPM from re-resolving to a different
     # version when Package.resolved is missing in fresh CI checkouts.
-  SnapshotTesting:
-    url: https://github.com/pointfreeco/swift-snapshot-testing
-    from: "1.17.0"
 
 targets:
   Vauchi:
@@ -87,7 +84,6 @@ targets:
       - path: VauchiSnapshotTests
     dependencies:
       - target: Vauchi
-      - package: SnapshotTesting
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: app.vauchi.macos.snapshottests

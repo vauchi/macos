@@ -8,7 +8,6 @@
 // content updates, biometric retry).
 
 import Combine
-import CoreUIModels
 import Foundation
 import SwiftUI
 
@@ -45,7 +44,7 @@ import SwiftUI
                 object: nil,
                 queue: .main
             ) { [weak self] _ in
-                self?.handleAppBackgrounded()
+                self?.dispatchAppBackgrounded()
             }
 
             NotificationCenter.default.addObserver(
@@ -53,7 +52,7 @@ import SwiftUI
                 object: nil,
                 queue: .main
             ) { [weak self] _ in
-                self?.viewModel?.loadScreen()
+                self?.viewModel?.loadInitialPresentation()
             }
 
             // A tapped notification forwards its core-supplied deep link to core
@@ -160,11 +159,9 @@ import SwiftUI
             }
         }
 
-        /// Handle app backgrounded event (C1 auto-lock).
-        func handleAppBackgrounded() {
-            guard repository?.handleAppBackgrounded() != nil else { return }
-            // Core navigated to Lock screen — refresh UI to show it
-            viewModel?.loadScreen()
+        /// Reports backgrounding through the generic presentation reducer.
+        func dispatchAppBackgrounded() {
+            viewModel?.dispatchPresentation(.appBackgrounded)
         }
 
         /// Relays an opaque `vauchi://` URI to core as `LinkOpened`. Core owns
@@ -172,7 +169,7 @@ import SwiftUI
         /// or a core-owned error). Dropped while locked — the tap has already
         /// foregrounded the app for the user to unlock.
         func openDeepLink(_ uri: String) {
-            viewModel?.handleAction(.linkOpened(uri: uri))
+            viewModel?.dispatchPresentation(.deepLinkOpened(uri: uri))
         }
     }
 #endif

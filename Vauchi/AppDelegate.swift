@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// macOS-specific application lifecycle hooks (menu bar, system tray,
+// macOS-specific application lifecycle hooks (system tray,
 // auto-lock notifications). Posts notifications that `AppState`
 // listens for so the app does not need a shared singleton.
 
@@ -16,7 +16,6 @@ import Foundation
 /// App delegate for macOS-specific lifecycle hooks (menu bar, system tray).
 class AppDelegate: NSObject, NSApplicationDelegate {
     let systemTrayManager = SystemTrayManager()
-    let menuBarManager = MenuBarManager()
 
     func applicationDidFinishLaunching(_: Notification) {
         // Before anything else: BLE/exchange/sync log::warn!/error! calls
@@ -29,7 +28,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         ScreenCaptureProtection.enable()
         systemTrayManager.setup()
-        menuBarManager.setupMenuBar()
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_: NSApplication) -> Bool {

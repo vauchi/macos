@@ -2,15 +2,13 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// Fallback content + view-model used when `VauchiPlatform` bindings
+// Fallback content used when `VauchiPlatform` bindings
 // are not present (e.g. SwiftPM-only previews or test hosts running
 // without the native xcframework). Never rendered in production.
 
 import SwiftUI
 
 #if !canImport(VauchiPlatform)
-    import CoreUIModels
-
     struct PlaceholderContentView: View {
         // Constants instead of inline string literals — keeps the dev
         // fallback out of the `check-domain-named-views` Text-literal
@@ -38,15 +36,6 @@ import SwiftUI
                     .foregroundColor(.secondary.opacity(0.7))
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-        }
-    }
-
-    /// Placeholder ViewModel for tests when VauchiPlatform is not available.
-    class PlaceholderViewModel: ObservableObject {
-        @Published var currentScreen: ScreenModel?
-
-        func handleAction(_: UserAction) {
-            // No-op: requires VauchiPlatform bindings
         }
     }
 #endif

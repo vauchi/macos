@@ -120,18 +120,6 @@ import Foundation
                 .appendingPathComponent("data")
                 .path
         }
-
-        /// Handle app backgrounded event (C1 auto-lock)
-        func handleAppBackgrounded() -> String? {
-            do {
-                return try appEngine.handleAppBackgrounded()
-            } catch {
-                #if DEBUG
-                    print("VauchiRepository: handleAppBackgrounded failed: \(error)")
-                #endif
-                return nil
-            }
-        }
     }
 
     /// Bridges core's `MobilePlatformKeychain` callback to the macOS
