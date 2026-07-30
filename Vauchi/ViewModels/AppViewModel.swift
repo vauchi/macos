@@ -191,12 +191,7 @@ import UniformTypeIdentifiers
 
         /// Invalidate cached engines after domain mutations.
         func invalidateAll() {
-            do {
-                try appEngine.invalidateAll()
-                loadInitialPresentation()
-            } catch {
-                print("AppViewModel: failed to invalidate: \(error)")
-            }
+            dispatchPresentation(.presentationInvalidated)
         }
 
         // MARK: - Core-Scheduled Wakeup (ADR-044 Am2a Option C)
