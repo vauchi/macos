@@ -503,7 +503,6 @@
 				9B834D827B063CB9F17CFA86 /* PresentationState.swift */,
 				49B374973D50CCCC7F0EF6DA /* PresentationSurfaceView.swift */,
 				2A06CC40359E668FF6C58451 /* StateViews.swift */,
-				CE42D30F93ED2ECE0C78FB70 /* Components */,
 			);
 			path = CoreUI;
 			sourceTree = "<group>";
@@ -575,13 +574,6 @@
 				CC27001BE792CD487814D16E /* Views */,
 			);
 			path = Vauchi;
-			sourceTree = "<group>";
-		};
-		CE42D30F93ED2ECE0C78FB70 /* Components */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Components;
 			sourceTree = "<group>";
 		};
 		DE4003224F0F48BD0A224CE5 /* ViewModels */ = {
@@ -1285,7 +1277,7 @@
 			repositoryURL = "https://gitlab.com/vauchi/vauchi-platform-swift.git";
 			requirement = {
 				kind = exactVersion;
-				version = 0.58.0;
+				version = 0.59.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
