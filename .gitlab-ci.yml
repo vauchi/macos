@@ -10,6 +10,7 @@ include:
       - '/ci-templates/timeouts.yml'
       - '/ci-templates/reuse.yml'
       - '/ci-templates/design-drift.yml'
+      - '/ci-templates/parser-parity.yml'
       - '/ci-templates/removed-symbols.yml'
       - '/ci-templates/badges.yml'
       - '/ci-templates/orphan-baselines.yml'
@@ -1379,7 +1380,6 @@ lint:cross-cutting-blocking:
     DESIGN_DRIFT_GREP_FILE: "Vauchi/CoreUI"
     DESIGN_DRIFT_PROTOCOL: "presentation"
     CORE_REF: "feature/contextual-command-surface"
-    DESIGN_DRIFT_GREP_FILE: ""
     DESIGN_DRIFT_REPO_LABEL: ""
     # check:removed-symbols
     SEARCH_DIRS: "Vauchi/"
@@ -1423,6 +1423,16 @@ lint:cross-cutting-blocking:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == "main"
+
+# Parser parity: verify every canonical presentation node is decoded.
+check:parser-parity:
+  extends: .parser-parity-job
+  variables:
+    FRONTEND_NAME: "macos"
+    PARSER_FILE: "Vauchi/CoreUI/PresentationNodes.swift"
+    PARSER_PROTOCOL: "presentation"
+    PARSER_SCRIPT_REF: "feature/contextual-command-surface"
+    CORE_REF: "feature/contextual-command-surface"
 
 # Design token drift: warn on hardcoded colors/spacing that bypass tokens.json.
 # Script lives in vauchi/scripts — fetched via API to avoid duplicating it here.
