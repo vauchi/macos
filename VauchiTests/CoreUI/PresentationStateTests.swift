@@ -3,9 +3,65 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 @testable import Vauchi
+import VauchiPlatform
 import XCTest
 
+private struct SharedPresentationContract: Decodable {
+    let schemaVersion: Int
+    let initialCommands: [PresentationCommand]
+    let steps: [SharedPresentationContractStep]
+    let expectedState: SharedPresentationContractExpectedState
+
+    enum CodingKeys: String, CodingKey {
+        case schemaVersion = "schema_version"
+        case initialCommands = "initial_commands"
+        case steps
+        case expectedState = "expected_state"
+    }
+}
+
+private struct SharedPresentationContractStep: Decodable {
+    let commands: [PresentationCommand]
+}
+
+private struct SharedPresentationContractExpectedState: Decodable {
+    let activeSurfaceID: String
+    let surface: PresentationSurface
+    let contextBar: PresentationContextBar
+
+    enum CodingKeys: String, CodingKey {
+        case activeSurfaceID = "active_surface_id"
+        case surface
+        case contextBar = "context_bar"
+    }
+}
+
 final class PresentationStateTests: XCTestCase {
+    // @scenario: generic_presentation_protocol.feature :: Every shell renders the same prepared presentation
+    func testSharedPresentationContractReachesExpectedState() throws {
+        let fixture = try JSONDecoder().decode(
+            SharedPresentationContract.self,
+            from: Data(presentationContractFixtureJson().utf8)
+        )
+        XCTAssertEqual(fixture.schemaVersion, 1)
+
+        var state = PresentationState()
+        XCTAssertTrue(try state.apply(fixture.initialCommands).isEmpty)
+        for step in fixture.steps {
+            XCTAssertTrue(try state.apply(step.commands).isEmpty)
+        }
+
+        XCTAssertEqual(state.activeSurfaceID, fixture.expectedState.activeSurfaceID)
+        XCTAssertEqual(
+            state.surfaces[fixture.expectedState.activeSurfaceID],
+            fixture.expectedState.surface
+        )
+        XCTAssertEqual(
+            state.bars[fixture.expectedState.activeSurfaceID]?.bar,
+            fixture.expectedState.contextBar
+        )
+    }
+
     func testAppliesPreparedTransactionAtomically() throws {
         let commands = try decodeCommands("""
         {"commands":[
