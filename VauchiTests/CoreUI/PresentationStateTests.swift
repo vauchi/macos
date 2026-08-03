@@ -39,6 +39,28 @@ final class PresentationStateTests: XCTestCase {
         XCTAssertTrue(effects.isEmpty)
     }
 
+    func testReEmittedSameRevisionReAppliesInsteadOfFailing() throws {
+        // Core's revision advances only on user actions, so racing full
+        // rebuilds (wakeup re-load, invalidation dispatch) legitimately
+        // re-emit the same surface at the same revision. iOS documents and
+        // allows this; macOS rejected it, which is the same defect Android
+        // shipped (vauchi/android!610 — it failed every cold launch there).
+        var state = PresentationState()
+        _ = try state.apply(decodeCommands("""
+        {"commands":[
+          {"ReplaceSurface":{"surface":\(surfaceJSON(revision: 2))}}
+        ]}
+        """))
+
+        _ = try state.apply(decodeCommands("""
+        {"commands":[
+          {"ReplaceSurface":{"surface":\(surfaceJSON(revision: 2))}}
+        ]}
+        """))
+
+        XCTAssertEqual(state.surfaces["main"]?.revision, 2)
+    }
+
     func testRejectsWholeStaleTransaction() throws {
         var state = PresentationState()
         _ = try state.apply(decodeCommands("""

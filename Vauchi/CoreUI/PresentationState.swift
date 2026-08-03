@@ -26,8 +26,19 @@ struct PresentationState {
         for command in commands {
             switch command {
             case let .replaceSurface(surface):
+                // Core's revision advances only on user actions, so racing
+                // full rebuilds (wakeup re-load, invalidation dispatch)
+                // legitimately re-emit the same surface at the same
+                // revision. Only a strictly older revision is stale; equal
+                // re-applies, last-writer wins.
+                //
+                // Mirrors iOS, which has always compared strictly. macOS
+                // rejected equal, and because transactions apply atomically
+                // that discarded every command batched with it — the same
+                // defect Android shipped (vauchi/android!610), where it
+                // failed on every cold launch.
                 if let previous = next.surfaces[surface.surfaceID],
-                   surface.revision <= previous.revision
+                   surface.revision < previous.revision
                 {
                     throw PresentationStateError.staleSurface(surface.surfaceID)
                 }
