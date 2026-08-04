@@ -163,16 +163,8 @@
 			isa = PBXGroup;
 			children = (
 				DFFE40C221022DBDBD034AF3 /* PresentationStateTests.swift */,
-				0795D7BA553D151750EFD399 /* fixtures */,
 			);
 			path = CoreUI;
-			sourceTree = "<group>";
-		};
-		0795D7BA553D151750EFD399 /* fixtures */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = fixtures;
 			sourceTree = "<group>";
 		};
 		1ECAE840736F23F69563D30C /* Platform */ = {
@@ -836,7 +828,7 @@
 			repositoryURL = "https://gitlab.com/vauchi/vauchi-platform-swift.git";
 			requirement = {
 				kind = exactVersion;
-				version = 0.59.0;
+				version = 0.59.3;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
