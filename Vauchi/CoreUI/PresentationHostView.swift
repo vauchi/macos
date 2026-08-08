@@ -19,7 +19,7 @@ struct PresentationHostView: View {
                             .padding(.horizontal, 16)
                             .padding(.bottom, 8)
                     }
-                if let overlay = viewModel.presentationState.activeOverlay {
+                if let overlay = viewModel.presentationState.overlay {
                     PresentationOverlayView(
                         overlay: overlay,
                         reducedMotion: reducedMotion,

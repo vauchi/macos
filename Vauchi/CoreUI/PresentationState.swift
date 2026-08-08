@@ -44,9 +44,18 @@ struct PresentationState {
                 }
                 next.surfaces[surface.surfaceID] = surface
                 next.bars.removeValue(forKey: surface.surfaceID)
-                if next.overlay?.surfaceID == surface.surfaceID {
-                    next.overlay = nil
-                }
+                // Any surface replacement means navigation happened, so the
+                // overlay dies with it — not only when the replaced surface is
+                // the one it was raised over. Core clears its own
+                // open-overlay state on every dispatch and sends no dismissal
+                // when an item inside the menu navigates.
+                //
+                // ReplaceSurface precedes PresentOverlay within a
+                // transaction, so this cannot clear an overlay the same batch
+                // just raised. A render-time filter on activeSurfaceID was
+                // tried instead and hid the navigation overlay outright
+                // (vauchi/ios!630 CI).
+                next.overlay = nil
             case let .setContextBar(bar, surfaceID):
                 guard next.surfaces[surfaceID]?.revision == bar.revision else {
                     throw PresentationStateError.mismatchedContextBar(surfaceID)
@@ -100,24 +109,6 @@ struct PresentationState {
 
     var activeBar: PresentationContextBar? {
         activeSurfaceID.flatMap { bars[$0]?.bar }
-    }
-
-    /// The overlay, but only while the surface it was raised over is still the
-    /// active one at the revision it was raised at.
-    ///
-    /// Core clears its own open-overlay state on every dispatch, so it expects
-    /// an overlay to die with its surface and sends no dismissal when an item
-    /// inside it navigates. `apply` already nils an overlay whose *own* surface
-    /// is replaced; the case that survives is navigation to a different surface
-    /// id, which left the menu drawn over the destination on iOS.
-    var activeOverlay: RevisionedOverlay? {
-        guard let overlay,
-              overlay.surfaceID == activeSurfaceID,
-              surfaces[overlay.surfaceID]?.revision == overlay.revision
-        else {
-            return nil
-        }
-        return overlay
     }
 
     var visibleSurfaceIDs: [String] {

@@ -221,7 +221,7 @@ final class PresentationStateTests: XCTestCase {
           }}
         ]}
         """))
-        XCTAssertEqual(state.activeOverlay?.overlay.kind, .navigation)
+        XCTAssertEqual(state.overlay?.overlay.kind, .navigation)
 
         _ = try state.apply(decodeCommands("""
         {"commands":[
@@ -233,7 +233,7 @@ final class PresentationStateTests: XCTestCase {
         ]}
         """))
         XCTAssertNil(
-            state.activeOverlay,
+            state.overlay,
             "a dismissed overlay must leave no overlay state"
         )
     }
@@ -262,7 +262,7 @@ final class PresentationStateTests: XCTestCase {
           }}}
         ]}
         """))
-        XCTAssertEqual(state.activeOverlay?.overlay.kind, .navigation)
+        XCTAssertEqual(state.overlay?.overlay.kind, .navigation)
 
         _ = try state.apply(decodeCommands("""
         {"commands":[
@@ -270,7 +270,7 @@ final class PresentationStateTests: XCTestCase {
         ]}
         """))
         XCTAssertNil(
-            state.activeOverlay,
+            state.overlay,
             "an overlay bound to an older surface revision must stop rendering"
         )
     }
