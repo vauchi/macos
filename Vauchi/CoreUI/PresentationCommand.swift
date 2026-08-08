@@ -94,6 +94,18 @@ private struct PresentationOverlayCommandPayload: Decodable {
     }
 }
 
+private struct PresentationDismissOverlayCommandPayload: Decodable {
+    let surfaceID: String
+    let revision: UInt64
+    let kind: PresentationOverlayKind
+
+    private enum CodingKeys: String, CodingKey {
+        case surfaceID = "surface_id"
+        case revision
+        case kind
+    }
+}
+
 private struct PresentationProfileCommandPayload: Decodable {
     let profile: PresentationProfile
 }
@@ -181,6 +193,15 @@ enum PresentationCommand: Decodable {
                     overlay: value.overlay
                 )
             )
+        case "DismissOverlay":
+            let value = try container.decode(
+                PresentationDismissOverlayCommandPayload.self, forKey: key
+            )
+            return .dismissOverlay(
+                surfaceID: value.surfaceID,
+                revision: value.revision,
+                kind: value.kind
+            )
         default:
             return try decodeEffect(from: container, key: key)
         }
@@ -191,13 +212,6 @@ enum PresentationCommand: Decodable {
         key: DynamicKey
     ) throws -> Self {
         switch key.stringValue {
-        case "DismissOverlay":
-            let value = try container.decode(DismissOverlayPayload.self, forKey: key)
-            self = .dismissOverlay(
-                surfaceID: value.surfaceID,
-                revision: value.revision,
-                kind: value.kind
-            )
         case "SetPresentationProfile":
             return try .setPresentationProfile(
                 container.decode(PresentationProfileCommandPayload.self, forKey: key).profile
