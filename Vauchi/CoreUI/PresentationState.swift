@@ -44,18 +44,21 @@ struct PresentationState {
                 }
                 next.surfaces[surface.surfaceID] = surface
                 next.bars.removeValue(forKey: surface.surfaceID)
-                // Any surface replacement means navigation happened, so the
-                // overlay dies with it — not only when the replaced surface is
-                // the one it was raised over. Core clears its own
-                // open-overlay state on every dispatch and sends no dismissal
-                // when an item inside the menu navigates.
+                // Only the overlay raised over *this* surface dies with it.
+                // A broader "any ReplaceSurface clears" rule was tried on iOS
+                // and reverted: it removed an overlay raised earlier in the
+                // same transaction, so the navigation menu never appeared
+                // (vauchi/ios!630 test:ui, twice).
                 //
-                // ReplaceSurface precedes PresentOverlay within a
-                // transaction, so this cannot clear an overlay the same batch
-                // just raised. A render-time filter on activeSurfaceID was
-                // tried instead and hid the navigation overlay outright
-                // (vauchi/ios!630 CI).
-                next.overlay = nil
+                // KNOWN GAP: navigating to a *different* surface id therefore
+                // leaves the overlay drawn over the destination — observed on
+                // iOS, tracked in
+                // 2026-08-07-ios-stale-overlay-and-raw-error-alert. The real
+                // fix is the per-surface overlay map the TUI and GTK already
+                // have; that is a refactor, not a patch.
+                if next.overlay?.surfaceID == surface.surfaceID {
+                    next.overlay = nil
+                }
             case let .setContextBar(bar, surfaceID):
                 guard next.surfaces[surfaceID]?.revision == bar.revision else {
                     throw PresentationStateError.mismatchedContextBar(surfaceID)
