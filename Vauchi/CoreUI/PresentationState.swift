@@ -57,6 +57,17 @@ struct PresentationState {
                     throw PresentationStateError.mismatchedOverlay(overlay.surfaceID)
                 }
                 next.overlay = overlay
+            case let .dismissOverlay(surfaceID, _, kind):
+                // Core rewrites a repeat PresentOverlay into this so the
+                // context-bar buttons toggle. Matching on kind as well as
+                // surface keeps a stale dismiss from closing an overlay
+                // Core has since replaced.
+                if let open = next.overlay,
+                   open.surfaceID == surfaceID,
+                   open.overlay.kind == kind
+                {
+                    next.overlay = nil
+                }
             case let .setPresentationProfile(profile):
                 next.profile = profile
             default:
@@ -89,6 +100,24 @@ struct PresentationState {
 
     var activeBar: PresentationContextBar? {
         activeSurfaceID.flatMap { bars[$0]?.bar }
+    }
+
+    /// The overlay, but only while the surface it was raised over is still the
+    /// active one at the revision it was raised at.
+    ///
+    /// Core clears its own open-overlay state on every dispatch, so it expects
+    /// an overlay to die with its surface and sends no dismissal when an item
+    /// inside it navigates. `apply` already nils an overlay whose *own* surface
+    /// is replaced; the case that survives is navigation to a different surface
+    /// id, which left the menu drawn over the destination on iOS.
+    var activeOverlay: RevisionedOverlay? {
+        guard let overlay,
+              overlay.surfaceID == activeSurfaceID,
+              surfaces[overlay.surfaceID]?.revision == overlay.revision
+        else {
+            return nil
+        }
+        return overlay
     }
 
     var visibleSurfaceIDs: [String] {

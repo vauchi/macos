@@ -122,6 +122,7 @@ enum PresentationCommand: Decodable {
     case replaceSurface(PresentationSurface)
     case setContextBar(RevisionedContextBar, surfaceID: String)
     case presentOverlay(RevisionedOverlay)
+    case dismissOverlay(surfaceID: String, revision: UInt64, kind: PresentationOverlayKind)
     case setPresentationProfile(PresentationProfile)
     case presentAlert(PresentationAlert)
     case showToast(PresentationToast)
@@ -190,6 +191,13 @@ enum PresentationCommand: Decodable {
         key: DynamicKey
     ) throws -> Self {
         switch key.stringValue {
+        case "DismissOverlay":
+            let value = try container.decode(DismissOverlayPayload.self, forKey: key)
+            self = .dismissOverlay(
+                surfaceID: value.surfaceID,
+                revision: value.revision,
+                kind: value.kind
+            )
         case "SetPresentationProfile":
             return try .setPresentationProfile(
                 container.decode(PresentationProfileCommandPayload.self, forKey: key).profile

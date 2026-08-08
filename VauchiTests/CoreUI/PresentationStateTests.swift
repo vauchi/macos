@@ -205,6 +205,76 @@ final class PresentationStateTests: XCTestCase {
         XCTAssertEqual(state.overlay?.overlay.kind, .actionMenu)
     }
 
+    /// Core makes the context-bar menu buttons toggle by rewriting a repeat
+    /// `PresentOverlay` into `DismissOverlay`. Without a case for it the menu
+    /// never closes — the gap fixed on Android in `vauchi/android!621` and on
+    /// iOS in `vauchi/ios!…`.
+    func testDismissOverlayClosesTheOpenOverlay() throws {
+        var state = PresentationState()
+        _ = try state.apply(decodeCommands("""
+        {"commands":[
+          {"ReplaceSurface":{"surface":\(surfaceJSON(revision: 1))}},
+          {"PresentOverlay":{
+            "surface_id":"main",
+            "revision":1,
+            "overlay":{"kind":"navigation","title":"More","items":[]}
+          }}
+        ]}
+        """))
+        XCTAssertEqual(state.activeOverlay?.overlay.kind, .navigation)
+
+        _ = try state.apply(decodeCommands("""
+        {"commands":[
+          {"DismissOverlay":{
+            "surface_id":"main",
+            "revision":1,
+            "kind":"navigation"
+          }}
+        ]}
+        """))
+        XCTAssertNil(
+            state.activeOverlay,
+            "a dismissed overlay must leave no overlay state"
+        )
+    }
+
+    /// `apply` already nils an overlay whose *own* surface is replaced, so the
+    /// case that survives is navigation to a **different** surface id — which
+    /// is what an iPhone showed: the menu raised over one surface stayed drawn
+    /// over the destination, covering rows that could then not be tapped
+    /// (`2026-08-07-ios-stale-overlay-and-raw-error-alert`).
+    func testOverlayDoesNotOutliveTheSurfaceThatOwnsIt() throws {
+        var state = PresentationState()
+        _ = try state.apply(decodeCommands("""
+        {"commands":[
+          {"ReplaceSurface":{"surface":\(surfaceJSON(revision: 1))}},
+          {"PresentOverlay":{
+            "surface_id":"main",
+            "revision":1,
+            "overlay":{"kind":"navigation","title":"More","items":[]}
+          }},
+          {"SetPresentationProfile":{"profile":{
+            "window_class":"compact",
+            "pane_layout":"single",
+            "primary_surface":"main",
+            "detail_surface":null,
+            "active_surface":"main"
+          }}}
+        ]}
+        """))
+        XCTAssertEqual(state.activeOverlay?.overlay.kind, .navigation)
+
+        _ = try state.apply(decodeCommands("""
+        {"commands":[
+          {"ReplaceSurface":{"surface":\(surfaceJSON(revision: 2))}}
+        ]}
+        """))
+        XCTAssertNil(
+            state.activeOverlay,
+            "an overlay bound to an older surface revision must stop rendering"
+        )
+    }
+
     func testEventEncoderPreservesOpaqueIdentifiersAndRawEnvironment() throws {
         let activation = PresentationEvent.actionActivated(
             surfaceID: "detail",
