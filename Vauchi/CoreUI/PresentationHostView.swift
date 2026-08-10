@@ -19,11 +19,22 @@ struct PresentationHostView: View {
                             .padding(.horizontal, 16)
                             .padding(.bottom, 8)
                     }
-                if let overlay = viewModel.presentationState.overlay {
+                if let overlay = viewModel.presentationState.activeOverlay {
                     PresentationOverlayView(
                         overlay: overlay,
                         reducedMotion: reducedMotion,
                         onAction: { event in
+                            // Choosing an item closes the menu, and Core has
+                            // to hear that: `AppEngine::open_overlay` is
+                            // cleared only by an `OverlayDismissed` event, so
+                            // staying quiet leaves its toggle rewriting the
+                            // next request for this menu into a dismissal and
+                            // the menu stops opening. Report it *before* the
+                            // action, while this surface is still active —
+                            // reporting it afterwards is rejected by Core's
+                            // fail-closed validation and reaches the user as
+                            // a "Presentation error" alert (vauchi/ios!633).
+                            viewModel.dismissPresentationOverlay()
                             viewModel.activateAndDispatch(
                                 surfaceID: overlay.surfaceID,
                                 event: event

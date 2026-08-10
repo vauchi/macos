@@ -187,7 +187,7 @@ final class PresentationStateTests: XCTestCase {
           }}
         ]}
         """))
-        XCTAssertEqual(state.overlay?.overlay.kind, .navigation)
+        XCTAssertEqual(state.activeOverlay?.overlay.kind, .navigation)
 
         _ = try state.apply(decodeCommands("""
         {"commands":[
@@ -202,7 +202,7 @@ final class PresentationStateTests: XCTestCase {
           }}
         ]}
         """))
-        XCTAssertEqual(state.overlay?.overlay.kind, .actionMenu)
+        XCTAssertEqual(state.activeOverlay?.overlay.kind, .actionMenu)
     }
 
     /// Core makes the context-bar menu buttons toggle by rewriting a repeat
@@ -221,7 +221,7 @@ final class PresentationStateTests: XCTestCase {
           }}
         ]}
         """))
-        XCTAssertEqual(state.overlay?.overlay.kind, .navigation)
+        XCTAssertEqual(state.activeOverlay?.overlay.kind, .navigation)
 
         _ = try state.apply(decodeCommands("""
         {"commands":[
@@ -233,7 +233,7 @@ final class PresentationStateTests: XCTestCase {
         ]}
         """))
         XCTAssertNil(
-            state.overlay,
+            state.activeOverlay,
             "a dismissed overlay must leave no overlay state"
         )
     }
@@ -262,7 +262,7 @@ final class PresentationStateTests: XCTestCase {
           }}}
         ]}
         """))
-        XCTAssertEqual(state.overlay?.overlay.kind, .navigation)
+        XCTAssertEqual(state.activeOverlay?.overlay.kind, .navigation)
 
         _ = try state.apply(decodeCommands("""
         {"commands":[
@@ -270,8 +270,115 @@ final class PresentationStateTests: XCTestCase {
         ]}
         """))
         XCTAssertNil(
-            state.overlay,
+            state.activeOverlay,
             "an overlay bound to an older surface revision must stop rendering"
+        )
+    }
+
+    /// Choosing a destination navigates to a *different* surface id, and Core
+    /// sends no dismissal for the surface left behind. Holding one unscoped
+    /// overlay field could not express that, so the menu stayed drawn over the
+    /// destination and the next tap dispatched against a surface Core no
+    /// longer considered active — which it fail-closed rejects, surfacing to
+    /// the user as a "Presentation error" alert. On iOS that was 55 alerts in
+    /// a single test:ui run (job 15799876791) before `vauchi/ios!633`.
+    func testOverlayStopsRenderingOnceAnotherSurfaceIsActive() throws {
+        var state = PresentationState()
+        _ = try state.apply(decodeCommands("""
+        {"commands":[
+          {"ReplaceSurface":{"surface":\(surfaceJSON(revision: 1))}},
+          {"SetPresentationProfile":{"profile":{
+            "window_class":"compact",
+            "pane_layout":"single",
+            "primary_surface":"main",
+            "detail_surface":null,
+            "active_surface":"main"
+          }}},
+          {"PresentOverlay":{
+            "surface_id":"main",
+            "revision":1,
+            "overlay":{"kind":"navigation","title":"More","items":[]}
+          }}
+        ]}
+        """))
+        XCTAssertEqual(state.activeOverlay?.overlay.kind, .navigation)
+
+        _ = try state.apply(decodeCommands("""
+        {"commands":[
+          {"ReplaceSurface":{"surface":\(surfaceJSON(revision: 1, surfaceID: "exchange"))}},
+          {"SetPresentationProfile":{"profile":{
+            "window_class":"compact",
+            "pane_layout":"single",
+            "primary_surface":"exchange",
+            "detail_surface":null,
+            "active_surface":"exchange"
+          }}}
+        ]}
+        """))
+        XCTAssertNil(
+            state.activeOverlay,
+            "a menu raised over 'main' must not stay drawn over 'exchange'"
+        )
+    }
+
+    /// The overlay raised over one surface must not leak into another that
+    /// happens to become active — scoping is per surface, not "most recent".
+    func testOverlayIsScopedToTheSurfaceItWasRaisedOver() throws {
+        var state = PresentationState()
+        _ = try state.apply(decodeCommands("""
+        {"commands":[
+          {"ReplaceSurface":{"surface":\(surfaceJSON(revision: 1))}},
+          {"ReplaceSurface":{"surface":\(surfaceJSON(revision: 1, surfaceID: "exchange"))}},
+          {"SetPresentationProfile":{"profile":{
+            "window_class":"compact",
+            "pane_layout":"single",
+            "primary_surface":"exchange",
+            "detail_surface":null,
+            "active_surface":"exchange"
+          }}},
+          {"PresentOverlay":{
+            "surface_id":"main",
+            "revision":1,
+            "overlay":{"kind":"navigation","title":"More","items":[]}
+          }}
+        ]}
+        """))
+
+        XCTAssertNil(
+            state.activeOverlay,
+            "an overlay raised over 'main' must not render while 'exchange' is active"
+        )
+    }
+
+    /// The periodic wakeup poll re-emits the current surface at the same
+    /// revision. That is a redraw, not navigation, so it must not take away a
+    /// menu the user has open — otherwise the menu vanishes under them at
+    /// whatever moment the timer happens to fire (`vauchi/ios!633`, test:ui
+    /// job 15800681495).
+    func testBenignRebuildKeepsTheOpenOverlay() throws {
+        var state = PresentationState()
+        _ = try state.apply(decodeCommands("""
+        {"commands":[
+          {"ReplaceSurface":{"surface":\(surfaceJSON(revision: 1))}},
+          {"PresentOverlay":{
+            "surface_id":"main",
+            "revision":1,
+            "overlay":{"kind":"navigation","title":"More","items":[]}
+          }}
+        ]}
+        """))
+        XCTAssertEqual(state.activeOverlay?.overlay.kind, .navigation)
+
+        _ = try state.apply(decodeCommands("""
+        {"commands":[
+          {"ReplaceSurface":{"surface":\(surfaceJSON(revision: 1, title: "Redrawn"))}}
+        ]}
+        """))
+
+        XCTAssertEqual(state.surfaces["main"]?.title, "Redrawn")
+        XCTAssertEqual(
+            state.activeOverlay?.overlay.kind, .navigation,
+            "a same-revision redraw must not close a menu the user has open"
         )
     }
 
@@ -422,13 +529,15 @@ final class PresentationStateTests: XCTestCase {
 
     private func surfaceJSON(
         revision: Int,
+        surfaceID: String = "main",
+        title: String = "Prepared by Core",
         nodes: String = "[]"
     ) -> String {
         """
         {
-          "surface_id":"main",
+          "surface_id":"\(surfaceID)",
           "revision":\(revision),
-          "title":"Prepared by Core",
+          "title":"\(title)",
           "subtitle":null,
           "accessibility_label":"Prepared by Core",
           "layout":"scroll",
