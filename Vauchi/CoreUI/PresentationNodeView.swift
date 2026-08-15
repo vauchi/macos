@@ -11,6 +11,9 @@ struct PresentationNodeView: View {
     let minimumTarget: CGFloat
     let focusedBinding: FocusState<String?>.Binding
     let onEvent: (PresentationEvent) -> Void
+    /// Whether this node's field held focus at the last change. Only a
+    /// field that had it can report losing it.
+    @State private var hadFocus = false
 
     var body: some View {
         switch node {
@@ -142,6 +145,29 @@ struct PresentationNodeView: View {
                     .font(.caption)
                     .foregroundStyle(.red)
             }
+        }
+        .onSubmit {
+            onEvent(
+                .inputSubmitted(
+                    surfaceID: surfaceID,
+                    bindingID: value.bindingID
+                )
+            )
+        }
+        // SwiftUI models focus as one "which binding" value, so a field
+        // learns it lost focus by watching that value move off itself.
+        // `onChange` here reports only the new value, so the "was it us?"
+        // half is tracked per node.
+        .onChange(of: focusedBinding.wrappedValue) { current in
+            if hadFocus, current != value.bindingID {
+                onEvent(
+                    .inputFocusEnded(
+                        surfaceID: surfaceID,
+                        bindingID: value.bindingID
+                    )
+                )
+            }
+            hadFocus = current == value.bindingID
         }
         .disabled(!value.enabled)
         .accessibilityLabel(value.accessibility.label)

@@ -48,6 +48,18 @@ private struct PresentationValueEventPayload: Encodable {
     }
 }
 
+/// A binding named without a value — submission and focus loss report
+/// *that* something happened, not what the field now holds.
+private struct PresentationBindingEventPayload: Encodable {
+    let surfaceID: String
+    let bindingID: String
+
+    private enum CodingKeys: String, CodingKey {
+        case surfaceID = "surface_id"
+        case bindingID = "binding_id"
+    }
+}
+
 private struct PresentationOverlayEventPayload: Encodable {
     let surfaceID: String
     let kind: PresentationOverlayKind
@@ -84,6 +96,13 @@ enum PresentationEvent: Encodable {
         bindingID: String,
         value: PresentationInputValue
     )
+    /// The user pressed Return in a field. Core decides whether that
+    /// means anything on this surface.
+    case inputSubmitted(surfaceID: String, bindingID: String)
+    /// A field lost focus without the user having submitted, so Core can
+    /// offer a way to commit text left behind rather than committing it
+    /// on the user's behalf.
+    case inputFocusEnded(surfaceID: String, bindingID: String)
     case backRequested(surfaceID: String)
     case overlayDismissed(surfaceID: String, kind: PresentationOverlayKind)
     case environmentChanged(
@@ -158,8 +177,8 @@ enum PresentationEvent: Encodable {
                 variant: "BackRequested",
                 into: &container
             )
-        case .overlayDismissed, .environmentChanged, .deepLinkOpened, .appBackgrounded,
-             .presentationInvalidated:
+        case .inputSubmitted, .inputFocusEnded, .overlayDismissed, .environmentChanged,
+             .deepLinkOpened, .appBackgrounded, .presentationInvalidated:
             try encodeSecondaryPayload(into: &container)
         }
     }
@@ -168,6 +187,24 @@ enum PresentationEvent: Encodable {
         into container: inout KeyedEncodingContainer<DynamicKey>
     ) throws {
         switch self {
+        case let .inputSubmitted(surfaceID, bindingID):
+            try encodePayloadValue(
+                PresentationBindingEventPayload(
+                    surfaceID: surfaceID,
+                    bindingID: bindingID
+                ),
+                variant: "InputSubmitted",
+                into: &container
+            )
+        case let .inputFocusEnded(surfaceID, bindingID):
+            try encodePayloadValue(
+                PresentationBindingEventPayload(
+                    surfaceID: surfaceID,
+                    bindingID: bindingID
+                ),
+                variant: "InputFocusEnded",
+                into: &container
+            )
         case let .overlayDismissed(surfaceID, kind):
             try encodePayloadValue(
                 PresentationOverlayEventPayload(surfaceID: surfaceID, kind: kind),
