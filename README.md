@@ -3,7 +3,7 @@
 
 > **Mirror:** This repo is a read-only mirror of [gitlab.com/vauchi/macos](https://gitlab.com/vauchi/macos). Please open issues and merge requests there.
 
-[![Pipeline](https://img.shields.io/endpoint?url=https://vauchi.gitlab.io/macos/badges/pipeline.json&label=pipeline)](https://gitlab.com/vauchi/macos/-/pipelines)
+[![Pipeline](https://img.shields.io/endpoint?url=https://vauchi.gitlab.io/macos/badges/pipeline.json&label=pipeline)](https://gitlab.com/vauchi/macos)
 [![REUSE](https://api.reuse.software/badge/gitlab.com/vauchi/macos)](https://api.reuse.software/info/gitlab.com/vauchi/macos)
 
 > [!NOTE]
