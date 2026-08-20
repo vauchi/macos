@@ -201,9 +201,20 @@ import UniformTypeIdentifiers
         /// after `earliestSecs` (capped at `deadlineSecs`) and dispatches
         /// `onWakeup()`; `minIntervalSecs` is honoured by simply not re-arming
         /// more frequently than requested.
-        func armWakeupTimer(earliestSecs: UInt32, deadlineSecs: UInt32, minIntervalSecs: UInt32) {
+        func armWakeupTimer(
+            earliestSecs: UInt32,
+            deadlineSecs: UInt32,
+            minIntervalSecs: UInt32,
+            earliestMillis: UInt32? = nil
+        ) {
             wakeupTimer?.invalidate()
-            let fireDelay = min(TimeInterval(earliestSecs), TimeInterval(deadlineSecs))
+            // Whole seconds cannot express the frame dwell of a live QR
+            // exchange, whose display advances from this timer. Android read
+            // only the seconds field and ran at 1013 ms against a ~300 ms
+            // design (2026-08-18-hover-transfer-stalls-on-the-last-chunk).
+            let earliest = earliestMillis.map { TimeInterval($0) / 1000.0 }
+                ?? TimeInterval(earliestSecs)
+            let fireDelay = min(earliest, TimeInterval(deadlineSecs))
             let timer = Timer(timeInterval: fireDelay, repeats: false) { [weak self] _ in
                 Task { @MainActor [weak self] in
                     self?.onWakeup()
@@ -455,11 +466,17 @@ import UniformTypeIdentifiers
         /// Core-scheduled wakeup (ADR-044 Am2a Option C). Translate the
         /// relative seconds into a desktop one-shot timer.
         private func dispatchWakeupCommand(_ command: CommandDTO) {
-            guard case let .scheduleWakeup(earliestSecs, deadlineSecs, minIntervalSecs) = command else { return }
+            guard case let .scheduleWakeup(
+                earliestSecs,
+                deadlineSecs,
+                minIntervalSecs,
+                earliestMillis
+            ) = command else { return }
             armWakeupTimer(
                 earliestSecs: earliestSecs,
                 deadlineSecs: deadlineSecs,
-                minIntervalSecs: minIntervalSecs
+                minIntervalSecs: minIntervalSecs,
+                earliestMillis: earliestMillis
             )
         }
 
