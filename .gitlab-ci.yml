@@ -12,6 +12,7 @@ include:
       - '/ci-templates/design-drift.yml'
       - '/ci-templates/parser-parity.yml'
       - '/ci-templates/removed-symbols.yml'
+      - '/ci-templates/binding-compat.yml'
       - '/ci-templates/badges.yml'
       - '/ci-templates/orphan-baselines.yml'
       - '/ci-templates/github-mirror.yml'
@@ -219,9 +220,19 @@ update:bindings-version:
       command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
       xcodegen generate
 
+    # Decide whether this bump can compile here at all. macOS had no such
+    # check, so the 0.63.0 bump opened green and failed to build when
+    # `scheduleWakeup` gained a fourth associated value (macos!359).
+    - !reference [.binding-compat-check, script]
+    - |
       git add project.yml Vauchi.xcodeproj/
       git commit -m "chore: Bump vauchi-platform-swift to $BINDINGS_VERSION"
       git push -u origin "$BRANCH"
+
+      MR_TITLE="chore: Bump vauchi-platform-swift to $BINDINGS_VERSION"
+      if [ "$MARK_DRAFT" = "true" ]; then
+        MR_TITLE="Draft: $MR_TITLE"
+      fi
 
       # Create MR via GitLab API
       MR_RESPONSE=$(curl -s --request POST \
@@ -230,7 +241,7 @@ update:bindings-version:
         --data "{
           \"source_branch\": \"$BRANCH\",
           \"target_branch\": \"main\",
-          \"title\": \"chore: Bump vauchi-platform-swift to $BINDINGS_VERSION\",
+          \"title\": \"$MR_TITLE\",
           \"description\": \"Automated version bump triggered by vauchi-platform-swift release.\\n\\nUpdates VauchiPlatform SPM minimum version to \`$BINDINGS_VERSION\`.\\n\\n---\\n_This MR was created automatically by CI._\",
           \"remove_source_branch\": true
         }" \
@@ -241,17 +252,21 @@ update:bindings-version:
       if [ -n "$MR_URL" ] && [ -n "$MR_IID" ]; then
         echo "Created MR: $MR_URL"
 
-        # Enable auto-merge so the MR merges automatically when CI passes
-        echo "Enabling auto-merge..."
-        MERGE_RESPONSE=$(curl -s --request PUT \
-          --header "PRIVATE-TOKEN: ${PROJECT_ACCESS_TOKEN}" \
-          "${CI_SERVER_URL}/api/v4/projects/${CI_PROJECT_ID}/merge_requests/${MR_IID}/merge?merge_when_pipeline_succeeds=true")
-        MERGE_STATUS=$(echo "$MERGE_RESPONSE" | jq -r '.merge_when_pipeline_succeeds // empty')
-        if [ "$MERGE_STATUS" = "true" ]; then
-          echo "Auto-merge enabled — MR will merge when pipeline succeeds"
+        if [ "$MARK_DRAFT" = "true" ]; then
+          echo "Skipping auto-merge — MR created as Draft due to stale callsites"
         else
-          echo "WARNING: Could not enable auto-merge (may require maintainer token)"
-          echo "  Response: $(echo "$MERGE_RESPONSE" | jq -r '.message // .error // "unknown"')"
+          # Enable auto-merge so the MR merges automatically when CI passes
+          echo "Enabling auto-merge..."
+          MERGE_RESPONSE=$(curl -s --request PUT \
+            --header "PRIVATE-TOKEN: ${PROJECT_ACCESS_TOKEN}" \
+            "${CI_SERVER_URL}/api/v4/projects/${CI_PROJECT_ID}/merge_requests/${MR_IID}/merge?merge_when_pipeline_succeeds=true")
+          MERGE_STATUS=$(echo "$MERGE_RESPONSE" | jq -r '.merge_when_pipeline_succeeds // empty')
+          if [ "$MERGE_STATUS" = "true" ]; then
+            echo "Auto-merge enabled — MR will merge when pipeline succeeds"
+          else
+            echo "WARNING: Could not enable auto-merge (may require maintainer token)"
+            echo "  Response: $(echo "$MERGE_RESPONSE" | jq -r '.message // .error // "unknown"')"
+          fi
         fi
       else
         echo "MR creation response: $MR_RESPONSE"
@@ -1471,6 +1486,9 @@ lint:cross-cutting-blocking:
     # check:removed-symbols
     SEARCH_DIRS: "Vauchi/"
     ROOT_PROJECT_ID: "77851901"
+  # vci02-ok: .timeout-standard sets only `timeout`, so there is no
+  # template before_script to preserve. The installs below are the merged
+  # before_scripts of the jobs this one !references, kept inline on purpose.
   before_script:
     # Merged installs from the original per-job before_scripts:
     #   - design-drift: curl openssh-client bash grep git
