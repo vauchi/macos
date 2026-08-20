@@ -25,6 +25,11 @@ import UniformTypeIdentifiers
         /// desktop interval; on fire it calls `appEngine.onWakeup()` and
         /// dispatches the returned commands/notifications.
         private var wakeupTimer: Timer?
+        /// The delay the most recent arm actually used. Mirrors
+        /// `hasActiveWakeupTimer` as a test seam: whether the sub-second value
+        /// is honoured is otherwise unobservable, and a bound-but-ignored
+        /// argument would compile and silently keep the old cadence.
+        private(set) var lastWakeupDelay: TimeInterval?
 
         struct AlertMessage: Identifiable {
             let id = UUID()
@@ -215,6 +220,7 @@ import UniformTypeIdentifiers
             let earliest = earliestMillis.map { TimeInterval($0) / 1000.0 }
                 ?? TimeInterval(earliestSecs)
             let fireDelay = min(earliest, TimeInterval(deadlineSecs))
+            lastWakeupDelay = fireDelay
             let timer = Timer(timeInterval: fireDelay, repeats: false) { [weak self] _ in
                 Task { @MainActor [weak self] in
                     self?.onWakeup()

@@ -68,6 +68,30 @@ import XCTest
             XCTAssertTrue(viewModel.hasActiveWakeupTimer, "second arm replaces, still one timer")
         }
 
+        /// Scenario: a sub-second interval wins over the whole-second field.
+        ///
+        /// A live QR exchange advances its display from this timer, and whole
+        /// seconds cannot express its ~300 ms frame dwell. Android read only
+        /// the seconds field and ran at 1013 ms
+        /// (2026-08-18-hover-transfer-stalls-on-the-last-chunk); binding the
+        /// argument and ignoring it here would compile and keep that defect.
+        func testSubSecondIntervalOverridesWholeSeconds() {
+            viewModel.armWakeupTimer(
+                earliestSecs: 1,
+                deadlineSecs: 60,
+                minIntervalSecs: 0,
+                earliestMillis: 300
+            )
+            XCTAssertEqual(viewModel.lastWakeupDelay ?? -1, 0.3, accuracy: 0.001)
+        }
+
+        /// Scenario: without a sub-second value the whole-second field stands,
+        /// which is every idle heartbeat.
+        func testWholeSecondsUsedWhenNoSubSecondValue() {
+            viewModel.armWakeupTimer(earliestSecs: 30, deadlineSecs: 90, minIntervalSecs: 30)
+            XCTAssertEqual(viewModel.lastWakeupDelay ?? -1, 30.0, accuracy: 0.001)
+        }
+
         /// Scenario: cancelling an inactive timer is a no-op.
         func testCancelWakeupTimerOnInactiveIsSafe() {
             XCTAssertFalse(viewModel.hasActiveWakeupTimer)
