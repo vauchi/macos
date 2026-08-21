@@ -78,6 +78,7 @@ struct PresentationNodeView: View {
                         row: row,
                         surfaceID: surfaceID,
                         minimumTarget: minimumTarget,
+                        focusedBinding: focusedBinding,
                         onEvent: onEvent
                     )
                 }
@@ -388,9 +389,14 @@ private struct PresentationImageContent: View {
 }
 
 private struct PresentationRowView: View {
+    /// Shell-minted handle so tests and automation can find a row's control
+    /// without matching localized copy. Matches the iOS spelling.
+    static let controlIdentifier = "presentationRowControl"
+
     let row: PresentationRow
     let surfaceID: String
     let minimumTarget: CGFloat
+    let focusedBinding: FocusState<String?>.Binding
     let onEvent: (PresentationEvent) -> Void
 
     var body: some View {
@@ -418,6 +424,7 @@ private struct PresentationRowView: View {
             if let detail = row.detail {
                 Text(detail).foregroundStyle(.secondary)
             }
+            controls
             if !row.secondaryActions.isEmpty {
                 Menu {
                     ForEach(row.secondaryActions) { action in
@@ -441,6 +448,29 @@ private struct PresentationRowView: View {
             }
         }
         .accessibilityLabel(row.accessibility.label)
+    }
+
+    /// The controls Core attached to this row.
+    ///
+    /// Decoded and then discarded until 2026-08-21, exactly as on iOS,
+    /// where it left six privacy settings rendering as text with no switch
+    /// and no way to change them
+    /// (`_private/docs/problems/2026-08-20-ios-settings-toggles-render-no-control/`).
+    ///
+    /// A row carrying controls has no activation of its own — Core sends
+    /// the toggle instead — so the row-level tap gesture above cannot
+    /// contend with the control for the same tap.
+    private var controls: some View {
+        ForEach(identifyPresentationNodes(row.controls)) { identified in
+            PresentationNodeView(
+                node: identified.node,
+                surfaceID: surfaceID,
+                minimumTarget: minimumTarget,
+                focusedBinding: focusedBinding,
+                onEvent: onEvent
+            )
+            .accessibilityIdentifier(Self.controlIdentifier)
+        }
     }
 
     private func activate(_ action: PresentationAction) {
