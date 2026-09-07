@@ -81,8 +81,9 @@ final class NavigationIconMapTests: XCTestCase {
         )
     }
 
-    func testFallbackSymbolIsAnInstalledSymbol() {
+    func testFallbackSymbolIsAnInstalledFilledSymbol() {
         XCTAssertTrue(symbolExists(NavigationIconMap.fallbackSymbol))
+        XCTAssertFalse(symbolExists(NavigationIconMap.fallbackSymbol + ".fill"))
     }
 
     /// The navigation palette is the shell's sidebar: every entry carries an

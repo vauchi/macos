@@ -14,8 +14,11 @@ import Foundation
 /// token this OS does not ship.
 enum NavigationIconMap {
     /// Shown when Core sends a token this build does not know, so a new
-    /// screen arrives with a neutral marker instead of a hole in the row.
-    static let fallbackSymbol = "circle.fill"
+    /// screen arrives with a marker instead of a hole in the row. An
+    /// apps-grid glyph reads as "some section of this app" and stays
+    /// truthful; reusing a concrete icon such as the house would put a
+    /// confident lie next to a label that says something else.
+    static let fallbackSymbol = "square.grid.2x2.fill"
 
     /// Filled weights throughout: outlines lose definition at the sizes a
     /// navigation row uses and are the first thing to disappear for
