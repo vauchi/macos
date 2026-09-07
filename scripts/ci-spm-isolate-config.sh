@@ -49,6 +49,21 @@ if [ ! -d "$MIRROR" ]; then
   exit 1
 fi
 
+# Also wipe the REAL (non-isolated) user-level SPM repository-fetch cache.
+# HOME is overridden for the caller's xcodebuild invocation, but that only
+# redirects where the mirrors *config* is read from (written below); SPM's
+# own repository cache is still consulted from the real runner $HOME
+# regardless — same gap build:debug's provisioning script already closes
+# for itself (macos/.gitlab-ci.yml §5). Without this, test:unit silently
+# resolves against whatever version a differently-pinned build:debug run
+# (this repo or ios, concurrent or simply the last to run in this build
+# slot) most recently cached here, producing "unable to read tree" for a
+# revision that exists only in the *correct* (isolated) mirror below.
+# Verified: macos!365 test:unit failed this way on an otherwise-idle
+# runner, proving it's stale-cache, not a live write/resolve race.
+rm -rf ~/Library/Caches/org.swift.swiftpm/repositories/vauchi-platform-swift-* 2>/dev/null || true
+rm -rf ~/Library/org.swift.swiftpm/repositories/vauchi-platform-swift-* 2>/dev/null || true
+
 CFG_DIR="$CI_PROJECT_DIR/.spm-home/Library/org.swift.swiftpm/configuration"
 mkdir -p "$CFG_DIR"
 printf '%s' "$(printf '%s\n' \
