@@ -105,7 +105,7 @@ struct PresentationOverlayView: View {
                     )
                 )
             } label: {
-                Text(action.label)
+                actionLabel(action)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             .buttonStyle(.bordered)
@@ -114,6 +114,22 @@ struct PresentationOverlayView: View {
                 action.tone == .destructive ? Color.red : Color.primary
             )
             .accessibilityLabel(action.accessibilityLabel)
+        }
+    }
+
+    /// Icon *and* label, never icon alone: the symbol is a recognition aid
+    /// for readers who skim rather than read, and removing the word would
+    /// trade one barrier for another.
+    @ViewBuilder
+    private func actionLabel(_ action: PresentationAction) -> some View {
+        if let symbol = NavigationIconMap.systemImage(
+            forOverlayKind: overlay.overlay.kind,
+            token: action.iconToken
+        ) {
+            Label(action.label, systemImage: symbol)
+                .labelStyle(.titleAndIcon)
+        } else {
+            Text(action.label)
         }
     }
 }
