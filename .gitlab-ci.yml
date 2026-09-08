@@ -1309,11 +1309,32 @@ test:ui:
     reports:
       junit: test-results.xml
     expire_in: 7 days
+  # Manual until the automation-mode grant is settled. Two reasons, and
+  # neither is "make the pipeline green".
+  #
+  # It cannot pass yet: the runner reaches testmanagerd but macOS refuses
+  # to enable automation mode for it, which is host configuration rather
+  # than anything in this repo.
+  #
+  # And it shares a working directory and resource_group with test:unit,
+  # reaching into `.spm-packages` through fix-xcframework-symlinks.sh.
+  # test:unit was reliable before this job existed and has failed twice
+  # since, with its own definition byte-identical to main. That is not
+  # proven to be the cause — which is the reason to stop running this on
+  # every pipeline while the question is open, not to keep going.
+  #
+  # `when: manual`, not `allow_failure: true` on its own: a job reporting
+  # success without running is the linux-qt failure mode filed the same
+  # day. A manual job is visibly not-run.
   rules:
     - if: ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "pipeline") && $BINDINGS_VERSION
       when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: manual
+      allow_failure: true
     - if: $CI_COMMIT_BRANCH == "main"
+      when: manual
+      allow_failure: true
 
 # Manual job: record snapshot baselines on CI and commit them to the branch.
 # CI is the single source of truth for baselines — never record locally.
