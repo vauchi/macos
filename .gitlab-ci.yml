@@ -1174,18 +1174,13 @@ test:ui:
         echo "XCUITest cannot drive an app from a switched-out session." >&2
         exit 1
       fi
-    # Ad-hoc signed, NOT unsigned. test:unit can disable signing outright
-    # because a unit test is hosted inside the app process; a UI test is a
-    # separate runner app that has to drive another process, and macOS will
-    # not grant that to an unsigned binary. It does not refuse either — the
-    # runner simply never connects and xcodebuild sits there until its 350s
-    # allowance expires, reporting "The test runner hung before establishing
-    # connection" with nothing above it.
-    - HOME="$CI_PROJECT_DIR/.spm-home" xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data -disableAutomaticPackageResolution CODE_SIGN_IDENTITY="-" CODE_SIGNING_REQUIRED=YES CODE_SIGNING_ALLOWED=YES ENABLE_HARDENED_RUNTIME=NO build-for-testing
+    - HOME="$CI_PROJECT_DIR/.spm-home" xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data -disableAutomaticPackageResolution CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
     - rm -rf UITestResults
-    # Say up front whether the runner is signed. When it is not, the failure
-    # arrives 350s later as a bare "hung before establishing connection" with
-    # no cause named, so the one fact that explains it belongs before the wait.
+    # Print the runner's signature before the wait. It does not decide
+    # anything — Xcode re-signs the runner from its own XCTRunner template, so
+    # the build's signing flags never reach it — but a failure that surfaces
+    # 350s later as a bare "hung before establishing connection" is worth
+    # spending two lines to narrow.
     - |
       runner=$(find .derived-data/Build/Products -maxdepth 2 -name "VauchiUITests-Runner.app" | head -1)
       if [ -z "$runner" ]; then
