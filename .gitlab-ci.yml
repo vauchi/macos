@@ -1212,6 +1212,42 @@ test:ui:
         exit 1
       fi
       echo "runner entitlements include testmanagerd mach-lookup"
+    # Automation mode additionally needs an Accessibility grant for the
+    # process responsible for the run. Without one xcodebuild does not
+    # report a denial — it waits, then says "Timed out while enabling
+    # automation mode", which names the symptom and not the cause. Print
+    # what TCC actually holds so a failing log carries the evidence
+    # instead of requiring someone to go read the database by hand.
+    #
+    # Read-only and best-effort: TCC.db is world-readable but reading it
+    # can itself require Full Disk Access, so an unreadable database is
+    # reported and skipped rather than failing a job over a precheck.
+    - |
+      TCC_DB="/Library/Application Support/com.apple.TCC/TCC.db"
+      runner_pid=$(pgrep -n gitlab-runner || true)
+      runner_raw=$(ps -o comm= -p "${runner_pid:-0}" 2>/dev/null | sed 's/^ *//')
+      # TCC records the resolved binary, `ps` reports the symlink Homebrew
+      # puts on PATH. Comparing the two directly never matches, and the
+      # check would then fail every run while the grant was present.
+      runner_bin=$(realpath "$runner_raw" 2>/dev/null || printf '%s' "$runner_raw")
+      echo "responsible-process candidate: ${runner_bin:-<unknown>}"
+      if rows=$(sqlite3 "$TCC_DB" \
+          "select client || ' => ' || auth_value from access \
+           where service='kTCCServiceAccessibility'" 2>/dev/null); then
+        echo "Accessibility grants in TCC (2 = allowed):"
+        printf '%s\n' "$rows" | sed 's/^/  /'
+        if [ -n "$runner_bin" ] \
+          && ! printf '%s\n' "$rows" | grep -qF "$runner_bin => 2"; then
+          echo "ERROR: no Accessibility grant for $runner_bin." >&2
+          echo "XCUITest cannot enable automation mode without one, and it" >&2
+          echo "times out rather than failing. Grant it in System Settings >" >&2
+          echo "Privacy & Security > Accessibility and restart the runner." >&2
+          echo "TCC is SIP-protected, so this cannot be scripted from a job." >&2
+          exit 1
+        fi
+      else
+        echo "NOTE: TCC database unreadable here — skipping the Accessibility precheck"
+      fi
     - |
       set +e
       export HOME="$CI_PROJECT_DIR/.spm-home"
