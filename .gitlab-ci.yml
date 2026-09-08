@@ -1213,31 +1213,34 @@ test:ui:
       fi
       echo "runner entitlements include testmanagerd mach-lookup"
     # Automation mode additionally needs an Accessibility grant for the
-    # process responsible for the run. Without one xcodebuild does not
-    # report a denial — it waits, then says "Timed out while enabling
-    # automation mode", which names the symptom and not the cause. Print
-    # what TCC actually holds so a failing log carries the evidence
-    # instead of requiring someone to go read the database by hand.
+    # process responsible for the run. Without one xcodebuild reports no
+    # denial — it waits, then says "Timed out while enabling automation
+    # mode", naming the symptom and not the cause. Print what TCC holds so
+    # a failing log carries the evidence.
     #
-    # Read-only and best-effort: TCC.db is world-readable but reading it
-    # can itself require Full Disk Access, so an unreadable database is
-    # reported and skipped rather than failing a job over a precheck.
+    # `set +e` for the whole probe: this is diagnostics, and the first
+    # version of it killed the job silently when `pgrep`/`ps` returned
+    # non-zero under the job's `set -e`. The only non-zero exit here is the
+    # deliberate one below.
     - |
+      set +e
       TCC_DB="/Library/Application Support/com.apple.TCC/TCC.db"
-      runner_pid=$(pgrep -n gitlab-runner || true)
+      runner_pid=$(pgrep -n gitlab-runner)
       runner_raw=$(ps -o comm= -p "${runner_pid:-0}" 2>/dev/null | sed 's/^ *//')
-      # TCC records the resolved binary, `ps` reports the symlink Homebrew
-      # puts on PATH. Comparing the two directly never matches, and the
-      # check would then fail every run while the grant was present.
-      runner_bin=$(realpath "$runner_raw" 2>/dev/null || printf '%s' "$runner_raw")
+      # TCC records the resolved binary; `ps` reports the symlink Homebrew
+      # puts on PATH. Comparing those two never matches.
+      runner_bin=$(realpath "$runner_raw" 2>/dev/null)
+      [ -z "$runner_bin" ] && runner_bin="$runner_raw"
       echo "responsible-process candidate: ${runner_bin:-<unknown>}"
-      if rows=$(sqlite3 "$TCC_DB" \
-          "select client || ' => ' || auth_value from access \
-           where service='kTCCServiceAccessibility'" 2>/dev/null); then
+      rows=$(sqlite3 "$TCC_DB" "select client || ' => ' || auth_value from access where service='kTCCServiceAccessibility'" 2>/dev/null)
+      sql_rc=$?
+      set -e
+      if [ "$sql_rc" -ne 0 ] || [ -z "$rows" ]; then
+        echo "NOTE: TCC database unreadable here — skipping the Accessibility precheck"
+      else
         echo "Accessibility grants in TCC (2 = allowed):"
         printf '%s\n' "$rows" | sed 's/^/  /'
-        if [ -n "$runner_bin" ] \
-          && ! printf '%s\n' "$rows" | grep -qF "$runner_bin => 2"; then
+        if [ -n "$runner_bin" ] && ! printf '%s\n' "$rows" | grep -qF "$runner_bin => 2"; then
           echo "ERROR: no Accessibility grant for $runner_bin." >&2
           echo "XCUITest cannot enable automation mode without one, and it" >&2
           echo "times out rather than failing. Grant it in System Settings >" >&2
@@ -1245,166 +1248,11 @@ test:ui:
           echo "TCC is SIP-protected, so this cannot be scripted from a job." >&2
           exit 1
         fi
-      else
-        echo "NOTE: TCC database unreadable here — skipping the Accessibility precheck"
       fi
-    - |
-      set +e
-      export HOME="$CI_PROJECT_DIR/.spm-home"
-      xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" \
-        -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data-ui \
-        -disableAutomaticPackageResolution \
-        -only-testing:VauchiUITests -resultBundlePath UITestResults test-without-building \
-        2>&1 | tee ui-build.log
-      XCODE_EXIT=${PIPESTATUS[0]}
-      set -e
-    # The runner's own session log is the only place the connection failure
-    # explains itself; xcodebuild prints the path and nothing else. Surface
-    # it here rather than leaving the next reader to fetch a result bundle.
-    - |
-      if grep -q "hung before establishing connection" ui-build.log 2>/dev/null \
-        || [ ! -d UITestResults.xcresult ]; then
-        session_log=$(find UITestResults.xcresult UITestResults -name "Session-*.log" 2>/dev/null | head -1)
-        if [ -n "$session_log" ]; then
-          echo "── runner session log: $session_log ──"
-          tail -80 "$session_log"
-        else
-          echo "── no runner session log found ──"
-        fi
-      fi
-    - command -v xcresultparser >/dev/null 2>&1 || brew install a7ex/homebrew-formulae/xcresultparser
-    - xcresultparser --output-format junit UITestResults > ui-test-results.xml || true
-    - |
-      if [ -f ui-test-results.xml ]; then
-        FAILURES=$(grep -c 'failures="[1-9]' ui-test-results.xml || true)
-        ERRORS=$(grep -c 'errors="[1-9]' ui-test-results.xml || true)
-        if [ "$FAILURES" -gt 0 ] || [ "$ERRORS" -gt 0 ]; then
-          echo "❌ UI tests failed (${FAILURES} failure suites, ${ERRORS} error suites)"
-          exit 1
-        fi
-        echo "✅ All UI tests passed (xcodebuild exit ${XCODE_EXIT} was logarchive noise)"
-      elif [ "$XCODE_EXIT" -ne 0 ]; then
-        echo "❌ UI tests failed and no results produced (exit code ${XCODE_EXIT})"
-        exit 1
-      fi
-  artifacts:
-    when: always
-    paths:
-      - UITestResults.xcresult
-      - ui-build.log
-    reports:
-      junit: ui-test-results.xml
-    expire_in: 7 days
-  rules:
-    - if: ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "pipeline") && $BINDINGS_VERSION
-      when: never
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_BRANCH == "main"
-
-# Coverage: xcodebuild with code coverage enabled (main merges only).
-# Produces Cobertura XML for GitLab MR annotations and pushes metrics
-# to Grafana Pushgateway. Mirrors iOS coverage job — same toolchain.
-coverage:unit:
-  extends: [.macos-job, .spm-cache-readonly, .timeout-long]
-  stage: test
-  needs:
-    - job: build:debug
-      artifacts: true
-      optional: true
-  variables:
-    VAUCHI_PLATFORM_USE_LOCAL_XCFRAMEWORK: "1"
-  before_script:
-    - !reference [.macos-job, before_script]
-    - command -v xcresultparser >/dev/null 2>&1 || brew install a7ex/homebrew-formulae/xcresultparser
-  script:
-    # Prefer Vauchi.xcodeproj from build:debug artifact; regen only if missing
-    # (e.g. scheduled pipelines where build:debug doesn't run).
-    - |
-      if [ ! -d Vauchi.xcodeproj ]; then
-        command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
-        xcodegen generate
-      fi
-    - ./scripts/fix-xcframework-symlinks.sh
-    - |
-      xcodebuild -project Vauchi.xcodeproj -scheme Vauchi \
-        -destination "platform=macOS" \
-        -clonedSourcePackagesDirPath .spm-packages \
-        -derivedDataPath .derived-data \
-        -disableAutomaticPackageResolution \
-        CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO \
-        ENABLE_HARDENED_RUNTIME=NO \
-        test -enableCodeCoverage YES \
-        -parallel-testing-enabled YES -parallel-testing-worker-count 4 \
-        -resultBundlePath coverage_result \
-        -only-testing:VauchiTests
-    - xcrun xccov view --report coverage_result.xcresult
-    - xcresultparser --output-format cobertura coverage_result.xcresult > cobertura.xml
-    - |
-      curl --silent --fail \
-        "${CI_API_V4_URL}/projects/vauchi%2Fscripts/repository/files/scripts%2Fci%2Fpush-coverage.sh/raw?ref=${VAUCHI_SCRIPTS_REF}" \
-        -o push-coverage.sh
-      chmod +x push-coverage.sh
-    - ./push-coverage.sh cobertura.xml macos || true
-  coverage: '/Line Coverage:\s+(\d+(?:\.\d+)?%)/'
-  artifacts:
-    reports:
-      coverage_report:
-        coverage_format: cobertura
-        path: cobertura.xml
-    paths:
-      - cobertura.xml
-    expire_in: 1 week
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "pipeline" || $CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "api"
-      when: never
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-
-
-test:snapshots:
-  extends: [.macos-job, .spm-cache-readonly]
-  stage: test
-  needs:
-    - job: build:debug
-      artifacts: true
-      optional: true
-  variables:
-    VRT_PLATFORM: macos
-    VRT_SCREENSHOT_DIR: VauchiSnapshotTests/__Snapshots__/VisualRegressionTests
-    # See test:unit comment — env var keeps the manifest on `path:`
-    # so xcodebuild doesn't try to re-download the xcframework.
-    VAUCHI_PLATFORM_USE_LOCAL_XCFRAMEWORK: "1"
-  # Enforced — snapshot flakes must be investigated, not ignored
-  script:
-    - |
-      BASELINE_COUNT=0
-      if [ -d VauchiSnapshotTests/__Snapshots__ ]; then
-        BASELINE_COUNT=$(find VauchiSnapshotTests/__Snapshots__ -name '*.png' | wc -l | tr -d ' ')
-      fi
-      echo "Snapshot baselines found: ${BASELINE_COUNT}"
-      if [ "${BASELINE_COUNT}" -eq 0 ]; then
-        echo ""
-        echo "=========================================="
-        echo "  BASELINES MISSING — advisory skip"
-        echo "=========================================="
-        echo "No committed PNG baselines in VauchiSnapshotTests/__Snapshots__/"
-        echo ""
-        echo "Use the 'Record baselines' manual job in this pipeline to generate them."
-        echo "CI is the single source of truth — do not record locally."
-        exit 0
-      fi
-    # Prefer Vauchi.xcodeproj from build:debug artifact; regen only if missing.
-    - |
-      if [ ! -d Vauchi.xcodeproj ]; then
-        command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
-        xcodegen generate
-      fi
-    # SPM state cached from build:debug — disable automatic resolution to prevent
-    # implicit re-resolve that hangs on binary target download (401 auth failure).
-    - ./scripts/fix-xcframework-symlinks.sh
-    # Per-job SPM mirror-config isolation — immune to the shared-config race
-    # (problem 2026-06-29-spm-mirror-config-race).
-    - ./scripts/ci-spm-isolate-config.sh
+      # Explicit: without it the block exits with the status of the last
+      # test above, which is non-zero whenever the runner cannot be
+      # identified — failing the job for the precheck's own reasons.
+      exit 0
     - HOME="$CI_PROJECT_DIR/.spm-home" xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data -disableAutomaticPackageResolution CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
     # xcodebuild exit 65 can be a false positive from logarchive errors (error 13,
     # "failed to read version.plist"). It can also restart after a transient launch
