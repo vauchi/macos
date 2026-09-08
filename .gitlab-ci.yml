@@ -1137,6 +1137,82 @@ test:unit:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == "main"
 
+# UI tests — the only layer that can observe what VoiceOver actually stops
+# on. A unit test sees the view tree the app *declares*; XCUITest sees the
+# accessibility tree AppKit *publishes*, and the two diverge (SwiftUI lifts
+# a Label's icon out of its button's subtree, so `.accessibilityHidden` on
+# the image does not reach it). Apple's own audit passes through that gap
+# because `.sufficientElementDescription` asks whether an element has a
+# description, not whether the description means anything.
+#
+# Serial, not parallel: XCUITest drives one app instance through a real
+# window server, and the console-session guard below is the same one
+# test:unit carries — outside an Aqua session xcodebuild does not fail, it
+# waits until the job times out.
+test:ui:
+  extends: [.macos-job, .spm-cache-readonly, .timeout-long]
+  stage: test
+  needs:
+    - job: build:debug
+      artifacts: true
+      optional: true
+  variables:
+    VAUCHI_PLATFORM_USE_LOCAL_XCFRAMEWORK: "1"
+  script:
+    - |
+      if [ ! -d Vauchi.xcodeproj ]; then
+        command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
+        xcodegen generate
+      fi
+    - ./scripts/fix-xcframework-symlinks.sh
+    - ./scripts/ci-spm-isolate-config.sh
+    - |
+      console_owner=$(stat -f '%Su' /dev/console 2>&1)
+      echo "launchd-session=$(launchctl managername 2>&1) uid=$(id -u) console-owner=$console_owner"
+      if [ "$console_owner" != "$(id -un)" ]; then
+        echo "ERROR: the console session belongs to '$console_owner', not '$(id -un)'." >&2
+        echo "XCUITest cannot drive an app from a switched-out session." >&2
+        exit 1
+      fi
+    - HOME="$CI_PROJECT_DIR/.spm-home" xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data -disableAutomaticPackageResolution CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
+    - rm -rf UITestResults
+    - |
+      set +e
+      export HOME="$CI_PROJECT_DIR/.spm-home"
+      xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" \
+        -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data \
+        -disableAutomaticPackageResolution \
+        -only-testing:VauchiUITests -resultBundlePath UITestResults test-without-building
+      XCODE_EXIT=$?
+      set -e
+    - command -v xcresultparser >/dev/null 2>&1 || brew install a7ex/homebrew-formulae/xcresultparser
+    - xcresultparser --output-format junit UITestResults > ui-test-results.xml || true
+    - |
+      if [ -f ui-test-results.xml ]; then
+        FAILURES=$(grep -c 'failures="[1-9]' ui-test-results.xml || true)
+        ERRORS=$(grep -c 'errors="[1-9]' ui-test-results.xml || true)
+        if [ "$FAILURES" -gt 0 ] || [ "$ERRORS" -gt 0 ]; then
+          echo "❌ UI tests failed (${FAILURES} failure suites, ${ERRORS} error suites)"
+          exit 1
+        fi
+        echo "✅ All UI tests passed (xcodebuild exit ${XCODE_EXIT} was logarchive noise)"
+      elif [ "$XCODE_EXIT" -ne 0 ]; then
+        echo "❌ UI tests failed and no results produced (exit code ${XCODE_EXIT})"
+        exit 1
+      fi
+  artifacts:
+    when: always
+    paths:
+      - UITestResults
+    reports:
+      junit: ui-test-results.xml
+    expire_in: 7 days
+  rules:
+    - if: ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "pipeline") && $BINDINGS_VERSION
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
+
 # Coverage: xcodebuild with code coverage enabled (main merges only).
 # Produces Cobertura XML for GitLab MR annotations and pushes metrics
 # to Grafana Pushgateway. Mirrors iOS coverage job — same toolchain.
