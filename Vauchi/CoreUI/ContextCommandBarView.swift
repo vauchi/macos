@@ -71,6 +71,9 @@ struct ContextCommandBarView: View {
             }
             .disabled(!action.enabled)
             .accessibilityLabel(action.accessibilityLabel)
+            // Stable frontend a11y anchor for UI tests, matching the iOS
+            // shell's `command.*` identifiers.
+            .accessibilityIdentifier(identifier(for: role))
             .help(role)
             .keyboardShortcut(shortcut(for: role))
         } else {
@@ -86,6 +89,14 @@ struct ContextCommandBarView: View {
                     interactionID: action.interactionID
                 )
             )
+        }
+    }
+
+    private func identifier(for role: String) -> String {
+        switch role {
+        case "Back": "command.back"
+        case "Navigate": "command.navigation"
+        default: "command.secondary"
         }
     }
 
