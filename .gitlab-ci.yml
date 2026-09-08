@@ -1094,7 +1094,20 @@ test:unit:
         echo "lock the screen or fast-user-switch away from that session." >&2
         exit 1
       fi
-    - HOME="$CI_PROJECT_DIR/.spm-home" xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data -disableAutomaticPackageResolution CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
+    # Signed, into its own derived-data tree — both halves are load-bearing.
+    #
+    # CODE_SIGNING_ALLOWED=NO (what test:unit uses, correctly, for an
+    # in-process unit test) strips the runner's entitlements. The XCTRunner
+    # is sandboxed and reaches testmanagerd through
+    # com.apple.security.temporary-exception.mach-lookup.global-name; with no
+    # entitlements it cannot look the service up, so it blocks in policy
+    # evaluation at exec and never reaches main. That surfaces 350s later as
+    # "The test runner hung before establishing connection".
+    #
+    # And it needs a separate tree because build:debug's artifact already
+    # holds unsigned products: xcodebuild finds them up to date and re-signs
+    # nothing, so enabling signing here alone changes nothing.
+    - HOME="$CI_PROJECT_DIR/.spm-home" xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data-ui -disableAutomaticPackageResolution CODE_SIGN_IDENTITY="-" CODE_SIGNING_REQUIRED=YES CODE_SIGNING_ALLOWED=YES ENABLE_HARDENED_RUNTIME=NO build-for-testing
     - rm -rf TestResults
     # xcodebuild exit 65 can be a false positive from logarchive errors (error 13,
     # "failed to read version.plist"). Capture exit code and check actual test results.
@@ -1176,25 +1189,34 @@ test:ui:
       fi
     - HOME="$CI_PROJECT_DIR/.spm-home" xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data -disableAutomaticPackageResolution CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
     - rm -rf UITestResults
-    # Print the runner's signature before the wait. It does not decide
-    # anything — Xcode re-signs the runner from its own XCTRunner template, so
-    # the build's signing flags never reach it — but a failure that surfaces
-    # 350s later as a bare "hung before establishing connection" is worth
-    # spending two lines to narrow.
+    # Fail here rather than 350s into a silent hang. `codesign -dv` is not
+    # enough — it reports the Mach-O signature, which exists either way. Only
+    # the entitlements tell you whether the runner can reach testmanagerd.
     - |
-      runner=$(find .derived-data/Build/Products -maxdepth 2 -name "VauchiUITests-Runner.app" | head -1)
+      runner=$(find .derived-data-ui/Build/Products -maxdepth 2 -name "VauchiUITests-Runner.app" | head -1)
       if [ -z "$runner" ]; then
-        echo "WARNING: VauchiUITests-Runner.app not found under .derived-data" >&2
-      else
-        echo "runner=$runner"
-        codesign -dv "$runner" 2>&1 | grep -E "Signature|Identifier|flags" || \
-          echo "ERROR: runner is unsigned — it will hang instead of failing" >&2
+        echo "ERROR: VauchiUITests-Runner.app not found under .derived-data-ui" >&2
+        exit 1
       fi
+      echo "runner=$runner"
+      if ! codesign --verify --verbose=1 "$runner"; then
+        echo "ERROR: runner signature is invalid — it will hang at exec, not fail" >&2
+        exit 1
+      fi
+      if ! codesign -d --entitlements - --xml "$runner" 2>/dev/null \
+        | grep -q "com.apple.testmanagerd"; then
+        echo "ERROR: runner carries no mach-lookup entitlement for testmanagerd." >&2
+        echo "It cannot connect, and XCUITest reports that as a hang. Check that" >&2
+        echo "this job builds with CODE_SIGNING_ALLOWED=YES into its own" >&2
+        echo "derived-data tree, not build:debug's unsigned one." >&2
+        exit 1
+      fi
+      echo "runner entitlements include testmanagerd mach-lookup"
     - |
       set +e
       export HOME="$CI_PROJECT_DIR/.spm-home"
       xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" \
-        -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data \
+        -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data-ui \
         -disableAutomaticPackageResolution \
         -only-testing:VauchiUITests -resultBundlePath UITestResults test-without-building \
         2>&1 | tee ui-build.log
