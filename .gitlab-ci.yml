@@ -1094,20 +1094,7 @@ test:unit:
         echo "lock the screen or fast-user-switch away from that session." >&2
         exit 1
       fi
-    # Signed, into its own derived-data tree — both halves are load-bearing.
-    #
-    # CODE_SIGNING_ALLOWED=NO (what test:unit uses, correctly, for an
-    # in-process unit test) strips the runner's entitlements. The XCTRunner
-    # is sandboxed and reaches testmanagerd through
-    # com.apple.security.temporary-exception.mach-lookup.global-name; with no
-    # entitlements it cannot look the service up, so it blocks in policy
-    # evaluation at exec and never reaches main. That surfaces 350s later as
-    # "The test runner hung before establishing connection".
-    #
-    # And it needs a separate tree because build:debug's artifact already
-    # holds unsigned products: xcodebuild finds them up to date and re-signs
-    # nothing, so enabling signing here alone changes nothing.
-    - HOME="$CI_PROJECT_DIR/.spm-home" xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data-ui -disableAutomaticPackageResolution CODE_SIGN_IDENTITY="-" CODE_SIGNING_REQUIRED=YES CODE_SIGNING_ALLOWED=YES ENABLE_HARDENED_RUNTIME=NO build-for-testing
+    - HOME="$CI_PROJECT_DIR/.spm-home" xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data -disableAutomaticPackageResolution CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
     - rm -rf TestResults
     # xcodebuild exit 65 can be a false positive from logarchive errors (error 13,
     # "failed to read version.plist"). Capture exit code and check actual test results.
@@ -1187,7 +1174,20 @@ test:ui:
         echo "XCUITest cannot drive an app from a switched-out session." >&2
         exit 1
       fi
-    - HOME="$CI_PROJECT_DIR/.spm-home" xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data -disableAutomaticPackageResolution CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
+    # Signed, into its own derived-data tree — both halves are load-bearing.
+    #
+    # CODE_SIGNING_ALLOWED=NO (what test:unit uses, correctly, for an
+    # in-process unit test) strips the runner's entitlements. The XCTRunner
+    # is sandboxed and reaches testmanagerd through
+    # com.apple.security.temporary-exception.mach-lookup.global-name; with no
+    # entitlements it cannot look the service up, so it blocks in policy
+    # evaluation at exec and never reaches main. That surfaces 350s later as
+    # "The test runner hung before establishing connection".
+    #
+    # And it needs a separate tree because build:debug's artifact already
+    # holds unsigned products: xcodebuild finds them up to date and re-signs
+    # nothing, so enabling signing here alone changes nothing.
+    - HOME="$CI_PROJECT_DIR/.spm-home" xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data-ui -disableAutomaticPackageResolution CODE_SIGN_IDENTITY="-" CODE_SIGNING_REQUIRED=YES CODE_SIGNING_ALLOWED=YES ENABLE_HARDENED_RUNTIME=NO build-for-testing
     - rm -rf UITestResults
     # Fail here rather than 350s into a silent hang. `codesign -dv` is not
     # enough — it reports the Mach-O signature, which exists either way. Only
