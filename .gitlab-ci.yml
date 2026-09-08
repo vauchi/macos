@@ -1076,6 +1076,12 @@ test:unit:
     # (problem 2026-06-29-spm-mirror-config-race). Both xcodebuild invocations
     # below read the mirror config via the job-private HOME.
     - ./scripts/ci-spm-isolate-config.sh
+    # `xcodebuild test` launches a real test host, which needs a GUI (Aqua)
+    # launchd session to reach `com.apple.testmanagerd`. Outside one it does
+    # not error, it waits — every macOS test:unit between 2026-08-21 and
+    # 2026-09-07 died on the 1h job timeout after `Writing result bundle`,
+    # with no output at all. One line up front tells a hang from a failure.
+    - echo "launchd-session=$(launchctl managername 2>&1) uid=$(id -u)"
     - HOME="$CI_PROJECT_DIR/.spm-home" xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data -disableAutomaticPackageResolution CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
     - rm -rf TestResults
     # xcodebuild exit 65 can be a false positive from logarchive errors (error 13,
