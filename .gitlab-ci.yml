@@ -1081,7 +1081,19 @@ test:unit:
     # not error, it waits — every macOS test:unit between 2026-08-21 and
     # 2026-09-07 died on the 1h job timeout after `Writing result bundle`,
     # with no output at all. One line up front tells a hang from a failure.
-    - echo "launchd-session=$(launchctl managername 2>&1) uid=$(id -u) console-owner=$(stat -f '%Su' /dev/console 2>&1)"
+    - |
+      console_owner=$(stat -f '%Su' /dev/console 2>&1)
+      echo "launchd-session=$(launchctl managername 2>&1) uid=$(id -u) console-owner=$console_owner"
+      if [ "$console_owner" != "$(id -un)" ]; then
+        echo "ERROR: the console session belongs to '$console_owner', not '$(id -un)'." >&2
+        echo "A macOS test host cannot be launched from a switched-out session." >&2
+        echo "xcodebuild does not fail in that state, it waits — this job would" >&2
+        echo "print nothing further and die on the 1h timeout." >&2
+        echo "Fix on the runner host: restore '$(id -un)' as the foreground console" >&2
+        echo "user (auto-login is configured, so a reboot restores it), and do not" >&2
+        echo "lock the screen or fast-user-switch away from that session." >&2
+        exit 1
+      fi
     - HOME="$CI_PROJECT_DIR/.spm-home" xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data -disableAutomaticPackageResolution CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
     - rm -rf TestResults
     # xcodebuild exit 65 can be a false positive from logarchive errors (error 13,
