@@ -1201,9 +1201,24 @@ test:ui:
       xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" \
         -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data \
         -disableAutomaticPackageResolution \
-        -only-testing:VauchiUITests -resultBundlePath UITestResults test-without-building
-      XCODE_EXIT=$?
+        -only-testing:VauchiUITests -resultBundlePath UITestResults test-without-building \
+        2>&1 | tee ui-build.log
+      XCODE_EXIT=${PIPESTATUS[0]}
       set -e
+    # The runner's own session log is the only place the connection failure
+    # explains itself; xcodebuild prints the path and nothing else. Surface
+    # it here rather than leaving the next reader to fetch a result bundle.
+    - |
+      if grep -q "hung before establishing connection" ui-build.log 2>/dev/null \
+        || [ ! -d UITestResults.xcresult ]; then
+        session_log=$(find UITestResults.xcresult UITestResults -name "Session-*.log" 2>/dev/null | head -1)
+        if [ -n "$session_log" ]; then
+          echo "── runner session log: $session_log ──"
+          tail -80 "$session_log"
+        else
+          echo "── no runner session log found ──"
+        fi
+      fi
     - command -v xcresultparser >/dev/null 2>&1 || brew install a7ex/homebrew-formulae/xcresultparser
     - xcresultparser --output-format junit UITestResults > ui-test-results.xml || true
     - |
@@ -1222,7 +1237,8 @@ test:ui:
   artifacts:
     when: always
     paths:
-      - UITestResults
+      - UITestResults.xcresult
+      - ui-build.log
     reports:
       junit: ui-test-results.xml
     expire_in: 7 days
