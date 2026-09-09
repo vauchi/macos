@@ -1137,18 +1137,22 @@ test:unit:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == "main"
 
+# Coverage: xcodebuild with code coverage enabled (main merges only).
+# Produces Cobertura XML for GitLab MR annotations and pushes metrics
+# to Grafana Pushgateway. Mirrors iOS coverage job — same toolchain.
 # UI tests — the only layer that can observe what VoiceOver actually stops
 # on. A unit test sees the view tree the app *declares*; XCUITest sees the
-# accessibility tree AppKit *publishes*, and the two diverge (SwiftUI lifts
-# a Label's icon out of its button's subtree, so `.accessibilityHidden` on
-# the image does not reach it). Apple's own audit passes through that gap
-# because `.sufficientElementDescription` asks whether an element has a
-# description, not whether the description means anything.
+# tree AppKit *publishes*, and the two diverge: SwiftUI lifts a Label's icon
+# out of its button's subtree, so `.accessibilityHidden` on the image never
+# reaches it. Apple's own audit passes straight through that gap, because
+# `.sufficientElementDescription` asks whether an element has a description,
+# not whether the description means anything.
 #
-# Serial, not parallel: XCUITest drives one app instance through a real
-# window server, and the console-session guard below is the same one
-# test:unit carries — outside an Aqua session xcodebuild does not fail, it
-# waits until the job times out.
+# Manual, because it cannot pass while macOS refuses automation mode for the
+# runner — host configuration that nothing in this repo affects. See
+# _private/docs/backlog/2026-09-08-macos-ui-runner-needs-accessibility-grant.
+# `when: manual` rather than `allow_failure: true` alone: a job reporting
+# success without running is the linux-qt failure mode filed the same day.
 test:ui:
   extends: [.macos-job, .spm-cache-readonly, .timeout-long]
   stage: test
@@ -1175,23 +1179,17 @@ test:ui:
         exit 1
       fi
     # Signed, into its own derived-data tree — both halves are load-bearing.
-    #
-    # CODE_SIGNING_ALLOWED=NO (what test:unit uses, correctly, for an
-    # in-process unit test) strips the runner's entitlements. The XCTRunner
-    # is sandboxed and reaches testmanagerd through
-    # com.apple.security.temporary-exception.mach-lookup.global-name; with no
-    # entitlements it cannot look the service up, so it blocks in policy
-    # evaluation at exec and never reaches main. That surfaces 350s later as
-    # "The test runner hung before establishing connection".
-    #
-    # And it needs a separate tree because build:debug's artifact already
-    # holds unsigned products: xcodebuild finds them up to date and re-signs
-    # nothing, so enabling signing here alone changes nothing.
+    # CODE_SIGNING_ALLOWED=NO, which test:unit uses correctly for an
+    # in-process unit test, strips the runner's entitlements; the sandboxed
+    # XCTRunner reaches testmanagerd through a mach-lookup exception and
+    # without it blocks in policy evaluation at exec. And it needs its own
+    # tree because build:debug's artifact holds unsigned products that
+    # xcodebuild would otherwise consider up to date and not re-sign.
     - HOME="$CI_PROJECT_DIR/.spm-home" xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data-ui -disableAutomaticPackageResolution CODE_SIGN_IDENTITY="-" CODE_SIGNING_REQUIRED=YES CODE_SIGNING_ALLOWED=YES ENABLE_HARDENED_RUNTIME=NO build-for-testing
-    - rm -rf UITestResults
+    - rm -rf UITestResults UITestResults.xcresult
     # Fail here rather than 350s into a silent hang. `codesign -dv` is not
-    # enough — it reports the Mach-O signature, which exists either way. Only
-    # the entitlements tell you whether the runner can reach testmanagerd.
+    # enough: it reports the Mach-O signature, which is present either way.
+    # Only the entitlements say whether the runner can reach testmanagerd.
     - |
       runner=$(find .derived-data-ui/Build/Products -maxdepth 2 -name "VauchiUITests-Runner.app" | head -1)
       if [ -z "$runner" ]; then
@@ -1200,59 +1198,183 @@ test:ui:
       fi
       echo "runner=$runner"
       if ! codesign --verify --verbose=1 "$runner"; then
-        echo "ERROR: runner signature is invalid — it will hang at exec, not fail" >&2
+        echo "ERROR: runner signature invalid — it will hang at exec, not fail" >&2
         exit 1
       fi
-      if ! codesign -d --entitlements - --xml "$runner" 2>/dev/null \
-        | grep -q "com.apple.testmanagerd"; then
+      if ! codesign -d --entitlements - --xml "$runner" 2>/dev/null | grep -q "com.apple.testmanagerd"; then
         echo "ERROR: runner carries no mach-lookup entitlement for testmanagerd." >&2
-        echo "It cannot connect, and XCUITest reports that as a hang. Check that" >&2
-        echo "this job builds with CODE_SIGNING_ALLOWED=YES into its own" >&2
-        echo "derived-data tree, not build:debug's unsigned one." >&2
+        echo "It cannot connect, and XCUITest reports that as a hang." >&2
         exit 1
       fi
       echo "runner entitlements include testmanagerd mach-lookup"
-    # Automation mode additionally needs an Accessibility grant for the
-    # process responsible for the run. Without one xcodebuild reports no
-    # denial — it waits, then says "Timed out while enabling automation
-    # mode", naming the symptom and not the cause. Print what TCC holds so
-    # a failing log carries the evidence.
-    #
-    # `set +e` for the whole probe: this is diagnostics, and the first
-    # version of it killed the job silently when `pgrep`/`ps` returned
-    # non-zero under the job's `set -e`. The only non-zero exit here is the
-    # deliberate one below.
+    # testmanagerd wedges: on 2026-09-09 it had been up 24h, was sleeping at
+    # 0% CPU, and refused control sessions ("Timed out after 120.0s while
+    # initiating control session with daemon"), failing test:unit and test:ui
+    # alike. `killall -9 testmanagerd` clears it; launchd respawns on demand.
+    # Report its age so the next reader does not have to rediscover this.
     - |
       set +e
-      TCC_DB="/Library/Application Support/com.apple.TCC/TCC.db"
-      runner_pid=$(pgrep -n gitlab-runner)
-      runner_raw=$(ps -o comm= -p "${runner_pid:-0}" 2>/dev/null | sed 's/^ *//')
-      # TCC records the resolved binary; `ps` reports the symlink Homebrew
-      # puts on PATH. Comparing those two never matches.
-      runner_bin=$(realpath "$runner_raw" 2>/dev/null)
-      [ -z "$runner_bin" ] && runner_bin="$runner_raw"
-      echo "responsible-process candidate: ${runner_bin:-<unknown>}"
-      rows=$(sqlite3 "$TCC_DB" "select client || ' => ' || auth_value from access where service='kTCCServiceAccessibility'" 2>/dev/null)
-      sql_rc=$?
-      set -e
-      if [ "$sql_rc" -ne 0 ] || [ -z "$rows" ]; then
-        echo "NOTE: TCC database unreadable here — skipping the Accessibility precheck"
+      tm_pid=$(pgrep -n testmanagerd)
+      if [ -n "$tm_pid" ]; then
+        echo "testmanagerd pid=$tm_pid age=$(ps -o etime= -p "$tm_pid" | tr -d ' ')"
       else
-        echo "Accessibility grants in TCC (2 = allowed):"
-        printf '%s\n' "$rows" | sed 's/^/  /'
-        if [ -n "$runner_bin" ] && ! printf '%s\n' "$rows" | grep -qF "$runner_bin => 2"; then
-          echo "ERROR: no Accessibility grant for $runner_bin." >&2
-          echo "XCUITest cannot enable automation mode without one, and it" >&2
-          echo "times out rather than failing. Grant it in System Settings >" >&2
-          echo "Privacy & Security > Accessibility and restart the runner." >&2
-          echo "TCC is SIP-protected, so this cannot be scripted from a job." >&2
-          exit 1
+        echo "testmanagerd not running (launchd will spawn it on demand)"
+      fi
+      set -e
+    - |
+      set +e
+      export HOME="$CI_PROJECT_DIR/.spm-home"
+      xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" \
+        -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data-ui \
+        -disableAutomaticPackageResolution \
+        -only-testing:VauchiUITests -resultBundlePath UITestResults \
+        test-without-building 2>&1 | tee ui-build.log
+      XCODE_EXIT=${PIPESTATUS[0]}
+      set -e
+    # The runner's own session log is the only place a connection failure
+    # explains itself; xcodebuild prints its path and nothing else.
+    - |
+      if grep -q "hung before establishing connection" ui-build.log 2>/dev/null; then
+        session_log=$(find UITestResults.xcresult UITestResults -name "Session-*.log" 2>/dev/null | head -1)
+        if [ -n "$session_log" ]; then
+          echo "── runner session log: $session_log ──"
+          tail -80 "$session_log"
         fi
       fi
-      # Explicit: without it the block exits with the status of the last
-      # test above, which is non-zero whenever the runner cannot be
-      # identified — failing the job for the precheck's own reasons.
-      exit 0
+    - command -v xcresultparser >/dev/null 2>&1 || brew install a7ex/homebrew-formulae/xcresultparser
+    - xcresultparser --output-format junit UITestResults > ui-test-results.xml || true
+    - |
+      if [ -f ui-test-results.xml ]; then
+        FAILURES=$(grep -c 'failures="[1-9]' ui-test-results.xml || true)
+        ERRORS=$(grep -c 'errors="[1-9]' ui-test-results.xml || true)
+        if [ "$FAILURES" -gt 0 ] || [ "$ERRORS" -gt 0 ]; then
+          echo "❌ UI tests failed (${FAILURES} failure suites, ${ERRORS} error suites)"
+          exit 1
+        fi
+        echo "✅ All UI tests passed (xcodebuild exit ${XCODE_EXIT} was logarchive noise)"
+      elif [ "$XCODE_EXIT" -ne 0 ]; then
+        echo "❌ UI tests failed and no results produced (exit code ${XCODE_EXIT})"
+        exit 1
+      fi
+  artifacts:
+    when: always
+    paths:
+      - UITestResults.xcresult
+      - ui-build.log
+    reports:
+      junit: ui-test-results.xml
+    expire_in: 7 days
+  rules:
+    - if: ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "pipeline") && $BINDINGS_VERSION
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: manual
+      allow_failure: true
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: manual
+      allow_failure: true
+
+coverage:unit:
+  extends: [.macos-job, .spm-cache-readonly, .timeout-long]
+  stage: test
+  needs:
+    - job: build:debug
+      artifacts: true
+      optional: true
+  variables:
+    VAUCHI_PLATFORM_USE_LOCAL_XCFRAMEWORK: "1"
+  before_script:
+    - !reference [.macos-job, before_script]
+    - command -v xcresultparser >/dev/null 2>&1 || brew install a7ex/homebrew-formulae/xcresultparser
+  script:
+    # Prefer Vauchi.xcodeproj from build:debug artifact; regen only if missing
+    # (e.g. scheduled pipelines where build:debug doesn't run).
+    - |
+      if [ ! -d Vauchi.xcodeproj ]; then
+        command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
+        xcodegen generate
+      fi
+    - ./scripts/fix-xcframework-symlinks.sh
+    - |
+      xcodebuild -project Vauchi.xcodeproj -scheme Vauchi \
+        -destination "platform=macOS" \
+        -clonedSourcePackagesDirPath .spm-packages \
+        -derivedDataPath .derived-data \
+        -disableAutomaticPackageResolution \
+        CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO \
+        ENABLE_HARDENED_RUNTIME=NO \
+        test -enableCodeCoverage YES \
+        -parallel-testing-enabled YES -parallel-testing-worker-count 4 \
+        -resultBundlePath coverage_result \
+        -only-testing:VauchiTests
+    - xcrun xccov view --report coverage_result.xcresult
+    - xcresultparser --output-format cobertura coverage_result.xcresult > cobertura.xml
+    - |
+      curl --silent --fail \
+        "${CI_API_V4_URL}/projects/vauchi%2Fscripts/repository/files/scripts%2Fci%2Fpush-coverage.sh/raw?ref=${VAUCHI_SCRIPTS_REF}" \
+        -o push-coverage.sh
+      chmod +x push-coverage.sh
+    - ./push-coverage.sh cobertura.xml macos || true
+  coverage: '/Line Coverage:\s+(\d+(?:\.\d+)?%)/'
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: cobertura.xml
+    paths:
+      - cobertura.xml
+    expire_in: 1 week
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "pipeline" || $CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "api"
+      when: never
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+
+
+test:snapshots:
+  extends: [.macos-job, .spm-cache-readonly]
+  stage: test
+  needs:
+    - job: build:debug
+      artifacts: true
+      optional: true
+  variables:
+    VRT_PLATFORM: macos
+    VRT_SCREENSHOT_DIR: VauchiSnapshotTests/__Snapshots__/VisualRegressionTests
+    # See test:unit comment — env var keeps the manifest on `path:`
+    # so xcodebuild doesn't try to re-download the xcframework.
+    VAUCHI_PLATFORM_USE_LOCAL_XCFRAMEWORK: "1"
+  # Enforced — snapshot flakes must be investigated, not ignored
+  script:
+    - |
+      BASELINE_COUNT=0
+      if [ -d VauchiSnapshotTests/__Snapshots__ ]; then
+        BASELINE_COUNT=$(find VauchiSnapshotTests/__Snapshots__ -name '*.png' | wc -l | tr -d ' ')
+      fi
+      echo "Snapshot baselines found: ${BASELINE_COUNT}"
+      if [ "${BASELINE_COUNT}" -eq 0 ]; then
+        echo ""
+        echo "=========================================="
+        echo "  BASELINES MISSING — advisory skip"
+        echo "=========================================="
+        echo "No committed PNG baselines in VauchiSnapshotTests/__Snapshots__/"
+        echo ""
+        echo "Use the 'Record baselines' manual job in this pipeline to generate them."
+        echo "CI is the single source of truth — do not record locally."
+        exit 0
+      fi
+    # Prefer Vauchi.xcodeproj from build:debug artifact; regen only if missing.
+    - |
+      if [ ! -d Vauchi.xcodeproj ]; then
+        command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
+        xcodegen generate
+      fi
+    # SPM state cached from build:debug — disable automatic resolution to prevent
+    # implicit re-resolve that hangs on binary target download (401 auth failure).
+    - ./scripts/fix-xcframework-symlinks.sh
+    # Per-job SPM mirror-config isolation — immune to the shared-config race
+    # (problem 2026-06-29-spm-mirror-config-race).
+    - ./scripts/ci-spm-isolate-config.sh
     - HOME="$CI_PROJECT_DIR/.spm-home" xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data -disableAutomaticPackageResolution CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
     # xcodebuild exit 65 can be a false positive from logarchive errors (error 13,
     # "failed to read version.plist"). It can also restart after a transient launch
@@ -1309,33 +1431,11 @@ test:ui:
     reports:
       junit: test-results.xml
     expire_in: 7 days
-  # Manual because it cannot pass yet: the runner reaches testmanagerd,
-  # and macOS refuses to enable automation mode for it. That is host
-  # configuration — see
-  # _private/docs/backlog/2026-09-08-macos-ui-runner-needs-accessibility-grant.
-  # Nothing in this repo changes it, so running it on every pipeline only
-  # buys a five-minute red.
-  #
-  # An earlier version of this comment also blamed this job for test:unit
-  # failing, on the theory that it disturbed the shared working directory
-  # via fix-xcframework-symlinks.sh. That was wrong: pipeline 2829442148
-  # ran with this job never started (started_at null) and test:unit failed
-  # anyway, with the same "hung before establishing connection". test:unit
-  # is broken on this host independently, and its definition is
-  # byte-identical to main.
-  #
-  # `when: manual`, not `allow_failure: true` on its own: a job reporting
-  # success without running is the linux-qt failure mode filed the same
-  # day. A manual job is visibly not-run.
   rules:
     - if: ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "pipeline") && $BINDINGS_VERSION
       when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: manual
-      allow_failure: true
     - if: $CI_COMMIT_BRANCH == "main"
-      when: manual
-      allow_failure: true
 
 # Manual job: record snapshot baselines on CI and commit them to the branch.
 # CI is the single source of truth for baselines — never record locally.
