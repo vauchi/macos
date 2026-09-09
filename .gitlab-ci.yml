@@ -1214,11 +1214,26 @@ test:ui:
     # Report its age so the next reader does not have to rediscover this.
     - |
       set +e
-      tm_pid=$(pgrep -n testmanagerd)
-      if [ -n "$tm_pid" ]; then
-        echo "testmanagerd pid=$tm_pid age=$(ps -o etime= -p "$tm_pid" | tr -d ' ')"
+      # Report the HOST daemon specifically. `pgrep -n testmanagerd` returns
+      # the newest match, which is the iOS simulator runtime's copy whenever
+      # a simulator is booted — so it reported a two-minute-old daemon while
+      # the host one was half an hour old. A wrong number in a log is worse
+      # than none.
+      host_tm=$(ps -eo pid,comm | awk '$2 == "/usr/libexec/testmanagerd" { print $1; exit }')
+      if [ -n "$host_tm" ]; then
+        echo "host testmanagerd pid=$host_tm age=$(ps -o etime= -p "$host_tm" | tr -d ' ')"
       else
-        echo "testmanagerd not running (launchd will spawn it on demand)"
+        echo "host testmanagerd not running (launchd spawns it on demand)"
+      fi
+      # A booted simulator runs its own testmanagerd under the same uid.
+      # Whether that competes with the host one for automation mode is not
+      # established, but it is a difference worth seeing in the log when a
+      # macOS-destination UI test fails to initialise.
+      sim_tm=$(ps -eo pid,args | grep "[s]imruntime.*testmanagerd" | awk '{ print $1 }' | tr '\n' ' ')
+      if [ -n "$sim_tm" ]; then
+        echo "NOTE: simulator-runtime testmanagerd also running (pids: $sim_tm)"
+        echo "      a booted simulator shares this uid; shut simulators down"
+        echo "      before trusting a macOS-destination UI test result."
       fi
       set -e
     - |
