@@ -1309,19 +1309,20 @@ test:ui:
     reports:
       junit: test-results.xml
     expire_in: 7 days
-  # Manual until the automation-mode grant is settled. Two reasons, and
-  # neither is "make the pipeline green".
+  # Manual because it cannot pass yet: the runner reaches testmanagerd,
+  # and macOS refuses to enable automation mode for it. That is host
+  # configuration — see
+  # _private/docs/backlog/2026-09-08-macos-ui-runner-needs-accessibility-grant.
+  # Nothing in this repo changes it, so running it on every pipeline only
+  # buys a five-minute red.
   #
-  # It cannot pass yet: the runner reaches testmanagerd but macOS refuses
-  # to enable automation mode for it, which is host configuration rather
-  # than anything in this repo.
-  #
-  # And it shares a working directory and resource_group with test:unit,
-  # reaching into `.spm-packages` through fix-xcframework-symlinks.sh.
-  # test:unit was reliable before this job existed and has failed twice
-  # since, with its own definition byte-identical to main. That is not
-  # proven to be the cause — which is the reason to stop running this on
-  # every pipeline while the question is open, not to keep going.
+  # An earlier version of this comment also blamed this job for test:unit
+  # failing, on the theory that it disturbed the shared working directory
+  # via fix-xcframework-symlinks.sh. That was wrong: pipeline 2829442148
+  # ran with this job never started (started_at null) and test:unit failed
+  # anyway, with the same "hung before establishing connection". test:unit
+  # is broken on this host independently, and its definition is
+  # byte-identical to main.
   #
   # `when: manual`, not `allow_failure: true` on its own: a job reporting
   # success without running is the linux-qt failure mode filed the same
