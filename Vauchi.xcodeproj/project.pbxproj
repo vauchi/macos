@@ -56,6 +56,7 @@
 		D65905F3E8A6B191F4611470 /* AudioProximityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49509AE0DF70B880F977B015 /* AudioProximityService.swift */; };
 		DA673F09635BBBF9871092A8 /* VauchiUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773C796EDEEFF9B928C04229 /* VauchiUITests.swift */; };
 		DCB3E583D86FF3A15C6BE915 /* PlatformAppEngine+DomainDispatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8809B70A6BEDF6B35461415B /* PlatformAppEngine+DomainDispatch.swift */; };
+		E46828FADC8D63F63BB68280 /* HardwareEventJsonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B14F6FC09C0E3B70E2A824 /* HardwareEventJsonTests.swift */; };
 		EC30F92B5A66058CF9972C27 /* BleExchangeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418F950D6541F912A27DA57D /* BleExchangeService.swift */; };
 		F05A78B995EB8456A4B310F3 /* PresentationContractTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE718E95F174F15A52F1FCEC /* PresentationContractTests.swift */; };
 		F8818B9E78A3E1A875E04227 /* PresentationCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A6BB9A87C49A6D79E266DFD /* PresentationCommand.swift */; };
@@ -87,6 +88,7 @@
 
 /* Begin PBXFileReference section */
 		007F08BF348F3C0C5BA74B92 /* PresentationPrimitives.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationPrimitives.swift; sourceTree = "<group>"; };
+		03B14F6FC09C0E3B70E2A824 /* HardwareEventJsonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HardwareEventJsonTests.swift; sourceTree = "<group>"; };
 		0A594A2A3929ED3F36E46FBD /* RenderContextPusher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderContextPusher.swift; sourceTree = "<group>"; };
 		0D3497B12DDDF10370069F86 /* Vauchi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Vauchi.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		234E756E782635B9AF9132F3 /* PlaceholderContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceholderContentView.swift; sourceTree = "<group>"; };
@@ -170,6 +172,7 @@
 		0551E4C6C31A1EF46B1DE22E /* CoreUI */ = {
 			isa = PBXGroup;
 			children = (
+				03B14F6FC09C0E3B70E2A824 /* HardwareEventJsonTests.swift */,
 				5482743CA87B21CE18C8C3B9 /* NavigationIconMapTests.swift */,
 				B53FDA1302B12D2357E476DB /* PresentationImageContentTests.swift */,
 				DFFE40C221022DBDBD034AF3 /* PresentationStateTests.swift */,
@@ -431,6 +434,7 @@
 			files = (
 				9D3AA48B67B4BBCBFBA6A33C /* ContentUpdateCycleTests.swift in Sources */,
 				566C2C33F23B683B8CB8226F /* DeviceCapabilitiesPusherTests.swift in Sources */,
+				E46828FADC8D63F63BB68280 /* HardwareEventJsonTests.swift in Sources */,
 				78DEE11DBBB312E894650FBF /* LocalizationServiceSettingsTests.swift in Sources */,
 				9CA8DD6871E91F814D81FED6 /* LocalizationServiceTests.swift in Sources */,
 				42E8C0D44725B88DB18845CB /* LocationServiceTests.swift in Sources */,
