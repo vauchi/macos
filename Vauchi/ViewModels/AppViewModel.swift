@@ -591,11 +591,12 @@ import UniformTypeIdentifiers
             return types.isEmpty ? [.data] : types
         }
 
-        /// Send a hardware event back to Core, execute its native effects,
-        /// then refresh presentation state through the reducer boundary.
+        /// Send a hardware event to Core as canonical event JSON, execute
+        /// its native effects, then refresh presentation state through the
+        /// reducer boundary.
         private func sendHardwareEvent(_ event: MobileEvent) {
             do {
-                let resultJson = try appEngine.handleHardwareEvent(event: event)
+                let resultJson = try appEngine.dispatchJson(eventJson: event.toEventJson())
                 try applyPresentationEnvelope(resultJson)
             } catch {
                 print("AppViewModel: hardware event failed: \(error)")
