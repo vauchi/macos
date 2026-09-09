@@ -366,7 +366,9 @@ struct PresentationNodeView: View {
     }
 }
 
-private struct PresentationImageContent: View {
+/// Not private: `PresentationImageContentTests` renders it directly, because
+/// the defect it guards is a missing fill that no UI-level query can see.
+struct PresentationImageContent: View {
     let value: PresentationImageNode
 
     var body: some View {
