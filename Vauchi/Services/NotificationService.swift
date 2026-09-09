@@ -13,7 +13,6 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
     override private init() {
         super.init()
         UNUserNotificationCenter.current().delegate = self
-        registerCategories()
     }
 
     /// Relays a tapped notification's Core-supplied deep-link URI to the app,
@@ -50,67 +49,95 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
         }
     }
 
-    /// Register notification categories and actions.
-    func registerCategories() {
-        // TODO(HUMBLE): T — maps NotificationCategory to OS category IDs and
-        // builds userInfo payload (see _private problem record
-        // 2026-07-06-desktop-tui-web-domain-shell-violations).
-        let center = UNUserNotificationCenter.current()
-
-        let emergencyCategory = UNNotificationCategory(
-            identifier: "emergencyAlert",
-            actions: [],
-            intentIdentifiers: [],
-            options: .customDismissAction
-        )
-
-        let updateCategory = UNNotificationCategory(
-            identifier: "contactAdded",
-            actions: [],
-            intentIdentifiers: [],
-            options: []
-        )
-
-        center.setNotificationCategories([emergencyCategory, updateCategory])
-    }
-
     /// Display a single notification.
     func showNotification(_ notification: MobilePendingNotification) {
+        deliver(PreparedNotification(
+            title: notification.title,
+            body: notification.body,
+            eventKey: notification.eventKey,
+            deepLinkUri: notification.deepLinkUri,
+            osCategoryId: notification.osCategoryId,
+            osCategoryOptions: notification.osCategoryOptions
+        ))
+    }
+
+    /// The core-prepared values one OS notification is built from.
+    struct PreparedNotification {
+        let title: String
+        let body: String
+        let eventKey: String
+        let deepLinkUri: String?
+        let osCategoryId: String
+        let osCategoryOptions: [String]
+    }
+
+    /// Assemble OS content from core-prepared values. Pure so it is
+    /// unit-testable without a live `UNUserNotificationCenter`.
+    static func notificationContent(for notification: PreparedNotification) -> UNMutableNotificationContent {
         let content = UNMutableNotificationContent()
         content.title = notification.title
         content.body = notification.body
         content.sound = .default
-        var userInfo: [String: Any] = [
-            "contact_id": notification.contactId,
-            "event_key": notification.eventKey,
-        ]
-        // Core supplies the tap target (`vauchi://contact/<id>`); stash it so
-        // `didReceive` can relay it back to core as `LinkOpened`.
-        if let deepLinkUri = notification.deepLinkUri {
-            userInfo["deep_link_uri"] = deepLinkUri
-        }
-        content.userInfo = userInfo
+        content.categoryIdentifier = notification.osCategoryId
+        // Core supplies the tap target; it is stashed verbatim so `didReceive`
+        // can relay it back as a generic `DeepLinkOpened` event.
+        content.userInfo = notification.deepLinkUri.map { ["deep_link_uri": $0] } ?? [:]
+        return content
+    }
 
-        switch notification.category {
-        case .emergencyAlert:
-            content.categoryIdentifier = "emergencyAlert"
-        case .contactAdded:
-            content.categoryIdentifier = "contactAdded"
-        case .cardUpdate:
-            content.categoryIdentifier = "cardUpdated"
-        case .duressAlert:
-            content.categoryIdentifier = "duressAlert"
-        }
+    /// The OS options core's `os_category_options` tokens name. A token this
+    /// shell does not know is dropped so a newer core cannot enable an
+    /// unreviewed OS behaviour.
+    private static let osCategoryOptionsByToken: [String: UNNotificationCategoryOptions] = [
+        "custom_dismiss_action": .customDismissAction,
+    ]
 
+    /// The `UNNotificationCategory` a core-prepared notification addresses,
+    /// built from core's opaque id and option tokens. Pure so it is
+    /// unit-testable without a live `UNUserNotificationCenter`.
+    static func osCategory(for notification: PreparedNotification) -> UNNotificationCategory {
+        let options = notification.osCategoryOptions.reduce(into: UNNotificationCategoryOptions()) { options, token in
+            if let option = osCategoryOptionsByToken[token] {
+                options.insert(option)
+            }
+        }
+        return UNNotificationCategory(
+            identifier: notification.osCategoryId,
+            actions: [],
+            intentIdentifiers: [],
+            options: options
+        )
+    }
+
+    /// The registered set after `category` joins it, replacing any earlier
+    /// registration of the same id so core's latest options win.
+    static func mergedCategories(
+        _ existing: Set<UNNotificationCategory>,
+        adding category: UNNotificationCategory
+    ) -> Set<UNNotificationCategory> {
+        var merged = existing.filter { $0.identifier != category.identifier }
+        merged.insert(category)
+        return merged
+    }
+
+    private func deliver(_ notification: PreparedNotification) {
         let request = UNNotificationRequest(
             identifier: notification.eventKey,
-            content: content,
+            content: Self.notificationContent(for: notification),
             trigger: nil // Deliver immediately
         )
+        let category = Self.osCategory(for: notification)
+        let center = UNUserNotificationCenter.current()
 
-        UNUserNotificationCenter.current().add(request) { error in
-            if let error = error {
-                print("NotificationService: Failed to add notification: \(error)")
+        // The category is registered per delivery because its options only
+        // apply to requests added afterwards, and core — not a fixed list
+        // here — owns which ids exist.
+        center.getNotificationCategories { existing in
+            center.setNotificationCategories(Self.mergedCategories(existing, adding: category))
+            center.add(request) { error in
+                if let error {
+                    print("NotificationService: Failed to add notification: \(error)")
+                }
             }
         }
     }
