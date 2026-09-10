@@ -19,6 +19,11 @@ struct RevisionedOverlay: Equatable {
     let overlay: PresentationOverlay
 }
 
+struct RevisionedNavigation: Equatable {
+    let revision: UInt64
+    let navigation: NavigationSpec
+}
+
 struct PresentationAlert: Decodable {
     let title: String
     let message: String
@@ -82,6 +87,18 @@ private struct PresentationBarCommandPayload: Decodable {
     }
 }
 
+private struct PresentationNavigationCommandPayload: Decodable {
+    let surfaceID: String
+    let revision: UInt64
+    let navigation: NavigationSpec
+
+    private enum CodingKeys: String, CodingKey {
+        case surfaceID = "surface_id"
+        case revision
+        case navigation
+    }
+}
+
 private struct PresentationOverlayCommandPayload: Decodable {
     let surfaceID: String
     let revision: UInt64
@@ -133,6 +150,7 @@ private struct PresentationNotificationCommandPayload: Decodable {
 enum PresentationCommand: Decodable {
     case replaceSurface(PresentationSurface)
     case setContextBar(RevisionedContextBar, surfaceID: String)
+    case setNavigation(RevisionedNavigation, surfaceID: String)
     case presentOverlay(RevisionedOverlay)
     case dismissOverlay(surfaceID: String, revision: UInt64, kind: PresentationOverlayKind)
     case setPresentationProfile(PresentationProfile)
@@ -182,6 +200,14 @@ enum PresentationCommand: Decodable {
             let value = try container.decode(PresentationBarCommandPayload.self, forKey: key)
             return .setContextBar(
                 .init(revision: value.revision, bar: value.bar),
+                surfaceID: value.surfaceID
+            )
+        case "SetNavigation":
+            let value = try container.decode(
+                PresentationNavigationCommandPayload.self, forKey: key
+            )
+            return .setNavigation(
+                .init(revision: value.revision, navigation: value.navigation),
                 surfaceID: value.surfaceID
             )
         case "PresentOverlay":

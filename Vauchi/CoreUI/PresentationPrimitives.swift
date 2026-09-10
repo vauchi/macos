@@ -94,6 +94,39 @@ struct PresentationOverlay: Codable, Equatable {
     let items: [PresentationAction]
 }
 
+/// One persistent-navigation destination Core publishes alongside the
+/// context bar (`Command::SetNavigation`), scoped by the same
+/// `interaction_id` the navigation overlay's items already use — a tap
+/// on either surface reports the identical opaque id.
+struct NavigationItem: Codable, Equatable, Identifiable {
+    let interactionID: String
+    let label: String
+    let accessibilityLabel: String
+    let iconToken: String?
+    let selected: Bool
+    let badgeCount: UInt32
+
+    var id: String {
+        interactionID
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case interactionID = "interaction_id"
+        case label
+        case accessibilityLabel = "accessibility_label"
+        case iconToken = "icon_token"
+        case selected
+        case badgeCount = "badge_count"
+    }
+}
+
+/// The complete set of persistent-navigation destinations for a surface.
+/// Empty `items` (e.g. a locked app) means a shell hides the sidebar/bar
+/// rather than render it with nothing in it.
+struct NavigationSpec: Codable, Equatable {
+    let items: [NavigationItem]
+}
+
 enum PresentationInputMode: String, Codable {
     case touch
     case pointer
