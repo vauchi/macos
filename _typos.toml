@@ -9,3 +9,4 @@ extend-exclude = [
 [default.extend-words]
 mappin = "mappin"
 writeable = "writeable"      # CoreBluetooth CBAttributePermissions.writeable (Apple API)
+wdth = "wdth"                # OpenType variable-font axis tag (width) in the Bricolage file name

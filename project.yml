@@ -38,6 +38,11 @@ targets:
           - "**/*.xcassets"
           - "Libs"
           - "Generated"
+          - "Resources/Fonts"
+      # Folder reference (not a group): preserves the Fonts/ subdirectory
+      # in Contents/Resources/ so it matches ATSApplicationFontsPath below.
+      - path: Vauchi/Resources/Fonts
+        type: folder
     dependencies:
       - package: VauchiPlatform
         product: VauchiPlatform
@@ -56,6 +61,7 @@ targets:
     info:
       path: Vauchi/Info.plist
       properties:
+        ATSApplicationFontsPath: Fonts
         CFBundleDisplayName: Vauchi
         CFBundleShortVersionString: "0.1.0"
         CFBundleVersion: "1"
