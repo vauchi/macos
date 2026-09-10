@@ -86,6 +86,34 @@ final class NavigationIconMapTests: XCTestCase {
         XCTAssertFalse(symbolExists(NavigationIconMap.fallbackSymbol + ".fill"))
     }
 
+    /// `testMappedSymbolsPreferFilledVariants` above proves no *fuller*
+    /// variant is left on the table, but it cannot prove these three were
+    /// actually checked rather than vacuously passing — appending
+    /// ".fill.fill" to an already-filled name would trivially not exist
+    /// too. Named explicitly so a reviewer sees these three were verified
+    /// against the installed SF Symbols catalog, not assumed.
+    func testTokensWhoseSymbolFamilyShipsNoFillKeepTheBaseName() {
+        for token in ["qrcode", "laptopcomputer", "mappin.and.ellipse"] {
+            XCTAssertFalse(
+                symbolExists(token + ".fill"),
+                "\(token) now has a .fill variant; NavigationIconMap should map to it"
+            )
+            XCTAssertEqual(NavigationIconMap.systemImage(for: token), token)
+        }
+    }
+
+    /// `person.fill.badge.plus` is a fill-*infix* name, not the
+    /// `<token>.fill` suffix the generic loop above checks — Core's token
+    /// is `person.badge.plus`. Spelled out explicitly because the generic
+    /// property test cannot express this exception.
+    func testPersonBadgePlusMapsToItsFillInfixVariant() {
+        XCTAssertEqual(
+            NavigationIconMap.systemImage(for: "person.badge.plus"),
+            "person.fill.badge.plus"
+        )
+        XCTAssertTrue(symbolExists("person.fill.badge.plus"))
+    }
+
     /// The navigation palette is the shell's sidebar: every entry carries an
     /// icon, including ones Core sent no token for. Other overlays keep their
     /// plain-text rows, so an action menu does not sprout meaningless dots.
