@@ -144,6 +144,139 @@ final class PresentationStateTests: XCTestCase {
         XCTAssertNil(state.bars["main"])
     }
 
+    func testDecodesSetNavigationWithItems() throws {
+        let commands = try decodeCommands("""
+        {"commands":[
+          {"SetNavigation":{
+            "surface_id":"contacts",
+            "revision":1,
+            "navigation":{"items":[
+              {
+                "interaction_id":"surface.1.context.presentation.navigation.contacts",
+                "label":"Contacts",
+                "accessibility_label":"Contacts",
+                "icon_token":"person.2",
+                "selected":true,
+                "badge_count":0
+              },
+              {
+                "interaction_id":"surface.1.context.presentation.navigation.groups",
+                "label":"Groups",
+                "accessibility_label":"Groups",
+                "icon_token":"folder",
+                "selected":false,
+                "badge_count":3
+              }
+            ]}
+          }}
+        ]}
+        """)
+
+        guard case let .setNavigation(revisioned, surfaceID) = try XCTUnwrap(commands.first) else {
+            return XCTFail("expected .setNavigation")
+        }
+        XCTAssertEqual(surfaceID, "contacts")
+        XCTAssertEqual(revisioned.revision, 1)
+        XCTAssertEqual(revisioned.navigation.items.count, 2)
+        XCTAssertEqual(
+            revisioned.navigation.items[0],
+            NavigationItem(
+                interactionID: "surface.1.context.presentation.navigation.contacts",
+                label: "Contacts",
+                accessibilityLabel: "Contacts",
+                iconToken: "person.2",
+                selected: true,
+                badgeCount: 0
+            )
+        )
+        XCTAssertEqual(
+            revisioned.navigation.items[1],
+            NavigationItem(
+                interactionID: "surface.1.context.presentation.navigation.groups",
+                label: "Groups",
+                accessibilityLabel: "Groups",
+                iconToken: "folder",
+                selected: false,
+                badgeCount: 3
+            )
+        )
+    }
+
+    func testDecodesSetNavigationWithEmptyItems() throws {
+        let commands = try decodeCommands("""
+        {"commands":[
+          {"SetNavigation":{
+            "surface_id":"locked",
+            "revision":1,
+            "navigation":{"items":[]}
+          }}
+        ]}
+        """)
+
+        guard case let .setNavigation(revisioned, _) = try XCTUnwrap(commands.first) else {
+            return XCTFail("expected .setNavigation")
+        }
+        XCTAssertTrue(revisioned.navigation.items.isEmpty)
+    }
+
+    func testAppliesNavigationForTheMatchingRevision() throws {
+        var state = PresentationState()
+        _ = try state.apply(decodeCommands("""
+        {"commands":[
+          {"ReplaceSurface":{"surface":\(surfaceJSON(revision: 1))}},
+          {"SetNavigation":{
+            "surface_id":"main",
+            "revision":1,
+            "navigation":{"items":[\(navigationItemJSON(id: "nav.contacts", label: "Contacts"))]}
+          }}
+        ]}
+        """))
+
+        XCTAssertEqual(state.activeNavigation?.items.first?.interactionID, "nav.contacts")
+    }
+
+    func testRejectsNavigationForAMismatchedRevision() throws {
+        var state = PresentationState()
+        _ = try state.apply(decodeCommands("""
+        {"commands":[
+          {"ReplaceSurface":{"surface":\(surfaceJSON(revision: 2))}}
+        ]}
+        """))
+
+        XCTAssertThrowsError(try state.apply(decodeCommands("""
+        {"commands":[
+          {"SetNavigation":{
+            "surface_id":"main",
+            "revision":1,
+            "navigation":{"items":[\(navigationItemJSON(id: "nav.stale", label: "Stale"))]}
+          }}
+        ]}
+        """)))
+        XCTAssertNil(state.activeNavigation)
+    }
+
+    func testReplacementClearsOldNavigation() throws {
+        var state = PresentationState()
+        _ = try state.apply(decodeCommands("""
+        {"commands":[
+          {"ReplaceSurface":{"surface":\(surfaceJSON(revision: 1))}},
+          {"SetNavigation":{
+            "surface_id":"main",
+            "revision":1,
+            "navigation":{"items":[\(navigationItemJSON(id: "nav.contacts", label: "Contacts"))]}
+          }}
+        ]}
+        """))
+
+        _ = try state.apply(decodeCommands("""
+        {"commands":[
+          {"ReplaceSurface":{"surface":\(surfaceJSON(revision: 2))}}
+        ]}
+        """))
+
+        XCTAssertNil(state.activeNavigation)
+    }
+
     func testReplacementClearsOldChrome() throws {
         var state = PresentationState()
         _ = try state.apply(decodeCommands("""
@@ -566,6 +699,23 @@ final class PresentationStateTests: XCTestCase {
           "icon_token":null,
           "enabled":true,
           "shortcut":\(shortcut.map { "\"\($0)\"" } ?? "null")
+        }
+        """
+    }
+
+    private func navigationItemJSON(
+        id: String,
+        label: String,
+        selected: Bool = true
+    ) -> String {
+        """
+        {
+          "interaction_id":"\(id)",
+          "label":"\(label)",
+          "accessibility_label":"\(label)",
+          "icon_token":null,
+          "selected":\(selected),
+          "badge_count":0
         }
         """
     }
