@@ -1223,6 +1223,20 @@ test:ui:
       optional: true
   variables:
     VAUCHI_PLATFORM_USE_LOCAL_XCFRAMEWORK: "1"
+    CI_JOB_KEYCHAIN: ci-macos-ui-${CI_JOB_ID}.keychain-db
+  after_script:
+    - |
+      if [ -f "/tmp/keychain-restore-${CI_JOB_ID}" ]; then
+        # shellcheck disable=SC2046
+        security list-keychains -d user -s $(cat "/tmp/keychain-restore-${CI_JOB_ID}")
+        rm -f "/tmp/keychain-restore-${CI_JOB_ID}"
+      fi
+      if [ -f "/tmp/keychain-default-restore-${CI_JOB_ID}" ]; then
+        security default-keychain -d user -s "$(cat "/tmp/keychain-default-restore-${CI_JOB_ID}")"
+        rm -f "/tmp/keychain-default-restore-${CI_JOB_ID}"
+      fi
+      security delete-keychain "$CI_JOB_KEYCHAIN" 2>/dev/null || true
+    - !reference [.macos-job, after_script]
   script:
     - |
       if [ ! -d Vauchi.xcodeproj ]; then
@@ -1239,33 +1253,40 @@ test:ui:
         echo "XCUITest cannot drive an app from a switched-out session." >&2
         exit 1
       fi
-    # A locked screen is still an owned console session, so the check above
-    # passes and tells you nothing. The app itself launches — and then its
-    # first Keychain read blocks in securityd forever, because the login
-    # keychain locked with the screen. `AppState.init()` never returns, no
-    # window is ever created, and XCTest reports the symptom sixty seconds
-    # later as "Application 'app.vauchi.macos' does not have a process ID"
-    # — naming neither the screen nor the keychain. That cost a night on
-    # 2026-09-10; the spindump in the job's .xcresult is what finally said
-    # so. Note the failure is a *block*, not an error: SecItemCopyMatching
-    # on the legacy file keychain never returns errSecInteractionNotAllowed,
-    # so the app's own `.deviceLocked` handling cannot fire.
+    # The app reads its storage key from the legacy file-based keychain,
+    # which resolves to this user's default keychain. On this runner that
+    # is a login keychain whose password no longer matches the account,
+    # so it never unlocks: `SecItemCopyMatching` finds the item (written
+    # 2026-03-13), tries to decrypt it, and blocks in securityd waiting on
+    # a SecurityAgent prompt nobody will ever answer. `AppState.init()`
+    # never returns, no window is created, and XCTest reports it 60s later
+    # as "Application 'app.vauchi.macos' does not have a process ID" — a
+    # message that describes neither the keychain nor the wait. Five tests,
+    # ~70s each, every run.
     #
-    # This is machine state, not repo state.
+    # Give the job its own unlocked keychain and take the login keychain
+    # out of the search list, so the app writes and reads a fresh key
+    # there instead. Same shape as the per-job keychain in ios/, and it
+    # makes the run hermetic rather than dependent on host keychain state.
+    # after_script restores the search list and deletes the keychain.
     - |
-      if ioreg -n Root -d1 -k IOConsoleLocked | grep -q '"IOConsoleLocked" = Yes'; then
-        echo "ERROR: the screen is locked on this host." >&2
-        echo "The app will launch and hang on a locked login keychain, and" >&2
-        echo "XCUITest will report 'does not have a process ID' after 60s." >&2
-        echo "Unlock the screen, and stop it locking again. On the runner:" >&2
-        echo "  defaults -currentHost write com.apple.screensaver idleTime 0" >&2
-        echo "  sudo pmset -a displaysleep 0" >&2
-        echo "  sysadminctl -screenLock off -password <gitlab-runner password>" >&2
-        echo "That leaves the console unattended-unlocked, so weigh that" >&2
-        echo "before running it on a shared host." >&2
-        exit 1
-      fi
-      echo "screen lock: unlocked"
+      security list-keychains -d user | tr -d '"' | tr '\n' ' ' \
+        > "/tmp/keychain-restore-${CI_JOB_ID}"
+      security default-keychain -d user | tr -d '"' | tr -d ' ' \
+        > "/tmp/keychain-default-restore-${CI_JOB_ID}"
+      security create-keychain -p "" "$CI_JOB_KEYCHAIN"
+      # No -l/-u: this keychain must not re-lock while the tests run.
+      security set-keychain-settings "$CI_JOB_KEYCHAIN"
+      security unlock-keychain -p "" "$CI_JOB_KEYCHAIN"
+      # Keep System.keychain (trust material) but drop the login keychain,
+      # or SecItemCopyMatching finds the undecryptable item there first.
+      keep=$(security list-keychains -d user | tr -d '"' \
+        | grep -v "login.keychain" | tr '\n' ' ')
+      # shellcheck disable=SC2086
+      security list-keychains -d user -s "$CI_JOB_KEYCHAIN" $keep
+      security default-keychain -d user -s "$CI_JOB_KEYCHAIN"
+      echo "keychain search list is now:"
+      security list-keychains -d user
     # macOS 12+ gate XCUITest behind an authenticated "Enable UI Automation".
     # Unsatisfied, the runner does not prompt and does not fail — it waits,
     # and xcodebuild reports Code=1000 "Timed out while enabling automation
