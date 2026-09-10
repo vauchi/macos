@@ -115,9 +115,7 @@ struct PresentationOverlayView: View {
             }
             .buttonStyle(.bordered)
             .disabled(!action.enabled)
-            .foregroundStyle(
-                action.tone == .destructive ? Color.red : Color.primary
-            )
+            .foregroundStyle(action.tone.foregroundColor)
             .accessibilityLabel(action.accessibilityLabel)
         }
     }
