@@ -58,7 +58,7 @@ final class PresentationImageContentTests: XCTestCase {
     /// opaque and the test proves nothing.
     private func alpha(of node: PresentationImageNode, at point: CGPoint) throws -> CGFloat {
         let host = NSHostingView(
-            rootView: PresentationImageContent(value: node)
+            rootView: PresentationImageContent(value: node, minimumTarget: side)
                 .frame(width: side, height: side)
         )
         host.frame = CGRect(x: 0, y: 0, width: side, height: side)
