@@ -1239,6 +1239,33 @@ test:ui:
         echo "XCUITest cannot drive an app from a switched-out session." >&2
         exit 1
       fi
+    # A locked screen is still an owned console session, so the check above
+    # passes and tells you nothing. The app itself launches — and then its
+    # first Keychain read blocks in securityd forever, because the login
+    # keychain locked with the screen. `AppState.init()` never returns, no
+    # window is ever created, and XCTest reports the symptom sixty seconds
+    # later as "Application 'app.vauchi.macos' does not have a process ID"
+    # — naming neither the screen nor the keychain. That cost a night on
+    # 2026-09-10; the spindump in the job's .xcresult is what finally said
+    # so. Note the failure is a *block*, not an error: SecItemCopyMatching
+    # on the legacy file keychain never returns errSecInteractionNotAllowed,
+    # so the app's own `.deviceLocked` handling cannot fire.
+    #
+    # This is machine state, not repo state.
+    - |
+      if ioreg -n Root -d1 -k IOConsoleLocked | grep -q '"IOConsoleLocked" = Yes'; then
+        echo "ERROR: the screen is locked on this host." >&2
+        echo "The app will launch and hang on a locked login keychain, and" >&2
+        echo "XCUITest will report 'does not have a process ID' after 60s." >&2
+        echo "Unlock the screen, and stop it locking again. On the runner:" >&2
+        echo "  defaults -currentHost write com.apple.screensaver idleTime 0" >&2
+        echo "  sudo pmset -a displaysleep 0" >&2
+        echo "  sysadminctl -screenLock off -password <gitlab-runner password>" >&2
+        echo "That leaves the console unattended-unlocked, so weigh that" >&2
+        echo "before running it on a shared host." >&2
+        exit 1
+      fi
+      echo "screen lock: unlocked"
     # macOS 12+ gate XCUITest behind an authenticated "Enable UI Automation".
     # Unsatisfied, the runner does not prompt and does not fail — it waits,
     # and xcodebuild reports Code=1000 "Timed out while enabling automation
