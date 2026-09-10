@@ -1290,8 +1290,11 @@ test:ui:
       security unlock-keychain -p "" "$CI_JOB_KEYCHAIN"
       # Keep System.keychain (trust material) but drop the login keychain,
       # or SecItemCopyMatching finds the undecryptable item there first.
+      # `|| true`: when the login keychain is the only entry, grep matches
+      # nothing and exits 1, which under set -eo pipefail kills the job
+      # with no message. An empty $keep is the normal, correct result.
       keep=$(security list-keychains -d user | tr -d '"' \
-        | grep -v "login.keychain" | tr '\n' ' ')
+        | grep -v "login.keychain" | tr '\n' ' ' || true)
       # shellcheck disable=SC2086
       security list-keychains -d user -s "$CI_JOB_KEYCHAIN" $keep
       security default-keychain -d user -s "$CI_JOB_KEYCHAIN"
