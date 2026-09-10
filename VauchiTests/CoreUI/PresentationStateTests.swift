@@ -151,22 +151,14 @@ final class PresentationStateTests: XCTestCase {
             "surface_id":"contacts",
             "revision":1,
             "navigation":{"items":[
-              {
-                "interaction_id":"surface.1.context.presentation.navigation.contacts",
-                "label":"Contacts",
-                "accessibility_label":"Contacts",
-                "icon_token":"person.2",
-                "selected":true,
-                "badge_count":0
-              },
-              {
-                "interaction_id":"surface.1.context.presentation.navigation.groups",
-                "label":"Groups",
-                "accessibility_label":"Groups",
-                "icon_token":"folder",
-                "selected":false,
-                "badge_count":3
-              }
+              \(navigationItemJSON(
+                  id: "surface.1.context.presentation.navigation.contacts",
+                  label: "Contacts", selected: true, iconToken: "person.2"
+              )),
+              \(navigationItemJSON(
+                  id: "surface.1.context.presentation.navigation.groups",
+                  label: "Groups", selected: false, iconToken: "folder", badgeCount: 3
+              ))
             ]}
           }}
         ]}
@@ -177,29 +169,16 @@ final class PresentationStateTests: XCTestCase {
         }
         XCTAssertEqual(surfaceID, "contacts")
         XCTAssertEqual(revisioned.revision, 1)
-        XCTAssertEqual(revisioned.navigation.items.count, 2)
-        XCTAssertEqual(
-            revisioned.navigation.items[0],
-            NavigationItem(
-                interactionID: "surface.1.context.presentation.navigation.contacts",
-                label: "Contacts",
-                accessibilityLabel: "Contacts",
-                iconToken: "person.2",
-                selected: true,
-                badgeCount: 0
-            )
-        )
-        XCTAssertEqual(
-            revisioned.navigation.items[1],
-            NavigationItem(
-                interactionID: "surface.1.context.presentation.navigation.groups",
-                label: "Groups",
-                accessibilityLabel: "Groups",
-                iconToken: "folder",
-                selected: false,
-                badgeCount: 3
-            )
-        )
+        XCTAssertEqual(revisioned.navigation.items, [
+            navigationItem(
+                id: "surface.1.context.presentation.navigation.contacts",
+                label: "Contacts", selected: true, iconToken: "person.2"
+            ),
+            navigationItem(
+                id: "surface.1.context.presentation.navigation.groups",
+                label: "Groups", selected: false, iconToken: "folder", badgeCount: 3
+            ),
+        ])
     }
 
     func testDecodesSetNavigationWithEmptyItems() throws {
@@ -706,17 +685,36 @@ final class PresentationStateTests: XCTestCase {
     private func navigationItemJSON(
         id: String,
         label: String,
-        selected: Bool = true
+        selected: Bool = true,
+        iconToken: String? = nil,
+        badgeCount: UInt32 = 0
     ) -> String {
         """
         {
           "interaction_id":"\(id)",
           "label":"\(label)",
           "accessibility_label":"\(label)",
-          "icon_token":null,
+          "icon_token":\(iconToken.map { "\"\($0)\"" } ?? "null"),
           "selected":\(selected),
-          "badge_count":0
+          "badge_count":\(badgeCount)
         }
         """
+    }
+
+    private func navigationItem(
+        id: String,
+        label: String,
+        selected: Bool = true,
+        iconToken: String? = nil,
+        badgeCount: UInt32 = 0
+    ) -> NavigationItem {
+        NavigationItem(
+            interactionID: id,
+            label: label,
+            accessibilityLabel: label,
+            iconToken: iconToken,
+            selected: selected,
+            badgeCount: badgeCount
+        )
     }
 }

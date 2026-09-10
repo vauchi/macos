@@ -11,67 +11,34 @@ struct PresentationHostView: View {
 
     var body: some View {
         GeometryReader { geometry in
-            ZStack {
-                surfaces
-                    .padding(16)
-                    .safeAreaInset(edge: .bottom) {
-                        commandBar
-                            .padding(.horizontal, 16)
-                            .padding(.bottom, 8)
+            chrome
+                .onAppear {
+                    reportEnvironment(geometry.size)
+                }
+                .onChange(of: geometry.size) { size in
+                    reportEnvironment(size)
+                }
+                .onChange(of: reducedMotion) { _ in
+                    reportEnvironment(geometry.size)
+                }
+                // WCAG 2.2 SC 2.4.11: a presented overlay visually covers the
+                // active surface, so any control focused underneath it must
+                // release focus rather than leave its ring drawn beneath a
+                // layer the user can no longer see through.
+                .onChange(of: viewModel.presentationState.activeOverlay) { overlay in
+                    if overlay != nil {
+                        focusedBindingID = nil
                     }
-                if let overlay = viewModel.presentationState.activeOverlay {
-                    PresentationOverlayView(
-                        overlay: overlay,
-                        reducedMotion: reducedMotion,
-                        onAction: { event in
-                            // Choosing an item closes the menu, and Core has
-                            // to hear that: `AppEngine::open_overlay` is
-                            // cleared only by an `OverlayDismissed` event, so
-                            // staying quiet leaves its toggle rewriting the
-                            // next request for this menu into a dismissal and
-                            // the menu stops opening. Report it *before* the
-                            // action, while this surface is still active —
-                            // reporting it afterwards is rejected by Core's
-                            // fail-closed validation and reaches the user as
-                            // a "Presentation error" alert (vauchi/ios!633).
-                            viewModel.dismissPresentationOverlay()
-                            viewModel.activateAndDispatch(
-                                surfaceID: overlay.surfaceID,
-                                event: event
-                            )
-                        },
-                        onDismiss: viewModel.dismissPresentationOverlay
+                }
+                .onExitCommand {
+                    guard let surfaceID = viewModel.presentationState.activeSurfaceID else {
+                        return
+                    }
+                    viewModel.activateAndDispatch(
+                        surfaceID: surfaceID,
+                        event: .backRequested(surfaceID: surfaceID)
                     )
-                    .zIndex(20)
                 }
-            }
-            .onAppear {
-                reportEnvironment(geometry.size)
-            }
-            .onChange(of: geometry.size) { size in
-                reportEnvironment(size)
-            }
-            .onChange(of: reducedMotion) { _ in
-                reportEnvironment(geometry.size)
-            }
-            // WCAG 2.2 SC 2.4.11: a presented overlay visually covers the
-            // active surface, so any control focused underneath it must
-            // release focus rather than leave its ring drawn beneath a
-            // layer the user can no longer see through.
-            .onChange(of: viewModel.presentationState.activeOverlay) { overlay in
-                if overlay != nil {
-                    focusedBindingID = nil
-                }
-            }
-            .onExitCommand {
-                guard let surfaceID = viewModel.presentationState.activeSurfaceID else {
-                    return
-                }
-                viewModel.activateAndDispatch(
-                    surfaceID: surfaceID,
-                    event: .backRequested(surfaceID: surfaceID)
-                )
-            }
         }
         .alert(item: $viewModel.alertMessage) { alert in
             Alert(
@@ -90,6 +57,79 @@ struct PresentationHostView: View {
                     .shadow(radius: 8)
                     .padding(.top, 8)
                     .accessibilityAddTraits(.isStaticText)
+            }
+        }
+    }
+
+    /// Wraps `content` in the persistent desktop sidebar when Core
+    /// publishes destinations for the active surface; empty `NavigationSpec`
+    /// (locked app) hides the column entirely rather than rendering one with
+    /// nothing in it. The navigation overlay stays reachable from the
+    /// context bar regardless — this sidebar is the persistent peer, not a
+    /// replacement for it.
+    @ViewBuilder
+    private var chrome: some View {
+        let sidebarModel = SidebarModel(navigation: viewModel.presentationState.activeNavigation)
+        if sidebarModel.isHidden {
+            content
+        } else {
+            NavigationSplitView {
+                PresentationSidebarView(
+                    model: sidebarModel,
+                    focusedBinding: $focusedBindingID,
+                    onSelect: { interactionID in
+                        guard let surfaceID = viewModel.presentationState.activeSurfaceID else {
+                            return
+                        }
+                        viewModel.activateAndDispatch(
+                            surfaceID: surfaceID,
+                            event: .actionActivated(
+                                surfaceID: surfaceID,
+                                interactionID: interactionID
+                            )
+                        )
+                    }
+                )
+                .navigationSplitViewColumnWidth(min: 180, ideal: 220, max: 280)
+            } detail: {
+                content
+            }
+        }
+    }
+
+    private var content: some View {
+        ZStack {
+            surfaces
+                .padding(16)
+                .safeAreaInset(edge: .bottom) {
+                    commandBar
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, 8)
+                }
+            if let overlay = viewModel.presentationState.activeOverlay {
+                PresentationOverlayView(
+                    overlay: overlay,
+                    reducedMotion: reducedMotion,
+                    onAction: { event in
+                        // Choosing an item closes the menu, and Core has to
+                        // hear that: `AppEngine::open_overlay` is cleared
+                        // only by an `OverlayDismissed` event, so staying
+                        // quiet leaves its toggle rewriting the next request
+                        // for this menu into a dismissal and the menu stops
+                        // opening. Report it *before* the action, while this
+                        // surface is still active — reporting it afterwards
+                        // is rejected by Core's fail-closed validation and
+                        // reaches the user as a "Presentation error" alert
+                        // (vauchi/ios!633).
+                        viewModel.dismissPresentationOverlay()
+                        viewModel.activateAndDispatch(
+                            surfaceID: overlay.surfaceID,
+                            event: event
+                        )
+                    },
+                    onDismiss: viewModel.dismissPresentationOverlay
+                )
+                .zIndex(20)
             }
         }
     }

@@ -28,43 +28,7 @@ struct PresentationState {
         for command in commands {
             switch command {
             case let .replaceSurface(surface):
-                // Core's revision advances only on user actions, so racing
-                // full rebuilds (wakeup re-load, invalidation dispatch)
-                // legitimately re-emit the same surface at the same
-                // revision. Only a strictly older revision is stale; equal
-                // re-applies, last-writer wins.
-                //
-                // Mirrors iOS, which has always compared strictly. macOS
-                // rejected equal, and because transactions apply atomically
-                // that discarded every command batched with it — the same
-                // defect Android shipped (vauchi/android!610), where it
-                // failed on every cold launch.
-                if let previous = next.surfaces[surface.surfaceID],
-                   surface.revision < previous.revision
-                {
-                    throw PresentationStateError.staleSurface(surface.surfaceID)
-                }
-                let rebuiltInPlace = next.surfaces[surface.surfaceID]?.revision
-                    == surface.revision
-                next.surfaces[surface.surfaceID] = surface
-                next.bars.removeValue(forKey: surface.surfaceID)
-                next.navigation.removeValue(forKey: surface.surfaceID)
-                // Only the overlay raised over *this* surface dies with it,
-                // and only when the surface actually moves on. A broader "any
-                // ReplaceSurface clears" rule was tried on iOS and reverted:
-                // it removed an overlay raised earlier in the same
-                // transaction, so the navigation menu never appeared
-                // (vauchi/ios!630 test:ui, twice). Keying by surface keeps
-                // that ordering assumption out of the rule.
-                //
-                // The same-revision case is the wakeup/invalidation rebuild
-                // described above, and it must not count as moving on: the
-                // periodic poll re-emits the current surface unchanged, and
-                // clearing on it closed whatever menu the user had open
-                // mid-choice (vauchi/ios!633, test:ui job 15800681495).
-                if !rebuiltInPlace {
-                    next.overlays.removeValue(forKey: surface.surfaceID)
-                }
+                try next.applyReplaceSurface(surface)
             case let .setContextBar(bar, surfaceID):
                 guard next.surfaces[surfaceID]?.revision == bar.revision else {
                     throw PresentationStateError.mismatchedContextBar(surfaceID)
@@ -108,6 +72,46 @@ struct PresentationState {
 
         self = next
         return effects
+    }
+
+    /// Split out of `apply` (CC-15/function-body-length): the surface swap
+    /// plus everything it invalidates.
+    ///
+    /// Core's revision advances only on user actions, so racing full
+    /// rebuilds (wakeup re-load, invalidation dispatch) legitimately
+    /// re-emit the same surface at the same revision. Only a strictly
+    /// older revision is stale; equal re-applies, last-writer wins.
+    ///
+    /// Mirrors iOS, which has always compared strictly. macOS rejected
+    /// equal, and because transactions apply atomically that discarded
+    /// every command batched with it — the same defect Android shipped
+    /// (vauchi/android!610), where it failed on every cold launch.
+    private mutating func applyReplaceSurface(_ surface: PresentationSurface) throws {
+        if let previous = surfaces[surface.surfaceID],
+           surface.revision < previous.revision
+        {
+            throw PresentationStateError.staleSurface(surface.surfaceID)
+        }
+        let rebuiltInPlace = surfaces[surface.surfaceID]?.revision == surface.revision
+        surfaces[surface.surfaceID] = surface
+        bars.removeValue(forKey: surface.surfaceID)
+        navigation.removeValue(forKey: surface.surfaceID)
+        // Only the overlay raised over *this* surface dies with it, and
+        // only when the surface actually moves on. A broader "any
+        // ReplaceSurface clears" rule was tried on iOS and reverted: it
+        // removed an overlay raised earlier in the same transaction, so
+        // the navigation menu never appeared (vauchi/ios!630 test:ui,
+        // twice). Keying by surface keeps that ordering assumption out
+        // of the rule.
+        //
+        // The same-revision case is the wakeup/invalidation rebuild
+        // described above, and it must not count as moving on: the
+        // periodic poll re-emits the current surface unchanged, and
+        // clearing on it closed whatever menu the user had open
+        // mid-choice (vauchi/ios!633, test:ui job 15800681495).
+        if !rebuiltInPlace {
+            overlays.removeValue(forKey: surface.surfaceID)
+        }
     }
 
     mutating func dismissOverlay() {
