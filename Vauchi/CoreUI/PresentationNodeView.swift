@@ -189,7 +189,7 @@ struct PresentationNodeView: View {
 
     @ViewBuilder
     private func image(_ value: PresentationImageNode) -> some View {
-        let content = PresentationImageContent(value: value)
+        let content = PresentationImageContent(value: value, minimumTarget: minimumTarget)
             .frame(minWidth: minimumTarget, minHeight: minimumTarget)
         if let action = value.activation {
             Button {
@@ -358,12 +358,10 @@ struct PresentationNodeView: View {
 /// Not private: `PresentationImageContentTests` renders it directly, because
 /// the defect it guards is a missing fill that no UI-level query can see.
 struct PresentationImageContent: View {
-    /// Side of the box the initials fallback occupies. Core names no size,
-    /// so each shell picks one. It has to be square for the circle case: a
-    /// circle clipped from a box as wide as the surface is a stadium.
-    private static let fallbackSide: CGFloat = 96
-
     let value: PresentationImageNode
+    /// The surface's pointer-target floor. Doubles as the fallback avatar's
+    /// diameter, matching `PresentationRowView`'s row avatar.
+    let minimumTarget: CGFloat
 
     var body: some View {
         Group {
@@ -372,6 +370,7 @@ struct PresentationImageContent: View {
                     .resizable()
                     .scaledToFit()
                     .brightness(Double(value.brightness - 1))
+                    .clipShape(clipShape(for: imageDataSpec))
             } else if let fallback = value.fallbackText, !fallback.isEmpty {
                 // The fill is the point. `clipShape` on a bare `Text` clips
                 // nothing, because a `Text` paints no body — which is why the
@@ -381,15 +380,25 @@ struct PresentationImageContent: View {
                 Text(fallback)
                     .font(.title2.weight(.semibold))
                     .foregroundColor(.primary)
-                    .frame(width: Self.fallbackSide, height: Self.fallbackSide)
-                    .background(Color.secondary.opacity(0.18))
+                    .frame(width: fallbackSpec.diameter, height: fallbackSpec.diameter)
+                    .background(Color.secondary.opacity(AvatarFallbackSpec.fillOpacity))
+                    .clipShape(clipShape(for: fallbackSpec))
             }
         }
-        .clipShape(
-            value.shape == .circle
-                ? AnyShape(Circle())
-                : AnyShape(RoundedRectangle(cornerRadius: 8))
-        )
+    }
+
+    private var fallbackSpec: AvatarFallbackSpec {
+        .fallback(minimumTargetSize: minimumTarget)
+    }
+
+    private var imageDataSpec: AvatarFallbackSpec {
+        .imageData(shape: value.shape, minimumTargetSize: minimumTarget)
+    }
+
+    private func clipShape(for spec: AvatarFallbackSpec) -> AnyShape {
+        spec.clipsToCircle
+            ? AnyShape(Circle())
+            : AnyShape(RoundedRectangle(cornerRadius: 8))
     }
 }
 
