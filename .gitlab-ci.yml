@@ -1234,6 +1234,11 @@ test:ui:
       if [ -f "/tmp/keychain-default-restore-${CI_JOB_ID}" ]; then
         security default-keychain -d user -s "$(cat "/tmp/keychain-default-restore-${CI_JOB_ID}")"
         rm -f "/tmp/keychain-default-restore-${CI_JOB_ID}"
+      else
+        # There was no user default before this job. Point it at the
+        # login keychain — the fallback the system would have used —
+        # rather than leaving it aimed at the keychain we delete below.
+        security default-keychain -d user -s "$HOME/Library/Keychains/login.keychain-db" || true
       fi
       security delete-keychain "$CI_JOB_KEYCHAIN" 2>/dev/null || true
     - !reference [.macos-job, after_script]
@@ -1272,8 +1277,13 @@ test:ui:
     - |
       security list-keychains -d user | tr -d '"' | tr '\n' ' ' \
         > "/tmp/keychain-restore-${CI_JOB_ID}"
-      security default-keychain -d user | tr -d '"' | tr -d ' ' \
-        > "/tmp/keychain-default-restore-${CI_JOB_ID}"
+      # `default-keychain -d user` exits 1 when no user default is set
+      # (the common case — the system then falls back to login.keychain).
+      # Under set -e that alone fails the job, so record it conditionally.
+      if prior_default=$(security default-keychain -d user 2>/dev/null); then
+        printf '%s\n' "$prior_default" | tr -d '"' | tr -d ' ' \
+          > "/tmp/keychain-default-restore-${CI_JOB_ID}"
+      fi
       security create-keychain -p "" "$CI_JOB_KEYCHAIN"
       # No -l/-u: this keychain must not re-lock while the tests run.
       security set-keychain-settings "$CI_JOB_KEYCHAIN"
