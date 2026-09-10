@@ -35,6 +35,7 @@
 		4EE9B40358253BE51C825BF7 /* TextRoleStyleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5427C4F253C3A904B25AA98 /* TextRoleStyleTests.swift */; };
 		566C2C33F23B683B8CB8226F /* DeviceCapabilitiesPusherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 653B68CB3B3D86B13D52E63E /* DeviceCapabilitiesPusherTests.swift */; };
 		589B61CEF67EA8B5B38933F4 /* PresentationPrimitives.swift in Sources */ = {isa = PBXBuildFile; fileRef = 007F08BF348F3C0C5BA74B92 /* PresentationPrimitives.swift */; };
+		5A86CBF4EF79DDFBFB393F1D /* SidebarModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20F21768CC084C55F26FE1E6 /* SidebarModel.swift */; };
 		60D8E07B9EFB1F102D7518A0 /* ThemeServiceSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BF7BC594414EE931756CE54 /* ThemeServiceSettingsTests.swift */; };
 		6E92A916EC67234553ED4D85 /* LocalizationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C859B6215BADD6A45480D9F /* LocalizationService.swift */; };
 		6FBFE80D49835D23A8DF1034 /* CoreUIModels in Frameworks */ = {isa = PBXBuildFile; productRef = B2C60C8C920018E8C7CF99BE /* CoreUIModels */; };
@@ -105,6 +106,7 @@
 		0A594A2A3929ED3F36E46FBD /* RenderContextPusher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderContextPusher.swift; sourceTree = "<group>"; };
 		0D3497B12DDDF10370069F86 /* Vauchi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Vauchi.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F5C6D36522C952C3BDADE1B /* PresentationTokens+PointerTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PresentationTokens+PointerTarget.swift"; sourceTree = "<group>"; };
+		20F21768CC084C55F26FE1E6 /* SidebarModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarModel.swift; sourceTree = "<group>"; };
 		234E756E782635B9AF9132F3 /* PlaceholderContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceholderContentView.swift; sourceTree = "<group>"; };
 		24602CA31C0CE84313D9F229 /* ContextCommandBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextCommandBarView.swift; sourceTree = "<group>"; };
 		24B6A6426D8087D5940C77B9 /* FocusRingModifierTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusRingModifierTests.swift; sourceTree = "<group>"; };
@@ -278,6 +280,7 @@
 				9B834D827B063CB9F17CFA86 /* PresentationState.swift */,
 				49B374973D50CCCC7F0EF6DA /* PresentationSurfaceView.swift */,
 				1F5C6D36522C952C3BDADE1B /* PresentationTokens+PointerTarget.swift */,
+				20F21768CC084C55F26FE1E6 /* SidebarModel.swift */,
 				2A06CC40359E668FF6C58451 /* StateViews.swift */,
 				BF7B59DC1F3F21EAE1966C19 /* TextRoleStyle.swift */,
 			);
@@ -568,6 +571,7 @@
 				3DE36B550B94C69219011CE1 /* PresentationTokens+PointerTarget.swift in Sources */,
 				14F136822861093402A2A51D /* RenderContextPusher.swift in Sources */,
 				3202529BECD6DFEEB2B2BECF /* ScreenCaptureProtection.swift in Sources */,
+				5A86CBF4EF79DDFBFB393F1D /* SidebarModel.swift in Sources */,
 				10D1448B9D41C32DDB95835C /* StateViews.swift in Sources */,
 				C48401965743DD70C01F2F95 /* SystemTrayManager.swift in Sources */,
 				372704301C13BD3953C05111 /* TextRoleStyle.swift in Sources */,
