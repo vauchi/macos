@@ -1183,11 +1183,28 @@ test:unit:
 # `.sufficientElementDescription` asks whether an element has a description,
 # not whether the description means anything.
 #
-# Manual, because it cannot pass while macOS refuses automation mode for the
-# runner — host configuration that nothing in this repo affects. See
+# Manual, because it cannot pass unattended, and the reason is now known
+# rather than merely observed. Enabling automation mode is authenticated
+# against the device-owner policy through LocalAuthentication — Touch ID
+# or the account password — by
+# AutomationMode.framework/automationmode-writer, which puts
+# AutomationModeUI.app on screen and waits. A CI job has nobody to answer
+# it, so xcodebuild reports Code=1000 "Timed out while enabling automation
+# mode" sixty seconds later.
+#
+# The approval is cached in /var/db/com.apple.dt.automationmode/ against a
+# creation time and the **boot session UUID**, so it survives until it
+# times out and never survives a restart. That is the whole explanation
+# for the intermittency this job was blamed for: someone approved once,
+# runs passed while the credential lived, and it expired.
+#
+# So this stays manual until someone has approved once since the last
+# boot. `when: manual` rather than `allow_failure: true` alone: a job
+# reporting success without running is the linux-qt failure mode filed the
+# same day.
+#
+# Full investigation, including what was ruled out:
 # _private/docs/backlog/2026-09-08-macos-ui-runner-needs-accessibility-grant.
-# `when: manual` rather than `allow_failure: true` alone: a job reporting
-# success without running is the linux-qt failure mode filed the same day.
 test:ui:
   extends: [.macos-job, .spm-cache-readonly, .timeout-long]
   stage: test
