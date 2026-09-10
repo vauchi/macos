@@ -1129,27 +1129,6 @@ test:unit:
         echo "lock the screen or fast-user-switch away from that session." >&2
         exit 1
       fi
-    # macOS 12+ gate XCUITest behind an authenticated "Enable UI Automation".
-    # Unsatisfied, the runner does not prompt and does not fail — it waits,
-    # and xcodebuild reports Code=1000 "Timed out while enabling automation
-    # mode" sixty seconds later, naming neither the cause nor the fix. That
-    # cost most of a night on 2026-09-09. One second here, with the command,
-    # is worth more than the sixty seconds and the mystery.
-    #
-    # This is machine state, not repo state: it survives reboots but not a
-    # rebuilt or replaced runner, which is exactly when nobody will remember
-    # why macOS UI tests stopped working.
-    - |
-      if automationmodetool | grep -q "DOES NOT REQUIRE user authentication"; then
-        echo "automation mode: no authentication required"
-      else
-        echo "ERROR: this host requires authentication to enable Automation Mode." >&2
-        echo "XCUITest will time out after 60s with Code=1000. On the runner:" >&2
-        echo "  sudo automationmodetool enable-automationmode-without-authentication" >&2
-        echo "It lets any local process enable UI automation without" >&2
-        echo "authenticating, so weigh that before running it on a shared host." >&2
-        exit 1
-      fi
     - HOME="$CI_PROJECT_DIR/.spm-home" xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data -disableAutomaticPackageResolution CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
     - rm -rf TestResults
     # xcodebuild exit 65 can be a false positive from logarchive errors (error 13,
@@ -1258,6 +1237,27 @@ test:ui:
       if [ "$console_owner" != "$(id -un)" ]; then
         echo "ERROR: the console session belongs to '$console_owner', not '$(id -un)'." >&2
         echo "XCUITest cannot drive an app from a switched-out session." >&2
+        exit 1
+      fi
+    # macOS 12+ gate XCUITest behind an authenticated "Enable UI Automation".
+    # Unsatisfied, the runner does not prompt and does not fail — it waits,
+    # and xcodebuild reports Code=1000 "Timed out while enabling automation
+    # mode" sixty seconds later, naming neither the cause nor the fix. That
+    # cost most of a night on 2026-09-09. One second here, with the command,
+    # is worth more than the sixty seconds and the mystery.
+    #
+    # This is machine state, not repo state: it survives reboots but not a
+    # rebuilt or replaced runner, which is exactly when nobody will remember
+    # why macOS UI tests stopped working.
+    - |
+      if automationmodetool | grep -q "DOES NOT REQUIRE user authentication"; then
+        echo "automation mode: no authentication required"
+      else
+        echo "ERROR: this host requires authentication to enable Automation Mode." >&2
+        echo "XCUITest will time out after 60s with Code=1000. On the runner:" >&2
+        echo "  sudo automationmodetool enable-automationmode-without-authentication" >&2
+        echo "It lets any local process enable UI automation without" >&2
+        echo "authenticating, so weigh that before running it on a shared host." >&2
         exit 1
       fi
     # Signed, into its own derived-data tree — both halves are load-bearing.
