@@ -1183,27 +1183,36 @@ test:unit:
 # `.sufficientElementDescription` asks whether an element has a description,
 # not whether the description means anything.
 #
-# Manual, because it cannot pass unattended, and the reason is now known
-# rather than merely observed. Enabling automation mode is authenticated
-# against the device-owner policy through LocalAuthentication — Touch ID
-# or the account password — by
-# AutomationMode.framework/automationmode-writer, which puts
-# AutomationModeUI.app on screen and waits. A CI job has nobody to answer
-# it, so xcodebuild reports Code=1000 "Timed out while enabling automation
-# mode" sixty seconds later.
+# Manual until the host is configured, and the configuration is one
+# command. macOS 12 and later require user authentication before anything
+# may enable Automation Mode, which is what XCUITest needs to drive a UI.
+# The machine states it itself:
 #
-# The approval is cached in /var/db/com.apple.dt.automationmode/ against a
-# creation time and the **boot session UUID**, so it survives until it
-# times out and never survives a restart. That is the whole explanation
-# for the intermittency this job was blamed for: someone approved once,
-# runs passed while the credential lived, and it expired.
+#   $ automationmodetool
+#   Automation Mode is disabled.
+#   This device requires user authentication to enable Automation Mode.
 #
-# So this stays manual until someone has approved once since the last
-# boot. `when: manual` rather than `allow_failure: true` alone: a job
-# reporting success without running is the linux-qt failure mode filed the
-# same day.
+# On a CI host nothing can satisfy that, and — importantly — no dialog is
+# ever shown to satisfy it *with*: the request simply expires, and
+# xcodebuild reports Code=1000 "Timed out while enabling automation mode"
+# exactly sixty seconds later. Verified on 2026-09-10 against a
+# freshly-booted host with no wedged daemons.
 #
-# Full investigation, including what was ruled out:
+# The fix is a persistent machine setting, not a per-session approval:
+#
+#   sudo automationmodetool enable-automationmode-without-authentication
+#
+# Weigh it before running it: it lets any local process enable UI
+# automation without authenticating, and UI automation can drive any app
+# and read any window. On a dedicated build host that is the intent; on a
+# shared machine it is a real weakening. `disable-...` reverts it.
+#
+# `when: manual` rather than `allow_failure: true` alone: a job reporting
+# success without running is the linux-qt failure mode filed the same day.
+# Once the host is configured, this job should go automatic and blocking,
+# the way ios/.gitlab-ci.yml's equivalent is.
+#
+# Full investigation, including several wrong turns:
 # _private/docs/backlog/2026-09-08-macos-ui-runner-needs-accessibility-grant.
 test:ui:
   extends: [.macos-job, .spm-cache-readonly, .timeout-long]
