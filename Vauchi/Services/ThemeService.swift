@@ -183,6 +183,16 @@
             return color(from: theme.colors.border)
         }
 
+        /// ADR-038 Amendment 3's focus-visible ring stroke. Optional in
+        /// `MobileThemeColors` because older theme catalog entries predate
+        /// the amendment; `accentColor` keeps focus visible either way.
+        var focusRing: Color {
+            guard let theme = currentTheme, let hex = theme.colors.focusRing else {
+                return .accentColor
+            }
+            return color(from: hex)
+        }
+
         // MARK: - Grouped Themes
 
         var darkThemes: [MobileTheme] {

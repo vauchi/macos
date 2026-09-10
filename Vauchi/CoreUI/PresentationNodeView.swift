@@ -37,6 +37,11 @@ struct PresentationNodeView: View {
             )
             .disabled(!value.enabled)
             .accessibilityLabel(value.accessibility.label)
+            .keyboardFocusRing(
+                focusedBinding,
+                equals: value.bindingID,
+                color: ThemeService.shared.focusRing
+            )
         case let .choice(value):
             Picker(
                 value.label,
@@ -200,6 +205,11 @@ struct PresentationNodeView: View {
             .buttonStyle(.plain)
             .disabled(!action.enabled)
             .accessibilityLabel(action.accessibilityLabel)
+            .keyboardFocusRing(
+                focusedBinding,
+                equals: action.interactionID,
+                color: ThemeService.shared.focusRing
+            )
         } else {
             content.accessibilityLabel(value.accessibility.label)
         }
@@ -222,6 +232,11 @@ struct PresentationNodeView: View {
                     sendAction(action)
                 }
                 .disabled(!action.enabled)
+                .keyboardFocusRing(
+                    focusedBinding,
+                    equals: action.interactionID,
+                    color: ThemeService.shared.focusRing
+                )
             }
         }
         .padding(8)
@@ -283,6 +298,11 @@ struct PresentationNodeView: View {
         }
         .disabled(!action.enabled)
         .accessibilityLabel(action.accessibilityLabel)
+        .keyboardFocusRing(
+            focusedBinding,
+            equals: action.interactionID,
+            color: ThemeService.shared.focusRing
+        )
     }
 
     private func children(_ nodes: [PresentationNode]) -> some View {
@@ -461,6 +481,11 @@ private struct PresentationRowView: View {
                 activate(action)
             }
         }
+        .keyboardFocusRing(
+            focusedBinding,
+            equals: row.id,
+            color: ThemeService.shared.focusRing
+        )
         .accessibilityLabel(row.accessibility.label)
     }
 

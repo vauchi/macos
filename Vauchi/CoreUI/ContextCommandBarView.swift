@@ -7,8 +7,14 @@ import SwiftUI
 struct ContextCommandBarView: View {
     let surfaceID: String
     let bar: PresentationContextBar?
+    let tokens: PresentationTokens?
     let reducedMotion: Bool
+    let focusedBinding: FocusState<String?>.Binding
     let onEvent: (PresentationEvent) -> Void
+
+    private var minimumTarget: CGFloat {
+        PresentationTokens.minimumTargetSize(from: tokens)
+    }
 
     var body: some View {
         HStack(spacing: 8) {
@@ -34,6 +40,11 @@ struct ContextCommandBarView: View {
                 .keyboardShortcut(
                     primary.shortcut == .undo ? "z" : .return,
                     modifiers: .command
+                )
+                .keyboardFocusRing(
+                    focusedBinding,
+                    equals: primary.interactionID,
+                    color: ThemeService.shared.focusRing
                 )
             } else {
                 Spacer(minLength: 140)
@@ -76,8 +87,13 @@ struct ContextCommandBarView: View {
             .accessibilityIdentifier(identifier(for: role))
             .help(role)
             .keyboardShortcut(shortcut(for: role))
+            .keyboardFocusRing(
+                focusedBinding,
+                equals: action.interactionID,
+                color: ThemeService.shared.focusRing
+            )
         } else {
-            Spacer(minLength: 44)
+            Spacer(minLength: minimumTarget)
         }
     }
 

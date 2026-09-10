@@ -54,6 +54,15 @@ struct PresentationHostView: View {
             .onChange(of: reducedMotion) { _ in
                 reportEnvironment(geometry.size)
             }
+            // WCAG 2.2 SC 2.4.11: a presented overlay visually covers the
+            // active surface, so any control focused underneath it must
+            // release focus rather than leave its ring drawn beneath a
+            // layer the user can no longer see through.
+            .onChange(of: viewModel.presentationState.activeOverlay) { overlay in
+                if overlay != nil {
+                    focusedBindingID = nil
+                }
+            }
             .onExitCommand {
                 guard let surfaceID = viewModel.presentationState.activeSurfaceID else {
                     return
@@ -124,7 +133,9 @@ struct PresentationHostView: View {
             ContextCommandBarView(
                 surfaceID: surfaceID,
                 bar: viewModel.presentationState.activeBar,
+                tokens: viewModel.presentationState.surfaces[surfaceID]?.tokens,
                 reducedMotion: reducedMotion,
+                focusedBinding: $focusedBindingID,
                 onEvent: { event in
                     viewModel.activateAndDispatch(
                         surfaceID: surfaceID,
