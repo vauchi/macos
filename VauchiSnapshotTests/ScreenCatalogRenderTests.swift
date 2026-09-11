@@ -82,6 +82,11 @@ final class ScreenCatalogRenderTests: XCTestCase {
             backing: .buffered,
             defer: false
         )
+        // A programmatic NSWindow releases itself on close; ARC then
+        // releases this reference again and the test process dies after
+        // the run (macos!401 job 16457814358: 9 PNG files written, then
+        // "Restarting after unexpected exit").
+        window.isReleasedWhenClosed = false
         window.contentView = host
         host.layoutSubtreeIfNeeded()
         defer { window.close() }
