@@ -35,21 +35,21 @@ final class VauchiUITests: XCTestCase {
         // macOS 14+ XCUITest accessibility audit.
         //
         // The handler NEVER suppresses: it returns false for every issue, so
-        // the audit still fails on all of them exactly as the bare
-        // `performAccessibilityAudit()` did. It exists only because the
-        // failure message ("Element has no description") does not say WHICH
-        // element, and the .xcresult carries only a cropped screenshot of it
-        // — enough to see it is window-sized, not enough to find it in the
-        // view tree. Printing the element makes the next failure name itself.
+        // the audit fails on all of them exactly as the bare
+        // `performAccessibilityAudit()` did. It only prints.
+        //
+        // That printing is the point. Left bare, this test reports
+        // "Element has no description" and nothing else: the .xcresult
+        // carries a screenshot of the element cropped to its own frame and
+        // no identity for it, which cost two CI round trips to turn into a
+        // name the first time it fired (2026-09-11, the window's
+        // GeometryReader wrapper). Printing the element means the next
+        // failure names itself.
         //
         // Do not turn this into a filter. The no-exclusions audit is a
         // deliberate regression guard (claude-errors-2026-03, E29) and
         // CC-21 applies before weakening any check.
         if #available(macOS 14.0, *) {
-            // The flagged element is an empty, disabled Group the size of the
-            // whole window. Its own subtree is just itself, so the only way
-            // to find what builds it is the surrounding tree.
-            print("A11Y-TREE-BEGIN\n\(app.debugDescription)\nA11Y-TREE-END")
             try app.performAccessibilityAudit { issue in
                 print("""
                 A11Y-AUDIT-ISSUE
