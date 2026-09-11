@@ -8,57 +8,76 @@ struct PresentationHostView: View {
     @ObservedObject var viewModel: AppViewModel
     @Environment(\.accessibilityReduceMotion) private var reducedMotion
     @FocusState private var focusedBindingID: String?
+    /// Last measured window size, kept so `reducedMotion` changes can
+    /// re-report the environment without the GeometryReader in scope.
+    @State private var viewportSize: CGSize = .zero
 
     var body: some View {
-        GeometryReader { geometry in
-            chrome
-                .onAppear {
-                    reportEnvironment(geometry.size)
+        // The GeometryReader measures the window; it must not WRAP the
+        // window. As a wrapper it became the single child of the window in
+        // the accessibility tree — a full-frame group holding the surface
+        // and the command bar, with no description of its own, which is
+        // what `testAccessibilityAudit` flags (audit type
+        // `sufficientElementDescription`). Its children are all labelled;
+        // only this structural wrapper was not, and a purely structural
+        // container should not be an accessibility element at all rather
+        // than be given invented copy. Reading the size from a background
+        // keeps the measurement and drops the wrapper.
+        chrome
+            .background {
+                GeometryReader { geometry in
+                    Color.clear
+                        .onAppear {
+                            viewportSize = geometry.size
+                            reportEnvironment(geometry.size)
+                        }
+                        .onChange(of: geometry.size) { size in
+                            viewportSize = size
+                            reportEnvironment(size)
+                        }
                 }
-                .onChange(of: geometry.size) { size in
-                    reportEnvironment(size)
-                }
-                .onChange(of: reducedMotion) { _ in
-                    reportEnvironment(geometry.size)
-                }
-                // WCAG 2.2 SC 2.4.11: a presented overlay visually covers the
-                // active surface, so any control focused underneath it must
-                // release focus rather than leave its ring drawn beneath a
-                // layer the user can no longer see through.
-                .onChange(of: viewModel.presentationState.activeOverlay) { overlay in
-                    if overlay != nil {
-                        focusedBindingID = nil
-                    }
-                }
-                .onExitCommand {
-                    guard let surfaceID = viewModel.presentationState.activeSurfaceID else {
-                        return
-                    }
-                    viewModel.activateAndDispatch(
-                        surfaceID: surfaceID,
-                        event: .backRequested(surfaceID: surfaceID)
-                    )
-                }
-        }
-        .alert(item: $viewModel.alertMessage) { alert in
-            Alert(
-                title: Text(alert.title),
-                message: Text(alert.message),
-                dismissButton: .default(Text(LocalizationService.shared.t("action.ok")))
-            )
-        }
-        .overlay(alignment: .top) {
-            if let message = viewModel.toastMessage {
-                Text(message)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
-                    .background(.regularMaterial)
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                    .shadow(radius: 8)
-                    .padding(.top, 8)
-                    .accessibilityAddTraits(.isStaticText)
+                .accessibilityHidden(true)
             }
-        }
+            .onChange(of: reducedMotion) { _ in
+                reportEnvironment(viewportSize)
+            }
+            // WCAG 2.2 SC 2.4.11: a presented overlay visually covers the
+            // active surface, so any control focused underneath it must
+            // release focus rather than leave its ring drawn beneath a
+            // layer the user can no longer see through.
+            .onChange(of: viewModel.presentationState.activeOverlay) { overlay in
+                if overlay != nil {
+                    focusedBindingID = nil
+                }
+            }
+            .onExitCommand {
+                guard let surfaceID = viewModel.presentationState.activeSurfaceID else {
+                    return
+                }
+                viewModel.activateAndDispatch(
+                    surfaceID: surfaceID,
+                    event: .backRequested(surfaceID: surfaceID)
+                )
+            }
+            .alert(item: $viewModel.alertMessage) { alert in
+                Alert(
+                    title: Text(alert.title),
+                    message: Text(alert.message),
+                    dismissButton: .default(Text(LocalizationService.shared.t("action.ok")))
+                )
+            }
+            .overlay(alignment: .top) {
+                if let message = viewModel.toastMessage {
+                    Text(message)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
+                        .background(.regularMaterial)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                        .shadow(radius: 8)
+                        .padding(.top, 8)
+                        .accessibilityAddTraits(.isStaticText)
+                }
+            }
     }
 
     /// Wraps `content` in the persistent desktop sidebar when Core
