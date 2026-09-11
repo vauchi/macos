@@ -1445,14 +1445,22 @@ test:ui:
     reports:
       junit: ui-test-results.xml
     expire_in: 7 days
+  # `when: manual` dates from when this job could not run at all: the app
+  # hung on a locked login keychain and every test failed after 60s. Both
+  # causes are fixed (macos!377 per-job keychain; the console no longer
+  # re-locks at boot), and the suite now runs in ~14s with 4 of 5 passing,
+  # so it is worth running unasked — a guard nobody clicks guards nothing.
+  #
+  # Still `allow_failure` because `testAccessibilityAudit` fails on a
+  # SwiftUI hosting container that app code cannot name
+  # (`backlog/2026-09-11-macos-a11y-audit-flags-the-window-content-container`).
+  # Drop allow_failure once that is resolved, and this actually gates.
   rules:
     - if: ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "pipeline") && $BINDINGS_VERSION
       when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: manual
       allow_failure: true
     - if: $CI_COMMIT_BRANCH == "main"
-      when: manual
       allow_failure: true
 
 # Screenshot walk — publishes a gallery of every screen and the onboarding
