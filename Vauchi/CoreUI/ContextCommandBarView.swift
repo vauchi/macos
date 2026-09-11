@@ -37,6 +37,7 @@ struct ContextCommandBarView: View {
                 .frame(minWidth: 140)
                 .disabled(!primary.enabled)
                 .accessibilityLabel(primary.accessibilityLabel)
+                .accessibilityIdentifier("command.primary")
                 .keyboardShortcut(
                     primary.shortcut == .undo ? "z" : .return,
                     modifiers: .command
