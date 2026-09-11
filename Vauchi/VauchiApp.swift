@@ -30,15 +30,6 @@ struct VauchiApp: App {
                 ContentView()
                     .environmentObject(appState)
                     .environmentObject(themeService)
-                    // The window's content container comes from SwiftUI's
-                    // hosting view, above anything PresentationHostView
-                    // builds, and `testAccessibilityAudit` flags it for
-                    // having no description at all. An identifier is the
-                    // one thing that reaches it from here, and it is not
-                    // user-facing copy — VoiceOver never speaks it, so
-                    // this stays clear of the Core-prepared accessibility
-                    // rule while giving the container an identity.
-                    .accessibilityIdentifier("vauchi.window.content")
             #else
                 PlaceholderContentView()
             #endif
