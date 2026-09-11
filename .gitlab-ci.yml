@@ -1475,6 +1475,96 @@ test:ui:
     - if: $CI_COMMIT_BRANCH == "main"
       allow_failure: true
 
+# Screen catalog render — replays Core's screen catalog fixture (every app
+# screen as the command batch Core emits for it) through the real SwiftUI
+# host from a hosted unit test, no UI automation, and publishes one PNG
+# per screen and appearance. Advisory like the walk: a changed screen is
+# news, not a gate.
+test:screen-catalog:
+  extends: [.macos-job, .spm-cache-readonly, .timeout-long]
+  stage: test
+  needs:
+    - job: build:debug
+      artifacts: true
+      optional: true
+  allow_failure: true
+  variables:
+    VAUCHI_PLATFORM_USE_LOCAL_XCFRAMEWORK: "1"
+    VRT_PLATFORM: macos
+    VRT_SCREENSHOT_DIR: build/screen-catalog
+    # xcodebuild forwards `TEST_RUNNER_*` to the test process, which
+    # reads them back as `VAUCHI_SCREEN_CATALOG` / `VAUCHI_SCREENSHOT_DIR`.
+    # The hosted test process is sandboxed on this runner; when its direct
+    # writes fail, the PNG files come out of the xcresult's kept attachments.
+    TEST_RUNNER_VAUCHI_SCREEN_CATALOG: $CI_PROJECT_DIR/build/screen_catalog_v1.json
+    TEST_RUNNER_VAUCHI_SCREENSHOT_DIR: $CI_PROJECT_DIR/build/screen-catalog
+  script:
+    - |
+      if [ ! -d Vauchi.xcodeproj ]; then
+        command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
+        xcodegen generate
+      fi
+    - ./scripts/fix-xcframework-symlinks.sh
+    # Per-job SPM mirror-config isolation — immune to the shared-config race
+    # (problem 2026-06-29-spm-mirror-config-race).
+    - ./scripts/ci-spm-isolate-config.sh
+    - mkdir -p build/screen-catalog
+    # Core main's catalog, or the contract fixture folded into one until
+    # the catalog lands there; the script prints which one it used.
+    - ./scripts/fetch-screen-catalog.sh build/screen_catalog_v1.json main
+    - HOME="$CI_PROJECT_DIR/.spm-home" xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data -disableAutomaticPackageResolution CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
+    - |
+      set +e
+      export HOME="$CI_PROJECT_DIR/.spm-home"
+      xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" \
+        -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data \
+        -disableAutomaticPackageResolution \
+        -only-testing:VauchiSnapshotTests/ScreenCatalogRenderTests \
+        -resultBundlePath build/screen_catalog.xcresult \
+        test-without-building | tee screen-catalog.log
+      XCODE_EXIT=${PIPESTATUS[0]}
+      set -e
+    - |
+      SHOT_COUNT=$(find build/screen-catalog -type f -name '*.png' | wc -l | tr -d ' ')
+      if [ "$SHOT_COUNT" -eq 0 ] && [ -d build/screen_catalog.xcresult ]; then
+        echo "no direct PNG writes (sandboxed test process) — exporting xcresult attachments"
+        ./scripts/export-screenshot-attachments.sh build/screen_catalog.xcresult build/screen-catalog
+        SHOT_COUNT=$(find build/screen-catalog -type f -name '*.png' | wc -l | tr -d ' ')
+      fi
+      echo "screen catalog PNG files rendered: $SHOT_COUNT"
+      find build/screen-catalog -type f -name '*.png' | sort
+    # Same summary-line evaluation as test:snapshots: xcodebuild's exit code
+    # carries logarchive noise; "Executed N tests, with M failures" is the truth.
+    - |
+      FINAL_LINE=$(grep -E '^\s*Executed [0-9]+ tests?, with [0-9]+ failure' screen-catalog.log | tail -1 || true)
+      if [ -n "$FINAL_LINE" ]; then
+        FAILURES=$(echo "$FINAL_LINE" | sed -E 's/.*with ([0-9]+) failure.*/\1/')
+        if [ "$FAILURES" -gt 0 ]; then
+          echo "❌ Screen catalog render failed: ${FINAL_LINE}"
+          exit 1
+        fi
+        echo "✅ Screen catalog rendered: ${FINAL_LINE} (xcodebuild exit ${XCODE_EXIT})"
+      elif [ "$XCODE_EXIT" -ne 0 ]; then
+        echo "❌ Screen catalog render failed and no summary produced (exit code ${XCODE_EXIT})"
+        exit 1
+      fi
+  after_script:
+    - !reference [.vrt-upload-script, script]
+    - !reference [.macos-job, after_script]
+  artifacts:
+    when: always
+    paths:
+      - build/screen-catalog/
+      - build/screen_catalog_v1.json
+      - build/screen_catalog.xcresult
+      - screen-catalog.log
+    expire_in: 1 week
+  rules:
+    - if: ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "pipeline") && $BINDINGS_VERSION
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
+
 # Screenshot walk — publishes a gallery of every screen and the onboarding
 # flow as job artifacts on every MR and on main, and to the VRT service
 # when a key is configured. Advisory: a screen that moved is news, not a
