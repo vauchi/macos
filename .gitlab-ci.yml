@@ -93,7 +93,13 @@ default:
         # returns the newest match, which is a booted simulator's own copy
         # whenever one is running — it reported a two-minute-old daemon
         # while the host's was half an hour old (macos!368).
-        host_tm=$(ps -eo pid,comm | awk '$2 == "/usr/libexec/testmanagerd" { print $1; exit }')
+        # No `exit` in awk: it stops reading, `ps` takes SIGPIPE, and under
+        # `set -eo pipefail` the substitution returns 141 and kills the job
+        # before any test runs. Race-dependent on how much `ps` still had to
+        # write, so it fails intermittently and never names itself — job
+        # 16457495750 died here with exit 141 and no other output. Keep the
+        # first match instead of exiting on it.
+        host_tm=$(ps -eo pid,comm | awk '$2 == "/usr/libexec/testmanagerd" && !found { print $1; found=1 }')
         if [ -n "$host_tm" ]; then
           echo "testmanagerd: clearing pid $host_tm, age $(ps -o etime= -p "$host_tm" | tr -d ' ')"
         else
@@ -1367,7 +1373,13 @@ test:unit:
       # a simulator is booted — so it reported a two-minute-old daemon while
       # the host one was half an hour old. A wrong number in a log is worse
       # than none.
-      host_tm=$(ps -eo pid,comm | awk '$2 == "/usr/libexec/testmanagerd" { print $1; exit }')
+      # No `exit` in awk: it stops reading, `ps` takes SIGPIPE, and under
+      # `set -eo pipefail` the substitution returns 141 and kills the job
+      # before any test runs. Race-dependent on how much `ps` still had to
+      # write, so it fails intermittently and never names itself — job
+      # 16457495750 died here with exit 141 and no other output. Keep the
+      # first match instead of exiting on it.
+      host_tm=$(ps -eo pid,comm | awk '$2 == "/usr/libexec/testmanagerd" && !found { print $1; found=1 }')
       if [ -n "$host_tm" ]; then
         echo "host testmanagerd pid=$host_tm age=$(ps -o etime= -p "$host_tm" | tr -d ' ')"
       else
