@@ -158,6 +158,19 @@ struct PresentationHostView: View {
                 .zIndex(20)
             }
         }
+        // Diagnostic: an identifier alone does not attach to an implicit
+        // SwiftUI container, so the previous run printing no identifier did
+        // NOT establish that the flagged Group is out of reach — it is
+        // equally consistent with this ZStack being that Group and dropping
+        // the identifier. `.contain` makes it an explicit accessibility
+        // container, which forces the identifier to attach.
+        //
+        // Reading the next run: flagged element reports
+        // `diag.host.zstack` -> the Group is this ZStack and ours to fix.
+        // A new unlabelled window-frame group appears above it -> the Group
+        // belongs to the hosting view and is a platform finding, not a bug
+        // in this file.
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("diag.host.zstack")
     }
 
