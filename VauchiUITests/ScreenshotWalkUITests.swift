@@ -56,7 +56,7 @@ final class ScreenshotWalkUITests: XCTestCase {
     /// tests alphabetically and `-only-testing` ignores a custom
     /// `defaultTestSuite`, so the numbers carry the order.
     func test1OnboardingFlow() throws {
-        app.launchArguments = []
+        app.launchArguments = ["--wipe-data-for-testing"]
         app.launch()
         app.activate()
 

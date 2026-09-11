@@ -31,6 +31,12 @@ import SwiftUI
             guard ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil else {
                 return
             }
+            #if DEBUG
+                let arguments = ProcessInfo.processInfo.arguments
+                if arguments.contains("--wipe-data-for-testing") || arguments.contains("--reset-for-testing") {
+                    wipeDataForTesting()
+                }
+            #endif
             initializeRepository()
 
             #if DEBUG
@@ -63,6 +69,23 @@ import SwiftUI
         }
 
         #if DEBUG
+            /// A persistent CI runner keeps the app's data directory between
+            /// jobs while each job gets a fresh keychain, so a leftover store
+            /// without its keys opened as a locked or half-onboarded app and
+            /// no test could rely on the first-launch state. Both testing
+            /// flags start from an empty store: `--wipe-data-for-testing`
+            /// stops there (onboarding), `--reset-for-testing` seeds an
+            /// identity on top.
+            private func wipeDataForTesting() {
+                let dataDir = VauchiRepository.defaultDataDir()
+                do {
+                    try FileManager.default.removeItem(atPath: dataDir)
+                    print("[Vauchi] testing flag: wiped \(dataDir)")
+                } catch {
+                    print("[Vauchi] testing flag: nothing to wipe at \(dataDir) (\(error))")
+                }
+            }
+
             private func seedTestIdentityIfNeeded() {
                 guard let repo = repository else {
                     print("[Vauchi] --reset-for-testing: no repository")
