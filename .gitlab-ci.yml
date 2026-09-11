@@ -1406,9 +1406,14 @@ test:unit:
       fi
     - command -v xcresultparser >/dev/null 2>&1 || brew install a7ex/homebrew-formulae/xcresultparser
     - xcresultparser --output-format junit UITestResults > ui-test-results.xml || true
-    # The screenshot walk's gallery, when the job asked for one.
+    # The screenshot walk's gallery, when the job asked for one. The test
+    # runner is sandboxed on this host and cannot write the PNG files
+    # itself, so they come out of the xcresult's kept attachments.
     - |
       if [ -n "${TEST_RUNNER_VAUCHI_SCREENSHOT_DIR:-}" ]; then
+        if [ -d UITestResults.xcresult ]; then
+          ./scripts/export-screenshot-attachments.sh UITestResults.xcresult "$TEST_RUNNER_VAUCHI_SCREENSHOT_DIR"
+        fi
         SHOT_COUNT=0
         if [ -d "$TEST_RUNNER_VAUCHI_SCREENSHOT_DIR" ]; then
           SHOT_COUNT=$(find "$TEST_RUNNER_VAUCHI_SCREENSHOT_DIR" -type f -name '*.png' | wc -l | tr -d ' ')

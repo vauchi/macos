@@ -37,7 +37,7 @@ final class ScreenshotWalkUITests: XCTestCase {
         continueAfterFailure = false
         app = XCUIApplication()
         captures = []
-        outputDirectory = try makeOutputDirectory()
+        outputDirectory = makeOutputDirectory()
     }
 
     override func tearDownWithError() throws {
