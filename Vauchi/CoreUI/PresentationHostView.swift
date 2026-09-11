@@ -24,12 +24,6 @@ struct PresentationHostView: View {
         // than be given invented copy. Reading the size from a background
         // keeps the measurement and drops the wrapper.
         chrome
-            // Diagnostic tags: the audit flags a window-filling Group with
-            // no description, and nothing in the issue says which view
-            // builds it. If the flagged element is one of ours it will
-            // print its identifier; if it prints none, the Group belongs to
-            // the hosting view and is not ours to remove.
-            .accessibilityIdentifier("diag.host.root")
             .background {
                 GeometryReader { geometry in
                     Color.clear
@@ -125,7 +119,6 @@ struct PresentationHostView: View {
     private var content: some View {
         ZStack {
             surfaces
-                .accessibilityIdentifier("diag.host.surfaces")
                 .padding(16)
                 .safeAreaInset(edge: .bottom) {
                     commandBar
@@ -158,20 +151,6 @@ struct PresentationHostView: View {
                 .zIndex(20)
             }
         }
-        // Diagnostic: an identifier alone does not attach to an implicit
-        // SwiftUI container, so the previous run printing no identifier did
-        // NOT establish that the flagged Group is out of reach — it is
-        // equally consistent with this ZStack being that Group and dropping
-        // the identifier. `.contain` makes it an explicit accessibility
-        // container, which forces the identifier to attach.
-        //
-        // Reading the next run: flagged element reports
-        // `diag.host.zstack` -> the Group is this ZStack and ours to fix.
-        // A new unlabelled window-frame group appears above it -> the Group
-        // belongs to the hosting view and is a platform finding, not a bug
-        // in this file.
-        .accessibilityElement(children: .contain)
-        .accessibilityIdentifier("diag.host.zstack")
     }
 
     @ViewBuilder
