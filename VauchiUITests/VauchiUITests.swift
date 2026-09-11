@@ -46,6 +46,10 @@ final class VauchiUITests: XCTestCase {
         // deliberate regression guard (claude-errors-2026-03, E29) and
         // CC-21 applies before weakening any check.
         if #available(macOS 14.0, *) {
+            // The flagged element is an empty, disabled Group the size of the
+            // whole window. Its own subtree is just itself, so the only way
+            // to find what builds it is the surrounding tree.
+            print("A11Y-TREE-BEGIN\n\(app.debugDescription)\nA11Y-TREE-END")
             try app.performAccessibilityAudit { issue in
                 print("""
                 A11Y-AUDIT-ISSUE
