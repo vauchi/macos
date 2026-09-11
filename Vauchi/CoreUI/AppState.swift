@@ -75,7 +75,12 @@ import SwiftUI
                 do {
                     try repo.appEngine.createIdentity(displayName: "Test User")
                     print("[Vauchi] --reset-for-testing: identity created")
-                    viewModel = AppViewModel(appEngine: repo.appEngine)
+                    // The engine chose its start screen at construction, when
+                    // there was no identity, so it is still on onboarding and
+                    // the navigation offers only "Welcome". Reopen the
+                    // repository so a fresh engine starts at home, exactly as
+                    // the next launch would.
+                    initializeRepository()
                 } catch {
                     print("[Vauchi] --reset-for-testing: failed: \(error)")
                 }
