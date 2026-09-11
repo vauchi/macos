@@ -1214,7 +1214,11 @@ test:unit:
 #
 # Full investigation, including several wrong turns:
 # _private/docs/backlog/2026-09-08-macos-ui-runner-needs-accessibility-grant.
-test:ui:
+# Shared body of the XCUITest jobs: job-scoped keychain, automation-mode
+# gate, signed build-for-testing, runner entitlement check, testmanagerd
+# report, logarchive-tolerant result parsing. `UI_TEST_SELECTOR` picks the
+# `-only-testing` target; concrete jobs own artifacts and rules.
+.macos-ui-test:
   extends: [.macos-job, .spm-cache-readonly, .timeout-long]
   stage: test
   needs:
@@ -1224,6 +1228,7 @@ test:ui:
   variables:
     VAUCHI_PLATFORM_USE_LOCAL_XCFRAMEWORK: "1"
     CI_JOB_KEYCHAIN: ci-macos-ui-${CI_JOB_ID}.keychain-db
+    UI_TEST_SELECTOR: VauchiUITests
   after_script:
     - |
       if [ -f "/tmp/keychain-restore-${CI_JOB_ID}" ]; then
@@ -1385,7 +1390,7 @@ test:ui:
       xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" \
         -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data-ui \
         -disableAutomaticPackageResolution \
-        -only-testing:VauchiUITests -resultBundlePath UITestResults \
+        "-only-testing:${UI_TEST_SELECTOR}" -resultBundlePath UITestResults \
         test-without-building 2>&1 | tee ui-build.log
       XCODE_EXIT=${PIPESTATUS[0]}
       set -e
@@ -1401,6 +1406,16 @@ test:ui:
       fi
     - command -v xcresultparser >/dev/null 2>&1 || brew install a7ex/homebrew-formulae/xcresultparser
     - xcresultparser --output-format junit UITestResults > ui-test-results.xml || true
+    # The screenshot walk's gallery, when the job asked for one.
+    - |
+      if [ -n "${TEST_RUNNER_VAUCHI_SCREENSHOT_DIR:-}" ]; then
+        SHOT_COUNT=0
+        if [ -d "$TEST_RUNNER_VAUCHI_SCREENSHOT_DIR" ]; then
+          SHOT_COUNT=$(find "$TEST_RUNNER_VAUCHI_SCREENSHOT_DIR" -type f -name '*.png' | wc -l | tr -d ' ')
+        fi
+        echo "screenshots captured: $SHOT_COUNT"
+        [ "$SHOT_COUNT" -eq 0 ] || find "$TEST_RUNNER_VAUCHI_SCREENSHOT_DIR" -type f -name '*.png' | sort
+      fi
     - |
       if [ -f ui-test-results.xml ]; then
         FAILURES=$(grep -c 'failures="[1-9]' ui-test-results.xml || true)
@@ -1414,6 +1429,9 @@ test:ui:
         echo "❌ UI tests failed and no results produced (exit code ${XCODE_EXIT})"
         exit 1
       fi
+
+test:ui:
+  extends: .macos-ui-test
   artifacts:
     when: always
     paths:
@@ -1431,6 +1449,38 @@ test:ui:
     - if: $CI_COMMIT_BRANCH == "main"
       when: manual
       allow_failure: true
+
+# Screenshot walk — publishes a gallery of every screen and the onboarding
+# flow as job artifacts on every MR and on main, and to the VRT service
+# when a key is configured. Advisory: a screen that moved is news, not a
+# gate — `test:ui` owns the structural assertions.
+test:screenshots:
+  extends: .macos-ui-test
+  allow_failure: true
+  variables:
+    UI_TEST_SELECTOR: VauchiUITests/ScreenshotWalkUITests
+    VRT_PLATFORM: macos
+    VRT_SCREENSHOT_DIR: build/screenshots
+    # xcodebuild forwards `TEST_RUNNER_*` to the UI test runner, which
+    # reads it back as `VAUCHI_SCREENSHOT_DIR` and writes the PNG files there.
+    TEST_RUNNER_VAUCHI_SCREENSHOT_DIR: $CI_PROJECT_DIR/build/screenshots
+  after_script:
+    - !reference [.vrt-upload-script, script]
+    - !reference [.macos-ui-test, after_script]
+  artifacts:
+    when: always
+    paths:
+      - build/screenshots/
+      - UITestResults.xcresult
+      - ui-build.log
+    reports:
+      junit: ui-test-results.xml
+    expire_in: 1 week
+  rules:
+    - if: ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "pipeline") && $BINDINGS_VERSION
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 coverage:unit:
   extends: [.macos-job, .spm-cache-readonly, .timeout-long]
