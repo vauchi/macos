@@ -88,12 +88,7 @@ final class ScreenCatalogRenderTests: XCTestCase {
         // "Restarting after unexpected exit").
         window.isReleasedWhenClosed = false
         window.contentView = host
-        // The NavigationSplitView sidebar is an AppKit table that only
-        // populates once its window is on screen; an off-screen window
-        // captured a blank column (job 16457814358).
-        window.orderFrontRegardless()
         host.layoutSubtreeIfNeeded()
-        window.displayIfNeeded()
         defer { window.close() }
 
         let scale = 2
