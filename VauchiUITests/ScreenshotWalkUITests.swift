@@ -58,6 +58,7 @@ final class ScreenshotWalkUITests: XCTestCase {
     func test1OnboardingFlow() throws {
         app.launchArguments = []
         app.launch()
+        app.activate()
 
         let primary = app.buttons["command.primary"]
         XCTAssertTrue(primary.waitForExistence(timeout: 15),
@@ -94,6 +95,7 @@ final class ScreenshotWalkUITests: XCTestCase {
     func test2Destinations() {
         app.launchArguments = ["--reset-for-testing"]
         app.launch()
+        app.activate()
 
         let navigation = app.buttons["command.navigation"]
         XCTAssertTrue(navigation.waitForExistence(timeout: 15),

@@ -143,13 +143,34 @@ extension ScreenshotWalkUITests {
 
     /// Onboarding asks for a display name; the field is the only text input
     /// on that step.
+    ///
+    /// A click only focuses the field while the window is key, and on the
+    /// CI host the launched window is not (job 16451857963: "Neither
+    /// element nor any descendant has keyboard focus"). Activate first and
+    /// type only once the field reports focus; typing blind fails the test
+    /// where leaving the name empty merely stalls the walk.
     func fillNameFieldIfPresent() {
         let field = app.textFields.firstMatch
         guard field.exists else { return }
+        app.activate()
         field.click()
+        if !hasKeyboardFocus(field) {
+            app.windows.firstMatch.click()
+            field.click()
+        }
+        guard hasKeyboardFocus(field) else {
+            print("[screenshots] name field never took keyboard focus; leaving it empty")
+            return
+        }
         field.typeText("Test User")
         settle()
         capture("\(screenSlug())-filled")
+    }
+
+    private func hasKeyboardFocus(_ element: XCUIElement) -> Bool {
+        let focused = NSPredicate(format: "hasKeyboardFocus == true")
+        let expectation = XCTNSPredicateExpectation(predicate: focused, object: element)
+        return XCTWaiter().wait(for: [expectation], timeout: 2) == .completed
     }
 
     func captureSecondaryActions() {
