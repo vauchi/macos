@@ -62,6 +62,7 @@
 		ACB5D66C9DC53BB3DEC7044E /* VauchiKeychainBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE32C32136CEB8811C89778C /* VauchiKeychainBridgeTests.swift */; };
 		ADB778BBA40707BAD3F8B21A /* AppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554291CB7224022A54BC954F /* AppViewModel.swift */; };
 		AE6ED32C72587A0283C520D2 /* VauchiRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95373D9E6440FED4B532EBDD /* VauchiRepository.swift */; };
+		B1A4AD4752837C2CA7E724FB /* WindowContentAccessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9141BF9EF205F0316F2EE7 /* WindowContentAccessibility.swift */; };
 		BF2293836C1D7191166FCE07 /* AppContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E5799FBB45272E5CCF4CEED /* AppContentView.swift */; };
 		C041D751F823A021E52DA876 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331706A539BC8824C9067EF5 /* AppDelegate.swift */; };
 		C08F19A01CA887CE179DB156 /* PresentationImageContentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B53FDA1302B12D2357E476DB /* PresentationImageContentTests.swift */; };
@@ -186,6 +187,7 @@
 		E3FE6A79522017C971205541 /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Fonts; path = Vauchi/Resources/Fonts; sourceTree = SOURCE_ROOT; };
 		E7944347EE6E209E80A5CF30 /* PresentationNodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationNodeView.swift; sourceTree = "<group>"; };
 		E8D652552F012CDE52615304 /* ScreenCatalogCaptureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenCatalogCaptureTests.swift; sourceTree = "<group>"; };
+		ED9141BF9EF205F0316F2EE7 /* WindowContentAccessibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowContentAccessibility.swift; sourceTree = "<group>"; };
 		EEDDFD35C524581CEE05797E /* PresentationTokensPointerTargetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationTokensPointerTargetTests.swift; sourceTree = "<group>"; };
 		F5427C4F253C3A904B25AA98 /* TextRoleStyleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextRoleStyleTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -304,6 +306,7 @@
 				20F21768CC084C55F26FE1E6 /* SidebarModel.swift */,
 				2A06CC40359E668FF6C58451 /* StateViews.swift */,
 				BF7B59DC1F3F21EAE1966C19 /* TextRoleStyle.swift */,
+				ED9141BF9EF205F0316F2EE7 /* WindowContentAccessibility.swift */,
 			);
 			path = CoreUI;
 			sourceTree = "<group>";
@@ -614,6 +617,7 @@
 				2D0728F99D4DBB3C8491C25B /* ThemeService.swift in Sources */,
 				2F7D817E60BDE6223F5E0484 /* VauchiApp.swift in Sources */,
 				AE6ED32C72587A0283C520D2 /* VauchiRepository.swift in Sources */,
+				B1A4AD4752837C2CA7E724FB /* WindowContentAccessibility.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -959,7 +963,7 @@
 			repositoryURL = "https://gitlab.com/vauchi/vauchi-platform-swift.git";
 			requirement = {
 				kind = exactVersion;
-				version = 0.66.0;
+				version = 0.67.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
