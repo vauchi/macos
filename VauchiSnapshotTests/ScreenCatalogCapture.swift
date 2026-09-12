@@ -38,7 +38,34 @@ enum ScreenCatalogCapture {
 
         guard let bitmap = bitmap(size: size, scale: scale) else { return nil }
         host.cacheDisplay(in: host.bounds, to: bitmap)
+        paintGlassColumns(of: host, into: bitmap, scale: scale)
         return bitmap.representation(using: .png, properties: [:])
+    }
+
+    /// On macOS 26 `NavigationSplitView` hosts the sidebar column in a
+    /// Liquid Glass container that only the window server composites:
+    /// under `cacheDisplay` its backdrop rasterises as a black gradient
+    /// and the content it hosts is skipped (job 16460767602). Painting
+    /// the column's background and caching the hosted content on its own
+    /// puts a flat sidebar where the glass one would be.
+    private static func paintGlassColumns(of host: NSView, into bitmap: NSBitmapImageRep, scale: Int) {
+        guard #available(macOS 26.0, *) else { return }
+        let glassViews = host.descendants.compactMap { $0 as? NSGlassEffectView }
+        guard !glassViews.isEmpty, let context = NSGraphicsContext(bitmapImageRep: bitmap) else { return }
+        NSGraphicsContext.saveGraphicsState()
+        NSGraphicsContext.current = context
+        defer { NSGraphicsContext.restoreGraphicsState() }
+        for glass in glassViews {
+            if let column = glass.superview {
+                NSColor.windowBackgroundColor.setFill()
+                column.convert(column.bounds, to: host).fill()
+            }
+            guard let content = glass.contentView,
+                  let contentBitmap = self.bitmap(size: content.bounds.size, scale: scale)
+            else { continue }
+            content.cacheDisplay(in: content.bounds, to: contentBitmap)
+            contentBitmap.draw(in: content.convert(content.bounds, to: host))
+        }
     }
 
     private static func bitmap(size: CGSize, scale: Int) -> NSBitmapImageRep? {
@@ -56,5 +83,11 @@ enum ScreenCatalogCapture {
         )
         bitmap?.size = size
         return bitmap
+    }
+}
+
+private extension NSView {
+    var descendants: [NSView] {
+        subviews.flatMap { [$0] + $0.descendants }
     }
 }
