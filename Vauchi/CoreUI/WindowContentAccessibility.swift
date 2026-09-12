@@ -1,0 +1,64 @@
+// SPDX-FileCopyrightText: 2026 Mattia Egloff <mattia.egloff@pm.me>
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+import SwiftUI
+
+/// Takes the window's content container out of the accessibility tree.
+///
+/// `testAccessibilityAudit` flags an element with no description that the
+/// element tree places as the window's direct child at the window's exact
+/// frame, with everything `PresentationHostView` builds inside it:
+///
+///     Window (Main)  {{760,206},{400,700}}  title 'Vauchi'
+///       Group        {{760,206},{400,700}}        <- flagged
+///         Group      {{775.5,254},{369,644.5}}    <- our content
+///
+/// It is SwiftUI's hosting container, not a view this app creates, and
+/// four SwiftUI-level attempts failed to address it: moving the measuring
+/// `GeometryReader` out of the layout chain, making the `ZStack` an
+/// explicit container, and applying an identifier or a label at the
+/// `WindowGroup` content. The last two reach it but land on the window
+/// and replace the identifier XCUITest resolves windows by, which broke
+/// `app.windows` and took three green tests red (job 16440006443).
+/// Recorded with job ids in
+/// `_private/docs/backlog/2026-09-11-macos-a11y-audit-flags-the-window-content-container`.
+///
+/// So reach it through AppKit instead, where the container can be
+/// addressed directly rather than through a modifier that also rewrites
+/// the window.
+///
+/// It is cleared rather than labelled deliberately. A purely structural
+/// container should not be an accessibility element at all — its children
+/// already carry the labels Core prepares — and naming it here would put
+/// accessibility copy in the frontend, which ADR-038/ADR-066 keep in Core.
+struct WindowContentAccessibility: NSViewRepresentable {
+    func makeNSView(context _: Context) -> NSView {
+        ContentAccessibilityView()
+    }
+
+    func updateNSView(_: NSView, context _: Context) {}
+
+    /// Zero-sized and never drawn; it exists to get a `window` reference.
+    private final class ContentAccessibilityView: NSView {
+        override func viewDidMoveToWindow() {
+            super.viewDidMoveToWindow()
+            // The window is nil until this view is installed, so this
+            // cannot be done at construction time.
+            guard let content = window?.contentView else {
+                // Distinguishes "the hook never ran" from "it ran and did
+                // not help" — the previous attempt could prove neither,
+                // which made its negative result unusable as evidence.
+                NSLog("[APPKIT-A11Y] viewDidMoveToWindow: window or contentView nil")
+                return
+            }
+            content.setAccessibilityElement(false)
+            NSLog(
+                "[APPKIT-A11Y] cleared on %@ frame=%@ isAccessibilityElement=%d",
+                String(describing: type(of: content)),
+                NSStringFromRect(content.frame),
+                content.isAccessibilityElement() ? 1 : 0
+            )
+        }
+    }
+}

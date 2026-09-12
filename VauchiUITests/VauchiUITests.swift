@@ -50,6 +50,9 @@ final class VauchiUITests: XCTestCase {
         // deliberate regression guard (claude-errors-2026-03, E29) and
         // CC-21 applies before weakening any check.
         if #available(macOS 14.0, *) {
+            // This run only: needed to see whether the AppKit change
+            // altered the tree at all.
+            print("A11Y-TREE-BEGIN\n\(app.debugDescription)\nA11Y-TREE-END")
             try app.performAccessibilityAudit { issue in
                 print("""
                 A11Y-AUDIT-ISSUE

@@ -24,6 +24,16 @@ import SwiftUI
                     ProgressView(LocalizationService.shared.t("app.initializing"))
                 }
             }
+            // Zero-sized and invisible; it exists only to reach the
+            // window's content container through AppKit. See
+            // WindowContentAccessibility for why SwiftUI modifiers
+            // cannot address that element without breaking window
+            // resolution.
+            .background(
+                WindowContentAccessibility()
+                    .frame(width: 0, height: 0)
+                    .accessibilityHidden(true)
+            )
         }
     }
 
