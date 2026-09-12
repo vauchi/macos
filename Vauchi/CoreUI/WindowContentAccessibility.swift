@@ -52,13 +52,19 @@ struct WindowContentAccessibility: NSViewRepresentable {
                 NSLog("[APPKIT-A11Y] viewDidMoveToWindow: window or contentView nil")
                 return
             }
+            // Tag before clearing, and read the evidence from the
+            // accessibility tree rather than from a log line. The app's
+            // own stdout does not reach the CI job log at all — six
+            // `print("[Vauchi] ...")` statements exist, one of them
+            // provably executes (the seeded identity shows up in the
+            // tree), and none appear in the trace. So a missing log line
+            // is not evidence the code did not run.
+            //
+            // If `appkit.contentview` appears anywhere in the dumped
+            // tree, this ran and that element is the content view. If it
+            // appears nowhere, it did not run.
+            content.setAccessibilityIdentifier("appkit.contentview")
             content.setAccessibilityElement(false)
-            NSLog(
-                "[APPKIT-A11Y] cleared on %@ frame=%@ isAccessibilityElement=%d",
-                String(describing: type(of: content)),
-                NSStringFromRect(content.frame),
-                content.isAccessibilityElement() ? 1 : 0
-            )
         }
     }
 }
