@@ -75,6 +75,7 @@
 		D65905F3E8A6B191F4611470 /* AudioProximityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49509AE0DF70B880F977B015 /* AudioProximityService.swift */; };
 		DA673F09635BBBF9871092A8 /* VauchiUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773C796EDEEFF9B928C04229 /* VauchiUITests.swift */; };
 		DCB3E583D86FF3A15C6BE915 /* PlatformAppEngine+DomainDispatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8809B70A6BEDF6B35461415B /* PlatformAppEngine+DomainDispatch.swift */; };
+		E029B74DC69464F3AB4DE7CB /* ScreenCatalogCaptureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8D652552F012CDE52615304 /* ScreenCatalogCaptureTests.swift */; };
 		E15D3E295518C2178E26D1A9 /* NotificationServiceContentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37CF81D097BBE672CB4C58D4 /* NotificationServiceContentTests.swift */; };
 		E46828FADC8D63F63BB68280 /* HardwareEventJsonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B14F6FC09C0E3B70E2A824 /* HardwareEventJsonTests.swift */; };
 		E9023ACF578FB502397EE363 /* FocusRingModifierTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B6A6426D8087D5940C77B9 /* FocusRingModifierTests.swift */; };
@@ -184,6 +185,7 @@
 		DFFE40C221022DBDBD034AF3 /* PresentationStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationStateTests.swift; sourceTree = "<group>"; };
 		E3FE6A79522017C971205541 /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Fonts; path = Vauchi/Resources/Fonts; sourceTree = SOURCE_ROOT; };
 		E7944347EE6E209E80A5CF30 /* PresentationNodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationNodeView.swift; sourceTree = "<group>"; };
+		E8D652552F012CDE52615304 /* ScreenCatalogCaptureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenCatalogCaptureTests.swift; sourceTree = "<group>"; };
 		EEDDFD35C524581CEE05797E /* PresentationTokensPointerTargetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationTokensPointerTargetTests.swift; sourceTree = "<group>"; };
 		F5427C4F253C3A904B25AA98 /* TextRoleStyleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextRoleStyleTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -311,6 +313,7 @@
 			children = (
 				AE718E95F174F15A52F1FCEC /* PresentationContractTests.swift */,
 				9CC8C031EBA0849BA30A119F /* ScreenCatalogCapture.swift */,
+				E8D652552F012CDE52615304 /* ScreenCatalogCaptureTests.swift */,
 				1A5E4BAE84EAF093A5315006 /* ScreenCatalogRenderTests.swift */,
 				8691393CE57A5898A62A9B08 /* ScreenCatalogTests.swift */,
 			);
@@ -548,6 +551,7 @@
 			files = (
 				F05A78B995EB8456A4B310F3 /* PresentationContractTests.swift in Sources */,
 				8237D52EACF3C1E7F1B501AE /* ScreenCatalogCapture.swift in Sources */,
+				E029B74DC69464F3AB4DE7CB /* ScreenCatalogCaptureTests.swift in Sources */,
 				500F6D1BBC823E6726D4A85C /* ScreenCatalogRenderTests.swift in Sources */,
 				9D5D4424B928F2AE4C789950 /* ScreenCatalogTests.swift in Sources */,
 			);
