@@ -30,8 +30,43 @@ final class NavigationIconMapTests: XCTestCase {
         "house",
     ]
 
+    /// The icon tokens Core attaches to `Status` nodes (`StatusIndicator`
+    /// and `InfoPanel` items across `vauchi-app/src/ui`). Several are Core's
+    /// own vocabulary rather than SF Symbol names (`warning`, `people`,
+    /// `devices`, `lifebuoy`), so the map has to translate, not pass through.
+    private static let coreStatusTokens = [
+        "warning", "people", "shield", "lifebuoy", "info", "devices", "lock",
+        "checkmark.circle", "checkmark.circle.fill", "link", "trash", "swap",
+        "qrcode", "qr", "key", "eye", "exclamationmark.triangle",
+        "checkmark.seal", "checkmark", "camera.slash", "xmark.circle", "xmark",
+        "wifi", "id_card", "delete", "cloud", "clock", "clock.arrow.circlepath",
+        "dot.radiowaves.left.and.right", "move.3d", "checkmark.shield",
+        "checkmark.shield.fill", "exclamationmark.shield", "arrow.left.arrow.right",
+        "github", "liberapay",
+    ]
+
     private func symbolExists(_ name: String) -> Bool {
         NSImage(systemSymbolName: name, accessibilityDescription: nil) != nil
+    }
+
+    /// A status row draws its icon before the title, so a token the map
+    /// cannot translate must yield no icon rather than the navigation
+    /// fallback: an apps-grid glyph beside "Warning" would be a lie.
+    func testEveryCoreStatusTokenResolvesToAnInstalledSymbol() {
+        for token in Self.coreStatusTokens {
+            let symbol = NavigationIconMap.statusSystemImage(for: token)
+            XCTAssertNotNil(symbol, "status token \(token) has no symbol")
+            XCTAssertNotEqual(symbol, NavigationIconMap.fallbackSymbol, token)
+            if let symbol {
+                XCTAssertTrue(symbolExists(symbol), "\(token) -> \(symbol) is not installed")
+            }
+        }
+    }
+
+    func testStatusIconIsAbsentWithoutATranslatableToken() {
+        XCTAssertNil(NavigationIconMap.statusSystemImage(for: nil))
+        XCTAssertNil(NavigationIconMap.statusSystemImage(for: " "))
+        XCTAssertNil(NavigationIconMap.statusSystemImage(for: "not.a.symbol.core.made.up"))
     }
 
     /// A name the system cannot resolve renders as a blank gap next to the
