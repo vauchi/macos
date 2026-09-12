@@ -20,6 +20,20 @@ final class HardwareEventJsonTests: XCTestCase {
         )
     }
 
+    /// The two variants the 0.66.0 binding added. `bytes` and `reason` are
+    /// the field names Core's serde contract expects — a mismatch here
+    /// decodes as an unknown event and is rejected, not corrected.
+    func testNfcApduAndFailureEncodeWithCoresFieldNames() {
+        XCTAssertEqual(
+            MobileEvent.nfcApduReceived(bytes: Data([0x90, 0x00])).toEventJson(),
+            #"{"NfcApduReceived":{"bytes":[144,0]}}"#
+        )
+        XCTAssertEqual(
+            MobileEvent.nfcFailed(reason: "tag lost").toEventJson(),
+            #"{"NfcFailed":{"reason":"tag lost"}}"#
+        )
+    }
+
     func testUnitVariantsEncodeAsBareStrings() {
         XCTAssertEqual(MobileEvent.filePickCancelledByUser.toEventJson(), #""FilePickCancelledByUser""#)
         XCTAssertEqual(MobileEvent.imagePickCancelled.toEventJson(), #""ImagePickCancelled""#)
