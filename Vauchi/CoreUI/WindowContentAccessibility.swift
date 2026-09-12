@@ -63,8 +63,24 @@ struct WindowContentAccessibility: NSViewRepresentable {
             // If `appkit.contentview` appears anywhere in the dumped
             // tree, this ran and that element is the content view. If it
             // appears nowhere, it did not run.
+            // Proven by job 16461108863: this identifier lands on the
+            // exact element the audit flags, so AppKit does address it.
+            // Kept because it is the only evidence that this code ran —
+            // the app's stdout never reaches the CI log.
             content.setAccessibilityIdentifier("appkit.contentview")
-            content.setAccessibilityElement(false)
+
+            // `setAccessibilityElement(false)` was tried here first and
+            // does nothing: the element stays in the tree, so SwiftUI's
+            // hosting view re-asserts it. An identifier alone does not
+            // satisfy the audit either — the same job shows the element
+            // flagged while carrying one.
+            //
+            // So give it the description the audit asks for. `app.name`
+            // comes from the shared locales, the same mechanism the shell
+            // already uses for user-facing strings, and resolves to the
+            // name the window's title bar already shows — VoiceOver gains
+            // a description rather than a second, conflicting one.
+            content.setAccessibilityLabel(LocalizationService.shared.t("app.name"))
         }
     }
 }
