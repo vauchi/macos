@@ -57,10 +57,8 @@ final class ScreenCatalogRenderTests: XCTestCase {
         sink.finish()
     }
 
-    /// Hosts the content in a window-sized `NSHostingView` and caches its
-    /// display into a 2x bitmap. `ImageRenderer` is not used: it cannot
-    /// draw the AppKit-backed `ScrollView` every `.scroll` surface sits
-    /// in (the iOS twin came out blank that way).
+    /// Composes the state through the app's own host view and hands the
+    /// window-sized composition to `ScreenCatalogCapture`.
     private func render(
         _ state: PresentationState,
         variant: ScreenCatalogRenderVariant
@@ -73,42 +71,9 @@ final class ScreenCatalogRenderTests: XCTestCase {
         .frame(width: Self.canvas.width, height: Self.canvas.height)
         .background(Color(nsColor: .windowBackgroundColor))
         .environment(\.dynamicTypeSize, variant.dynamicTypeSize)
-        let host = NSHostingView(rootView: content)
-        host.frame = CGRect(origin: .zero, size: Self.canvas)
-        host.appearance = NSAppearance(named: variant.appearance)
-        let window = NSWindow(
-            contentRect: host.frame,
-            styleMask: [.borderless],
-            backing: .buffered,
-            defer: false
-        )
-        // A programmatic NSWindow releases itself on close; ARC then
-        // releases this reference again and the test process dies after
-        // the run (macos!401 job 16457814358: 9 PNG files written, then
-        // "Restarting after unexpected exit").
-        window.isReleasedWhenClosed = false
-        window.contentView = host
-        host.layoutSubtreeIfNeeded()
-        defer { window.close() }
-
-        let scale = 2
-        guard let bitmap = NSBitmapImageRep(
-            bitmapDataPlanes: nil,
-            pixelsWide: Int(Self.canvas.width) * scale,
-            pixelsHigh: Int(Self.canvas.height) * scale,
-            bitsPerSample: 8,
-            samplesPerPixel: 4,
-            hasAlpha: true,
-            isPlanar: false,
-            colorSpaceName: .deviceRGB,
-            bytesPerRow: 0,
-            bitsPerPixel: 0
+        guard let png = ScreenCatalogCapture.png(
+            of: content, size: Self.canvas, appearance: variant.appearance
         ) else {
-            throw ScreenCatalogRenderError.noImage(variant)
-        }
-        bitmap.size = Self.canvas
-        host.cacheDisplay(in: host.bounds, to: bitmap)
-        guard let png = bitmap.representation(using: .png, properties: [:]) else {
             throw ScreenCatalogRenderError.noImage(variant)
         }
         return png
