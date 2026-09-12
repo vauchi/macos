@@ -43,6 +43,62 @@ enum NavigationIconMap {
         "house": "house.fill",
     ]
 
+    /// Tokens Core attaches to `Status` nodes. Several are Core's own
+    /// vocabulary (`warning`, `people`, `devices`, `lifebuoy`, `id_card`)
+    /// and a few name symbols this OS does not ship (`camera.slash`), so
+    /// the table translates rather than passes through.
+    private static let statusSymbolsByToken: [String: String] = [
+        "warning": "exclamationmark.triangle.fill",
+        "exclamationmark.triangle": "exclamationmark.triangle.fill",
+        "people": "person.2.fill",
+        "person": "person.fill",
+        "shield": "shield.fill",
+        "checkmark.shield": "checkmark.shield.fill",
+        "checkmark.shield.fill": "checkmark.shield.fill",
+        "exclamationmark.shield": "exclamationmark.shield.fill",
+        "lifebuoy": "lifepreserver.fill",
+        "info": "info.circle.fill",
+        "devices": "laptopcomputer.and.iphone",
+        "lock": "lock.fill",
+        "key": "key.fill",
+        "eye": "eye.fill",
+        "checkmark": "checkmark",
+        "checkmark.circle": "checkmark.circle.fill",
+        "checkmark.circle.fill": "checkmark.circle.fill",
+        "checkmark.seal": "checkmark.seal.fill",
+        "xmark": "xmark",
+        "xmark.circle": "xmark.circle.fill",
+        "link": "link",
+        "wifi": "wifi",
+        "cloud": "cloud.fill",
+        "trash": "trash.fill",
+        "delete": "trash.fill",
+        "swap": "arrow.left.arrow.right",
+        "arrow.left.arrow.right": "arrow.left.arrow.right",
+        "qrcode": "qrcode",
+        "qr": "qrcode",
+        "camera.slash": "video.slash.fill",
+        "clock": "clock.fill",
+        "clock.arrow.circlepath": "clock.arrow.circlepath",
+        "dot.radiowaves.left.and.right": "dot.radiowaves.left.and.right",
+        "move.3d": "move.3d",
+        "id_card": "person.text.rectangle.fill",
+        "github": "chevron.left.forwardslash.chevron.right",
+        "liberapay": "heart.fill",
+    ]
+
+    /// Partial by design: a status row draws its icon before the title, and
+    /// an apps-grid fallback beside "Warning" would be a confident lie, so
+    /// an untranslatable token draws nothing.
+    static func statusSystemImage(for token: String?) -> String? {
+        guard let token = token?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !token.isEmpty
+        else {
+            return nil
+        }
+        return statusSymbolsByToken[token] ?? symbolsByToken[token]
+    }
+
     /// Total over every token, present or not.
     static func systemImage(for token: String?) -> String {
         guard let token = token?.trimmingCharacters(in: .whitespacesAndNewlines),

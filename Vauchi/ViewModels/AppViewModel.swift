@@ -127,6 +127,8 @@ import UniformTypeIdentifiers
                 break
             case .resetApplication:
                 loadInitialPresentation()
+            case .requestBiometricUnlock:
+                requestBiometricUnlock()
             case .postNotification, .platformEffect:
                 break
             default:
@@ -172,6 +174,7 @@ import UniformTypeIdentifiers
                 "ExportFile",
                 "PerformNativeBack",
                 "ResetApplication",
+                "RequestBiometricUnlock",
                 "PostNotification",
             ]
             root["commands"] = commands.filter { command in
@@ -606,6 +609,33 @@ import UniformTypeIdentifiers
         /// Report that a hardware transport is unavailable.
         private func sendHardwareUnavailable(transport: String) {
             sendHardwareEvent(.hardwareUnavailable(transport: transport))
+        }
+
+        /// Prompt for Touch ID and report the outcome as the hardware event
+        /// Core expects. Core pads its duress decision to a constant floor
+        /// (>= 300 ms) inside `dispatchJson`, so the success round-trip runs
+        /// off the main actor and only the resulting envelope is applied here.
+        private func requestBiometricUnlock() {
+            Task { [weak self] in
+                let result: Result<Bool, Error>
+                do {
+                    result = try await .success(BiometricService.shared.authenticateBiometricOnly(
+                        reason: LocalizationService.shared.t("lock.auth_reason")
+                    ))
+                } catch {
+                    result = .failure(error)
+                }
+                guard let self, let event = BiometricUnlockBridge.event(for: result) else { return }
+                let engine = appEngine
+                do {
+                    let resultJson = try await Task.detached(priority: .userInitiated) {
+                        try engine.dispatchJson(eventJson: event.toEventJson())
+                    }.value
+                    try applyPresentationEnvelope(resultJson)
+                } catch {
+                    print("AppViewModel: biometric unlock failed: \(error)")
+                }
+            }
         }
     }
 

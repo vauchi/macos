@@ -43,22 +43,7 @@ struct PresentationNodeView: View {
                 color: ThemeService.shared.focusRing
             )
         case let .choice(value):
-            Picker(
-                value.label,
-                selection: Binding(
-                    get: { value.selected },
-                    set: { changed in
-                        sendValue(value.bindingID, .choice(changed))
-                    }
-                )
-            ) {
-                Text("—").tag(String?.none)
-                ForEach(value.options) { option in
-                    Text(option.label).tag(String?.some(option.id))
-                }
-            }
-            .disabled(!value.enabled)
-            .accessibilityLabel(value.accessibility.label)
+            choice(value)
         case let .group(value):
             GroupBox(value.label ?? "") {
                 if value.axis == .horizontal {
@@ -215,8 +200,41 @@ struct PresentationNodeView: View {
         }
     }
 
+    /// No "none" row: Core rejects `Choice(None)`, so offering it only
+    /// produced a rejected value. The label stays on the picker in both
+    /// styles so VoiceOver reads what the segments choose between.
+    @ViewBuilder
+    private func choice(_ value: PresentationChoiceNode) -> some View {
+        let picker = Picker(
+            value.label,
+            selection: Binding(
+                get: { value.selected },
+                set: { changed in
+                    sendValue(value.bindingID, .choice(changed))
+                }
+            )
+        ) {
+            ForEach(value.options) { option in
+                Text(option.label).tag(String?.some(option.id))
+            }
+        }
+        .disabled(!value.enabled)
+        .accessibilityLabel(value.accessibility.label)
+        if value.prefersSegmentedControl {
+            picker.pickerStyle(.segmented)
+        } else {
+            picker.pickerStyle(.menu)
+        }
+    }
+
     private func status(_ value: PresentationStatusNode) -> some View {
         HStack {
+            if let symbol = NavigationIconMap.statusSystemImage(for: value.iconToken) {
+                Image(systemName: symbol)
+                    .font(.title3)
+                    .foregroundStyle(toneColor(value.tone))
+                    .accessibilityHidden(true)
+            }
             VStack(alignment: .leading) {
                 Text(value.title).font(.headline)
                 if let detail = value.detail {

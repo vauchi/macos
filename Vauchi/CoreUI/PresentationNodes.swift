@@ -184,6 +184,12 @@ struct PresentationChoiceNode: Codable, Equatable {
     let enabled: Bool
     let accessibility: PresentationAccessibility
 
+    /// Two or three options fit side by side (Perspective, Groups); the
+    /// theme list's fifteen do not, and one option has nothing to segment.
+    var prefersSegmentedControl: Bool {
+        (2 ... 3).contains(options.count)
+    }
+
     private enum CodingKeys: String, CodingKey {
         case bindingID = "binding_id"
         case label

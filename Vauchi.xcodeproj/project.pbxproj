@@ -39,6 +39,7 @@
 		595359DAE404110EFF34DEF2 /* ScreenCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FFFCC81B552D355B9A52C0C /* ScreenCatalog.swift */; };
 		59741D7F82226CA6FC94F5DD /* PresentationHostContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC86DEE36EE0BDC2B729FF6 /* PresentationHostContent.swift */; };
 		5A86CBF4EF79DDFBFB393F1D /* SidebarModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20F21768CC084C55F26FE1E6 /* SidebarModel.swift */; };
+		5E3F03217A562741885A95B1 /* BiometricUnlockBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5EC393CDE3EB022DA19E3D3 /* BiometricUnlockBridgeTests.swift */; };
 		60D8E07B9EFB1F102D7518A0 /* ThemeServiceSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BF7BC594414EE931756CE54 /* ThemeServiceSettingsTests.swift */; };
 		6E92A916EC67234553ED4D85 /* LocalizationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C859B6215BADD6A45480D9F /* LocalizationService.swift */; };
 		6FBFE80D49835D23A8DF1034 /* CoreUIModels in Frameworks */ = {isa = PBXBuildFile; productRef = B2C60C8C920018E8C7CF99BE /* CoreUIModels */; };
@@ -62,6 +63,7 @@
 		ACB5D66C9DC53BB3DEC7044E /* VauchiKeychainBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE32C32136CEB8811C89778C /* VauchiKeychainBridgeTests.swift */; };
 		ADB778BBA40707BAD3F8B21A /* AppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554291CB7224022A54BC954F /* AppViewModel.swift */; };
 		AE6ED32C72587A0283C520D2 /* VauchiRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95373D9E6440FED4B532EBDD /* VauchiRepository.swift */; };
+		B119261CF6CF96111C795A47 /* PresentationCommandTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1B78122C6BCA7F181C2B21B /* PresentationCommandTests.swift */; };
 		B1A4AD4752837C2CA7E724FB /* WindowContentAccessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9141BF9EF205F0316F2EE7 /* WindowContentAccessibility.swift */; };
 		BF2293836C1D7191166FCE07 /* AppContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E5799FBB45272E5CCF4CEED /* AppContentView.swift */; };
 		C041D751F823A021E52DA876 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331706A539BC8824C9067EF5 /* AppDelegate.swift */; };
@@ -71,6 +73,7 @@
 		C72D0889A2D85FB2445BD06A /* PresentationTokensPointerTargetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEDDFD35C524581CEE05797E /* PresentationTokensPointerTargetTests.swift */; };
 		C75EB92B4999209BD75CCBD3 /* PresentationSmokeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAEF5BAE3E1BDBC31DED21D2 /* PresentationSmokeTests.swift */; };
 		C8C4DCDB890AEB912C9440F3 /* PresentationOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F9A4DAC6D203C61E58BF054 /* PresentationOverlayView.swift */; };
+		CAD15EBE61B35AB3B087C223 /* PresentationChoiceNodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DAE62317CC1CF12A4513FFA /* PresentationChoiceNodeTests.swift */; };
 		CC36096489B2AE8B5BFF1223 /* NavigationIconAccessibilityUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70EA94FA311BF6FFB21AFF4A /* NavigationIconAccessibilityUITests.swift */; };
 		D53ADA09532F5A59A7BF3D75 /* BiometricService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F9D4D1B77DDD1226B84C5C /* BiometricService.swift */; };
 		D65905F3E8A6B191F4611470 /* AudioProximityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49509AE0DF70B880F977B015 /* AudioProximityService.swift */; };
@@ -82,6 +85,7 @@
 		E9023ACF578FB502397EE363 /* FocusRingModifierTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B6A6426D8087D5940C77B9 /* FocusRingModifierTests.swift */; };
 		EC30F92B5A66058CF9972C27 /* BleExchangeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418F950D6541F912A27DA57D /* BleExchangeService.swift */; };
 		F05A78B995EB8456A4B310F3 /* PresentationContractTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE718E95F174F15A52F1FCEC /* PresentationContractTests.swift */; };
+		F0742AE94EDCCD8A0426AF55 /* BiometricUnlockBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = B65D738EAA0170E3B6BA5456 /* BiometricUnlockBridge.swift */; };
 		F8818B9E78A3E1A875E04227 /* PresentationCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A6BB9A87C49A6D79E266DFD /* PresentationCommand.swift */; };
 		FA8DCD283862F3522FB0CD0D /* PresentationSidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F3367A62294CD9B325736F /* PresentationSidebarView.swift */; };
 /* End PBXBuildFile section */
@@ -137,6 +141,7 @@
 		5438036805D34A0588FAE1C3 /* SystemTrayManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemTrayManager.swift; sourceTree = "<group>"; };
 		5482743CA87B21CE18C8C3B9 /* NavigationIconMapTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationIconMapTests.swift; sourceTree = "<group>"; };
 		554291CB7224022A54BC954F /* AppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewModel.swift; sourceTree = "<group>"; };
+		5DAE62317CC1CF12A4513FFA /* PresentationChoiceNodeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationChoiceNodeTests.swift; sourceTree = "<group>"; };
 		644F12D83413B334E234F4AC /* LockScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockScreenView.swift; sourceTree = "<group>"; };
 		653B68CB3B3D86B13D52E63E /* DeviceCapabilitiesPusherTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceCapabilitiesPusherTests.swift; sourceTree = "<group>"; };
 		67B69481786D9E06CC1F32D9 /* ScreenshotWalkUITests+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ScreenshotWalkUITests+Helpers.swift"; sourceTree = "<group>"; };
@@ -171,9 +176,11 @@
 		AE718E95F174F15A52F1FCEC /* PresentationContractTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationContractTests.swift; sourceTree = "<group>"; };
 		AFAE02F92415DA6CD6D99735 /* SidebarModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarModelTests.swift; sourceTree = "<group>"; };
 		AFC86DEE36EE0BDC2B729FF6 /* PresentationHostContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationHostContent.swift; sourceTree = "<group>"; };
+		B1B78122C6BCA7F181C2B21B /* PresentationCommandTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationCommandTests.swift; sourceTree = "<group>"; };
 		B31DFE6F23CEA01F0437957B /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
 		B3F3367A62294CD9B325736F /* PresentationSidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationSidebarView.swift; sourceTree = "<group>"; };
 		B53FDA1302B12D2357E476DB /* PresentationImageContentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationImageContentTests.swift; sourceTree = "<group>"; };
+		B65D738EAA0170E3B6BA5456 /* BiometricUnlockBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricUnlockBridge.swift; sourceTree = "<group>"; };
 		BB75683BE92B1B2E80EF559D /* PresentationNodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationNodes.swift; sourceTree = "<group>"; };
 		BDB1CEDFBA5AE37F12D5BE39 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		BE32C32136CEB8811C89778C /* VauchiKeychainBridgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VauchiKeychainBridgeTests.swift; sourceTree = "<group>"; };
@@ -190,6 +197,7 @@
 		ED9141BF9EF205F0316F2EE7 /* WindowContentAccessibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowContentAccessibility.swift; sourceTree = "<group>"; };
 		EEDDFD35C524581CEE05797E /* PresentationTokensPointerTargetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationTokensPointerTargetTests.swift; sourceTree = "<group>"; };
 		F5427C4F253C3A904B25AA98 /* TextRoleStyleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextRoleStyleTests.swift; sourceTree = "<group>"; };
+		F5EC393CDE3EB022DA19E3D3 /* BiometricUnlockBridgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricUnlockBridgeTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -226,6 +234,8 @@
 				03B14F6FC09C0E3B70E2A824 /* HardwareEventJsonTests.swift */,
 				5482743CA87B21CE18C8C3B9 /* NavigationIconMapTests.swift */,
 				D3A48EA2C7DE011AEE833EA2 /* PresentationActionToneTests.swift */,
+				5DAE62317CC1CF12A4513FFA /* PresentationChoiceNodeTests.swift */,
+				B1B78122C6BCA7F181C2B21B /* PresentationCommandTests.swift */,
 				B53FDA1302B12D2357E476DB /* PresentationImageContentTests.swift */,
 				DFFE40C221022DBDBD034AF3 /* PresentationStateTests.swift */,
 				EEDDFD35C524581CEE05797E /* PresentationTokensPointerTargetTests.swift */,
@@ -253,6 +263,7 @@
 		5B9EAC8491A990983095623D /* VauchiTests */ = {
 			isa = PBXGroup;
 			children = (
+				F5EC393CDE3EB022DA19E3D3 /* BiometricUnlockBridgeTests.swift */,
 				7C42CA0EEF4243C65EE1FDAF /* ContentUpdateCycleTests.swift */,
 				653B68CB3B3D86B13D52E63E /* DeviceCapabilitiesPusherTests.swift */,
 				812EEE5AF140DB98855AF442 /* LocalizationServiceSettingsTests.swift */,
@@ -372,6 +383,7 @@
 			children = (
 				49509AE0DF70B880F977B015 /* AudioProximityService.swift */,
 				92F9D4D1B77DDD1226B84C5C /* BiometricService.swift */,
+				B65D738EAA0170E3B6BA5456 /* BiometricUnlockBridge.swift */,
 				418F950D6541F912A27DA57D /* BleExchangeService.swift */,
 				7A01546D222F8024BB3E0009 /* DeviceCapabilitiesPusher.swift */,
 				7A701A0C348B6758EED1D949 /* DirectSendService.swift */,
@@ -525,6 +537,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7F01B87953EEFE74C498EA48 /* AvatarFallbackSpecTests.swift in Sources */,
+				5E3F03217A562741885A95B1 /* BiometricUnlockBridgeTests.swift in Sources */,
 				9D3AA48B67B4BBCBFBA6A33C /* ContentUpdateCycleTests.swift in Sources */,
 				566C2C33F23B683B8CB8226F /* DeviceCapabilitiesPusherTests.swift in Sources */,
 				E9023ACF578FB502397EE363 /* FocusRingModifierTests.swift in Sources */,
@@ -536,6 +549,8 @@
 				E15D3E295518C2178E26D1A9 /* NotificationServiceContentTests.swift in Sources */,
 				3D1CBC0C00C370BCFAA0D7A8 /* NotificationServiceDeepLinkTests.swift in Sources */,
 				0D568A3271482CEABA444A7F /* PresentationActionToneTests.swift in Sources */,
+				CAD15EBE61B35AB3B087C223 /* PresentationChoiceNodeTests.swift in Sources */,
+				B119261CF6CF96111C795A47 /* PresentationCommandTests.swift in Sources */,
 				C08F19A01CA887CE179DB156 /* PresentationImageContentTests.swift in Sources */,
 				C75EB92B4999209BD75CCBD3 /* PresentationSmokeTests.swift in Sources */,
 				750231F789BE3B2634B7B5FD /* PresentationStateTests.swift in Sources */,
@@ -582,6 +597,7 @@
 				D65905F3E8A6B191F4611470 /* AudioProximityService.swift in Sources */,
 				A8599FBE491489ECC46F29E3 /* AvatarFallbackSpec.swift in Sources */,
 				D53ADA09532F5A59A7BF3D75 /* BiometricService.swift in Sources */,
+				F0742AE94EDCCD8A0426AF55 /* BiometricUnlockBridge.swift in Sources */,
 				EC30F92B5A66058CF9972C27 /* BleExchangeService.swift in Sources */,
 				45EB912C9310E6DC89131A5F /* ContextCommandBarView.swift in Sources */,
 				4389AD09A1FCCD8661B98FE6 /* DeviceCapabilitiesPusher.swift in Sources */,
