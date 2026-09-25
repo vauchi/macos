@@ -100,10 +100,24 @@ final class PresentationImageContentTests: XCTestCase {
     /// Core's `brightness` is an offset where 0 means unchanged (the avatar
     /// editor slider runs -0.3...0.3). Reading it as a multiplier turned
     /// every picture Core sends at 0, avatars and the onboarding mark, black.
+    ///
+    /// Rendered with `ImageRenderer`, not the `cacheDisplay` path above:
+    /// that path paints the fallback fills but came back without the
+    /// picture's pixels in CI (macos!407), so it cannot tell black from
+    /// absent here.
     func testAPictureAtNeutralBrightnessKeepsItsColour() throws {
         let node = try imageNode(data: solidWhitePNG(), fallbackText: nil, shape: .natural)
+        let renderer = ImageRenderer(
+            content: PresentationImageContent(value: node, minimumTarget: side)
+                .frame(width: side, height: side)
+        )
+        renderer.scale = 1
+        let cgImage = try XCTUnwrap(renderer.cgImage, "ImageRenderer produced no bitmap")
+        let rep = NSBitmapImageRep(cgImage: cgImage)
 
-        let sampled = try color(of: node, at: CGPoint(x: side / 2, y: side / 2))
+        let sampled = try XCTUnwrap(
+            rep.colorAt(x: Int(side / 2), y: Int(side / 2))?.usingColorSpace(.sRGB)
+        )
 
         XCTAssertGreaterThan(sampled.alphaComponent, 0.8, "the picture was not drawn at all")
         XCTAssertGreaterThan(
