@@ -44,6 +44,7 @@
 		60D8E07B9EFB1F102D7518A0 /* ThemeServiceSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BF7BC594414EE931756CE54 /* ThemeServiceSettingsTests.swift */; };
 		6E92A916EC67234553ED4D85 /* LocalizationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C859B6215BADD6A45480D9F /* LocalizationService.swift */; };
 		6FBFE80D49835D23A8DF1034 /* CoreUIModels in Frameworks */ = {isa = PBXBuildFile; productRef = B2C60C8C920018E8C7CF99BE /* CoreUIModels */; };
+		718C70DB0A9E9F9255260685 /* PresentationImageFrameSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59A995353802932C1D87AFEA /* PresentationImageFrameSpec.swift */; };
 		750231F789BE3B2634B7B5FD /* PresentationStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFFE40C221022DBDBD034AF3 /* PresentationStateTests.swift */; };
 		771A40C3FF4D73DACC5C67D0 /* SidebarModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFAE02F92415DA6CD6D99735 /* SidebarModelTests.swift */; };
 		78DEE11DBBB312E894650FBF /* LocalizationServiceSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812EEE5AF140DB98855AF442 /* LocalizationServiceSettingsTests.swift */; };
@@ -142,6 +143,7 @@
 		5438036805D34A0588FAE1C3 /* SystemTrayManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemTrayManager.swift; sourceTree = "<group>"; };
 		5482743CA87B21CE18C8C3B9 /* NavigationIconMapTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationIconMapTests.swift; sourceTree = "<group>"; };
 		554291CB7224022A54BC954F /* AppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewModel.swift; sourceTree = "<group>"; };
+		59A995353802932C1D87AFEA /* PresentationImageFrameSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationImageFrameSpec.swift; sourceTree = "<group>"; };
 		5DAE62317CC1CF12A4513FFA /* PresentationChoiceNodeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationChoiceNodeTests.swift; sourceTree = "<group>"; };
 		644F12D83413B334E234F4AC /* LockScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockScreenView.swift; sourceTree = "<group>"; };
 		653B68CB3B3D86B13D52E63E /* DeviceCapabilitiesPusherTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceCapabilitiesPusherTests.swift; sourceTree = "<group>"; };
@@ -308,6 +310,7 @@
 				6F0B112148ABCC1933D659A4 /* PresentationEvent.swift */,
 				AFC86DEE36EE0BDC2B729FF6 /* PresentationHostContent.swift */,
 				6A437D369672857F52C06E24 /* PresentationHostView.swift */,
+				59A995353802932C1D87AFEA /* PresentationImageFrameSpec.swift */,
 				BB75683BE92B1B2E80EF559D /* PresentationNodes.swift */,
 				E7944347EE6E209E80A5CF30 /* PresentationNodeView.swift */,
 				8F9A4DAC6D203C61E58BF054 /* PresentationOverlayView.swift */,
@@ -619,6 +622,7 @@
 				28ABEAE77D5BC15063202DCC /* PresentationEvent.swift in Sources */,
 				59741D7F82226CA6FC94F5DD /* PresentationHostContent.swift in Sources */,
 				3FEEF96814D965F74AD0A42D /* PresentationHostView.swift in Sources */,
+				718C70DB0A9E9F9255260685 /* PresentationImageFrameSpec.swift in Sources */,
 				37B0045C32255AE32005F23B /* PresentationNodeView.swift in Sources */,
 				4EAEBFCF75EC10C4B544735E /* PresentationNodes.swift in Sources */,
 				C8C4DCDB890AEB912C9440F3 /* PresentationOverlayView.swift in Sources */,

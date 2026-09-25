@@ -179,8 +179,19 @@ struct PresentationNodeView: View {
 
     @ViewBuilder
     private func image(_ value: PresentationImageNode) -> some View {
-        let content = PresentationImageContent(value: value, minimumTarget: minimumTarget)
-            .frame(minWidth: minimumTarget, minHeight: minimumTarget)
+        let spec = PresentationImageFrameSpec.node(size: value.size, minimumTarget: minimumTarget)
+        let sized = PresentationImageContent(value: value, minimumTarget: spec.diameter)
+        let content = spec.capsToAvailableWidth
+            // Core named an exact square: cap there and shrink with the
+            // row rather than flooring and growing to fill it, then
+            // centre — the unsized branch below keeps the left-aligned,
+            // grow-to-fill behaviour every avatar already relies on.
+            ? AnyView(
+                sized
+                    .frame(maxWidth: spec.diameter, maxHeight: spec.diameter)
+                    .frame(maxWidth: .infinity)
+            )
+            : AnyView(sized.frame(minWidth: spec.diameter, minHeight: spec.diameter))
         if let action = value.activation {
             Button {
                 sendAction(action)
