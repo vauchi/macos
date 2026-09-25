@@ -407,7 +407,7 @@ struct PresentationImageContent: View {
                 Image(nsImage: image)
                     .resizable()
                     .scaledToFit()
-                    .brightness(Double(value.brightness - 1))
+                    .brightness(Double(value.brightness))
                     .clipShape(clipShape(for: imageDataSpec))
             } else if let fallback = value.fallbackText, !fallback.isEmpty {
                 // The fill is the point. `clipShape` on a bare `Text` clips
