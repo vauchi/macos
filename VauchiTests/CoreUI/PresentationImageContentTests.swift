@@ -81,30 +81,27 @@ final class PresentationImageContentTests: XCTestCase {
         return try XCTUnwrap(sampled.usingColorSpace(.sRGB))
     }
 
+    /// Filled through `CGContext`: `NSBitmapImageRep.setColor(.white, …)` on a
+    /// device-RGB rep writes nothing (`.white` is a grey colour), which left
+    /// this fixture transparent and failed the test below for the wrong
+    /// reason in CI (macos!407).
     private func solidWhitePNG() throws -> [UInt8] {
-        let rep = try XCTUnwrap(
-            NSBitmapImageRep(
-                bitmapDataPlanes: nil, pixelsWide: 8, pixelsHigh: 8,
-                bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true, isPlanar: false,
-                colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0
+        let context = try XCTUnwrap(
+            CGContext(
+                data: nil, width: 8, height: 8, bitsPerComponent: 8, bytesPerRow: 0,
+                space: CGColorSpaceCreateDeviceRGB(),
+                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
             )
         )
-        for column in 0 ..< 8 {
-            for row in 0 ..< 8 {
-                rep.setColor(.white, atX: column, y: row)
-            }
-        }
+        context.setFillColor(CGColor(red: 1, green: 1, blue: 1, alpha: 1))
+        context.fill(CGRect(x: 0, y: 0, width: 8, height: 8))
+        let rep = try NSBitmapImageRep(cgImage: XCTUnwrap(context.makeImage()))
         return try [UInt8](XCTUnwrap(rep.representation(using: .png, properties: [:])))
     }
 
     /// Core's `brightness` is an offset where 0 means unchanged (the avatar
     /// editor slider runs -0.3...0.3). Reading it as a multiplier turned
     /// every picture Core sends at 0, avatars and the onboarding mark, black.
-    ///
-    /// Rendered with `ImageRenderer`, not the `cacheDisplay` path above:
-    /// that path paints the fallback fills but came back without the
-    /// picture's pixels in CI (macos!407), so it cannot tell black from
-    /// absent here.
     func testAPictureAtNeutralBrightnessKeepsItsColour() throws {
         let node = try imageNode(data: solidWhitePNG(), fallbackText: nil, shape: .natural)
         let renderer = ImageRenderer(
