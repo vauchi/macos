@@ -40,14 +40,15 @@ final class PresentationImageContentTests: XCTestCase {
     private func imageNode(
         data: [UInt8]?,
         fallbackText: String?,
-        shape: PresentationImageShape
+        shape: PresentationImageShape,
+        brightness: Float = 0
     ) -> PresentationImageNode {
         PresentationImageNode(
             id: nil,
             data: data,
             fallbackText: fallbackText,
             shape: shape,
-            brightness: 1,
+            brightness: brightness,
             activation: nil,
             accessibility: PresentationAccessibility(label: "Avatar", description: nil)
         )
@@ -57,6 +58,10 @@ final class PresentationImageContentTests: XCTestCase {
     /// Transparent matters: against an opaque ground every pixel comes back
     /// opaque and the test proves nothing.
     private func alpha(of node: PresentationImageNode, at point: CGPoint) throws -> CGFloat {
+        try color(of: node, at: point).alphaComponent
+    }
+
+    private func color(of node: PresentationImageNode, at point: CGPoint) throws -> NSColor {
         let host = NSHostingView(
             rootView: PresentationImageContent(value: node, minimumTarget: side)
                 .frame(width: side, height: side)
@@ -73,7 +78,37 @@ final class PresentationImageContentTests: XCTestCase {
         let sampled = try XCTUnwrap(
             rep.colorAt(x: Int(point.x), y: Int(side - point.y))
         )
-        return sampled.alphaComponent
+        return try XCTUnwrap(sampled.usingColorSpace(.sRGB))
+    }
+
+    private func solidWhitePNG() throws -> [UInt8] {
+        let rep = try XCTUnwrap(
+            NSBitmapImageRep(
+                bitmapDataPlanes: nil, pixelsWide: 8, pixelsHigh: 8,
+                bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true, isPlanar: false,
+                colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0
+            )
+        )
+        for x in 0..<8 {
+            for y in 0..<8 {
+                rep.setColor(.white, atX: x, y: y)
+            }
+        }
+        return [UInt8](try XCTUnwrap(rep.representation(using: .png, properties: [:])))
+    }
+
+    /// Core's `brightness` is an offset where 0 means unchanged (the avatar
+    /// editor slider runs -0.3...0.3). Reading it as a multiplier turned
+    /// every picture Core sends at 0, avatars and the onboarding mark, black.
+    func testAPictureAtNeutralBrightnessKeepsItsColour() throws {
+        let node = imageNode(data: try solidWhitePNG(), fallbackText: nil, shape: .natural)
+
+        let sampled = try color(of: node, at: CGPoint(x: side / 2, y: side / 2))
+
+        XCTAssertGreaterThan(sampled.alphaComponent, 0.8, "the picture was not drawn at all")
+        XCTAssertGreaterThan(
+            sampled.redComponent, 0.8, "a white picture at brightness 0 rendered as \(sampled)"
+        )
     }
 
     func testCircularFallbackInitialsAreDrawnOnAFilledShape() throws {
