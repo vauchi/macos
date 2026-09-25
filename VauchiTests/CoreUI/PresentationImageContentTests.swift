@@ -89,9 +89,9 @@ final class PresentationImageContentTests: XCTestCase {
                 colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0
             )
         )
-        for x in 0 ..< 8 {
-            for y in 0 ..< 8 {
-                rep.setColor(.white, atX: x, y: y)
+        for column in 0 ..< 8 {
+            for row in 0 ..< 8 {
+                rep.setColor(.white, atX: column, y: row)
             }
         }
         return try [UInt8](XCTUnwrap(rep.representation(using: .png, properties: [:])))
