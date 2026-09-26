@@ -17,6 +17,9 @@ include:
       - '/ci-templates/orphan-baselines.yml'
       - '/ci-templates/github-mirror.yml'
       - '/ci-templates/vrt-upload.yml'
+      - '/ci-templates/verified-fetch.yml'
+      - '/ci-templates/tool-install.yml'
+      - '/ci-templates/cross-cutting-lint.yml'
 
 variables:
   VAUCHI_SCRIPTS_REF: "ci-templates-v2026.09.26"
@@ -425,6 +428,13 @@ lint:humble:
           - "Vauchi/**/*.swift"
           - ".gitlab-ci.yml"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+# Exact-zero release gate (ADR-066): a release tag may carry no boundary
+# violations, live or stored — MR-time lint:humble above still allows
+# existing debt to shrink gradually. package:dmg needs this job so a
+# failing gate blocks the release package.
+release:ratchet-zero:
+  extends: .release-ratchet-zero
 
 check:snapshot-recording:
   stage: lint
@@ -2048,7 +2058,7 @@ check:design-tokens:
 package:dmg:
   extends: [.macos-job, .timeout-extended]
   stage: deploy
-  needs: ["build:release"]
+  needs: ["build:release", "release:ratchet-zero"]
   rules:
     - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/
   script:
