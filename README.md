@@ -34,11 +34,14 @@ xcodebuild -scheme Vauchi -configuration Debug build
 
 ## Architecture
 
-This app implements the core-driven UI contract:
+This app is a display-only shell: core emits generic, fully prepared
+presentation commands, and the app reports opaque events back.
 
-- **ScreenRenderer** renders `ScreenModel` from core
-- **14 component views** map to core's `Component` enum variants
-- **ActionHandler** maps user input to `UserAction` enum
+- **PresentationHostView** (`Vauchi/CoreUI`) renders core's presentation
+  commands with SwiftUI views
+- **ContextCommandBarView** maps core's back, navigation, primary, and
+  secondary roles to a native command bar
+- **PresentationEvent** reports user input to core as opaque events
 - **Platform chrome**: menu bar, system tray, keyboard shortcuts
 
 All business logic lives in `vauchi-core` (Rust). This repo is a pure rendering layer.
