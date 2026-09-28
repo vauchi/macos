@@ -51,6 +51,7 @@
 		78DEE11DBBB312E894650FBF /* LocalizationServiceSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812EEE5AF140DB98855AF442 /* LocalizationServiceSettingsTests.swift */; };
 		7F01B87953EEFE74C498EA48 /* AvatarFallbackSpecTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 458ECA778929B29F48389729 /* AvatarFallbackSpecTests.swift */; };
 		8237D52EACF3C1E7F1B501AE /* ScreenCatalogCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CC8C031EBA0849BA30A119F /* ScreenCatalogCapture.swift */; };
+		82D2E4617055E2424DDCE587 /* NotificationServiceAuthorizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 219A7195BEAC47A808D8F852 /* NotificationServiceAuthorizationTests.swift */; };
 		8CD4D48FC7E49B0DA82AD497 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B31DFE6F23CEA01F0437957B /* KeychainService.swift */; };
 		99944BA751677899052C05DA /* WakeupTimerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE2CCF76CCD81A822601D43D /* WakeupTimerTests.swift */; };
 		9C9A5E8876CAFA84118E8DBF /* LockScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 644F12D83413B334E234F4AC /* LockScreenView.swift */; };
@@ -126,6 +127,7 @@
 		1A5E4BAE84EAF093A5315006 /* ScreenCatalogRenderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenCatalogRenderTests.swift; sourceTree = "<group>"; };
 		1F5C6D36522C952C3BDADE1B /* PresentationTokens+PointerTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PresentationTokens+PointerTarget.swift"; sourceTree = "<group>"; };
 		20F21768CC084C55F26FE1E6 /* SidebarModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarModel.swift; sourceTree = "<group>"; };
+		219A7195BEAC47A808D8F852 /* NotificationServiceAuthorizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationServiceAuthorizationTests.swift; sourceTree = "<group>"; };
 		234E756E782635B9AF9132F3 /* PlaceholderContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceholderContentView.swift; sourceTree = "<group>"; };
 		24602CA31C0CE84313D9F229 /* ContextCommandBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextCommandBarView.swift; sourceTree = "<group>"; };
 		24B6A6426D8087D5940C77B9 /* FocusRingModifierTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusRingModifierTests.swift; sourceTree = "<group>"; };
@@ -276,6 +278,7 @@
 				812EEE5AF140DB98855AF442 /* LocalizationServiceSettingsTests.swift */,
 				2FBC9B875F77F7D59BA26DC7 /* LocalizationServiceTests.swift */,
 				DC20FCD1651B95E823A06410 /* LocationServiceTests.swift */,
+				219A7195BEAC47A808D8F852 /* NotificationServiceAuthorizationTests.swift */,
 				37CF81D097BBE672CB4C58D4 /* NotificationServiceContentTests.swift */,
 				A7C515EE1804FDB78832CA0D /* NotificationServiceDeepLinkTests.swift */,
 				3B183C71862EEB94A1A20C7D /* PresentationFailureAlertTests.swift */,
@@ -555,6 +558,7 @@
 				9CA8DD6871E91F814D81FED6 /* LocalizationServiceTests.swift in Sources */,
 				42E8C0D44725B88DB18845CB /* LocationServiceTests.swift in Sources */,
 				1BB5832181399F70969847FB /* NavigationIconMapTests.swift in Sources */,
+				82D2E4617055E2424DDCE587 /* NotificationServiceAuthorizationTests.swift in Sources */,
 				E15D3E295518C2178E26D1A9 /* NotificationServiceContentTests.swift in Sources */,
 				3D1CBC0C00C370BCFAA0D7A8 /* NotificationServiceDeepLinkTests.swift in Sources */,
 				0D568A3271482CEABA444A7F /* PresentationActionToneTests.swift in Sources */,
