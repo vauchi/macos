@@ -100,27 +100,26 @@ import XCTest
     /// themes.json writes alpha colours as CSS RRGGBBAA (the scrim is
     /// #00000080); color(from:) has to read them, not drop them to .clear.
     final class ThemeServiceHexColorTests: XCTestCase {
-        private func components(_ color: Color) -> (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat) {
-            let rgb = NSColor(color).usingColorSpace(.sRGB) ?? .clear
-            return (rgb.redComponent, rgb.greenComponent, rgb.blueComponent, rgb.alphaComponent)
+        private func srgb(_ color: Color) -> NSColor {
+            NSColor(color).usingColorSpace(.sRGB) ?? .clear
         }
 
         func test_eight_digit_theme_colour_reads_as_rrggbbaa() {
-            let scrim = components(ThemeService.shared.color(from: "#00000080"))
-            XCTAssertEqual(scrim.red, 0, accuracy: 0.01)
-            XCTAssertEqual(scrim.blue, 0, accuracy: 0.01)
-            XCTAssertEqual(scrim.alpha, 128.0 / 255.0, accuracy: 0.01)
+            let scrim = srgb(ThemeService.shared.color(from: "#00000080"))
+            XCTAssertEqual(scrim.redComponent, 0, accuracy: 0.01)
+            XCTAssertEqual(scrim.blueComponent, 0, accuracy: 0.01)
+            XCTAssertEqual(scrim.alphaComponent, 128.0 / 255.0, accuracy: 0.01)
         }
 
         func test_six_digit_theme_colour_reads_as_opaque() {
-            let red = components(ThemeService.shared.color(from: "#b3261e"))
-            XCTAssertEqual(red.red, 0xB3 / 255.0, accuracy: 0.01)
-            XCTAssertEqual(red.green, 0x26 / 255.0, accuracy: 0.01)
-            XCTAssertEqual(red.alpha, 1, accuracy: 0.01)
+            let red = srgb(ThemeService.shared.color(from: "#b3261e"))
+            XCTAssertEqual(red.redComponent, 0xB3 / 255.0, accuracy: 0.01)
+            XCTAssertEqual(red.greenComponent, 0x26 / 255.0, accuracy: 0.01)
+            XCTAssertEqual(red.alphaComponent, 1, accuracy: 0.01)
         }
 
         func test_malformed_theme_colour_is_clear() {
-            XCTAssertEqual(components(ThemeService.shared.color(from: "#12345")).alpha, 0, accuracy: 0.01)
+            XCTAssertEqual(srgb(ThemeService.shared.color(from: "#12345")).alphaComponent, 0, accuracy: 0.01)
         }
     }
 #endif
