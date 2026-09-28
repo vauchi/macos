@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		013B279390AE63715483CB89 /* HardwareEventJson.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE82C39943D0D7C5D82AE197 /* HardwareEventJson.swift */; };
+		048070DC8CB18C66127608DB /* PresentationFailureAlertTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B183C71862EEB94A1A20C7D /* PresentationFailureAlertTests.swift */; };
 		072615DEAAD0650CF34C6B6E /* PlaceholderContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 234E756E782635B9AF9132F3 /* PlaceholderContentView.swift */; };
 		0D568A3271482CEABA444A7F /* PresentationActionToneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A48EA2C7DE011AEE833EA2 /* PresentationActionToneTests.swift */; };
 		10D1448B9D41C32DDB95835C /* StateViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A06CC40359E668FF6C58451 /* StateViews.swift */; };
@@ -133,6 +134,7 @@
 		331706A539BC8824C9067EF5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3741052F03E3274B5C209EF6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		37CF81D097BBE672CB4C58D4 /* NotificationServiceContentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationServiceContentTests.swift; sourceTree = "<group>"; };
+		3B183C71862EEB94A1A20C7D /* PresentationFailureAlertTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationFailureAlertTests.swift; sourceTree = "<group>"; };
 		40B52514F7B6CC866BDD778D /* ScreenCaptureProtection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenCaptureProtection.swift; sourceTree = "<group>"; };
 		418F950D6541F912A27DA57D /* BleExchangeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BleExchangeService.swift; sourceTree = "<group>"; };
 		458ECA778929B29F48389729 /* AvatarFallbackSpecTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarFallbackSpecTests.swift; sourceTree = "<group>"; };
@@ -276,6 +278,7 @@
 				DC20FCD1651B95E823A06410 /* LocationServiceTests.swift */,
 				37CF81D097BBE672CB4C58D4 /* NotificationServiceContentTests.swift */,
 				A7C515EE1804FDB78832CA0D /* NotificationServiceDeepLinkTests.swift */,
+				3B183C71862EEB94A1A20C7D /* PresentationFailureAlertTests.swift */,
 				AAEF5BAE3E1BDBC31DED21D2 /* PresentationSmokeTests.swift */,
 				4BF7BC594414EE931756CE54 /* ThemeServiceSettingsTests.swift */,
 				BE32C32136CEB8811C89778C /* VauchiKeychainBridgeTests.swift */,
@@ -557,6 +560,7 @@
 				0D568A3271482CEABA444A7F /* PresentationActionToneTests.swift in Sources */,
 				CAD15EBE61B35AB3B087C223 /* PresentationChoiceNodeTests.swift in Sources */,
 				B119261CF6CF96111C795A47 /* PresentationCommandTests.swift in Sources */,
+				048070DC8CB18C66127608DB /* PresentationFailureAlertTests.swift in Sources */,
 				C08F19A01CA887CE179DB156 /* PresentationImageContentTests.swift in Sources */,
 				17ABD6784C9A89F651F8E6C7 /* PresentationImageFrameSpecTests.swift in Sources */,
 				C75EB92B4999209BD75CCBD3 /* PresentationSmokeTests.swift in Sources */,
