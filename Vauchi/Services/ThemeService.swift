@@ -122,18 +122,21 @@
                 hexSanitized.removeFirst()
             }
 
-            guard hexSanitized.count == 6 else {
+            // themes.json writes alpha colours in CSS order, RRGGBBAA.
+            guard hexSanitized.count == 6 || hexSanitized.count == 8 else {
                 return .clear
             }
 
-            var rgb: UInt64 = 0
-            Scanner(string: hexSanitized).scanHexInt64(&rgb)
+            var value: UInt64 = 0
+            Scanner(string: hexSanitized).scanHexInt64(&value)
+            let rgba = hexSanitized.count == 8 ? value : (value << 8) | 0xFF
 
-            let red = Double((rgb & 0xFF0000) >> 16) / 255.0
-            let green = Double((rgb & 0x00FF00) >> 8) / 255.0
-            let blue = Double(rgb & 0x0000FF) / 255.0
+            let red = Double((rgba >> 24) & 0xFF) / 255.0
+            let green = Double((rgba >> 16) & 0xFF) / 255.0
+            let blue = Double((rgba >> 8) & 0xFF) / 255.0
+            let alpha = Double(rgba & 0xFF) / 255.0
 
-            return Color(red: red, green: green, blue: blue)
+            return Color(red: red, green: green, blue: blue, opacity: alpha)
         }
 
         // MARK: - Color Accessors
@@ -176,6 +179,12 @@
         var warning: Color {
             guard let theme = currentTheme else { return .orange }
             return color(from: theme.colors.warning)
+        }
+
+        /// Backdrop colour behind modal overlays.
+        var scrim: Color {
+            guard let hex = currentTheme?.colors.scrim else { return Color.black.opacity(0.28) }
+            return color(from: hex)
         }
 
         var border: Color {

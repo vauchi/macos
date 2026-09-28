@@ -24,7 +24,7 @@ import SwiftUI
 
                 Image(systemName: "lock.shield.fill")
                     .font(.system(size: 64))
-                    .foregroundColor(.cyan)
+                    .foregroundColor(ThemeService.shared.accent)
                     .accessibilityHidden(true)
 
                 Text(localizationService.t("lock.title"))
@@ -44,7 +44,7 @@ import SwiftUI
                         .frame(maxWidth: 240)
                 }
                 .buttonStyle(.borderedProminent)
-                .tint(.cyan)
+                .tint(ThemeService.shared.accent)
                 .controlSize(.large)
                 .accessibilityHint(localizationService.t("lock.a11y_hint"))
 

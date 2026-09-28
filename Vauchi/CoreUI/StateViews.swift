@@ -18,7 +18,7 @@ import SwiftUI
             VStack(spacing: 16) {
                 Image(systemName: "exclamationmark.triangle")
                     .font(.system(size: 48))
-                    .foregroundColor(.orange)
+                    .foregroundColor(ThemeService.shared.warning)
 
                 Text(LocalizationService.shared.t("app.failed_to_start"))
                     .font(.title2.bold())
