@@ -42,16 +42,26 @@ import UniformTypeIdentifiers
             loadInitialPresentation()
         }
 
+        /// Core owns user-facing copy (ADR-045 Am1), and an error's own
+        /// description can carry internal state (DC-05), so the user sees
+        /// Core's generic strings and only the error type is logged
+        /// (vauchi/private#308).
+        static func presentationFailureAlert(for error: Error) -> AlertMessage {
+            NSLog("[Vauchi] Presentation failed: %@", String(describing: type(of: error)))
+            let localization = LocalizationService.shared
+            return AlertMessage(
+                title: localization.t("error.title"),
+                message: localization.t("error.generic")
+            )
+        }
+
         func loadInitialPresentation() {
             do {
                 try applyPresentationEnvelope(
                     appEngine.initialCommandsJson()
                 )
             } catch {
-                alertMessage = AlertMessage(
-                    title: "Presentation error",
-                    message: String(describing: error)
-                )
+                alertMessage = Self.presentationFailureAlert(for: error)
             }
         }
 
@@ -65,10 +75,7 @@ import UniformTypeIdentifiers
                     appEngine.dispatchJson(eventJson: eventJSON)
                 )
             } catch {
-                alertMessage = AlertMessage(
-                    title: "Presentation error",
-                    message: String(describing: error)
-                )
+                alertMessage = Self.presentationFailureAlert(for: error)
             }
         }
 
@@ -145,10 +152,7 @@ import UniformTypeIdentifiers
                     try Data(file.data).write(to: url, options: .atomic)
                 } catch {
                     Task { @MainActor [weak self] in
-                        self?.alertMessage = AlertMessage(
-                            title: "Export failed",
-                            message: String(describing: error)
-                        )
+                        self?.alertMessage = Self.presentationFailureAlert(for: error)
                     }
                 }
             }
