@@ -46,8 +46,12 @@ struct PresentationSidebarView: View {
     /// so the same destination reads the same way in either presentation.
     private func rowLabel(for row: SidebarRow) -> some View {
         HStack {
-            Label(row.label, systemImage: NavigationIconMap.systemImage(for: row.iconToken))
-                .labelStyle(.titleAndIcon)
+            Label {
+                Text(row.label)
+            } icon: {
+                NavigationIconImage(NavigationIconMap.icon(for: row.iconToken))
+            }
+            .labelStyle(.titleAndIcon)
             if row.badgeCount > 0 {
                 Spacer()
                 Text("\(row.badgeCount)")

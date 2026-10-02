@@ -240,8 +240,8 @@ struct PresentationNodeView: View {
 
     private func status(_ value: PresentationStatusNode) -> some View {
         HStack {
-            if let symbol = NavigationIconMap.statusSystemImage(for: value.iconToken) {
-                Image(systemName: symbol)
+            if let icon = NavigationIconMap.statusIcon(for: value.iconToken) {
+                NavigationIconImage(icon, pointSize: 24, relativeTo: .title3)
                     .font(.title3)
                     .foregroundStyle(toneColor(value.tone))
                     .accessibilityHidden(true)

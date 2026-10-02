@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import Foundation
+import AppKit
 
 /// Resolves the platform-neutral `icon_token` Core attaches to a
 /// `PresentationAction` into an SF Symbol name.
@@ -12,6 +12,13 @@ import Foundation
 /// explicit anyway: passing an arbitrary Core token straight to
 /// `Image(systemName:)` would render a blank gap the moment Core names a
 /// token this OS does not ship.
+/// What a Core `icon_token` draws as: an SF Symbol, or one of Vauchi's own
+/// pictograms bundled in the asset catalog under the token's own name.
+enum NavigationIcon: Equatable {
+    case symbol(String)
+    case asset(String)
+}
+
 enum NavigationIconMap {
     /// Shown when Core sends a token this build does not know, so a new
     /// screen arrives with a marker instead of a hole in the row. An
@@ -119,5 +126,55 @@ enum NavigationIconMap {
     ) -> String? {
         guard kind == .navigation || token != nil else { return nil }
         return systemImage(for: token)
+    }
+
+    /// Tokens under this prefix name a bundled asset rather than a symbol.
+    /// The shell resolves them by name alone and never learns what the
+    /// pictogram depicts (ADR-066), so a new one ships as an asset, not code.
+    static let pictogramPrefix = "pictogram."
+
+    private static let pictogramNameCharacters = CharacterSet(
+        charactersIn: "abcdefghijklmnopqrstuvwxyz0123456789_."
+    )
+
+    /// `systemImage(for:)` widened to pictograms. A pictogram this build does
+    /// not ship falls back like any other unknown token.
+    static func icon(for token: String?) -> NavigationIcon {
+        if let asset = pictogramAsset(for: token) {
+            return .asset(asset)
+        }
+        return .symbol(systemImage(for: token))
+    }
+
+    static func icon(
+        forOverlayKind kind: PresentationOverlayKind,
+        token: String?
+    ) -> NavigationIcon? {
+        guard kind == .navigation || token != nil else { return nil }
+        return icon(for: token)
+    }
+
+    /// `statusSystemImage(for:)` widened to pictograms, staying partial.
+    static func statusIcon(for token: String?) -> NavigationIcon? {
+        if let asset = pictogramAsset(for: token) {
+            return .asset(asset)
+        }
+        return statusSystemImage(for: token).map(NavigationIcon.symbol)
+    }
+
+    /// The token goes to an image lookup that also searches bundle paths, so
+    /// only a plain lowercase dotted name is ever handed over.
+    private static func pictogramAsset(for token: String?) -> String? {
+        guard let name = token?.trimmingCharacters(in: .whitespacesAndNewlines),
+              name.hasPrefix(pictogramPrefix),
+              name.count > pictogramPrefix.count,
+              !name.contains(".."),
+              !name.hasSuffix("."),
+              name.rangeOfCharacter(from: pictogramNameCharacters.inverted) == nil,
+              NSImage(named: name) != nil
+        else {
+            return nil
+        }
+        return name
     }
 }

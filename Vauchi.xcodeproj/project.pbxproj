@@ -41,6 +41,7 @@
 		595359DAE404110EFF34DEF2 /* ScreenCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FFFCC81B552D355B9A52C0C /* ScreenCatalog.swift */; };
 		59741D7F82226CA6FC94F5DD /* PresentationHostContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC86DEE36EE0BDC2B729FF6 /* PresentationHostContent.swift */; };
 		5A86CBF4EF79DDFBFB393F1D /* SidebarModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20F21768CC084C55F26FE1E6 /* SidebarModel.swift */; };
+		5DA017D592A1A9672DC64A91 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E17FD049E1582776B08D1899 /* Assets.xcassets */; };
 		5E3F03217A562741885A95B1 /* BiometricUnlockBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5EC393CDE3EB022DA19E3D3 /* BiometricUnlockBridgeTests.swift */; };
 		60D8E07B9EFB1F102D7518A0 /* ThemeServiceSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BF7BC594414EE931756CE54 /* ThemeServiceSettingsTests.swift */; };
 		6E92A916EC67234553ED4D85 /* LocalizationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C859B6215BADD6A45480D9F /* LocalizationService.swift */; };
@@ -76,6 +77,7 @@
 		C48401965743DD70C01F2F95 /* SystemTrayManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5438036805D34A0588FAE1C3 /* SystemTrayManager.swift */; };
 		C72D0889A2D85FB2445BD06A /* PresentationTokensPointerTargetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEDDFD35C524581CEE05797E /* PresentationTokensPointerTargetTests.swift */; };
 		C75EB92B4999209BD75CCBD3 /* PresentationSmokeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAEF5BAE3E1BDBC31DED21D2 /* PresentationSmokeTests.swift */; };
+		C79FB06179FB5B40949218F3 /* NavigationIconImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 918D2994A02A3E0DB31A6A80 /* NavigationIconImage.swift */; };
 		C8C4DCDB890AEB912C9440F3 /* PresentationOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F9A4DAC6D203C61E58BF054 /* PresentationOverlayView.swift */; };
 		CAD15EBE61B35AB3B087C223 /* PresentationChoiceNodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DAE62317CC1CF12A4513FFA /* PresentationChoiceNodeTests.swift */; };
 		CC36096489B2AE8B5BFF1223 /* NavigationIconAccessibilityUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70EA94FA311BF6FFB21AFF4A /* NavigationIconAccessibilityUITests.swift */; };
@@ -174,6 +176,7 @@
 		8FDE9009AE079A27B82E5CB6 /* VauchiUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VauchiUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8FFFCC81B552D355B9A52C0C /* ScreenCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenCatalog.swift; sourceTree = "<group>"; };
 		90C2F7C347C991030CADC674 /* PresentationImageFrameSpecTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationImageFrameSpecTests.swift; sourceTree = "<group>"; };
+		918D2994A02A3E0DB31A6A80 /* NavigationIconImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationIconImage.swift; sourceTree = "<group>"; };
 		92F9D4D1B77DDD1226B84C5C /* BiometricService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricService.swift; sourceTree = "<group>"; };
 		95373D9E6440FED4B532EBDD /* VauchiRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VauchiRepository.swift; sourceTree = "<group>"; };
 		95FC0B5B9D3918ADE8F9FF31 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
@@ -199,6 +202,7 @@
 		DC20FCD1651B95E823A06410 /* LocationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationServiceTests.swift; sourceTree = "<group>"; };
 		DE2CCF76CCD81A822601D43D /* WakeupTimerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WakeupTimerTests.swift; sourceTree = "<group>"; };
 		DFFE40C221022DBDBD034AF3 /* PresentationStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationStateTests.swift; sourceTree = "<group>"; };
+		E17FD049E1582776B08D1899 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E3FE6A79522017C971205541 /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Fonts; path = Vauchi/Resources/Fonts; sourceTree = SOURCE_ROOT; };
 		E7944347EE6E209E80A5CF30 /* PresentationNodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationNodeView.swift; sourceTree = "<group>"; };
 		E8D652552F012CDE52615304 /* ScreenCatalogCaptureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenCatalogCaptureTests.swift; sourceTree = "<group>"; };
@@ -311,6 +315,7 @@
 				24602CA31C0CE84313D9F229 /* ContextCommandBarView.swift */,
 				83EEDE9AC18C43B517008161 /* FocusRingModifier.swift */,
 				CE82C39943D0D7C5D82AE197 /* HardwareEventJson.swift */,
+				918D2994A02A3E0DB31A6A80 /* NavigationIconImage.swift */,
 				4BBE7769F241AC83AF919601 /* NavigationIconMap.swift */,
 				8A6BB9A87C49A6D79E266DFD /* PresentationCommand.swift */,
 				6F0B112148ABCC1933D659A4 /* PresentationEvent.swift */,
@@ -369,6 +374,7 @@
 			isa = PBXGroup;
 			children = (
 				331706A539BC8824C9067EF5 /* AppDelegate.swift */,
+				E17FD049E1582776B08D1899 /* Assets.xcassets */,
 				3741052F03E3274B5C209EF6 /* Info.plist */,
 				234E756E782635B9AF9132F3 /* PlaceholderContentView.swift */,
 				71E5FB136BF29B1F9D9B7F04 /* VauchiApp.swift */,
@@ -537,6 +543,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5DA017D592A1A9672DC64A91 /* Assets.xcassets in Resources */,
 				26EDE59053AA4925CD66C445 /* Fonts in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -622,6 +629,7 @@
 				8CD4D48FC7E49B0DA82AD497 /* KeychainService.swift in Sources */,
 				6E92A916EC67234553ED4D85 /* LocalizationService.swift in Sources */,
 				9C9A5E8876CAFA84118E8DBF /* LockScreenView.swift in Sources */,
+				C79FB06179FB5B40949218F3 /* NavigationIconImage.swift in Sources */,
 				13CA1DF2E5D9A7B112881653 /* NavigationIconMap.swift in Sources */,
 				138BEFDCC908871EDE97D333 /* NotificationService.swift in Sources */,
 				072615DEAAD0650CF34C6B6E /* PlaceholderContentView.swift in Sources */,
@@ -767,7 +775,7 @@
 		6947FE1DCAFA1DD3469AB700 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -786,7 +794,7 @@
 		85301E320FF88FA8FBAF8E74 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
