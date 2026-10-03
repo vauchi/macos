@@ -72,7 +72,9 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
                 deliver(notification)
             case .requestFirst:
                 authorizer.requestAuthorization { granted in
-                    if granted { deliver(notification) }
+                    if granted {
+                        deliver(notification)
+                    }
                 }
             case .drop:
                 break

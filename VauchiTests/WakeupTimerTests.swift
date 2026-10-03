@@ -54,7 +54,9 @@ import XCTest
             viewModel?.cancelWakeupTimer()
             viewModel = nil
             engine = nil
-            if let tempDir { try? FileManager.default.removeItem(at: tempDir) }
+            if let tempDir {
+                try? FileManager.default.removeItem(at: tempDir)
+            }
         }
 
         /// Scenario: starting the timer twice does not create a second timer.

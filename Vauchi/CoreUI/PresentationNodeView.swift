@@ -413,26 +413,24 @@ struct PresentationImageContent: View {
     let minimumTarget: CGFloat
 
     var body: some View {
-        Group {
-            if let data = value.data, let image = NSImage(data: Data(data)) {
-                Image(nsImage: image)
-                    .resizable()
-                    .scaledToFit()
-                    .brightness(Double(value.brightness))
-                    .clipShape(clipShape(for: imageDataSpec))
-            } else if let fallback = value.fallbackText, !fallback.isEmpty {
-                // The fill is the point. `clipShape` on a bare `Text` clips
-                // nothing, because a `Text` paints no body — which is why the
-                // initials read as a stray letter on the page rather than as
-                // an avatar. `PresentationRowView` below already frames and
-                // fills its own fallback; only this node was missing it.
-                Text(fallback)
-                    .font(.title2.weight(.semibold))
-                    .foregroundColor(.primary)
-                    .frame(width: fallbackSpec.diameter, height: fallbackSpec.diameter)
-                    .background(Color.secondary.opacity(AvatarFallbackSpec.fillOpacity))
-                    .clipShape(clipShape(for: fallbackSpec))
-            }
+        if let data = value.data, let image = NSImage(data: Data(data)) {
+            Image(nsImage: image)
+                .resizable()
+                .scaledToFit()
+                .brightness(Double(value.brightness))
+                .clipShape(clipShape(for: imageDataSpec))
+        } else if let fallback = value.fallbackText, !fallback.isEmpty {
+            // The fill is the point. `clipShape` on a bare `Text` clips
+            // nothing, because a `Text` paints no body — which is why the
+            // initials read as a stray letter on the page rather than as
+            // an avatar. `PresentationRowView` below already frames and
+            // fills its own fallback; only this node was missing it.
+            Text(fallback)
+                .font(.title2.weight(.semibold))
+                .foregroundColor(.primary)
+                .frame(width: fallbackSpec.diameter, height: fallbackSpec.diameter)
+                .background(Color.secondary.opacity(AvatarFallbackSpec.fillOpacity))
+                .clipShape(clipShape(for: fallbackSpec))
         }
     }
 

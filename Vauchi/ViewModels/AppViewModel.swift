@@ -565,7 +565,11 @@ import UniformTypeIdentifiers
                         // Hold security-scoped access while we read the
                         // file — sandboxed builds raise EACCES otherwise.
                         let didStart = url.startAccessingSecurityScopedResource()
-                        defer { if didStart { url.stopAccessingSecurityScopedResource() } }
+                        defer {
+                            if didStart {
+                                url.stopAccessingSecurityScopedResource()
+                            }
+                        }
                         if let data = try? Data(contentsOf: url) {
                             self.sendHardwareEvent(.filePickedFromUser(
                                 bytes: data,

@@ -47,7 +47,9 @@ extension ScreenshotWalkUITests {
         var pendingDash = false
         for scalar in lowered.unicodeScalars {
             if CharacterSet.alphanumerics.contains(scalar), scalar.isASCII {
-                if pendingDash, !slug.isEmpty { slug.append("-") }
+                if pendingDash, !slug.isEmpty {
+                    slug.append("-")
+                }
                 slug.unicodeScalars.append(scalar)
                 pendingDash = false
             } else {
@@ -91,7 +93,9 @@ extension ScreenshotWalkUITests {
         let trimmed = method.replacingOccurrences(of: "^test[0-9]*", with: "", options: .regularExpression)
         var slug = ""
         for character in trimmed {
-            if character.isUppercase, !slug.isEmpty { slug.append("-") }
+            if character.isUppercase, !slug.isEmpty {
+                slug.append("-")
+            }
             slug.append(character.lowercased())
         }
         return slug
