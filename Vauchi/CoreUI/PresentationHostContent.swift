@@ -70,8 +70,6 @@ struct PresentationHostContent: View {
                 .padding(16)
                 .safeAreaInset(edge: .bottom) {
                     commandBar
-                        .padding(.horizontal, 16)
-                        .padding(.bottom, 8)
                 }
             if let overlay = state.activeOverlay {
                 PresentationOverlayView(
@@ -136,6 +134,7 @@ struct PresentationHostContent: View {
                 tokens: state.surfaces[surfaceID]?.tokens,
                 reducedMotion: reducedMotion,
                 focusedBinding: $focusedBindingID,
+                navigationShown: !SidebarModel(navigation: state.activeNavigation).isHidden,
                 onEvent: { event in
                     onEvent(surfaceID, event)
                 }

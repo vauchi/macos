@@ -18,6 +18,11 @@ struct PresentationSidebarView: View {
             sidebarRow(for: row)
         }
         .listStyle(.sidebar)
+        // The same anchor the navigation overlay carries: with the sidebar
+        // on screen the bar draws no launcher, so tests read destinations
+        // from here (vauchi/private#479).
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("navigationDestinations")
         .accessibilityLabel("Navigation")
     }
 

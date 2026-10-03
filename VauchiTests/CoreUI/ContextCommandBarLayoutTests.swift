@@ -95,12 +95,13 @@ final class ContextCommandBarLayoutTests: XCTestCase {
 
     // MARK: - showsLabel(_:)
 
-    /// "≡" and "⋯" were never guessed by two of three readers; the chevron
-    /// is the platform's own and needs no words.
-    func testLaunchersShowTheirLabelAndBackDoesNot() {
+    /// On the desktop there is room for every word, so each role button
+    /// writes its label beside the icon; the primary button is its label.
+    func testEveryRoleButtonShowsItsLabel() {
         XCTAssertTrue(ContextCommandBarLayout.showsLabel(.navigation))
         XCTAssertTrue(ContextCommandBarLayout.showsLabel(.secondary))
-        XCTAssertFalse(ContextCommandBarLayout.showsLabel(.back))
+        XCTAssertTrue(ContextCommandBarLayout.showsLabel(.back))
+        XCTAssertFalse(ContextCommandBarLayout.showsLabel(.primary))
     }
 
     // MARK: - needsFlexibleGap(slots:)
