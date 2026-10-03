@@ -131,8 +131,11 @@ extension ScreenshotWalkUITests {
     func openOverlay(containersAtRest: Int) -> XCUIElement {
         if destinationContainers.count <= containersAtRest {
             let navigation = app.buttons["command.navigation"]
-            XCTAssertTrue(navigation.waitForExistence(timeout: 5),
-                          "Navigation command should exist on every main destination")
+            guard navigation.exists else {
+                XCTAssertTrue(navigationDestinations.waitForExistence(timeout: 5),
+                              "Without a navigation launcher the sidebar lists the destinations")
+                return navigationDestinations
+            }
             navigation.click()
             XCTAssertTrue(wait(destinationContainers, until: "count > \(containersAtRest)", timeout: 5),
                           "Navigation overlay should list destinations")

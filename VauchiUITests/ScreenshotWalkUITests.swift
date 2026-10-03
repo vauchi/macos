@@ -97,9 +97,8 @@ final class ScreenshotWalkUITests: XCTestCase {
         app.launch()
         app.activate()
 
-        let navigation = app.buttons["command.navigation"]
-        XCTAssertTrue(navigation.waitForExistence(timeout: 15),
-                      "Command bar should appear after --reset-for-testing identity seeding")
+        XCTAssertTrue(navigationDestinations.waitForExistence(timeout: 15),
+                      "Sidebar should appear after --reset-for-testing identity seeding")
         settle()
         capture("home")
 

@@ -70,8 +70,10 @@
 		AE6ED32C72587A0283C520D2 /* VauchiRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95373D9E6440FED4B532EBDD /* VauchiRepository.swift */; };
 		B119261CF6CF96111C795A47 /* PresentationCommandTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1B78122C6BCA7F181C2B21B /* PresentationCommandTests.swift */; };
 		B1A4AD4752837C2CA7E724FB /* WindowContentAccessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9141BF9EF205F0316F2EE7 /* WindowContentAccessibility.swift */; };
+		B4AEDA4AF0BE317F760EE7CA /* PresentationInformationOverlayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAF456AF714942F67FCD5FA2 /* PresentationInformationOverlayTests.swift */; };
 		BF2293836C1D7191166FCE07 /* AppContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E5799FBB45272E5CCF4CEED /* AppContentView.swift */; };
 		C041D751F823A021E52DA876 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331706A539BC8824C9067EF5 /* AppDelegate.swift */; };
+		C06D9774C64A5008D9E80DCF /* ContextCommandBarLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAD14938360861D9B2172622 /* ContextCommandBarLayoutTests.swift */; };
 		C08F19A01CA887CE179DB156 /* PresentationImageContentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B53FDA1302B12D2357E476DB /* PresentationImageContentTests.swift */; };
 		C2BF1FC510A65D73DD722C95 /* VauchiPlatform in Frameworks */ = {isa = PBXBuildFile; productRef = BE415B866BE8E26F05791810 /* VauchiPlatform */; };
 		C48401965743DD70C01F2F95 /* SystemTrayManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5438036805D34A0588FAE1C3 /* SystemTrayManager.swift */; };
@@ -206,6 +208,8 @@
 		E3FE6A79522017C971205541 /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Fonts; path = Vauchi/Resources/Fonts; sourceTree = SOURCE_ROOT; };
 		E7944347EE6E209E80A5CF30 /* PresentationNodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationNodeView.swift; sourceTree = "<group>"; };
 		E8D652552F012CDE52615304 /* ScreenCatalogCaptureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenCatalogCaptureTests.swift; sourceTree = "<group>"; };
+		EAD14938360861D9B2172622 /* ContextCommandBarLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextCommandBarLayoutTests.swift; sourceTree = "<group>"; };
+		EAF456AF714942F67FCD5FA2 /* PresentationInformationOverlayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationInformationOverlayTests.swift; sourceTree = "<group>"; };
 		ED9141BF9EF205F0316F2EE7 /* WindowContentAccessibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowContentAccessibility.swift; sourceTree = "<group>"; };
 		EEDDFD35C524581CEE05797E /* PresentationTokensPointerTargetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationTokensPointerTargetTests.swift; sourceTree = "<group>"; };
 		F5427C4F253C3A904B25AA98 /* TextRoleStyleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextRoleStyleTests.swift; sourceTree = "<group>"; };
@@ -242,6 +246,7 @@
 			isa = PBXGroup;
 			children = (
 				458ECA778929B29F48389729 /* AvatarFallbackSpecTests.swift */,
+				EAD14938360861D9B2172622 /* ContextCommandBarLayoutTests.swift */,
 				24B6A6426D8087D5940C77B9 /* FocusRingModifierTests.swift */,
 				03B14F6FC09C0E3B70E2A824 /* HardwareEventJsonTests.swift */,
 				5482743CA87B21CE18C8C3B9 /* NavigationIconMapTests.swift */,
@@ -250,6 +255,7 @@
 				B1B78122C6BCA7F181C2B21B /* PresentationCommandTests.swift */,
 				B53FDA1302B12D2357E476DB /* PresentationImageContentTests.swift */,
 				90C2F7C347C991030CADC674 /* PresentationImageFrameSpecTests.swift */,
+				EAF456AF714942F67FCD5FA2 /* PresentationInformationOverlayTests.swift */,
 				DFFE40C221022DBDBD034AF3 /* PresentationStateTests.swift */,
 				EEDDFD35C524581CEE05797E /* PresentationTokensPointerTargetTests.swift */,
 				AFAE02F92415DA6CD6D99735 /* SidebarModelTests.swift */,
@@ -531,8 +537,8 @@
 			projectRoot = "";
 			targets = (
 				8205328B6D921F4914B03739 /* Vauchi */,
-				C288D45F00B14D12ACFAD0BC /* VauchiSnapshotTests */,
 				E9D120DDA95653CDD66564FF /* VauchiTests */,
+				C288D45F00B14D12ACFAD0BC /* VauchiSnapshotTests */,
 				4E3A6E4270EA7198C4E93FDA /* VauchiUITests */,
 			);
 		};
@@ -558,6 +564,7 @@
 				7F01B87953EEFE74C498EA48 /* AvatarFallbackSpecTests.swift in Sources */,
 				5E3F03217A562741885A95B1 /* BiometricUnlockBridgeTests.swift in Sources */,
 				9D3AA48B67B4BBCBFBA6A33C /* ContentUpdateCycleTests.swift in Sources */,
+				C06D9774C64A5008D9E80DCF /* ContextCommandBarLayoutTests.swift in Sources */,
 				566C2C33F23B683B8CB8226F /* DeviceCapabilitiesPusherTests.swift in Sources */,
 				E9023ACF578FB502397EE363 /* FocusRingModifierTests.swift in Sources */,
 				E46828FADC8D63F63BB68280 /* HardwareEventJsonTests.swift in Sources */,
@@ -574,6 +581,7 @@
 				048070DC8CB18C66127608DB /* PresentationFailureAlertTests.swift in Sources */,
 				C08F19A01CA887CE179DB156 /* PresentationImageContentTests.swift in Sources */,
 				17ABD6784C9A89F651F8E6C7 /* PresentationImageFrameSpecTests.swift in Sources */,
+				B4AEDA4AF0BE317F760EE7CA /* PresentationInformationOverlayTests.swift in Sources */,
 				C75EB92B4999209BD75CCBD3 /* PresentationSmokeTests.swift in Sources */,
 				750231F789BE3B2634B7B5FD /* PresentationStateTests.swift in Sources */,
 				C72D0889A2D85FB2445BD06A /* PresentationTokensPointerTargetTests.swift in Sources */,

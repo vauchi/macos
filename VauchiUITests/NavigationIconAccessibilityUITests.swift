@@ -63,6 +63,18 @@ final class NavigationIconAccessibilityUITests: XCTestCase {
     /// "Recovery" announces "Passwords", and `mappin.and.ellipse` beside
     /// "Places" announces "Remove Map Pin", naming a destructive action on a
     /// row that only navigates.
+    /// With the sidebar on screen the command bar draws no navigation
+    /// launcher: both open the same destinations (vauchi/private#479).
+    func testNoNavigationLauncherWhileTheSidebarShows() {
+        let destinations = app.descendants(matching: .any)
+            .matching(identifier: "navigationDestinations")
+            .firstMatch
+        XCTAssertTrue(destinations.waitForExistence(timeout: 10),
+                      "Sidebar should be on screen")
+        XCTAssertFalse(app.buttons["command.navigation"].exists,
+                       "The navigation launcher duplicates the sidebar")
+    }
+
     func testNavigationIconsAreNotSeparateElements() {
         let destinations = openNavigationDestinations()
         XCTAssertTrue(destinations.waitForExistence(timeout: 10),
