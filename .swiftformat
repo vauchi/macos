@@ -7,3 +7,7 @@
 --exclude Vauchi/Libs/VauchiPlatformLocal/.build
 --exclude DerivedData
 --exclude build
+
+# CI and every developer run the same swiftformat; an older one fails
+# here instead of passing code CI then rejects (#489).
+--minversion 0.63.1
