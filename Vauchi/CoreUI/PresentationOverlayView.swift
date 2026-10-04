@@ -105,7 +105,7 @@ struct PresentationOverlayView: View {
                     Image(systemName: "xmark")
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel("Close")
+                .accessibilityLabel(overlay.overlay.closeAccessibilityLabel)
             }
             content()
         }
