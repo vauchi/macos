@@ -489,6 +489,19 @@ private struct PresentationRowView: View {
             if let detail = row.detail {
                 Text(detail).foregroundStyle(.secondary)
             }
+            if let info = row.info {
+                // Explains this one item (vauchi/private#479); Core names it
+                // "About <item>" so VoiceOver says what the icon is for.
+                Button {
+                    activate(info)
+                } label: {
+                    Image(systemName: "info.circle")
+                }
+                .buttonStyle(.borderless)
+                .disabled(!info.enabled)
+                .help(info.accessibilityLabel)
+                .accessibilityLabel(info.accessibilityLabel)
+            }
             controls
             if !row.secondaryActions.isEmpty {
                 Menu {
