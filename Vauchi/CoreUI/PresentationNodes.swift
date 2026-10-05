@@ -348,11 +348,6 @@ indirect enum PresentationNode: Codable, Equatable {
         /// it to the shell.
         let errorCorrection: String?
         let accessibility: PresentationAccessibility
-
-        private enum CodingKeys: String, CodingKey {
-            case id, payloads, purpose, label, placement, accessibility
-            case errorCorrection = "error_correction"
-        }
     }
 
     struct Confirmation: Codable, Equatable {
@@ -442,6 +437,13 @@ func identifyPresentationNodes(
             id: node.identityID ?? "position:\(index)",
             node: node
         )
+    }
+}
+
+extension PresentationNode.QrCode {
+    private enum CodingKeys: String, CodingKey {
+        case id, payloads, purpose, label, placement, accessibility
+        case errorCorrection = "error_correction"
     }
 }
 
