@@ -341,7 +341,18 @@ indirect enum PresentationNode: Codable, Equatable {
         let payloads: [String]
         let purpose: PresentationQRPurpose
         let label: String?
+        /// Where in the node's square a display code is drawn; absent
+        /// means the full square.
+        let placement: QrPlacement?
+        /// Core's error-correction level for a display code; absent leaves
+        /// it to the shell.
+        let errorCorrection: String?
         let accessibility: PresentationAccessibility
+
+        private enum CodingKeys: String, CodingKey {
+            case id, payloads, purpose, label, placement, accessibility
+            case errorCorrection = "error_correction"
+        }
     }
 
     struct Confirmation: Codable, Equatable {
@@ -432,4 +443,56 @@ func identifyPresentationNodes(
             node: node
         )
     }
+}
+
+/// Where a display code sits in its node's square, in permille: its side
+/// and its top-left corner (vauchi/private#450).
+struct QrPlacement: Codable, Equatable {
+    let size: Int
+    // swiftlint:disable:next identifier_name - Core's JSON names the corner x and y
+    let x: Int
+    // swiftlint:disable:next identifier_name - Core's JSON names the corner x and y
+    let y: Int
+}
+
+/// A code's side and top-left corner inside a square, in points. Pure, so
+/// `PresentationQrPlacementTests` can assert the numbers without rendering.
+struct QrFrameSpec: Equatable {
+    let side: CGFloat
+    let left: CGFloat
+    let top: CGFloat
+
+    init(side: CGFloat, left: CGFloat, top: CGFloat) {
+        self.side = side
+        self.left = left
+        self.top = top
+    }
+
+    /// No placement is the full square. Core only sends placements inside
+    /// the square; a value outside it is pulled back in, so the code is
+    /// never drawn past its node.
+    init(placement: QrPlacement?, squareSide: CGFloat) {
+        guard let placement, placement.size > 0 else {
+            self.init(side: squareSide, left: 0, top: 0)
+            return
+        }
+        let full = 1000
+        let size = min(placement.size, full)
+        let room = full - size
+        // Multiply before dividing: 650 × 240 / 1000 is exact.
+        let scaled = { (permille: Int) -> CGFloat in
+            CGFloat(permille) * squareSide / CGFloat(full)
+        }
+        self.init(
+            side: scaled(size),
+            left: scaled(min(max(placement.x, 0), room)),
+            top: scaled(min(max(placement.y, 0), room))
+        )
+    }
+}
+
+/// Core Image's correction level for Core's `error_correction`: "low" is
+/// L; absent or anything else is M, the level shells drew before.
+func qrCorrectionLevel(_ errorCorrection: String?) -> String {
+    errorCorrection == "low" ? "L" : "M"
 }

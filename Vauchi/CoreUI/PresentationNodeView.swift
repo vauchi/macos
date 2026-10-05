@@ -280,14 +280,20 @@ struct PresentationNodeView: View {
                 Text(label).font(.headline)
             }
             if value.purpose == .display,
+               let placement = value.placement,
                let payload = value.payloads.first,
-               let image = qrImage(payload)
+               let image = qrImage(payload, errorCorrection: value.errorCorrection)
+            {
+                placedQr(image, at: placement, label: value.accessibility.label)
+            } else if value.purpose == .display,
+                      let payload = value.payloads.first,
+                      let image = qrImage(payload, errorCorrection: value.errorCorrection)
             {
                 Image(nsImage: image)
                     .interpolation(.none)
                     .resizable()
                     .scaledToFit()
-                    .frame(maxWidth: 240, maxHeight: 240)
+                    .frame(maxWidth: Self.qrSide, maxHeight: Self.qrSide)
                     .accessibilityLabel(value.accessibility.label)
             } else if value.purpose == .capture {
                 TextField(
@@ -390,16 +396,40 @@ struct PresentationNodeView: View {
         }
     }
 
-    private func qrImage(_ value: String) -> NSImage? {
+    /// The square a display code is drawn in, in points.
+    static let qrSide: CGFloat = 240
+
+    /// A placed code leaves part of the square empty. That part is white,
+    /// so the peer's camera sees one bright square whatever the theme.
+    private func placedQr(
+        _ image: NSImage,
+        at placement: QrPlacement,
+        label: String
+    ) -> some View {
+        let frame = QrFrameSpec(placement: placement, squareSide: Self.qrSide)
+        return Color.white // design-token-ok: a QR code needs a white quiet zone for the peer's camera
+            .frame(width: Self.qrSide, height: Self.qrSide)
+            .overlay(alignment: .topLeading) {
+                Image(nsImage: image)
+                    .interpolation(.none)
+                    .resizable()
+                    .frame(width: frame.side, height: frame.side)
+                    .offset(x: frame.left, y: frame.top)
+            }
+            .accessibilityLabel(label)
+    }
+
+    private func qrImage(_ value: String, errorCorrection: String?) -> NSImage? {
         let filter = CIFilter.qrCodeGenerator()
         filter.message = Data(value.utf8)
+        filter.correctionLevel = qrCorrectionLevel(errorCorrection)
         guard let output = filter.outputImage else { return nil }
         let representation = CIContext().createCGImage(
             output.transformed(by: .init(scaleX: 10, y: 10)),
             from: output.extent.applying(.init(scaleX: 10, y: 10))
         )
         return representation.map {
-            NSImage(cgImage: $0, size: .init(width: 240, height: 240))
+            NSImage(cgImage: $0, size: .init(width: Self.qrSide, height: Self.qrSide))
         }
     }
 }
