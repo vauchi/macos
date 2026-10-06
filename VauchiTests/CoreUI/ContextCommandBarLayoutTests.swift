@@ -2,12 +2,14 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// The context bar sits under the content beside the sidebar. It floated as a
-// card, kept a button-sized hole for an absent slot, and offered "More"
-// beside a sidebar listing the same destinations (vauchi/private#479).
-// Where each of Core's slots goes is pure enough to assert without
-// rendering, so `ContextCommandBarLayout` holds it and this file pins it.
+// The context bar no longer draws a row of its own under the content: Back
+// and Navigate sit at the leading end of the surface's title row, Actions
+// and Info at the trailing end, and Primary becomes a full-width button at
+// the bottom of the surface (vauchi/private#479, #534). Where each of
+// Core's slots goes is pure enough to assert without rendering, so
+// `ContextCommandBarLayout` holds it and this file pins it.
 
+import SwiftUI
 @testable import Vauchi
 import XCTest
 
@@ -90,27 +92,86 @@ final class ContextCommandBarLayoutTests: XCTestCase {
             ContextCommandBarLayout.slots(bar: bar(primary: true, secondary: true)),
             [.primary, .secondary]
         )
-        XCTAssertTrue(ContextCommandBarLayout.showsLabel(.info))
     }
 
-    // MARK: - showsLabel(_:)
+    // MARK: - leadingTitleSlots(bar:navigationShown:)
 
-    /// On the desktop there is room for every word, so each role button
-    /// writes its label beside the icon; the primary button is its label.
-    func testEveryRoleButtonShowsItsLabel() {
-        XCTAssertTrue(ContextCommandBarLayout.showsLabel(.navigation))
-        XCTAssertTrue(ContextCommandBarLayout.showsLabel(.secondary))
-        XCTAssertTrue(ContextCommandBarLayout.showsLabel(.back))
-        XCTAssertFalse(ContextCommandBarLayout.showsLabel(.primary))
+    /// Back and Navigate move into the title row's leading end, in the
+    /// same order the retired bar drew them (vauchi/private#479, #534).
+    func testLeadingTitleSlotsAreBackThenNavigation() {
+        XCTAssertEqual(
+            ContextCommandBarLayout.leadingTitleSlots(
+                bar: bar(back: true, navigation: true, primary: true, secondary: true, info: true)
+            ),
+            [.back, .navigation]
+        )
     }
 
-    // MARK: - needsFlexibleGap(slots:)
+    func testLeadingTitleSlotsDropNavigationWhileItIsOnScreen() {
+        let full = bar(back: true, navigation: true)
+        XCTAssertEqual(
+            ContextCommandBarLayout.leadingTitleSlots(bar: full, navigationShown: true),
+            [.back]
+        )
+        XCTAssertEqual(
+            ContextCommandBarLayout.leadingTitleSlots(bar: full, navigationShown: false),
+            [.back, .navigation]
+        )
+    }
 
-    /// The primary button fills the row. Without one, a gap in its place
-    /// keeps Back at the leading edge and the launchers at the trailing one.
-    func testAGapStandsInForAMissingPrimary() {
-        XCTAssertTrue(ContextCommandBarLayout.needsFlexibleGap(slots: [.back, .secondary]))
-        XCTAssertTrue(ContextCommandBarLayout.needsFlexibleGap(slots: [.back]))
-        XCTAssertFalse(ContextCommandBarLayout.needsFlexibleGap(slots: [.back, .primary, .secondary]))
+    /// Primary moved to the bottom of the surface, and Actions/Info sit at
+    /// the title row's trailing end instead — neither belongs leading.
+    func testLeadingTitleSlotsNeverCarryPrimaryOrTrailingActions() {
+        let full = bar(back: true, navigation: true, primary: true, secondary: true, info: true)
+        let leading = ContextCommandBarLayout.leadingTitleSlots(bar: full)
+        XCTAssertFalse(leading.contains(.primary))
+        XCTAssertFalse(leading.contains(.secondary))
+        XCTAssertFalse(leading.contains(.info))
+    }
+
+    // MARK: - trailingTitleSlots(bar:)
+
+    /// Actions and Info move into the title row's trailing end, in the
+    /// same order the retired bar drew them.
+    func testTrailingTitleSlotsAreActionsThenInfo() {
+        XCTAssertEqual(
+            ContextCommandBarLayout.trailingTitleSlots(
+                bar: bar(back: true, navigation: true, primary: true, secondary: true, info: true)
+            ),
+            [.secondary, .info]
+        )
+    }
+
+    func testTrailingTitleSlotsNeverCarryPrimaryOrLeadingActions() {
+        let full = bar(back: true, navigation: true, primary: true, secondary: true, info: true)
+        let trailing = ContextCommandBarLayout.trailingTitleSlots(bar: full)
+        XCTAssertFalse(trailing.contains(.primary))
+        XCTAssertFalse(trailing.contains(.back))
+        XCTAssertFalse(trailing.contains(.navigation))
+    }
+
+    // MARK: - accessibilityIdentifier(for:)
+
+    /// Stable frontend a11y anchor for UI tests, matching the iOS shell's
+    /// `command.*` identifiers — unchanged by the move into the title row.
+    func testEverySlotKeepsItsStableAccessibilityIdentifier() {
+        XCTAssertEqual(ContextCommandBarLayout.accessibilityIdentifier(for: .back), "command.back")
+        XCTAssertEqual(ContextCommandBarLayout.accessibilityIdentifier(for: .navigation), "command.navigation")
+        XCTAssertEqual(ContextCommandBarLayout.accessibilityIdentifier(for: .primary), "command.primary")
+        XCTAssertEqual(ContextCommandBarLayout.accessibilityIdentifier(for: .secondary), "command.secondary")
+        XCTAssertEqual(ContextCommandBarLayout.accessibilityIdentifier(for: .info), "command.info")
+    }
+
+    // MARK: - keyboardShortcut(for:)
+
+    /// Keyboard shortcuts stay as they are; only where the button draws
+    /// changed (vauchi/private#534).
+    func testEachTitleRowSlotKeepsItsKeyboardShortcut() {
+        XCTAssertEqual(ContextCommandBarLayout.keyboardShortcut(for: .back).key, KeyEquivalent("["))
+        XCTAssertEqual(ContextCommandBarLayout.keyboardShortcut(for: .navigation).key, KeyEquivalent("k"))
+        XCTAssertEqual(ContextCommandBarLayout.keyboardShortcut(for: .navigation).modifiers, .command)
+        XCTAssertEqual(ContextCommandBarLayout.keyboardShortcut(for: .secondary).key, .downArrow)
+        XCTAssertEqual(ContextCommandBarLayout.keyboardShortcut(for: .secondary).modifiers, .option)
+        XCTAssertEqual(ContextCommandBarLayout.keyboardShortcut(for: .info).key, KeyEquivalent("?"))
     }
 }
