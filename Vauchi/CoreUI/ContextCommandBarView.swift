@@ -4,7 +4,12 @@
 
 import SwiftUI
 
-/// Where Core's context-bar slots go, kept out of the view so
+/// Where Core's context-bar slots go. Core still sends one `ContextBar`
+/// per surface, but no shell draws it as a row of its own any more: Back
+/// and Navigate sit at the leading end of `PresentationSurfaceView`'s
+/// title row, Actions and Info at the trailing end, and Primary becomes a
+/// full-width button at the bottom of the surface
+/// (vauchi/private#479, #534). Kept out of the view so
 /// `ContextCommandBarLayoutTests` can assert it without rendering.
 enum ContextCommandBarLayout {
     enum Slot: Equatable {
@@ -39,145 +44,46 @@ enum ContextCommandBarLayout {
         return slots
     }
 
-    /// On the desktop every role button already writes its word beside the
-    /// icon; the back arrow keeps its word too, since there is room.
-    static func showsLabel(_ slot: Slot) -> Bool {
-        slot != .primary
+    /// Back and Navigate, title-row leading end, in Core's slot order.
+    static func leadingTitleSlots(bar: PresentationContextBar?, navigationShown: Bool = false) -> [Slot] {
+        slots(bar: bar, navigationShown: navigationShown).filter { $0 == .back || $0 == .navigation }
     }
 
-    /// The primary button sits in the middle; without one a gap keeps Back
-    /// leading and the launchers trailing.
-    static func needsFlexibleGap(slots: [Slot]) -> Bool {
-        !slots.contains(.primary)
-    }
-}
-
-/// Core's context bar as one row under the content, on the window's own
-/// surface rather than a floating card.
-struct ContextCommandBarView: View {
-    let surfaceID: String
-    let bar: PresentationContextBar?
-    let tokens: PresentationTokens?
-    let reducedMotion: Bool
-    let focusedBinding: FocusState<String?>.Binding
-    let navigationShown: Bool
-    let onEvent: (PresentationEvent) -> Void
-
-    private var minimumTarget: CGFloat {
-        PresentationTokens.minimumTargetSize(from: tokens)
+    /// Actions and Info, title-row trailing end, in Core's slot order.
+    static func trailingTitleSlots(bar: PresentationContextBar?) -> [Slot] {
+        slots(bar: bar).filter { $0 == .secondary || $0 == .info }
     }
 
-    var body: some View {
-        let slots = ContextCommandBarLayout.slots(bar: bar, navigationShown: navigationShown)
-        if !slots.isEmpty {
-            HStack(spacing: 8) {
-                if let back = bar?.back {
-                    roleButton(back, systemImage: "arrow.left", role: "Back")
-                }
-                if let navigation = bar?.navigation, slots.contains(.navigation) {
-                    roleButton(navigation, systemImage: "line.3.horizontal", role: "Navigate")
-                }
-                if let primary = bar?.primary {
-                    primaryButton(primary)
-                }
-                if ContextCommandBarLayout.needsFlexibleGap(slots: slots) {
-                    Spacer(minLength: 0)
-                }
-                if let secondary = bar?.secondary {
-                    roleButton(secondary, systemImage: "ellipsis", role: "More actions")
-                }
-                if let info = bar?.info {
-                    roleButton(info, systemImage: "info.circle", role: "Info")
-                }
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .frame(maxWidth: .infinity)
-            .background(.bar)
-            .overlay(alignment: .top) {
-                Divider()
-            }
-            .accessibilityElement(children: .contain)
-            .accessibilityLabel("Contextual commands")
+    /// Stable frontend a11y anchor for UI tests, matching the iOS shell's
+    /// `command.*` identifiers.
+    static func accessibilityIdentifier(for slot: Slot) -> String {
+        switch slot {
+        case .back: "command.back"
+        case .navigation: "command.navigation"
+        case .primary: "command.primary"
+        case .secondary: "command.secondary"
+        case .info: "command.info"
         }
     }
 
-    private func primaryButton(_ primary: PresentationAction) -> some View {
-        Button(primary.label) {
-            activate(primary)
-        }
-        .buttonStyle(.borderedProminent)
-        .controlSize(.large)
-        .frame(minWidth: 140)
-        .disabled(!primary.enabled)
-        .accessibilityLabel(primary.accessibilityLabel)
-        .accessibilityIdentifier("command.primary")
-        .keyboardShortcut(
-            primary.shortcut == .undo ? "z" : .return,
-            modifiers: .command
-        )
-        .keyboardFocusRing(
-            focusedBinding,
-            equals: primary.interactionID,
-            color: ThemeService.shared.focusRing
-        )
-    }
-
-    private func roleButton(
-        _ action: PresentationAction,
-        systemImage: String,
-        role: String
-    ) -> some View {
-        Button {
-            activate(action)
-        } label: {
-            Label(action.label, systemImage: systemImage)
-                .labelStyle(.titleAndIcon)
-        }
-        .disabled(!action.enabled)
-        .accessibilityLabel(action.accessibilityLabel)
-        // Stable frontend a11y anchor for UI tests, matching the iOS
-        // shell's `command.*` identifiers.
-        .accessibilityIdentifier(identifier(for: role))
-        .help(role)
-        .keyboardShortcut(shortcut(for: role))
-        .keyboardFocusRing(
-            focusedBinding,
-            equals: action.interactionID,
-            color: ThemeService.shared.focusRing
-        )
-    }
-
-    private func activate(_ action: PresentationAction) {
-        withAnimation(reducedMotion ? nil : .easeOut(duration: 0.2)) {
-            onEvent(
-                .actionActivated(
-                    surfaceID: surfaceID,
-                    interactionID: action.interactionID
-                )
-            )
+    /// English fallback for the title row's icon-only buttons' tooltip;
+    /// Core's own `accessibility_label` still drives VoiceOver.
+    static func helpText(for slot: Slot) -> String {
+        switch slot {
+        case .back: "Back"
+        case .navigation: "Navigate"
+        case .primary: ""
+        case .secondary: "More actions"
+        case .info: "Info"
         }
     }
 
-    private func identifier(for role: String) -> String {
-        switch role {
-        case "Back": "command.back"
-        case "Navigate": "command.navigation"
-        case "Info": "command.info"
-        default: "command.secondary"
-        }
-    }
-
-    private func shortcut(for role: String) -> KeyboardShortcut {
-        switch role {
-        case "Navigate":
-            KeyboardShortcut("k", modifiers: .command)
-        case "More actions":
-            KeyboardShortcut(.downArrow, modifiers: .option)
-        case "Info":
-            KeyboardShortcut("?", modifiers: .command)
-        default:
-            KeyboardShortcut("[", modifiers: .command)
+    static func keyboardShortcut(for slot: Slot) -> KeyboardShortcut {
+        switch slot {
+        case .navigation: KeyboardShortcut("k", modifiers: .command)
+        case .secondary: KeyboardShortcut(.downArrow, modifiers: .option)
+        case .info: KeyboardShortcut("?", modifiers: .command)
+        case .back, .primary: KeyboardShortcut("[", modifiers: .command)
         }
     }
 }

@@ -4,10 +4,11 @@
 
 import SwiftUI
 
-/// The visible composition of one `PresentationState`: sidebar, surfaces,
-/// context bar and any overlay. `PresentationHostView` wraps it with the
-/// live view model, window measurement and alerts; the screen-catalog
-/// render replays a state through it without an engine.
+/// The visible composition of one `PresentationState`: sidebar, surfaces
+/// (each carrying the active one's context bar in its own title row and
+/// content) and any overlay. `PresentationHostView` wraps it with the live
+/// view model, window measurement and alerts; the screen-catalog render
+/// replays a state through it without an engine.
 struct PresentationHostContent: View {
     let state: PresentationState
     let onEvent: (_ surfaceID: String, _ event: PresentationEvent) -> Void
@@ -32,8 +33,8 @@ struct PresentationHostContent: View {
     /// publishes destinations for the active surface; empty `NavigationSpec`
     /// (locked app) hides the column entirely rather than rendering one with
     /// nothing in it. The navigation overlay stays reachable from the
-    /// context bar regardless — this sidebar is the persistent peer, not a
-    /// replacement for it.
+    /// active surface's title row regardless — this sidebar is the
+    /// persistent peer, not a replacement for it.
     @ViewBuilder
     private var chrome: some View {
         let sidebarModel = SidebarModel(navigation: state.activeNavigation)
@@ -68,9 +69,6 @@ struct PresentationHostContent: View {
         ZStack {
             surfaces
                 .padding(16)
-                .safeAreaInset(edge: .bottom) {
-                    commandBar
-                }
             if let overlay = state.activeOverlay {
                 PresentationOverlayView(
                     overlay: overlay,
@@ -111,34 +109,25 @@ struct PresentationHostContent: View {
     }
 
     private func surfaceViews(_ ids: [String]) -> some View {
-        ForEach(ids, id: \.self) { surfaceID in
+        let navigationShown = !SidebarModel(navigation: state.activeNavigation).isHidden
+        return ForEach(ids, id: \.self) { surfaceID in
             if let surface = state.surfaces[surfaceID] {
+                let isActive = state.activeSurfaceID == surfaceID
                 PresentationSurfaceView(
                     surface: surface,
-                    active: state.activeSurfaceID == surfaceID,
+                    active: isActive,
+                    // Core's bar belongs to the active surface only — the
+                    // same scoping `state.activeBar` already applied when
+                    // this drew as a separate row.
+                    bar: isActive ? state.activeBar : nil,
+                    navigationShown: navigationShown,
+                    reducedMotion: reducedMotion,
                     focusedBinding: $focusedBindingID,
                     onEvent: { event in
                         onEvent(surfaceID, event)
                     }
                 )
             }
-        }
-    }
-
-    @ViewBuilder
-    private var commandBar: some View {
-        if let surfaceID = state.activeSurfaceID {
-            ContextCommandBarView(
-                surfaceID: surfaceID,
-                bar: state.activeBar,
-                tokens: state.surfaces[surfaceID]?.tokens,
-                reducedMotion: reducedMotion,
-                focusedBinding: $focusedBindingID,
-                navigationShown: !SidebarModel(navigation: state.activeNavigation).isHidden,
-                onEvent: { event in
-                    onEvent(surfaceID, event)
-                }
-            )
         }
     }
 }
