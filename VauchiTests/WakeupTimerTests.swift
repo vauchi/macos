@@ -63,34 +63,24 @@ import XCTest
         func testArmWakeupTimerIsIdempotent() {
             XCTAssertFalse(viewModel.hasActiveWakeupTimer, "starts inactive")
 
-            viewModel.armWakeupTimer(earliestSecs: 10, deadlineSecs: 60, minIntervalSecs: 30)
+            viewModel.armWakeupTimer(delayMillis: 10000)
             XCTAssertTrue(viewModel.hasActiveWakeupTimer, "first arm activates")
 
-            viewModel.armWakeupTimer(earliestSecs: 10, deadlineSecs: 60, minIntervalSecs: 30)
+            viewModel.armWakeupTimer(delayMillis: 10000)
             XCTAssertTrue(viewModel.hasActiveWakeupTimer, "second arm replaces, still one timer")
         }
 
-        /// Scenario: a sub-second interval wins over the whole-second field.
+        /// Scenario: the timer waits exactly the delay Core computed.
         ///
-        /// A live QR exchange advances its display from this timer, and whole
-        /// seconds cannot express its ~300 ms frame dwell. Android read only
-        /// the seconds field and ran at 1013 ms
-        /// (2026-08-18-hover-transfer-stalls-on-the-last-chunk); binding the
-        /// argument and ignoring it here would compile and keep that defect.
-        func testSubSecondIntervalOverridesWholeSeconds() {
-            viewModel.armWakeupTimer(
-                earliestSecs: 1,
-                deadlineSecs: 60,
-                minIntervalSecs: 0,
-                earliestMillis: 300
-            )
+        /// Core sends `delay_millis` (earliest, sub-second when needed, never
+        /// past the deadline); macOS derived it from the other fields before
+        /// (vauchi/private#548). A live QR exchange's ~300 ms frame dwell
+        /// must survive as 0.3 s, not round to a second.
+        func testArmsExactlyCoresDelay() {
+            viewModel.armWakeupTimer(delayMillis: 300)
             XCTAssertEqual(viewModel.lastWakeupDelay ?? -1, 0.3, accuracy: 0.001)
-        }
 
-        /// Scenario: without a sub-second value the whole-second field stands,
-        /// which is every idle heartbeat.
-        func testWholeSecondsUsedWhenNoSubSecondValue() {
-            viewModel.armWakeupTimer(earliestSecs: 30, deadlineSecs: 90, minIntervalSecs: 30)
+            viewModel.armWakeupTimer(delayMillis: 30000)
             XCTAssertEqual(viewModel.lastWakeupDelay ?? -1, 30.0, accuracy: 0.001)
         }
 
@@ -104,7 +94,7 @@ import XCTest
 
         /// Scenario: arm then cancel clears the timer.
         func testArmThenCancelDeactivates() {
-            viewModel.armWakeupTimer(earliestSecs: 10, deadlineSecs: 60, minIntervalSecs: 30)
+            viewModel.armWakeupTimer(delayMillis: 10000)
             XCTAssertTrue(viewModel.hasActiveWakeupTimer)
 
             viewModel.cancelWakeupTimer()
@@ -113,7 +103,7 @@ import XCTest
 
         /// Scenario: cancel twice in a row is safe.
         func testCancelTwiceIsIdempotent() {
-            viewModel.armWakeupTimer(earliestSecs: 10, deadlineSecs: 60, minIntervalSecs: 30)
+            viewModel.armWakeupTimer(delayMillis: 10000)
             viewModel.cancelWakeupTimer()
             viewModel.cancelWakeupTimer()
             XCTAssertFalse(viewModel.hasActiveWakeupTimer)
@@ -122,7 +112,7 @@ import XCTest
         /// Scenario: arm/cancel cycle can be repeated without leaking timers.
         func testArmCancelCycleRepeatable() {
             for _ in 0 ..< 5 {
-                viewModel.armWakeupTimer(earliestSecs: 10, deadlineSecs: 60, minIntervalSecs: 30)
+                viewModel.armWakeupTimer(delayMillis: 10000)
                 XCTAssertTrue(viewModel.hasActiveWakeupTimer)
                 viewModel.cancelWakeupTimer()
                 XCTAssertFalse(viewModel.hasActiveWakeupTimer)
