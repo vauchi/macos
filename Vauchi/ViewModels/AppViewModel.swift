@@ -607,7 +607,7 @@ import UniformTypeIdentifiers
         /// reducer boundary.
         private func sendHardwareEvent(_ event: MobileEvent) {
             do {
-                let resultJson = try appEngine.dispatchJson(eventJson: event.toEventJson())
+                let resultJson = try appEngine.dispatchJson(eventJson: hardwareEventJson(event: event))
                 try applyPresentationEnvelope(resultJson)
             } catch {
                 print("AppViewModel: hardware event failed: \(error)")
@@ -637,7 +637,7 @@ import UniformTypeIdentifiers
                 let engine = appEngine
                 do {
                     let resultJson = try await Task.detached(priority: .userInitiated) {
-                        try engine.dispatchJson(eventJson: event.toEventJson())
+                        try engine.dispatchJson(eventJson: hardwareEventJson(event: event))
                     }.value
                     try applyPresentationEnvelope(resultJson)
                 } catch {

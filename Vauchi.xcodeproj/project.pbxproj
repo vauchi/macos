@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		013B279390AE63715483CB89 /* HardwareEventJson.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE82C39943D0D7C5D82AE197 /* HardwareEventJson.swift */; };
 		048070DC8CB18C66127608DB /* PresentationFailureAlertTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B183C71862EEB94A1A20C7D /* PresentationFailureAlertTests.swift */; };
 		072615DEAAD0650CF34C6B6E /* PlaceholderContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 234E756E782635B9AF9132F3 /* PlaceholderContentView.swift */; };
 		0D568A3271482CEABA444A7F /* PresentationActionToneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A48EA2C7DE011AEE833EA2 /* PresentationActionToneTests.swift */; };
@@ -91,7 +90,6 @@
 		E029B74DC69464F3AB4DE7CB /* ScreenCatalogCaptureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8D652552F012CDE52615304 /* ScreenCatalogCaptureTests.swift */; };
 		E15D3E295518C2178E26D1A9 /* NotificationServiceContentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37CF81D097BBE672CB4C58D4 /* NotificationServiceContentTests.swift */; };
 		E29B99A31BAD9EA2FC154C0F /* PresentationRowInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FF78143E85F40617060C709 /* PresentationRowInfoTests.swift */; };
-		E46828FADC8D63F63BB68280 /* HardwareEventJsonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B14F6FC09C0E3B70E2A824 /* HardwareEventJsonTests.swift */; };
 		E9023ACF578FB502397EE363 /* FocusRingModifierTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B6A6426D8087D5940C77B9 /* FocusRingModifierTests.swift */; };
 		EC30F92B5A66058CF9972C27 /* BleExchangeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418F950D6541F912A27DA57D /* BleExchangeService.swift */; };
 		F05A78B995EB8456A4B310F3 /* PresentationContractTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE718E95F174F15A52F1FCEC /* PresentationContractTests.swift */; };
@@ -126,7 +124,6 @@
 
 /* Begin PBXFileReference section */
 		007F08BF348F3C0C5BA74B92 /* PresentationPrimitives.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationPrimitives.swift; sourceTree = "<group>"; };
-		03B14F6FC09C0E3B70E2A824 /* HardwareEventJsonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HardwareEventJsonTests.swift; sourceTree = "<group>"; };
 		0A594A2A3929ED3F36E46FBD /* RenderContextPusher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderContextPusher.swift; sourceTree = "<group>"; };
 		0C3F3532A6BDC5F1212AF860 /* ScreenshotWalkUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotWalkUITests.swift; sourceTree = "<group>"; };
 		0D3497B12DDDF10370069F86 /* Vauchi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Vauchi.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -202,7 +199,6 @@
 		BE32C32136CEB8811C89778C /* VauchiKeychainBridgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VauchiKeychainBridgeTests.swift; sourceTree = "<group>"; };
 		BF7B59DC1F3F21EAE1966C19 /* TextRoleStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextRoleStyle.swift; sourceTree = "<group>"; };
 		C8B35ECCC9FCA862F3D805EA /* PresentationQrPlacementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationQrPlacementTests.swift; sourceTree = "<group>"; };
-		CE82C39943D0D7C5D82AE197 /* HardwareEventJson.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HardwareEventJson.swift; sourceTree = "<group>"; };
 		D1F52755DCDD5FBC9C7C9181 /* AvatarFallbackSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarFallbackSpec.swift; sourceTree = "<group>"; };
 		D3A48EA2C7DE011AEE833EA2 /* PresentationActionToneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationActionToneTests.swift; sourceTree = "<group>"; };
 		DC20FCD1651B95E823A06410 /* LocationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationServiceTests.swift; sourceTree = "<group>"; };
@@ -252,7 +248,6 @@
 				458ECA778929B29F48389729 /* AvatarFallbackSpecTests.swift */,
 				EAD14938360861D9B2172622 /* ContextCommandBarLayoutTests.swift */,
 				24B6A6426D8087D5940C77B9 /* FocusRingModifierTests.swift */,
-				03B14F6FC09C0E3B70E2A824 /* HardwareEventJsonTests.swift */,
 				5482743CA87B21CE18C8C3B9 /* NavigationIconMapTests.swift */,
 				D3A48EA2C7DE011AEE833EA2 /* PresentationActionToneTests.swift */,
 				5DAE62317CC1CF12A4513FFA /* PresentationChoiceNodeTests.swift */,
@@ -326,7 +321,6 @@
 				D1F52755DCDD5FBC9C7C9181 /* AvatarFallbackSpec.swift */,
 				24602CA31C0CE84313D9F229 /* ContextCommandBarView.swift */,
 				83EEDE9AC18C43B517008161 /* FocusRingModifier.swift */,
-				CE82C39943D0D7C5D82AE197 /* HardwareEventJson.swift */,
 				918D2994A02A3E0DB31A6A80 /* NavigationIconImage.swift */,
 				4BBE7769F241AC83AF919601 /* NavigationIconMap.swift */,
 				8A6BB9A87C49A6D79E266DFD /* PresentationCommand.swift */,
@@ -573,7 +567,6 @@
 				C06D9774C64A5008D9E80DCF /* ContextCommandBarLayoutTests.swift in Sources */,
 				566C2C33F23B683B8CB8226F /* DeviceCapabilitiesPusherTests.swift in Sources */,
 				E9023ACF578FB502397EE363 /* FocusRingModifierTests.swift in Sources */,
-				E46828FADC8D63F63BB68280 /* HardwareEventJsonTests.swift in Sources */,
 				78DEE11DBBB312E894650FBF /* LocalizationServiceSettingsTests.swift in Sources */,
 				9CA8DD6871E91F814D81FED6 /* LocalizationServiceTests.swift in Sources */,
 				42E8C0D44725B88DB18845CB /* LocationServiceTests.swift in Sources */,
@@ -641,7 +634,6 @@
 				4389AD09A1FCCD8661B98FE6 /* DeviceCapabilitiesPusher.swift in Sources */,
 				A20441612CDA08A586DADCC0 /* DirectSendService.swift in Sources */,
 				2696B283BD7E5497994A6E93 /* FocusRingModifier.swift in Sources */,
-				013B279390AE63715483CB89 /* HardwareEventJson.swift in Sources */,
 				8CD4D48FC7E49B0DA82AD497 /* KeychainService.swift in Sources */,
 				6E92A916EC67234553ED4D85 /* LocalizationService.swift in Sources */,
 				9C9A5E8876CAFA84118E8DBF /* LockScreenView.swift in Sources */,
