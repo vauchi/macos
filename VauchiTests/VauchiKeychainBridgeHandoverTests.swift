@@ -68,7 +68,11 @@ final class VauchiKeychainBridgeHandoverTests: XCTestCase {
     func testAnInstallFromBeforeOpensUnderItsOldKey() throws {
         let oldKey = Data((0 ..< 32).map { _ in UInt8.random(in: 0 ... 255) })
         do {
-            let before = try PlatformAppEngine(dataDir: tempDir.path, relayUrl: "https://relay.test", storageKeyBytes: oldKey)
+            let before = try PlatformAppEngine(
+                dataDir: tempDir.path,
+                relayUrl: "https://relay.test",
+                storageKeyBytes: oldKey
+            )
             try before.createIdentity(displayName: "Before")
         }
         store.items["storage_key"] = oldKey

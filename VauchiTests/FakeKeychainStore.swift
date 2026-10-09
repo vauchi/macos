@@ -12,18 +12,24 @@ final class FakeKeychainStore: KeychainStoring {
     var failure: Error?
 
     func save(key: String, data: Data) throws {
-        if let failure { throw failure }
+        if let failure {
+            throw failure
+        }
         items[key] = data
     }
 
     func load(key: String) throws -> Data {
-        if let failure { throw failure }
+        if let failure {
+            throw failure
+        }
         guard let data = items[key] else { throw KeychainServiceError.notFound }
         return data
     }
 
     func delete(key: String) throws {
-        if let failure { throw failure }
+        if let failure {
+            throw failure
+        }
         items[key] = nil
     }
 }
