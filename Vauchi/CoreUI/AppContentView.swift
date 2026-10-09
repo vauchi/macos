@@ -14,9 +14,7 @@ import SwiftUI
 
         var body: some View {
             Group {
-                if appState.isAuthenticationRequired {
-                    LockScreenView(onUnlock: { appState.authenticateAndRetry() })
-                } else if let error = appState.error {
+                if let error = appState.error {
                     ErrorView(message: error)
                 } else if let viewModel = appState.viewModel {
                     AppContentView(viewModel: viewModel)

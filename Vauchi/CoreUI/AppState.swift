@@ -19,7 +19,6 @@ import SwiftUI
     class AppState: ObservableObject {
         @Published var viewModel: AppViewModel?
         @Published var error: String?
-        @Published var isAuthenticationRequired = false
 
         private var repository: VauchiRepository?
 
@@ -115,7 +114,6 @@ import SwiftUI
                 let repo = try VauchiRepository()
                 repository = repo
                 viewModel = AppViewModel(appEngine: repo.appEngine)
-                isAuthenticationRequired = false
                 error = nil
                 runContentUpdateCycle(appEngine: repo.appEngine)
             } catch {
@@ -162,24 +160,6 @@ import SwiftUI
                     // Locale store is hot-reloaded by core — reload picks
                     // up any new social-network labels / locale strings.
                     self?.viewModel?.invalidateAll()
-                }
-            }
-        }
-
-        /// Authenticate with Touch ID / password and retry initialization.
-        func authenticateAndRetry() {
-            Task {
-                do {
-                    let success = try await BiometricService.shared.authenticate(
-                        reason: LocalizationService.shared.t("lock.auth_reason")
-                    )
-                    if success {
-                        initializeRepository()
-                    }
-                } catch BiometricError.cancelled {
-                    print("VauchiApp: authentication cancelled")
-                } catch {
-                    print("VauchiApp: authentication failed: \(error)")
                 }
             }
         }
