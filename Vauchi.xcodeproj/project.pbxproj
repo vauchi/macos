@@ -44,6 +44,7 @@
 		5DA017D592A1A9672DC64A91 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E17FD049E1582776B08D1899 /* Assets.xcassets */; };
 		5E3F03217A562741885A95B1 /* BiometricUnlockBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5EC393CDE3EB022DA19E3D3 /* BiometricUnlockBridgeTests.swift */; };
 		60D8E07B9EFB1F102D7518A0 /* ThemeServiceSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BF7BC594414EE931756CE54 /* ThemeServiceSettingsTests.swift */; };
+		62599578493FDDEC0B2996CA /* FakeKeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1710F96007D89158A39B53E /* FakeKeychainStore.swift */; };
 		6E92A916EC67234553ED4D85 /* LocalizationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C859B6215BADD6A45480D9F /* LocalizationService.swift */; };
 		6FBFE80D49835D23A8DF1034 /* CoreUIModels in Frameworks */ = {isa = PBXBuildFile; productRef = B2C60C8C920018E8C7CF99BE /* CoreUIModels */; };
 		718C70DB0A9E9F9255260685 /* PresentationImageFrameSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59A995353802932C1D87AFEA /* PresentationImageFrameSpec.swift */; };
@@ -83,6 +84,7 @@
 		C8C4DCDB890AEB912C9440F3 /* PresentationOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F9A4DAC6D203C61E58BF054 /* PresentationOverlayView.swift */; };
 		CAD15EBE61B35AB3B087C223 /* PresentationChoiceNodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DAE62317CC1CF12A4513FFA /* PresentationChoiceNodeTests.swift */; };
 		CC36096489B2AE8B5BFF1223 /* NavigationIconAccessibilityUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70EA94FA311BF6FFB21AFF4A /* NavigationIconAccessibilityUITests.swift */; };
+		CDD9B39CBE0D8354161D2E71 /* VauchiKeychainBridgeHandoverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DDC142AE1FF7267B32DD39 /* VauchiKeychainBridgeHandoverTests.swift */; };
 		D53ADA09532F5A59A7BF3D75 /* BiometricService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F9D4D1B77DDD1226B84C5C /* BiometricService.swift */; };
 		D65905F3E8A6B191F4611470 /* AudioProximityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49509AE0DF70B880F977B015 /* AudioProximityService.swift */; };
 		DA673F09635BBBF9871092A8 /* VauchiUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773C796EDEEFF9B928C04229 /* VauchiUITests.swift */; };
@@ -184,6 +186,7 @@
 		95FC0B5B9D3918ADE8F9FF31 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		9B834D827B063CB9F17CFA86 /* PresentationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationState.swift; sourceTree = "<group>"; };
 		9CC8C031EBA0849BA30A119F /* ScreenCatalogCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenCatalogCapture.swift; sourceTree = "<group>"; };
+		A1710F96007D89158A39B53E /* FakeKeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeKeychainStore.swift; sourceTree = "<group>"; };
 		A7C515EE1804FDB78832CA0D /* NotificationServiceDeepLinkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationServiceDeepLinkTests.swift; sourceTree = "<group>"; };
 		AAEF5BAE3E1BDBC31DED21D2 /* PresentationSmokeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationSmokeTests.swift; sourceTree = "<group>"; };
 		AE718E95F174F15A52F1FCEC /* PresentationContractTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationContractTests.swift; sourceTree = "<group>"; };
@@ -201,6 +204,7 @@
 		C8B35ECCC9FCA862F3D805EA /* PresentationQrPlacementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationQrPlacementTests.swift; sourceTree = "<group>"; };
 		D1F52755DCDD5FBC9C7C9181 /* AvatarFallbackSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarFallbackSpec.swift; sourceTree = "<group>"; };
 		D3A48EA2C7DE011AEE833EA2 /* PresentationActionToneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationActionToneTests.swift; sourceTree = "<group>"; };
+		D9DDC142AE1FF7267B32DD39 /* VauchiKeychainBridgeHandoverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VauchiKeychainBridgeHandoverTests.swift; sourceTree = "<group>"; };
 		DC20FCD1651B95E823A06410 /* LocationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationServiceTests.swift; sourceTree = "<group>"; };
 		DE2CCF76CCD81A822601D43D /* WakeupTimerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WakeupTimerTests.swift; sourceTree = "<group>"; };
 		DFFE40C221022DBDBD034AF3 /* PresentationStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationStateTests.swift; sourceTree = "<group>"; };
@@ -286,6 +290,7 @@
 				F5EC393CDE3EB022DA19E3D3 /* BiometricUnlockBridgeTests.swift */,
 				7C42CA0EEF4243C65EE1FDAF /* ContentUpdateCycleTests.swift */,
 				653B68CB3B3D86B13D52E63E /* DeviceCapabilitiesPusherTests.swift */,
+				A1710F96007D89158A39B53E /* FakeKeychainStore.swift */,
 				812EEE5AF140DB98855AF442 /* LocalizationServiceSettingsTests.swift */,
 				2FBC9B875F77F7D59BA26DC7 /* LocalizationServiceTests.swift */,
 				DC20FCD1651B95E823A06410 /* LocationServiceTests.swift */,
@@ -295,6 +300,7 @@
 				3B183C71862EEB94A1A20C7D /* PresentationFailureAlertTests.swift */,
 				AAEF5BAE3E1BDBC31DED21D2 /* PresentationSmokeTests.swift */,
 				4BF7BC594414EE931756CE54 /* ThemeServiceSettingsTests.swift */,
+				D9DDC142AE1FF7267B32DD39 /* VauchiKeychainBridgeHandoverTests.swift */,
 				BE32C32136CEB8811C89778C /* VauchiKeychainBridgeTests.swift */,
 				DE2CCF76CCD81A822601D43D /* WakeupTimerTests.swift */,
 				0551E4C6C31A1EF46B1DE22E /* CoreUI */,
@@ -566,6 +572,7 @@
 				9D3AA48B67B4BBCBFBA6A33C /* ContentUpdateCycleTests.swift in Sources */,
 				C06D9774C64A5008D9E80DCF /* ContextCommandBarLayoutTests.swift in Sources */,
 				566C2C33F23B683B8CB8226F /* DeviceCapabilitiesPusherTests.swift in Sources */,
+				62599578493FDDEC0B2996CA /* FakeKeychainStore.swift in Sources */,
 				E9023ACF578FB502397EE363 /* FocusRingModifierTests.swift in Sources */,
 				78DEE11DBBB312E894650FBF /* LocalizationServiceSettingsTests.swift in Sources */,
 				9CA8DD6871E91F814D81FED6 /* LocalizationServiceTests.swift in Sources */,
@@ -589,6 +596,7 @@
 				771A40C3FF4D73DACC5C67D0 /* SidebarModelTests.swift in Sources */,
 				4EE9B40358253BE51C825BF7 /* TextRoleStyleTests.swift in Sources */,
 				60D8E07B9EFB1F102D7518A0 /* ThemeServiceSettingsTests.swift in Sources */,
+				CDD9B39CBE0D8354161D2E71 /* VauchiKeychainBridgeHandoverTests.swift in Sources */,
 				ACB5D66C9DC53BB3DEC7044E /* VauchiKeychainBridgeTests.swift in Sources */,
 				99944BA751677899052C05DA /* WakeupTimerTests.swift in Sources */,
 			);
