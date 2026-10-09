@@ -118,9 +118,6 @@ import SwiftUI
                 isAuthenticationRequired = false
                 error = nil
                 runContentUpdateCycle(appEngine: repo.appEngine)
-            } catch VauchiRepositoryError.deviceLocked {
-                isAuthenticationRequired = true
-                print("VauchiApp: device locked, authentication required")
             } catch {
                 self.error = error.localizedDescription
                 print("VauchiApp: failed to initialize: \(error)")

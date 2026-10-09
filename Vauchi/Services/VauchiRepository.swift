@@ -10,18 +10,12 @@ import Foundation
     import VauchiPlatform
 
     enum VauchiRepositoryError: Error, LocalizedError {
-        case storageKeyGeneration(String)
         case initialization(String)
-        case deviceLocked
 
         var errorDescription: String? {
             switch self {
-            case let .storageKeyGeneration(reason):
-                "Failed to generate storage key: \(reason)"
             case let .initialization(reason):
                 "Failed to initialize Vauchi: \(reason)"
-            case .deviceLocked:
-                "Device is locked — unlock to access secure storage"
             }
         }
     }
@@ -29,7 +23,15 @@ import Foundation
     class VauchiRepository: ObservableObject {
         let appEngine: PlatformAppEngine
 
-        init(dataDir: String? = nil, relayUrl: String = "https://relay.vauchi.app") throws {
+        /// Core keeps every key that opens the database in `keychain`, so a
+        /// shred that deletes them destroys access (vauchi/private#580). A
+        /// locked keychain does not fail here: Core starts locked and shows
+        /// its own unlock screen.
+        init(
+            dataDir: String? = nil,
+            relayUrl: String = "https://relay.vauchi.app",
+            keychain: MobilePlatformKeychain = VauchiKeychainBridge()
+        ) throws {
             let dir = dataDir ?? VauchiRepository.defaultDataDir()
 
             try FileManager.default.createDirectory(
@@ -37,32 +39,16 @@ import Foundation
                 withIntermediateDirectories: true
             )
 
-            let storageKeyData: Data
             do {
-                storageKeyData = try VauchiRepository.getOrCreateStorageKey()
-            } catch let error as KeychainServiceError {
-                if case .deviceLocked = error {
-                    throw VauchiRepositoryError.deviceLocked
-                }
-                throw VauchiRepositoryError.storageKeyGeneration("\(error)")
-            }
-
-            do {
-                appEngine = try PlatformAppEngine(
+                appEngine = try PlatformAppEngine.openWithKeychain(
                     dataDir: dir,
                     relayUrl: relayUrl,
-                    storageKeyBytes: storageKeyData
+                    shellStorageKey: nil,
+                    keychain: keychain
                 )
             } catch {
                 throw VauchiRepositoryError.initialization("\(error)")
             }
-
-            // B7 Phase 2: wire the keychain to PlatformAppEngine so the
-            // core-driven shred DomainCommands (SoftShred / CancelShred /
-            // HardShred / PanicShred) can reach the platform keychain.
-            // Unlike iOS/Android, macOS has no widget/panic-shred path,
-            // so only the engine slot is wired.
-            appEngine.setPlatformKeychain(keychain: VauchiKeychainBridge())
 
             // S4 — wire `ThemeService` + `LocalizationService` to the live
             // engine so subsequent theme/locale changes propagate to core
@@ -82,32 +68,6 @@ import Foundation
             pushDeviceCapabilities(engine: appEngine)
         }
 
-        // MARK: - Storage Key Management
-
-        static func getOrCreateStorageKey() throws -> Data {
-            do {
-                return try KeychainService.shared.loadStorageKey()
-            } catch KeychainServiceError.notFound {
-                // Generate new 32-byte key
-                var bytes = [UInt8](repeating: 0, count: 32)
-                let status = SecRandomCopyBytes(kSecRandomDefault, 32, &bytes)
-                guard status == errSecSuccess else {
-                    // Zeroize before throwing
-                    _ = bytes.withUnsafeMutableBufferPointer { ptr in
-                        memset_s(ptr.baseAddress!, ptr.count, 0, ptr.count)
-                    }
-                    throw KeychainServiceError.unknown(status)
-                }
-                let data = Data(bytes)
-                // Zeroize the mutable byte array now that Data holds a copy
-                bytes.withUnsafeMutableBufferPointer { ptr in
-                    memset_s(ptr.baseAddress!, ptr.count, 0, ptr.count)
-                }
-                try KeychainService.shared.saveStorageKey(data)
-                return data
-            }
-        }
-
         // MARK: - Data Directory
 
         static func defaultDataDir() -> String {
@@ -122,11 +82,16 @@ import Foundation
         }
     }
 
-    /// Bridges core's `MobilePlatformKeychain` callback to the macOS
-    /// `KeychainService`, so the `PlatformAppEngine` shred `DomainCommand`s
-    /// (B7) can clear key material from the login keychain. `loadKey` maps the
-    /// not-found case to `nil` as the protocol expects.
+    /// Adapts the macOS `KeychainService` to Core's `MobilePlatformKeychain`:
+    /// Core keeps every key that opens the database here (ADR-033).
+    ///
+    /// Until Core stores its own bootstrap key, the bootstrap name is served
+    /// from the storage key this app kept itself before vauchi/private#580,
+    /// and deleting it deletes that key too.
     class VauchiKeychainBridge: MobilePlatformKeychain {
+        private static let bootstrapKeyName = "storage_bootstrap"
+        private static let legacyStorageKeyName = "storage_key"
+
         private let keychain: KeychainStoring
 
         init(keychain: KeychainStoring = KeychainService.shared) {
@@ -134,19 +99,51 @@ import Foundation
         }
 
         func saveKey(name: String, key: Data) throws {
-            try keychain.save(key: name, data: key)
+            do {
+                try keychain.save(key: name, data: key)
+            } catch {
+                throw Self.keychainFailure("saveKey(\(name))", error)
+            }
         }
 
         func loadKey(name: String) throws -> Data? {
             do {
                 return try keychain.load(key: name)
             } catch KeychainServiceError.notFound {
-                return nil
+                guard name == Self.bootstrapKeyName else { return nil }
+                return try loadLegacyStorageKey()
+            } catch {
+                throw Self.keychainFailure("loadKey(\(name))", error)
             }
         }
 
         func deleteKey(name: String) throws {
-            try keychain.delete(key: name)
+            do {
+                try keychain.delete(key: name)
+                if name == Self.bootstrapKeyName {
+                    try keychain.delete(key: Self.legacyStorageKeyName)
+                }
+            } catch {
+                throw Self.keychainFailure("deleteKey(\(name))", error)
+            }
+        }
+
+        private func loadLegacyStorageKey() throws -> Data? {
+            do {
+                return try keychain.load(key: Self.legacyStorageKeyName)
+            } catch KeychainServiceError.notFound {
+                return nil
+            } catch {
+                throw Self.keychainFailure("loadKey(\(Self.bootstrapKeyName))", error)
+            }
+        }
+
+        /// Names the failure for Core, which chooses the screen (ADR-045).
+        private static func keychainFailure(_ operation: String, _ error: Error) -> KeychainError {
+            if case KeychainServiceError.deviceLocked = error {
+                return .AuthenticationRequired
+            }
+            return .OperationFailed(msg: "\(operation): \(error)")
         }
     }
 #endif
