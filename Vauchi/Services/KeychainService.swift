@@ -7,7 +7,7 @@
 import Foundation
 import Security
 
-enum KeychainError: Error {
+enum KeychainServiceError: Error {
     case duplicateEntry
     case unknown(OSStatus)
     case notFound
@@ -15,7 +15,14 @@ enum KeychainError: Error {
     case deviceLocked
 }
 
-class KeychainService {
+/// Name-addressed secret storage; `KeychainService` in the app, a fake in tests.
+protocol KeychainStoring {
+    func save(key: String, data: Data) throws
+    func load(key: String) throws -> Data
+    func delete(key: String) throws
+}
+
+class KeychainService: KeychainStoring {
     static let shared = KeychainService()
 
     private let service = "app.vauchi.macos"
@@ -65,9 +72,9 @@ class KeychainService {
 
         guard status == errSecSuccess else {
             if status == errSecInteractionNotAllowed {
-                throw KeychainError.deviceLocked
+                throw KeychainServiceError.deviceLocked
             }
-            throw KeychainError.unknown(status)
+            throw KeychainServiceError.unknown(status)
         }
     }
 
@@ -85,16 +92,16 @@ class KeychainService {
 
         guard status == errSecSuccess else {
             if status == errSecItemNotFound {
-                throw KeychainError.notFound
+                throw KeychainServiceError.notFound
             }
             if status == errSecInteractionNotAllowed {
-                throw KeychainError.deviceLocked
+                throw KeychainServiceError.deviceLocked
             }
-            throw KeychainError.unknown(status)
+            throw KeychainServiceError.unknown(status)
         }
 
         guard let data = result as? Data else {
-            throw KeychainError.invalidData
+            throw KeychainServiceError.invalidData
         }
 
         return data
@@ -110,7 +117,7 @@ class KeychainService {
         let status = SecItemDelete(query as CFDictionary)
 
         guard status == errSecSuccess || status == errSecItemNotFound else {
-            throw KeychainError.unknown(status)
+            throw KeychainServiceError.unknown(status)
         }
     }
 

@@ -40,7 +40,7 @@ import Foundation
             let storageKeyData: Data
             do {
                 storageKeyData = try VauchiRepository.getOrCreateStorageKey()
-            } catch let error as KeychainError {
+            } catch let error as KeychainServiceError {
                 if case .deviceLocked = error {
                     throw VauchiRepositoryError.deviceLocked
                 }
@@ -87,7 +87,7 @@ import Foundation
         static func getOrCreateStorageKey() throws -> Data {
             do {
                 return try KeychainService.shared.loadStorageKey()
-            } catch KeychainError.notFound {
+            } catch KeychainServiceError.notFound {
                 // Generate new 32-byte key
                 var bytes = [UInt8](repeating: 0, count: 32)
                 let status = SecRandomCopyBytes(kSecRandomDefault, 32, &bytes)
@@ -96,7 +96,7 @@ import Foundation
                     _ = bytes.withUnsafeMutableBufferPointer { ptr in
                         memset_s(ptr.baseAddress!, ptr.count, 0, ptr.count)
                     }
-                    throw KeychainError.unknown(status)
+                    throw KeychainServiceError.unknown(status)
                 }
                 let data = Data(bytes)
                 // Zeroize the mutable byte array now that Data holds a copy
@@ -124,19 +124,14 @@ import Foundation
 
     /// Bridges core's `MobilePlatformKeychain` callback to the macOS
     /// `KeychainService`, so the `PlatformAppEngine` shred `DomainCommand`s
-    /// (B7) can clear key material from the login keychain.
-    ///
-    /// Unlike iOS, macOS cannot re-wrap failures into the binding's
-    /// `KeychainError` type: macOS declares a *local* `KeychainError` (in
-    /// `KeychainService`) that shadows the unqualified name, and the binding
-    /// type can't be module-qualified because the module name `VauchiPlatform`
-    /// collides with the engine class of the same name. We therefore let the
-    /// local `KeychainError` propagate — UniFFI's callback shim marshals any
-    /// non-matching error as a descriptive `CALL_UNEXPECTED_ERROR` string, so
-    /// core still sees a meaningful failure. `loadKey` maps the not-found case
-    /// to `nil` as the protocol expects.
+    /// (B7) can clear key material from the login keychain. `loadKey` maps the
+    /// not-found case to `nil` as the protocol expects.
     class VauchiKeychainBridge: MobilePlatformKeychain {
-        private let keychain = KeychainService.shared
+        private let keychain: KeychainStoring
+
+        init(keychain: KeychainStoring = KeychainService.shared) {
+            self.keychain = keychain
+        }
 
         func saveKey(name: String, key: Data) throws {
             try keychain.save(key: name, data: key)
@@ -145,7 +140,7 @@ import Foundation
         func loadKey(name: String) throws -> Data? {
             do {
                 return try keychain.load(key: name)
-            } catch KeychainError.notFound {
+            } catch KeychainServiceError.notFound {
                 return nil
             }
         }
