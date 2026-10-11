@@ -669,7 +669,6 @@ import UniformTypeIdentifiers
         static func fromWire(_ value: String) -> MobileNotificationCategory {
             switch value {
             case "emergency_alert", "EmergencyAlert": return .emergencyAlert
-            case "duress_alert", "DuressAlert": return .duressAlert
             case "contact_added", "ContactAdded": return .contactAdded
             case "card_update", "CardUpdate": return .cardUpdate
             default: return .contactAdded
