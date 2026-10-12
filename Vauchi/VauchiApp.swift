@@ -30,6 +30,12 @@ struct VauchiApp: App {
                 ContentView()
                     .environmentObject(appState)
                     .environmentObject(themeService)
+                    // A vauchi:// link goes to Core, which owns the
+                    // destination (vauchi/private#650). Without the
+                    // external-events preference SwiftUI opens a new window
+                    // for every link instead of reusing this one.
+                    .onOpenURL { url in appState.openDeepLink(url.absoluteString) }
+                    .handlesExternalEvents(preferring: ["*"], allowing: ["*"])
             #else
                 PlaceholderContentView()
             #endif
