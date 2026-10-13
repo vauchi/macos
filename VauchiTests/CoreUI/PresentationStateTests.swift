@@ -95,6 +95,37 @@ final class PresentationStateTests: XCTestCase {
         XCTAssertTrue(effects.isEmpty)
     }
 
+    /// Core sends ResetApplication after a wipe. Kept, the old profile still
+    /// named the wipe screen active and the wiped screens stayed in memory;
+    /// the iPhone stayed on Emergency Data Wipe (vauchi/private#293, #666).
+    func testResetApplicationDropsTheScreensAndProfileShownBeforeIt() throws {
+        var state = PresentationState()
+        _ = try state.apply(decodeCommands("""
+        {"commands":[
+          {"ReplaceSurface":{"surface":\(surfaceJSON(revision: 1))}},
+          {"SetPresentationProfile":{"profile":{
+            "window_class":"compact",
+            "pane_layout":"single",
+            "primary_surface":"main",
+            "detail_surface":null,
+            "active_surface":"main"
+          }}}
+        ]}
+        """))
+
+        let effects = try state.apply(decodeCommands("""
+        {"commands":["ResetApplication"]}
+        """))
+
+        XCTAssertEqual(state.surfaces.count, 0)
+        XCTAssertNil(state.profile)
+        XCTAssertNil(state.activeSurfaceID)
+        XCTAssertEqual(effects.count, 1)
+        guard case .resetApplication = effects.first else {
+            return XCTFail("ResetApplication must still reach the view model: \(effects)")
+        }
+    }
+
     func testReEmittedSameRevisionReAppliesInsteadOfFailing() throws {
         // Core's revision advances only on user actions, so racing full
         // rebuilds (wakeup re-load, invalidation dispatch) legitimately
