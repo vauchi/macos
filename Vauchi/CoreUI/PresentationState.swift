@@ -54,6 +54,11 @@ struct PresentationState {
                 }
             case let .setPresentationProfile(profile):
                 next.profile = profile
+            case .resetApplication:
+                // Core wiped its data: every screen and the profile came
+                // from the engine that is gone (vauchi/private#666).
+                next = PresentationState()
+                effects.append(command)
             default:
                 effects.append(command)
             }
