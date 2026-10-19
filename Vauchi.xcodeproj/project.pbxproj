@@ -16,6 +16,7 @@
 		138BEFDCC908871EDE97D333 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDB1CEDFBA5AE37F12D5BE39 /* NotificationService.swift */; };
 		13CA1DF2E5D9A7B112881653 /* NavigationIconMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BBE7769F241AC83AF919601 /* NavigationIconMap.swift */; };
 		14F136822861093402A2A51D /* RenderContextPusher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A594A2A3929ED3F36E46FBD /* RenderContextPusher.swift */; };
+		177C6EC7C2F72DF97B24C159 /* DuressUnlockUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 298A59B5B556896AEEC598CD /* DuressUnlockUITests.swift */; };
 		17ABD6784C9A89F651F8E6C7 /* PresentationImageFrameSpecTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90C2F7C347C991030CADC674 /* PresentationImageFrameSpecTests.swift */; };
 		18DFBC47BE88310909350859 /* VauchiHardware in Frameworks */ = {isa = PBXBuildFile; productRef = 0AB22D05ABC258D050086FBF /* VauchiHardware */; };
 		1BB5832181399F70969847FB /* NavigationIconMapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5482743CA87B21CE18C8C3B9 /* NavigationIconMapTests.swift */; };
@@ -144,6 +145,7 @@
 		234E756E782635B9AF9132F3 /* PlaceholderContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceholderContentView.swift; sourceTree = "<group>"; };
 		24602CA31C0CE84313D9F229 /* ContextCommandBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextCommandBarView.swift; sourceTree = "<group>"; };
 		24B6A6426D8087D5940C77B9 /* FocusRingModifierTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusRingModifierTests.swift; sourceTree = "<group>"; };
+		298A59B5B556896AEEC598CD /* DuressUnlockUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DuressUnlockUITests.swift; sourceTree = "<group>"; };
 		2A06CC40359E668FF6C58451 /* StateViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateViews.swift; sourceTree = "<group>"; };
 		2FBC9B875F77F7D59BA26DC7 /* LocalizationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationServiceTests.swift; sourceTree = "<group>"; };
 		331706A539BC8824C9067EF5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -386,6 +388,7 @@
 		C9DFA1127C049CB0C36BDF57 /* VauchiUITests */ = {
 			isa = PBXGroup;
 			children = (
+				298A59B5B556896AEEC598CD /* DuressUnlockUITests.swift */,
 				CBFCE162A35A9D193F872E2D /* ListRowAccessibilityUITests.swift */,
 				70EA94FA311BF6FFB21AFF4A /* NavigationIconAccessibilityUITests.swift */,
 				0C3F3532A6BDC5F1212AF860 /* ScreenshotWalkUITests.swift */,
@@ -636,6 +639,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				177C6EC7C2F72DF97B24C159 /* DuressUnlockUITests.swift in Sources */,
 				3A33E8452749562D9E9CC4EC /* ListRowAccessibilityUITests.swift in Sources */,
 				CC36096489B2AE8B5BFF1223 /* NavigationIconAccessibilityUITests.swift in Sources */,
 				A177B7FD2ED08BFFD03A0F56 /* ScreenshotWalkUITests+Helpers.swift in Sources */,
