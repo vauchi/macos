@@ -33,11 +33,12 @@ final class ListRowAccessibilityUITests: XCTestCase {
                       "--reset-for-testing should seed an identity and show the destinations")
         destinations.buttons.matching(NSPredicate(format: "label == %@", "Settings")).firstMatch.click()
 
+        // Advanced sits in the App section; with the defect it read "App".
         let rowTitle = app.descendants(matching: .any)
-            .matching(NSPredicate(format: "label == %@ OR value == %@", "Delivery Receipts", "Delivery Receipts"))
+            .matching(NSPredicate(format: "label == %@ OR value == %@", "Advanced", "Advanced"))
             .firstMatch
         XCTAssertTrue(rowTitle.waitForExistence(timeout: 10),
-                      "The Delivery Receipts row should be announced by its title. On screen: \(announced())")
+                      "The Advanced row should be announced by its title. On screen: \(announced())")
 
         let rowControls = app.checkBoxes.matching(identifier: "presentationRowControl").allElementsBoundByIndex
         XCTAssertFalse(rowControls.isEmpty, "Settings should show its row toggles")
