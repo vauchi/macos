@@ -53,7 +53,11 @@ struct ColumnAccessibility: NSViewRepresentable {
             guard !columnIdentifier.isEmpty, let column = nearestHostingAncestor() else { return }
             // The anchor a later run can find the element by in the tree.
             column.setAccessibilityIdentifier(columnIdentifier)
-            column.setAccessibilityLabel(columnLabel)
+            if columnLabel.isEmpty {
+                column.setAccessibilityElement(false)
+            } else {
+                column.setAccessibilityLabel(columnLabel)
+            }
         }
 
         /// The column's host is the first hosting view above the content;
