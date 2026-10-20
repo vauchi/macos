@@ -6,36 +6,24 @@ import Foundation
 
 /// Picks the platform effects out of a Core envelope, which mixes them with
 /// the presentation commands the reducer applies.
+///
+/// The reducer's own decoder decides, not a list kept beside it: a list
+/// missed SetNavigation and DismissOverlay, which then reached the hardware
+/// dispatcher as unknown commands and were answered as unavailable
+/// (vauchi/private#707), as RequestBiometricUnlock once was.
 enum NativeEffectSelection {
-    private static let presentationVariants: Set = [
-        "ReplaceSurface",
-        "SetContextBar",
-        "PresentOverlay",
-        "SetPresentationProfile",
-        "PresentAlert",
-        "ShowToast",
-        "OpenExternalUrl",
-        "ExportFile",
-        "PerformNativeBack",
-        "ResetApplication",
-        "RequestBiometricUnlock",
-        "PostNotification",
-    ]
-
     /// The envelope with only its platform effects, or nil when it has none.
     static func platformEffectsJSON(in envelopeJSON: Data) throws -> Data? {
         guard var root = try JSONSerialization.jsonObject(with: envelopeJSON)
             as? [String: Any],
             let commands = root["commands"] as? [Any]
         else { return nil }
-        let effects = commands.filter { command in
-            if let variant = command as? String {
-                return !presentationVariants.contains(variant)
-            }
-            guard let object = command as? [String: Any],
-                  let variant = object.keys.first
-            else { return false }
-            return !presentationVariants.contains(variant)
+        let decoded = try JSONDecoder()
+            .decode(PresentationCommandEnvelope.self, from: envelopeJSON)
+            .commands
+        let effects = zip(commands, decoded).compactMap { raw, command -> Any? in
+            guard case .platformEffect = command else { return nil }
+            return raw
         }
         guard !effects.isEmpty else { return nil }
         root["commands"] = effects
