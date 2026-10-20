@@ -11,15 +11,17 @@ import SwiftUI
 /// sidebar's list. A diagnostic run (macos pipeline 2967921702) named it:
 /// the list's second AppKit ancestor,
 /// `NSHostingView<ModifiedContent<ColumnView, NavigationPaneModifier<…>>>`,
-/// the host the split view makes for each column. With that one labelled
-/// (2967958787) the audit moved on to the detail column's, the full-window
-/// Group above the active surface. Like the window's content view
-/// (`WindowContentAccessibility`), these are SwiftUI's own containers,
-/// reachable only from AppKit.
+/// the host the split view makes for each column. Like the window's content
+/// view (`WindowContentAccessibility`), it is SwiftUI's own container,
+/// reachable only from AppKit; labelled (2967958787) the audit stops
+/// flagging it.
 ///
-/// Callers pass a label that already exists: `app.navigation` for the
-/// sidebar, and Core's own accessibility label of the active surface for
-/// the detail column.
+/// Not used for the detail column: its host spans the whole window, title
+/// bar included, and labelled it claims the full-screen button's child
+/// (Parent/Child mismatch, 2968004201); `setAccessibilityElement(false)`
+/// is ignored (2968128464). vauchi/private#722 tracks it.
+///
+/// Callers pass a label that already exists, `app.navigation` here.
 struct ColumnAccessibility: NSViewRepresentable {
     let label: String
     let identifier: String
@@ -53,11 +55,7 @@ struct ColumnAccessibility: NSViewRepresentable {
             guard !columnIdentifier.isEmpty, let column = nearestHostingAncestor() else { return }
             // The anchor a later run can find the element by in the tree.
             column.setAccessibilityIdentifier(columnIdentifier)
-            if columnLabel.isEmpty {
-                column.setAccessibilityElement(false)
-            } else {
-                column.setAccessibilityLabel(columnLabel)
-            }
+            column.setAccessibilityLabel(columnLabel)
         }
 
         /// The column's host is the first hosting view above the content;
