@@ -18,7 +18,10 @@ struct PresentationSidebarView: View {
             sidebarRow(for: row)
         }
         .listStyle(.sidebar)
-        .background(SidebarColumnAccessibility())
+        .background(ColumnAccessibility(
+            label: LocalizationService.shared.t("app.navigation"),
+            identifier: "appkit.sidebarcolumn"
+        ))
         // The same anchor the navigation overlay carries: with the sidebar
         // on screen the bar draws no launcher, so tests read destinations
         // from here (vauchi/private#479).
