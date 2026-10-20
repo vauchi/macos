@@ -20,6 +20,7 @@ final class DuressUnlockUITests: XCTestCase {
 
     private enum Label {
         static let settings = "Settings"
+        static let advanced = "Advanced"
         static let changePassword = "Change Password"
         static let duressPin = "Duress PIN"
         static let setUpPin = "Set Up PIN"
@@ -48,12 +49,15 @@ final class DuressUnlockUITests: XCTestCase {
         XCTAssertTrue(destinations.firstMatch.waitForExistence(timeout: 15),
                       "--reset-for-testing should seed an identity and show the destinations")
 
+        // Both rows sit in Advanced's Security group, not on Settings itself.
         openDestination(Label.settings)
+        click(Label.advanced)
         click(Label.changePassword)
         fillSecureFields(with: appPassword)
         click(Label.save)
 
         openDestination(Label.settings)
+        click(Label.advanced)
         click(Label.duressPin)
         click(Label.setUpPin)
         fillSecureFields(with: duressPin)
