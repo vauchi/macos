@@ -129,17 +129,38 @@ final class DuressUnlockUITests: XCTestCase {
             XCTFail("No password or PIN field. On screen: \(labelsOnScreen())", file: file, line: line)
             return
         }
-        app.activate()
         for field in fields.allElementsBoundByIndex {
-            field.click()
+            guard focus(field) else {
+                attachScreen(named: "no-focus-\(field.label)")
+                XCTFail("'\(field.label)' never took keyboard focus", file: file, line: line)
+                return
+            }
             field.typeText(text)
         }
     }
 
-    /// Core's rows may render as buttons, cells or bare text; a button wins
-    /// over text with the same label, scrolling down while none is hittable.
-    /// A Core row's title is its text's value; a control's is its label.
-    /// Scrolls the view that holds the match, not the sidebar's.
+    /// A click on the window's title bar makes it key without pressing
+    /// anything in its content.
+    private func focus(_ field: XCUIElement) -> Bool {
+        app.activate()
+        field.click()
+        if !hasKeyboardFocus(field) {
+            app.windows.firstMatch.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.02)).click()
+            field.click()
+        }
+        return hasKeyboardFocus(field)
+    }
+
+    private func hasKeyboardFocus(_ element: XCUIElement) -> Bool {
+        let focused = NSPredicate(format: "hasKeyboardFocus == true")
+        let expectation = XCTNSPredicateExpectation(predicate: focused, object: element)
+        return XCTWaiter().wait(for: [expectation], timeout: 2) == .completed
+    }
+
+    /// Core's rows render as buttons, cells or bare text, a button winning
+    /// over text with the same title. A row's title is its text's value, a
+    /// control's its label. Scrolls the view that holds the match, not the
+    /// sidebar's, while none is hittable.
     private func hittableElement(labeled label: String) -> XCUIElement? {
         let titled = NSPredicate(format: "label == %@ OR value == %@", label, label)
         let matches = app.descendants(matching: .any).matching(titled)
