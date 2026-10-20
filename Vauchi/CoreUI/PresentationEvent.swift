@@ -244,6 +244,8 @@ enum PresentationEvent: Encodable {
     }
 }
 
+/// Core's `InputValue` is snake_case, unlike the event names around it
+/// (vauchi/private#719).
 private extension PresentationInputValue {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: PresentationEvent.DynamicKey.self)
@@ -251,22 +253,22 @@ private extension PresentationInputValue {
         case let .text(value):
             try container.encode(
                 value,
-                forKey: .init(stringValue: "Text")!
+                forKey: .init(stringValue: "text")!
             )
         case let .boolean(value):
             try container.encode(
                 value,
-                forKey: .init(stringValue: "Boolean")!
+                forKey: .init(stringValue: "boolean")!
             )
         case let .choice(value):
             try container.encode(
                 value,
-                forKey: .init(stringValue: "Choice")!
+                forKey: .init(stringValue: "choice")!
             )
         case let .number(value):
             try container.encode(
                 value,
-                forKey: .init(stringValue: "Number")!
+                forKey: .init(stringValue: "number")!
             )
         }
     }
