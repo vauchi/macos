@@ -90,9 +90,30 @@ final class EmergencyWipeUITests: XCTestCase {
             XCTFail("No text field for '\(label)'. On screen: \(labelsOnScreen())", file: file, line: line)
             return
         }
-        app.activate()
-        target.click()
+        guard focus(target) else {
+            attachScreen(named: "no-focus-\(label)")
+            XCTFail("'\(label)' never took keyboard focus", file: file, line: line)
+            return
+        }
         target.typeText(text)
+    }
+
+    /// A click on the window's title bar makes it key without pressing
+    /// anything in its content, which on this screen holds the wipe button.
+    private func focus(_ field: XCUIElement) -> Bool {
+        app.activate()
+        field.click()
+        if !hasKeyboardFocus(field) {
+            app.windows.firstMatch.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.02)).click()
+            field.click()
+        }
+        return hasKeyboardFocus(field)
+    }
+
+    private func hasKeyboardFocus(_ element: XCUIElement) -> Bool {
+        let focused = NSPredicate(format: "hasKeyboardFocus == true")
+        let expectation = XCTNSPredicateExpectation(predicate: focused, object: element)
+        return XCTWaiter().wait(for: [expectation], timeout: 2) == .completed
     }
 
     /// Core's rows may render as buttons, cells or bare text; the first
