@@ -53,8 +53,12 @@ final class EmergencyWipeUITests: XCTestCase {
         let landed = welcome.firstMatch.waitForExistence(timeout: 20)
         attachScreen(named: "after-wipe")
         XCTAssertTrue(landed, "After the wipe the app should show Welcome. On screen: \(labelsOnScreen())")
-        XCTAssertFalse(destinations.firstMatch.exists,
-                       "Welcome has no destinations; seeing them means the pre-wipe layout survived")
+        // Onboarding has its own one-entry navigation ("Welcome"); what must
+        // not survive is the seeded identity's.
+        let survivors = ["Contacts", "My Card", "Exchange", "Devices", Label.settings].filter { label in
+            destinations.buttons.matching(NSPredicate(format: "label == %@", label)).firstMatch.exists
+        }
+        XCTAssertEqual(survivors, [], "The pre-wipe destinations survived the wipe. On screen: \(labelsOnScreen())")
     }
 
     // MARK: - Driving
