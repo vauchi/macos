@@ -163,37 +163,8 @@ import UniformTypeIdentifiers
         }
 
         private func dispatchNativeEffects(from data: Data) throws {
-            guard var root = try JSONSerialization.jsonObject(with: data)
-                as? [String: Any],
-                let commands = root["commands"] as? [Any]
+            guard let filtered = try NativeEffectSelection.platformEffectsJSON(in: data)
             else { return }
-            let presentationVariants: Set = [
-                "ReplaceSurface",
-                "SetContextBar",
-                "PresentOverlay",
-                "SetPresentationProfile",
-                "PresentAlert",
-                "ShowToast",
-                "OpenExternalUrl",
-                "ExportFile",
-                "PerformNativeBack",
-                "ResetApplication",
-                "RequestBiometricUnlock",
-                "PostNotification",
-            ]
-            root["commands"] = commands.filter { command in
-                if let variant = command as? String {
-                    return !presentationVariants.contains(variant)
-                }
-                guard let object = command as? [String: Any],
-                      let variant = object.keys.first
-                else { return false }
-                return !presentationVariants.contains(variant)
-            }
-            guard let hardwareCommands = root["commands"] as? [Any],
-                  !hardwareCommands.isEmpty
-            else { return }
-            let filtered = try JSONSerialization.data(withJSONObject: root)
             let envelope = try coreJSONDecoder.decode(
                 NativeEffectEnvelope.self,
                 from: filtered
