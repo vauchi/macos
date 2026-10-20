@@ -35,7 +35,7 @@ final class DuressUnlockUITests: XCTestCase {
     override func setUpWithError() throws {
         continueAfterFailure = false
         app = XCUIApplication()
-        app.launchArguments = ["--reset-for-testing"]
+        app.launchArguments = UITestLaunch.arguments("--reset-for-testing")
         app.launch()
         app.activate()
     }
@@ -64,7 +64,7 @@ final class DuressUnlockUITests: XCTestCase {
 
         // No testing flag: both flags wipe the store, password included.
         app.terminate()
-        app.launchArguments = []
+        app.launchArguments = UITestLaunch.arguments()
         app.launch()
         app.activate()
 
