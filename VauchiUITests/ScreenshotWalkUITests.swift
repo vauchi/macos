@@ -56,7 +56,7 @@ final class ScreenshotWalkUITests: XCTestCase {
     /// tests alphabetically and `-only-testing` ignores a custom
     /// `defaultTestSuite`, so the numbers carry the order.
     func test1OnboardingFlow() throws {
-        app.launchArguments = ["--wipe-data-for-testing"]
+        app.launchArguments = UITestLaunch.arguments("--wipe-data-for-testing")
         app.launch()
         app.activate()
 
@@ -93,7 +93,7 @@ final class ScreenshotWalkUITests: XCTestCase {
     /// Screenshots home, the navigation overlay, every destination it lists,
     /// and the secondary-actions overlay.
     func test2Destinations() {
-        app.launchArguments = ["--reset-for-testing"]
+        app.launchArguments = UITestLaunch.arguments("--reset-for-testing")
         app.launch()
         app.activate()
 

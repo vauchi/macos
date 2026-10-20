@@ -91,6 +91,7 @@
 		D070C25EEBB4ADED47C94A89 /* NativeEffectSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B6B5AD77B8F57FD8F6CF75C /* NativeEffectSelection.swift */; };
 		D53ADA09532F5A59A7BF3D75 /* BiometricService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F9D4D1B77DDD1226B84C5C /* BiometricService.swift */; };
 		D65905F3E8A6B191F4611470 /* AudioProximityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49509AE0DF70B880F977B015 /* AudioProximityService.swift */; };
+		D6CC7232BB791C94AACA3CCA /* UITestLaunch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 987937A7D2D776722B2CA106 /* UITestLaunch.swift */; };
 		DA673F09635BBBF9871092A8 /* VauchiUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773C796EDEEFF9B928C04229 /* VauchiUITests.swift */; };
 		DCB3E583D86FF3A15C6BE915 /* PlatformAppEngine+DomainDispatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8809B70A6BEDF6B35461415B /* PlatformAppEngine+DomainDispatch.swift */; };
 		E029B74DC69464F3AB4DE7CB /* ScreenCatalogCaptureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8D652552F012CDE52615304 /* ScreenCatalogCaptureTests.swift */; };
@@ -189,6 +190,7 @@
 		92F9D4D1B77DDD1226B84C5C /* BiometricService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricService.swift; sourceTree = "<group>"; };
 		95373D9E6440FED4B532EBDD /* VauchiRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VauchiRepository.swift; sourceTree = "<group>"; };
 		95FC0B5B9D3918ADE8F9FF31 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		987937A7D2D776722B2CA106 /* UITestLaunch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITestLaunch.swift; sourceTree = "<group>"; };
 		9B834D827B063CB9F17CFA86 /* PresentationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationState.swift; sourceTree = "<group>"; };
 		9CC8C031EBA0849BA30A119F /* ScreenCatalogCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenCatalogCapture.swift; sourceTree = "<group>"; };
 		9EA2277D925095A67547D8E9 /* ScreenCatalogEntryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenCatalogEntryTests.swift; sourceTree = "<group>"; };
@@ -382,6 +384,7 @@
 				70EA94FA311BF6FFB21AFF4A /* NavigationIconAccessibilityUITests.swift */,
 				0C3F3532A6BDC5F1212AF860 /* ScreenshotWalkUITests.swift */,
 				67B69481786D9E06CC1F32D9 /* ScreenshotWalkUITests+Helpers.swift */,
+				987937A7D2D776722B2CA106 /* UITestLaunch.swift */,
 				773C796EDEEFF9B928C04229 /* VauchiUITests.swift */,
 			);
 			path = VauchiUITests;
@@ -629,6 +632,7 @@
 				CC36096489B2AE8B5BFF1223 /* NavigationIconAccessibilityUITests.swift in Sources */,
 				A177B7FD2ED08BFFD03A0F56 /* ScreenshotWalkUITests+Helpers.swift in Sources */,
 				A11583580003772B4514642B /* ScreenshotWalkUITests.swift in Sources */,
+				D6CC7232BB791C94AACA3CCA /* UITestLaunch.swift in Sources */,
 				DA673F09635BBBF9871092A8 /* VauchiUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

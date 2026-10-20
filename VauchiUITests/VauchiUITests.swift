@@ -13,6 +13,7 @@ final class VauchiUITests: XCTestCase {
 
     override func setUpWithError() throws {
         continueAfterFailure = false
+        app.launchArguments = UITestLaunch.arguments()
         app.launch()
     }
 

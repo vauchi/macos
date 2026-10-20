@@ -21,7 +21,7 @@ final class NavigationIconAccessibilityUITests: XCTestCase {
     override func setUpWithError() throws {
         continueAfterFailure = false
         app = XCUIApplication()
-        app.launchArguments = ["--reset-for-testing"]
+        app.launchArguments = UITestLaunch.arguments("--reset-for-testing")
         app.launch()
     }
 
