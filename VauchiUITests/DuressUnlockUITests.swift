@@ -138,9 +138,13 @@ final class DuressUnlockUITests: XCTestCase {
 
     /// Core's rows may render as buttons, cells or bare text; a button wins
     /// over text with the same label, scrolling down while none is hittable.
+    /// A Core row's title is its text's value; a control's is its label.
+    /// Scrolls the view that holds the match, not the sidebar's.
     private func hittableElement(labeled label: String) -> XCUIElement? {
-        let matches = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", label))
+        let titled = NSPredicate(format: "label == %@ OR value == %@", label, label)
+        let matches = app.descendants(matching: .any).matching(titled)
         guard matches.firstMatch.waitForExistence(timeout: 10) else { return nil }
+        let scrollView = app.scrollViews.containing(titled).firstMatch
         for _ in 0 ..< 6 {
             let buttons = matches.matching(NSPredicate(format: "elementType == %d",
                                                        XCUIElement.ElementType.button.rawValue))
@@ -149,14 +153,14 @@ final class DuressUnlockUITests: XCTestCase {
             {
                 return hit
             }
-            app.scrollViews.firstMatch.scroll(byDeltaX: 0, deltaY: -300)
+            scrollView.scroll(byDeltaX: 0, deltaY: -300)
         }
         return nil
     }
 
     private func labelsOnScreen() -> [String] {
         app.descendants(matching: .any).allElementsBoundByIndex
-            .map(\.label)
+            .map { $0.label.isEmpty ? ($0.value as? String ?? "") : $0.label }
             .filter { !$0.isEmpty }
     }
 
