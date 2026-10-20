@@ -51,6 +51,9 @@ final class VauchiUITests: XCTestCase {
         // deliberate regression guard (claude-errors-2026-03, E29) and
         // CC-21 applies before weakening any check.
         if #available(macOS 14.0, *) {
+            // Diagnostic (vauchi/private#722): collect every issue instead of
+            // failing on the first, to learn whether the audit stops early.
+            var issues: [String] = []
             try app.performAccessibilityAudit { issue in
                 print("""
                 A11Y-AUDIT-ISSUE
@@ -59,8 +62,10 @@ final class VauchiUITests: XCTestCase {
                   detailed: \(issue.detailedDescription)
                   element:  \(String(describing: issue.element))
                 """)
-                return false
+                issues.append(issue.compactDescription)
+                return true
             }
+            XCTAssertEqual(issues, [], "accessibility audit issues")
         }
     }
 }
