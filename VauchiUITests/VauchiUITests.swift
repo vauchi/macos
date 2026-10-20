@@ -35,24 +35,22 @@ final class VauchiUITests: XCTestCase {
     func testAccessibilityAudit() throws {
         // macOS 14+ XCUITest accessibility audit.
         //
-        // The handler NEVER suppresses: it returns false for every issue, so
-        // the audit fails on all of them exactly as the bare
-        // `performAccessibilityAudit()` did. It only prints.
+        // The handler collects every issue and the test fails once on the
+        // list, instead of failing on the first: the audit stops at its
+        // first failed issue, which hid one finding behind another for
+        // several CI runs (vauchi/private#722, pipeline 2968737205).
         //
-        // That printing is the point. Left bare, this test reports
-        // "Element has no description" and nothing else: the .xcresult
-        // carries a screenshot of the element cropped to its own frame and
-        // no identity for it, which cost two CI round trips to turn into a
-        // name the first time it fired (2026-09-11, the window's
-        // GeometryReader wrapper). Printing the element means the next
-        // failure names itself.
+        // Each issue is printed because the .xcresult carries only a
+        // screenshot cropped to the element and no identity for it, which
+        // cost two CI round trips to turn into a name the first time it
+        // fired (2026-09-11, the window's GeometryReader wrapper).
         //
-        // Do not turn this into a filter. The no-exclusions audit is a
-        // deliberate regression guard (claude-errors-2026-03, E29) and
-        // CC-21 applies before weakening any check.
+        // `isAppKitChrome` exempts exactly two elements the app does not
+        // draw and cannot describe; every other issue still fails. Do not
+        // widen it: the audit is a deliberate regression guard
+        // (claude-errors-2026-03, E29) and CC-21 applies before weakening
+        // any check.
         if #available(macOS 14.0, *) {
-            // Diagnostic (vauchi/private#722): collect every issue instead of
-            // failing on the first, to learn whether the audit stops early.
             var issues: [String] = []
             try app.performAccessibilityAudit { issue in
                 print("""
@@ -62,10 +60,30 @@ final class VauchiUITests: XCTestCase {
                   detailed: \(issue.detailedDescription)
                   element:  \(String(describing: issue.element))
                 """)
-                issues.append(issue.compactDescription)
+                if !self.isAppKitChrome(issue) {
+                    issues.append("\(issue.compactDescription): \(String(describing: issue.element))")
+                }
                 return true
             }
             XCTAssertEqual(issues, [], "accessibility audit issues")
+        }
+    }
+
+    /// AppKit's own window chrome, flagged on the macOS CI host in pipeline
+    /// 2968737205 (vauchi/private#722): the Group inside the title bar's
+    /// full-screen button (Parent/Child mismatch) and a TouchBar element on
+    /// a Mac without a Touch Bar (no description).
+    @available(macOS 14.0, *)
+    private func isAppKitChrome(_ issue: XCUIAccessibilityAuditIssue) -> Bool {
+        guard let element = issue.element else { return false }
+        switch issue.auditType {
+        case .parentChild:
+            let fullScreenButton = app.windows.firstMatch.buttons["_XCUI:FullScreenWindow"]
+            return fullScreenButton.exists && fullScreenButton.frame.contains(element.frame)
+        case .sufficientElementDescription:
+            return element.elementType == .touchBar
+        default:
+            return false
         }
     }
 }
