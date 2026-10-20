@@ -25,6 +25,7 @@ import SwiftUI
 struct ColumnAccessibility: NSViewRepresentable {
     let label: String
     let identifier: String
+    var framesToContent = false
 
     func makeNSView(context _: Context) -> NSView {
         ColumnAccessibilityView()
@@ -32,17 +33,24 @@ struct ColumnAccessibility: NSViewRepresentable {
 
     func updateNSView(_ view: NSView, context _: Context) {
         guard let view = view as? ColumnAccessibilityView else { return }
-        view.apply(label: label, identifier: identifier)
+        view.apply(label: label, identifier: identifier, framesToContent: framesToContent)
     }
 
     /// Zero-sized and never drawn; it exists to reach its ancestors.
     final class ColumnAccessibilityView: NSView {
         private var columnLabel = ""
         private var columnIdentifier = ""
+        private var framesToContent = false
 
-        func apply(label: String, identifier: String) {
+        func apply(label: String, identifier: String, framesToContent: Bool) {
             columnLabel = label
             columnIdentifier = identifier
+            self.framesToContent = framesToContent
+            labelColumn()
+        }
+
+        override func layout() {
+            super.layout()
             labelColumn()
         }
 
@@ -56,6 +64,13 @@ struct ColumnAccessibility: NSViewRepresentable {
             // The anchor a later run can find the element by in the tree.
             column.setAccessibilityIdentifier(columnIdentifier)
             column.setAccessibilityLabel(columnLabel)
+            if framesToContent, let window {
+                // Diagnostic (vauchi/private#722): the host spans the whole
+                // window, title bar included; narrowed to the content this
+                // view sits behind, it should no longer cover the
+                // full-screen button.
+                column.setAccessibilityFrame(window.convertToScreen(convert(bounds, to: nil)))
+            }
         }
 
         /// The column's host is the first hosting view above the content;
