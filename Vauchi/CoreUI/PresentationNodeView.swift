@@ -56,6 +56,7 @@ struct PresentationNodeView: View {
                     }
                 }
             }
+            .accessibilityElement(children: .contain)
             .accessibilityLabel(value.accessibility.label)
         case let .list(value):
             VStack(alignment: .leading, spacing: 8) {
@@ -72,6 +73,9 @@ struct PresentationNodeView: View {
                     )
                 }
             }
+            // A label on a plain container is copied onto every child, so
+            // each row read as the list's title (vauchi/private#715).
+            .accessibilityElement(children: .contain)
             .accessibilityLabel(value.accessibility.label)
         case let .image(value):
             image(value)
