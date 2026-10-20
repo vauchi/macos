@@ -16,12 +16,13 @@ import SwiftUI
 /// reachable only from AppKit; labelled (2967958787) the audit stops
 /// flagging it.
 ///
-/// Not used for the detail column: its host spans the whole window, title
-/// bar included, and labelled it claims the full-screen button's child
-/// (Parent/Child mismatch, 2968004201); `setAccessibilityElement(false)`
-/// is ignored (2968128464). vauchi/private#722 tracks it.
+/// The detail column's host is flagged the same way and labelled the same
+/// way (vauchi/private#722, 2968737205). The Parent/Child mismatch that
+/// appeared once it was labelled belongs to AppKit's full-screen button and
+/// was there all along, hidden because the audit stops at its first issue.
 ///
-/// Callers pass a label that already exists, `app.navigation` here.
+/// Callers pass a label that already exists: `app.navigation` for the
+/// sidebar, `app.name` for the detail column, which has no key of its own.
 struct ColumnAccessibility: NSViewRepresentable {
     let label: String
     let identifier: String

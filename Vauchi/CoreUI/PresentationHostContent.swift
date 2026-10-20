@@ -61,6 +61,10 @@ struct PresentationHostContent: View {
                 .navigationSplitViewColumnWidth(min: 180, ideal: 220, max: 280)
             } detail: {
                 content
+                    .background(ColumnAccessibility(
+                        label: LocalizationService.shared.t("app.name"),
+                        identifier: "appkit.detailcolumn"
+                    ))
             }
         }
     }
