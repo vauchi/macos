@@ -99,6 +99,7 @@ struct PresentationNodeView: View {
                     step: value.step ?? 0.001
                 )
             }
+            .accessibilityElement(children: .contain)
             .accessibilityLabel(value.accessibility.label)
         case let .progress(value):
             VStack(alignment: .leading) {
@@ -111,6 +112,7 @@ struct PresentationNodeView: View {
                     ProgressView()
                 }
             }
+            .accessibilityElement(children: .contain)
             .accessibilityLabel(value.accessibility.label)
         case .divider:
             Divider()
@@ -164,6 +166,7 @@ struct PresentationNodeView: View {
             hadFocus = current == value.bindingID
         }
         .disabled(!value.enabled)
+        .accessibilityElement(children: .contain)
         .accessibilityLabel(value.accessibility.label)
     }
 
@@ -275,6 +278,7 @@ struct PresentationNodeView: View {
         .padding(8)
         .background(toneColor(value.tone).opacity(0.12))
         .clipShape(RoundedRectangle(cornerRadius: 8))
+        .accessibilityElement(children: .contain)
         .accessibilityLabel(value.accessibility.label)
     }
 
@@ -328,6 +332,7 @@ struct PresentationNodeView: View {
         .padding(8)
         .background(ThemeService.shared.warning.opacity(0.12))
         .clipShape(RoundedRectangle(cornerRadius: 8))
+        .accessibilityElement(children: .contain)
         .accessibilityLabel(value.accessibility.label)
     }
 
@@ -564,6 +569,9 @@ private struct PresentationRowView: View {
             equals: row.id,
             color: ThemeService.shared.focusRing
         )
+        // Without .contain the row's label replaced its info button's and
+        // controls' own labels (vauchi/private#720), as #715 found for lists.
+        .accessibilityElement(children: .contain)
         .accessibilityLabel(row.accessibility.label)
     }
 
