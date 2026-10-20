@@ -48,7 +48,8 @@ final class EmergencyWipeUITests: XCTestCase {
         type("WIPE", into: Label.typeWipe)
         click(Label.shredEverything)
 
-        let welcome = app.staticTexts.matching(NSPredicate(format: "label == %@", Label.welcomeSubtitle))
+        let welcome = app.staticTexts.matching(NSPredicate(format: "label == %@ OR value == %@",
+                                                           Label.welcomeSubtitle, Label.welcomeSubtitle))
         let landed = welcome.firstMatch.waitForExistence(timeout: 20)
         attachScreen(named: "after-wipe")
         XCTAssertTrue(landed, "After the wipe the app should show Welcome. On screen: \(labelsOnScreen())")
