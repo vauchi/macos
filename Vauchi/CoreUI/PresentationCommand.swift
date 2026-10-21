@@ -139,6 +139,10 @@ private struct PresentationURLCommandPayload: Decodable {
     let url: String
 }
 
+private struct PresentationPromptCommandPayload: Decodable {
+    let prompt: String
+}
+
 private struct PresentationFileCommandPayload: Decodable {
     let file: PresentationExportFile
 }
@@ -163,6 +167,11 @@ enum PresentationCommand: Decodable {
     /// The lock screen's Touch ID button (Core 0.67.1). Answered with a
     /// `BiometricUnlockSucceeded` event once LocalAuthentication agrees.
     case requestBiometricUnlock
+    /// Seal a fresh secret behind the OS user-presence check, then run the
+    /// check with `prompt` as its reason (vauchi/private#712).
+    case createUserPresenceSecret(prompt: String)
+    /// Run the OS user-presence check with `prompt` and unseal that secret.
+    case revealUserPresenceSecret(prompt: String)
     case postNotification(JSONValue)
     case platformEffect(variant: String, payload: JSONValue?)
 
@@ -260,6 +269,14 @@ enum PresentationCommand: Decodable {
         case "ExportFile":
             return try .exportFile(
                 container.decode(PresentationFileCommandPayload.self, forKey: key).file
+            )
+        case "CreateUserPresenceSecret":
+            return try .createUserPresenceSecret(
+                prompt: container.decode(PresentationPromptCommandPayload.self, forKey: key).prompt
+            )
+        case "RevealUserPresenceSecret":
+            return try .revealUserPresenceSecret(
+                prompt: container.decode(PresentationPromptCommandPayload.self, forKey: key).prompt
             )
         case "PostNotification":
             return try .postNotification(

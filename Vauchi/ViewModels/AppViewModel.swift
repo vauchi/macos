@@ -136,6 +136,8 @@ import UniformTypeIdentifiers
                 loadInitialPresentation()
             case .requestBiometricUnlock:
                 requestBiometricUnlock()
+            case .createUserPresenceSecret, .revealUserPresenceSecret:
+                answerUserPresence(command)
             case .postNotification, .platformEffect:
                 break
             default:
@@ -587,6 +589,29 @@ import UniformTypeIdentifiers
                     try applyPresentationEnvelope(resultJson)
                 } catch {
                     print("AppViewModel: biometric unlock failed: \(error)")
+                }
+            }
+        }
+
+        /// The keychain read blocks while the OS prompt is up, so both it and
+        /// the dispatch run off the main actor (vauchi/private#712).
+        private func answerUserPresence(_ command: PresentationCommand) {
+            let engine = appEngine
+            Task { [weak self] in
+                let eventJSON = await Task.detached(priority: .userInitiated) {
+                    UserPresenceSecretBridge.answer(
+                        to: command,
+                        keychain: SystemUserPresenceKeychain()
+                    )?.eventJSON
+                }.value
+                guard let self, let eventJSON else { return }
+                do {
+                    let resultJson = try await Task.detached(priority: .userInitiated) {
+                        try engine.dispatchJson(eventJson: eventJSON)
+                    }.value
+                    try applyPresentationEnvelope(resultJson)
+                } catch {
+                    print("AppViewModel: user presence answer failed: \(type(of: error))")
                 }
             }
         }

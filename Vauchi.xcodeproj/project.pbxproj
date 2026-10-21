@@ -95,6 +95,7 @@
 		CAD15EBE61B35AB3B087C223 /* PresentationChoiceNodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DAE62317CC1CF12A4513FFA /* PresentationChoiceNodeTests.swift */; };
 		CC36096489B2AE8B5BFF1223 /* NavigationIconAccessibilityUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70EA94FA311BF6FFB21AFF4A /* NavigationIconAccessibilityUITests.swift */; };
 		CDD9B39CBE0D8354161D2E71 /* VauchiKeychainBridgeHandoverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DDC142AE1FF7267B32DD39 /* VauchiKeychainBridgeHandoverTests.swift */; };
+		CF0A4436E8B24423459F9242 /* UserPresenceKeychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48863E2512C96F56E1A3A1C /* UserPresenceKeychain.swift */; };
 		D070C25EEBB4ADED47C94A89 /* NativeEffectSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B6B5AD77B8F57FD8F6CF75C /* NativeEffectSelection.swift */; };
 		D53ADA09532F5A59A7BF3D75 /* BiometricService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F9D4D1B77DDD1226B84C5C /* BiometricService.swift */; };
 		D65905F3E8A6B191F4611470 /* AudioProximityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49509AE0DF70B880F977B015 /* AudioProximityService.swift */; };
@@ -112,6 +113,7 @@
 		F0742AE94EDCCD8A0426AF55 /* BiometricUnlockBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = B65D738EAA0170E3B6BA5456 /* BiometricUnlockBridge.swift */; };
 		F8818B9E78A3E1A875E04227 /* PresentationCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A6BB9A87C49A6D79E266DFD /* PresentationCommand.swift */; };
 		FA8DCD283862F3522FB0CD0D /* PresentationSidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F3367A62294CD9B325736F /* PresentationSidebarView.swift */; };
+		FBEC5B957FA1C3E0B319D45D /* UserPresenceSecretBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ED7930E1937E9D55A0BBAE2 /* UserPresenceSecretBridge.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -159,6 +161,7 @@
 		3741052F03E3274B5C209EF6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		37CF81D097BBE672CB4C58D4 /* NotificationServiceContentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationServiceContentTests.swift; sourceTree = "<group>"; };
 		3B183C71862EEB94A1A20C7D /* PresentationFailureAlertTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationFailureAlertTests.swift; sourceTree = "<group>"; };
+		3ED7930E1937E9D55A0BBAE2 /* UserPresenceSecretBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPresenceSecretBridge.swift; sourceTree = "<group>"; };
 		40B52514F7B6CC866BDD778D /* ScreenCaptureProtection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenCaptureProtection.swift; sourceTree = "<group>"; };
 		418F950D6541F912A27DA57D /* BleExchangeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BleExchangeService.swift; sourceTree = "<group>"; };
 		458ECA778929B29F48389729 /* AvatarFallbackSpecTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarFallbackSpecTests.swift; sourceTree = "<group>"; };
@@ -235,6 +238,7 @@
 		DFFE40C221022DBDBD034AF3 /* PresentationStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationStateTests.swift; sourceTree = "<group>"; };
 		E17FD049E1582776B08D1899 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E3FE6A79522017C971205541 /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Fonts; path = Vauchi/Resources/Fonts; sourceTree = SOURCE_ROOT; };
+		E48863E2512C96F56E1A3A1C /* UserPresenceKeychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPresenceKeychain.swift; sourceTree = "<group>"; };
 		E620C9FB664D030A42C3E8FE /* ColumnAccessibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColumnAccessibility.swift; sourceTree = "<group>"; };
 		E7944347EE6E209E80A5CF30 /* PresentationNodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationNodeView.swift; sourceTree = "<group>"; };
 		E8D652552F012CDE52615304 /* ScreenCatalogCaptureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenCatalogCaptureTests.swift; sourceTree = "<group>"; };
@@ -466,6 +470,8 @@
 				0A594A2A3929ED3F36E46FBD /* RenderContextPusher.swift */,
 				40B52514F7B6CC866BDD778D /* ScreenCaptureProtection.swift */,
 				84CF989EA84DBE8A9F43E05D /* ThemeService.swift */,
+				E48863E2512C96F56E1A3A1C /* UserPresenceKeychain.swift */,
+				3ED7930E1937E9D55A0BBAE2 /* UserPresenceSecretBridge.swift */,
 				95373D9E6440FED4B532EBDD /* VauchiRepository.swift */,
 			);
 			path = Services;
@@ -735,6 +741,8 @@
 				C48401965743DD70C01F2F95 /* SystemTrayManager.swift in Sources */,
 				372704301C13BD3953C05111 /* TextRoleStyle.swift in Sources */,
 				2D0728F99D4DBB3C8491C25B /* ThemeService.swift in Sources */,
+				CF0A4436E8B24423459F9242 /* UserPresenceKeychain.swift in Sources */,
+				FBEC5B957FA1C3E0B319D45D /* UserPresenceSecretBridge.swift in Sources */,
 				2F7D817E60BDE6223F5E0484 /* VauchiApp.swift in Sources */,
 				AE6ED32C72587A0283C520D2 /* VauchiRepository.swift in Sources */,
 				B1A4AD4752837C2CA7E724FB /* WindowContentAccessibility.swift in Sources */,

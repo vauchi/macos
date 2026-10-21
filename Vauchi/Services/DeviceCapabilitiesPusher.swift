@@ -54,6 +54,7 @@ struct DeviceHardware {
     var hasAccelerometer: Bool
     var hasInternet: Bool
     var hasUsbPort: Bool
+    var canSealUserPresence: Bool = false
 }
 
 /// Build the JSON object core's `DeviceCapabilities` deserializes
@@ -77,6 +78,7 @@ func buildDeviceCapabilitiesJson(_ hardware: DeviceHardware) -> String {
     parts.append("\"has_accelerometer\":\(jsonBool(hardware.hasAccelerometer))")
     parts.append("\"has_internet\":\(jsonBool(hardware.hasInternet))")
     parts.append("\"has_usb_port\":\(jsonBool(hardware.hasUsbPort))")
+    parts.append("\"can_seal_user_presence\":\(jsonBool(hardware.canSealUserPresence))")
     return "{" + parts.joined(separator: ",") + "}"
 }
 
@@ -93,6 +95,8 @@ private func jsonBool(_ value: Bool) -> String {
 ///   (Apple Silicon + T2 Macs have it; pre-T2 Intel Macs do not).
 /// - `hasUsbPort` is `false`: Vauchi's Cable exchange is not a desktop
 ///   path, so we do not advertise a mode the Mac cannot perform.
+/// - `canSealUserPresence` needs a device credential and the
+///   data-protection keychain (vauchi/private#712).
 /// - `audio` is `.full`: every Mac has a speaker and microphone.
 func detectDeviceHardware() -> DeviceHardware {
     let laContext = LAContext()
@@ -116,7 +120,8 @@ func detectDeviceHardware() -> DeviceHardware {
         hasSecureEnclave: SecureEnclave.isAvailable,
         hasAccelerometer: false,
         hasInternet: true,
-        hasUsbPort: false
+        hasUsbPort: false,
+        canSealUserPresence: SystemUserPresenceKeychain().canCheckUserPresence
     )
 }
 
