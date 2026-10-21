@@ -39,13 +39,11 @@ import XCTest
                 .appendingPathComponent(UUID().uuidString)
             try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
 
-            // Deterministic 32-byte storage key — tests never share state with
-            // real data dirs, so a constant key is safe and avoids Keychain.
-            let storageKey = Data(repeating: 0, count: 32)
-            engine = try PlatformAppEngine(
+            engine = try PlatformAppEngine.openWithKeychain(
                 dataDir: tempDir.path,
                 relayUrl: "https://test.invalid",
-                storageKeyBytes: storageKey
+                shellStorageKey: nil,
+                keychain: VauchiKeychainBridge(keychain: FakeKeychainStore())
             )
             viewModel = AppViewModel(appEngine: engine)
         }

@@ -42,6 +42,12 @@ path = ["VauchiSnapshotTests/__Snapshots__/**"]
 SPDX-FileCopyrightText = "2026 Mattia Egloff <mattia.egloff@pm.me>"
 SPDX-License-Identifier = "GPL-3.0-or-later"
 
+# Test databases Core's legacy_install_fixture example wrote (binary)
+[[annotations]]
+path = ["VauchiTests/**/*.db"]
+SPDX-FileCopyrightText = "2026 Mattia Egloff <mattia.egloff@pm.me>"
+SPDX-License-Identifier = "GPL-3.0-or-later"
+
 # Brand font files (SIL Open Font License 1.1), verbatim from Google Fonts
 # via themes/fonts.
 [[annotations]]
