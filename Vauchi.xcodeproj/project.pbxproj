@@ -100,6 +100,7 @@
 		D65905F3E8A6B191F4611470 /* AudioProximityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49509AE0DF70B880F977B015 /* AudioProximityService.swift */; };
 		D6CC7232BB791C94AACA3CCA /* UITestLaunch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 987937A7D2D776722B2CA106 /* UITestLaunch.swift */; };
 		DA673F09635BBBF9871092A8 /* VauchiUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773C796EDEEFF9B928C04229 /* VauchiUITests.swift */; };
+		DBAC58EF5FBF9FAACB6C8AEE /* UserPresenceSecretBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74B09E17987EC3275EACCF99 /* UserPresenceSecretBridgeTests.swift */; };
 		DCB3E583D86FF3A15C6BE915 /* PlatformAppEngine+DomainDispatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8809B70A6BEDF6B35461415B /* PlatformAppEngine+DomainDispatch.swift */; };
 		E029B74DC69464F3AB4DE7CB /* ScreenCatalogCaptureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8D652552F012CDE52615304 /* ScreenCatalogCaptureTests.swift */; };
 		E0D770D1FB1B47ED61FC9551 /* PresentationInputValueEncodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B54F3CDD518857DEDB8A1B /* PresentationInputValueEncodingTests.swift */; };
@@ -180,6 +181,7 @@
 		6F0B112148ABCC1933D659A4 /* PresentationEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationEvent.swift; sourceTree = "<group>"; };
 		70EA94FA311BF6FFB21AFF4A /* NavigationIconAccessibilityUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationIconAccessibilityUITests.swift; sourceTree = "<group>"; };
 		71E5FB136BF29B1F9D9B7F04 /* VauchiApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VauchiApp.swift; sourceTree = "<group>"; };
+		74B09E17987EC3275EACCF99 /* UserPresenceSecretBridgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPresenceSecretBridgeTests.swift; sourceTree = "<group>"; };
 		773C796EDEEFF9B928C04229 /* VauchiUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VauchiUITests.swift; sourceTree = "<group>"; };
 		7A01546D222F8024BB3E0009 /* DeviceCapabilitiesPusher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceCapabilitiesPusher.swift; sourceTree = "<group>"; };
 		7A701A0C348B6758EED1D949 /* DirectSendService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectSendService.swift; sourceTree = "<group>"; };
@@ -332,6 +334,7 @@
 				B8EAE3B508A02A2BDEF3207F /* StorageKeyUpgradeTests.swift */,
 				4BF7BC594414EE931756CE54 /* ThemeServiceSettingsTests.swift */,
 				671E9917D8FFFC5AE5B1E443 /* URLSchemeContractTests.swift */,
+				74B09E17987EC3275EACCF99 /* UserPresenceSecretBridgeTests.swift */,
 				D9DDC142AE1FF7267B32DD39 /* VauchiKeychainBridgeHandoverTests.swift */,
 				BE32C32136CEB8811C89778C /* VauchiKeychainBridgeTests.swift */,
 				DE2CCF76CCD81A822601D43D /* WakeupTimerTests.swift */,
@@ -651,6 +654,7 @@
 				4EE9B40358253BE51C825BF7 /* TextRoleStyleTests.swift in Sources */,
 				60D8E07B9EFB1F102D7518A0 /* ThemeServiceSettingsTests.swift in Sources */,
 				A71CDB4A24300D1DCA8CAA60 /* URLSchemeContractTests.swift in Sources */,
+				DBAC58EF5FBF9FAACB6C8AEE /* UserPresenceSecretBridgeTests.swift in Sources */,
 				CDD9B39CBE0D8354161D2E71 /* VauchiKeychainBridgeHandoverTests.swift in Sources */,
 				ACB5D66C9DC53BB3DEC7044E /* VauchiKeychainBridgeTests.swift in Sources */,
 				99944BA751677899052C05DA /* WakeupTimerTests.swift in Sources */,

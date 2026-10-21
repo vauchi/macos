@@ -97,6 +97,28 @@ final class DeviceCapabilitiesPusherTests: XCTestCase {
         XCTAssertEqual(dict["platform"] as? String, "Desktop")
     }
 
+    /// Core offers the OS user-presence check only where the shell can
+    /// seal a secret behind it (vauchi/private#712).
+    func test_can_seal_user_presence_is_reported_both_ways() {
+        var hardware = DeviceHardware(
+            hasNfc: false,
+            hasBle: true,
+            hasCamera: false,
+            audio: .full,
+            hasBiometrics: false,
+            biometricType: nil,
+            hasSecureEnclave: true,
+            hasAccelerometer: false,
+            hasInternet: true,
+            hasUsbPort: false,
+            canSealUserPresence: true
+        )
+        XCTAssertEqual(parse(buildDeviceCapabilitiesJson(hardware))["can_seal_user_presence"] as? Bool, true)
+
+        hardware.canSealUserPresence = false
+        XCTAssertEqual(parse(buildDeviceCapabilitiesJson(hardware))["can_seal_user_presence"] as? Bool, false)
+    }
+
     /// Every `DeviceAudioCapability` rawValue matches a core variant.
     func test_audio_capability_raw_values_match_core_variants() {
         XCTAssertEqual(DeviceAudioCapability.full.rawValue, "Full")

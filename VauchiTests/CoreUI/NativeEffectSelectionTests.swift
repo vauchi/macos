@@ -34,6 +34,21 @@ final class NativeEffectSelectionTests: XCTestCase {
         XCTAssertEqual(variants, ["BleStartScanning"])
     }
 
+    /// Left as platform effects they decode as `.unknown` and are answered
+    /// on the wrong transport, so Core's export would wait forever
+    /// (vauchi/private#712).
+    func testUserPresenceCommandsStayWithThePresentation() throws {
+        let variants = try selectedVariants("""
+        {"commands":[
+          {"CreateUserPresenceSecret":{"prompt":"p"}},
+          {"RevealUserPresenceSecret":{"prompt":"p"}},
+          "BleStopScanning"
+        ]}
+        """)
+
+        XCTAssertEqual(variants, ["BleStopScanning"])
+    }
+
     func testAnEnvelopeWithOnlyPresentationCommandsSelectsNothing() throws {
         let selected = try NativeEffectSelection.platformEffectsJSON(in: Data("""
         {"commands":[{"SetNavigation":{"surface_id":"main","revision":1,"navigation":{"items":[]}}}]}
