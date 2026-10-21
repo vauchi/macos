@@ -23,6 +23,7 @@
 		1BB5832181399F70969847FB /* NavigationIconMapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5482743CA87B21CE18C8C3B9 /* NavigationIconMapTests.swift */; };
 		2696B283BD7E5497994A6E93 /* FocusRingModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83EEDE9AC18C43B517008161 /* FocusRingModifier.swift */; };
 		26EDE59053AA4925CD66C445 /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = E3FE6A79522017C971205541 /* Fonts */; };
+		273975EC388CFE5D5B02731F /* RenderContextPusherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB04A9F8F1DEF697349D20A3 /* RenderContextPusherTests.swift */; };
 		28ABEAE77D5BC15063202DCC /* PresentationEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F0B112148ABCC1933D659A4 /* PresentationEvent.swift */; };
 		2D0728F99D4DBB3C8491C25B /* ThemeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CF989EA84DBE8A9F43E05D /* ThemeService.swift */; };
 		2F7D817E60BDE6223F5E0484 /* VauchiApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71E5FB136BF29B1F9D9B7F04 /* VauchiApp.swift */; };
@@ -233,6 +234,7 @@
 		E8D652552F012CDE52615304 /* ScreenCatalogCaptureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenCatalogCaptureTests.swift; sourceTree = "<group>"; };
 		EAD14938360861D9B2172622 /* ContextCommandBarLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextCommandBarLayoutTests.swift; sourceTree = "<group>"; };
 		EAF456AF714942F67FCD5FA2 /* PresentationInformationOverlayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationInformationOverlayTests.swift; sourceTree = "<group>"; };
+		EB04A9F8F1DEF697349D20A3 /* RenderContextPusherTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderContextPusherTests.swift; sourceTree = "<group>"; };
 		ED9141BF9EF205F0316F2EE7 /* WindowContentAccessibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowContentAccessibility.swift; sourceTree = "<group>"; };
 		EEDDFD35C524581CEE05797E /* PresentationTokensPointerTargetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationTokensPointerTargetTests.swift; sourceTree = "<group>"; };
 		F5427C4F253C3A904B25AA98 /* TextRoleStyleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextRoleStyleTests.swift; sourceTree = "<group>"; };
@@ -322,6 +324,7 @@
 				A7C515EE1804FDB78832CA0D /* NotificationServiceDeepLinkTests.swift */,
 				3B183C71862EEB94A1A20C7D /* PresentationFailureAlertTests.swift */,
 				AAEF5BAE3E1BDBC31DED21D2 /* PresentationSmokeTests.swift */,
+				EB04A9F8F1DEF697349D20A3 /* RenderContextPusherTests.swift */,
 				B8EAE3B508A02A2BDEF3207F /* StorageKeyUpgradeTests.swift */,
 				4BF7BC594414EE931756CE54 /* ThemeServiceSettingsTests.swift */,
 				671E9917D8FFFC5AE5B1E443 /* URLSchemeContractTests.swift */,
@@ -617,6 +620,7 @@
 				C75EB92B4999209BD75CCBD3 /* PresentationSmokeTests.swift in Sources */,
 				750231F789BE3B2634B7B5FD /* PresentationStateTests.swift in Sources */,
 				C72D0889A2D85FB2445BD06A /* PresentationTokensPointerTargetTests.swift in Sources */,
+				273975EC388CFE5D5B02731F /* RenderContextPusherTests.swift in Sources */,
 				5E688F30D19C48A1083D7DBE /* ScreenCatalogEntryTests.swift in Sources */,
 				771A40C3FF4D73DACC5C67D0 /* SidebarModelTests.swift in Sources */,
 				89FE20C8AD2D3DCBAF13F8CB /* StorageKeyUpgradeTests.swift in Sources */,
