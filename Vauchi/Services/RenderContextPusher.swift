@@ -31,7 +31,11 @@ import Foundation
         let locale = LocalizationService.shared
         let effectiveTheme = theme.followSystem ? nil : theme.selectedThemeId
         let effectiveLocale = locale.followSystem ? nil : locale.selectedLocaleCode
-        let json = buildRenderContextJson(themeId: effectiveTheme, locale: effectiveLocale)
+        let json = buildRenderContextJson(
+            themeId: effectiveTheme,
+            locale: effectiveLocale,
+            systemLocale: Locale.preferredLanguages.first
+        )
         do {
             try engine.setRenderContextJson(json: json)
         } catch {
@@ -41,13 +45,19 @@ import Foundation
 
     /// Build a minimal JSON object for `RenderContext`. Omits keys whose
     /// effective value is `nil` ("follow system" semantic per ADR-047).
-    func buildRenderContextJson(themeId: String?, locale: String?) -> String {
+    /// `systemLocale` is the OS language, sent on every push: on "Follow
+    /// system" no `locale` goes out, and core renders the system language
+    /// only if it is told what it is (vauchi/private#721).
+    func buildRenderContextJson(themeId: String?, locale: String?, systemLocale: String?) -> String {
         var parts: [String] = []
         if let themeId {
             parts.append("\"theme_id\":\(jsonString(themeId))")
         }
         if let locale {
             parts.append("\"locale\":\(jsonString(locale))")
+        }
+        if let systemLocale {
+            parts.append("\"system_locale\":\(jsonString(systemLocale))")
         }
         return "{" + parts.joined(separator: ",") + "}"
     }
