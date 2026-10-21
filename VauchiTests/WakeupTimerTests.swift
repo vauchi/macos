@@ -16,25 +16,16 @@ import XCTest
     /// cancels on disappear; start/stop must be idempotent because SwiftUI
     /// can deliver redundant lifecycle hooks.
     ///
-    /// Constructs `PlatformAppEngine` directly against a temp `dataDir` so
-    /// the tests work inside the test host (unlike `VauchiRepository`, which
-    /// requires Keychain access).
+    /// Opens `PlatformAppEngine` against a temp `dataDir` with the fake
+    /// keychain store, so the tests run inside the test host, which has no
+    /// Keychain entitlement.
     @MainActor
     final class WakeupTimerTests: XCTestCase {
         var tempDir: URL!
         var engine: PlatformAppEngine!
         var viewModel: AppViewModel!
 
-        /// `PlatformAppEngine` init touches SecureStorage which fails in the
-        /// macOS XCTest host (no signed Vauchi app → no Keychain entitlement).
-        /// Mirrors the retired `AnimatedQrTimerTests` skip convention.
-        private var isTestHost: Bool {
-            ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
-        }
-
         override func setUpWithError() throws {
-            try XCTSkipIf(isTestHost, "Requires Keychain — skipped in test host")
-
             tempDir = FileManager.default.temporaryDirectory
                 .appendingPathComponent(UUID().uuidString)
             try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
