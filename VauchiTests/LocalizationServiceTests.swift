@@ -43,7 +43,7 @@ import XCTest
         /// Then it returns "Vauchi".
         func test_t_returns_english_for_known_key() {
             let service = LocalizationService(defaults: makeEphemeralDefaults())
-            service.selectLocale(.english)
+            service.selectLocale(code: "en")
 
             XCTAssertEqual(
                 service.t("app.name"),
@@ -85,7 +85,7 @@ import XCTest
         /// tests (vauchi-app::i18n::tests::test_get_string_with_args).
         func test_t_with_args_on_bundled_key_is_noop() {
             let service = LocalizationService(defaults: makeEphemeralDefaults())
-            service.selectLocale(.english)
+            service.selectLocale(code: "en")
 
             let out = service.t("app.name", args: ["count": "3"])
 

@@ -29,7 +29,7 @@
         private let defaults: UserDefaults
         private var appEngine: PlatformAppEngine?
 
-        @Published var currentLocale: MobileLocale = .english
+        @Published var currentLocale: String = "en"
         @Published var availableLocales: [MobileLocaleInfo] = []
 
         private convenience init() {
@@ -100,7 +100,7 @@
             if let locale = parseLocaleCode(code: systemLanguage) {
                 currentLocale = locale
             } else {
-                currentLocale = .english
+                currentLocale = "en"
             }
         }
 
@@ -109,12 +109,6 @@
             followSystem = false
             selectedLocaleCode = code
             pushRenderContext(engine: appEngine)
-        }
-
-        /// Select a locale directly.
-        func selectLocale(_ locale: MobileLocale) {
-            let info = getLocaleInfo(locale: locale)
-            selectLocale(code: info.code)
         }
 
         /// Reset to follow system language.
