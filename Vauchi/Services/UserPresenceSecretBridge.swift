@@ -6,10 +6,7 @@ import Foundation
 import Security
 import VauchiPlatform
 
-/// The shell's answer to a user-presence command. Core 0.85.0's
-/// `MobileEvent` has no variant for these, so the event JSON is written
-/// here in Core's externally tagged serde shape, as `PresentationEvent`
-/// already is (vauchi/private#712).
+/// The shell's answer to a user-presence command (vauchi/private#712).
 enum UserPresenceEvent: Equatable, CustomStringConvertible {
     case created([UInt8])
     case revealed([UInt8])
@@ -17,17 +14,19 @@ enum UserPresenceEvent: Equatable, CustomStringConvertible {
     case unavailable
 
     var eventJSON: String {
+        hardwareEventJson(event: event)
+    }
+
+    private var event: MobileEvent {
         switch self {
         case let .created(secret):
-            Self.secretEventJSON("UserPresenceSecretCreated", secret)
+            .userPresenceSecretCreated(secret: Data(secret))
         case let .revealed(secret):
-            Self.secretEventJSON("UserPresenceSecretRevealed", secret)
+            .userPresenceSecretRevealed(secret: Data(secret))
         case .cancelled:
-            #""UserPresenceCheckCancelled""#
+            .userPresenceCheckCancelled
         case .unavailable:
-            hardwareEventJson(event: .hardwareUnavailable(
-                transport: UserPresenceSecretBridge.transport
-            ))
+            .hardwareUnavailable(transport: UserPresenceSecretBridge.transport)
         }
     }
 
@@ -39,11 +38,6 @@ enum UserPresenceEvent: Equatable, CustomStringConvertible {
         case .cancelled: "cancelled"
         case .unavailable: "unavailable"
         }
-    }
-
-    private static func secretEventJSON(_ variant: String, _ secret: [UInt8]) -> String {
-        let bytes = secret.map(String.init).joined(separator: ",")
-        return #"{"\#(variant)":{"secret":[\#(bytes)]}}"#
     }
 }
 
