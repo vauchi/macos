@@ -25,6 +25,17 @@ final class PresentationCommandTests: XCTestCase {
         }
     }
 
+    /// Core queues this once a content update applies themes (core!1937,
+    /// private#733); the app answers by applying the selected theme again.
+    func testReloadThemeDecodesAsItsOwnCommand() throws {
+        let commands = try decode(#"{"commands":["ReloadTheme"]}"#)
+
+        XCTAssertEqual(commands.count, 1)
+        guard case .reloadTheme = commands[0] else {
+            return XCTFail("expected .reloadTheme, got \(commands[0])")
+        }
+    }
+
     func testUnknownStringVariantsStayOpaquePlatformEffects() throws {
         let commands = try decode(#"{"commands":["SomethingFromTheFuture"]}"#)
 

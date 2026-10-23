@@ -49,6 +49,12 @@ final class NativeEffectSelectionTests: XCTestCase {
         XCTAssertEqual(variants, ["BleStopScanning"])
     }
 
+    func testReloadThemeStaysWithThePresentation() throws {
+        let variants = try selectedVariants(#"{"commands":["ReloadTheme","BleStopScanning"]}"#)
+
+        XCTAssertEqual(variants, ["BleStopScanning"])
+    }
+
     func testAnEnvelopeWithOnlyPresentationCommandsSelectsNothing() throws {
         let selected = try NativeEffectSelection.platformEffectsJSON(in: Data("""
         {"commands":[{"SetNavigation":{"surface_id":"main","revision":1,"navigation":{"items":[]}}}]}

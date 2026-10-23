@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		048070DC8CB18C66127608DB /* PresentationFailureAlertTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B183C71862EEB94A1A20C7D /* PresentationFailureAlertTests.swift */; };
+		0570443CAA0E03893F8DA126 /* NetworkCostMonitorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD03C84AA494096DBEEC1749 /* NetworkCostMonitorTests.swift */; };
 		072615DEAAD0650CF34C6B6E /* PlaceholderContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 234E756E782635B9AF9132F3 /* PlaceholderContentView.swift */; };
 		07445CDDB7EA8081D58085E2 /* NativeEffectSelectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D61E0301701C2CC52ADDB859 /* NativeEffectSelectionTests.swift */; };
 		0CB162937ECD882567E9197F /* ColumnAccessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = E620C9FB664D030A42C3E8FE /* ColumnAccessibility.swift */; };
@@ -234,6 +235,7 @@
 		D61E0301701C2CC52ADDB859 /* NativeEffectSelectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeEffectSelectionTests.swift; sourceTree = "<group>"; };
 		D9DDC142AE1FF7267B32DD39 /* VauchiKeychainBridgeHandoverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VauchiKeychainBridgeHandoverTests.swift; sourceTree = "<group>"; };
 		DC20FCD1651B95E823A06410 /* LocationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationServiceTests.swift; sourceTree = "<group>"; };
+		DD03C84AA494096DBEEC1749 /* NetworkCostMonitorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkCostMonitorTests.swift; sourceTree = "<group>"; };
 		DE2CCF76CCD81A822601D43D /* WakeupTimerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WakeupTimerTests.swift; sourceTree = "<group>"; };
 		DFFE40C221022DBDBD034AF3 /* PresentationStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationStateTests.swift; sourceTree = "<group>"; };
 		E17FD049E1582776B08D1899 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -329,6 +331,7 @@
 				812EEE5AF140DB98855AF442 /* LocalizationServiceSettingsTests.swift */,
 				2FBC9B875F77F7D59BA26DC7 /* LocalizationServiceTests.swift */,
 				DC20FCD1651B95E823A06410 /* LocationServiceTests.swift */,
+				DD03C84AA494096DBEEC1749 /* NetworkCostMonitorTests.swift */,
 				219A7195BEAC47A808D8F852 /* NotificationServiceAuthorizationTests.swift */,
 				37CF81D097BBE672CB4C58D4 /* NotificationServiceContentTests.swift */,
 				A7C515EE1804FDB78832CA0D /* NotificationServiceDeepLinkTests.swift */,
@@ -637,6 +640,7 @@
 				42E8C0D44725B88DB18845CB /* LocationServiceTests.swift in Sources */,
 				07445CDDB7EA8081D58085E2 /* NativeEffectSelectionTests.swift in Sources */,
 				1BB5832181399F70969847FB /* NavigationIconMapTests.swift in Sources */,
+				0570443CAA0E03893F8DA126 /* NetworkCostMonitorTests.swift in Sources */,
 				82D2E4617055E2424DDCE587 /* NotificationServiceAuthorizationTests.swift in Sources */,
 				E15D3E295518C2178E26D1A9 /* NotificationServiceContentTests.swift in Sources */,
 				3D1CBC0C00C370BCFAA0D7A8 /* NotificationServiceDeepLinkTests.swift in Sources */,
