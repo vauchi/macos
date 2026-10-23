@@ -167,6 +167,9 @@ enum PresentationCommand: Decodable {
     /// The lock screen's Touch ID button (Core 0.67.1). Answered with a
     /// `BiometricUnlockSucceeded` event once LocalAuthentication agrees.
     case requestBiometricUnlock
+    /// Queued once a content update applied themes (core!1937): apply the
+    /// selected theme again so a CDN theme takes effect (private#733).
+    case reloadTheme
     /// Seal a fresh secret behind the OS user-presence check, then run the
     /// check with `prompt` as its reason (vauchi/private#712).
     case createUserPresenceSecret(prompt: String)
@@ -296,6 +299,7 @@ enum PresentationCommand: Decodable {
         case "PerformNativeBack": .performNativeBack
         case "ResetApplication": .resetApplication
         case "RequestBiometricUnlock": .requestBiometricUnlock
+        case "ReloadTheme": .reloadTheme
         default: .platformEffect(variant: variant, payload: nil)
         }
     }

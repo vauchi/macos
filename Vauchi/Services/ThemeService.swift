@@ -40,7 +40,7 @@
         init(defaults: UserDefaults) {
             self.defaults = defaults
             registerDefaults()
-            loadThemes()
+            reloadThemes()
         }
 
         // MARK: - Engine attachment
@@ -62,7 +62,9 @@
             ])
         }
 
-        private func loadThemes() {
+        /// Reads the theme catalogue again, which includes themes a content
+        /// update cached since launch, and applies the selected theme.
+        func reloadThemes() {
             availableThemes = getAvailableThemes()
             applySelectedTheme()
         }

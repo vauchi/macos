@@ -5,7 +5,7 @@
 // Top-level @MainActor state object owning VauchiRepository + AppViewModel,
 // driving auth/lock state, and bridging app lifecycle notifications from
 // AppDelegate into core actions (background lock, foreground refresh,
-// content updates, biometric retry).
+// network cost, biometric retry).
 
 import Combine
 import Foundation
@@ -21,6 +21,7 @@ import SwiftUI
         @Published var error: String?
 
         private var repository: VauchiRepository?
+        private var networkCost: AnyCancellable?
 
         init() {
             // Skip heavy initialization when running as a test host.
@@ -113,54 +114,17 @@ import SwiftUI
             do {
                 let repo = try VauchiRepository()
                 repository = repo
-                viewModel = AppViewModel(appEngine: repo.appEngine)
+                let viewModel = AppViewModel(appEngine: repo.appEngine)
+                self.viewModel = viewModel
                 error = nil
-                runContentUpdateCycle(appEngine: repo.appEngine)
+                networkCost = NetworkCostMonitor.shared.$cost
+                    .removeDuplicates()
+                    .sink { [weak viewModel] cost in
+                        viewModel?.reportNetworkCost(cost)
+                    }
             } catch {
                 self.error = error.localizedDescription
                 print("VauchiApp: failed to initialize: \(error)")
-            }
-        }
-
-        /// Native follow-ups for a content-update cycle outcome. Pure so
-        /// the decision is unit-testable (`ContentUpdateCycleTests`)
-        /// without an engine; the domain check→apply sequencing lives in
-        /// core (`RunContentUpdateCycle`). `refreshAppearance` implies
-        /// `applied` (core invariant), so the `applied` guard alone gates
-        /// both follow-ups.
-        nonisolated static func contentCycleActions(
-            _ outcome: MobileContentCycleOutcome
-        ) -> (refreshTheme: Bool, reloadUI: Bool) {
-            guard outcome.applied else { return (false, false) }
-            return (outcome.refreshAppearance, true)
-        }
-
-        /// Run the remote content-update cycle in the background after
-        /// startup. Core owns the whole check→apply→invalidate sequence
-        /// (`RunContentUpdateCycle`); macOS only performs the native
-        /// consequences — re-applying the theme when the appearance
-        /// changed and reloading the UI when anything was applied. Best
-        /// effort: fired once on launch, no retry; failures return a
-        /// no-op outcome, logged in debug without disrupting startup.
-        private func runContentUpdateCycle(appEngine: PlatformAppEngine) {
-            Task.detached(priority: .utility) { [weak self] in
-                let outcome: MobileContentCycleOutcome
-                do {
-                    outcome = try appEngine.runContentUpdateCycle()
-                } catch {
-                    print("AppState: runContentUpdateCycle dispatch failed: \(error)")
-                    return
-                }
-                let actions = AppState.contentCycleActions(outcome)
-                guard actions.reloadUI else { return }
-                await MainActor.run {
-                    if actions.refreshTheme {
-                        ThemeService.shared.applySelectedTheme()
-                    }
-                    // Locale store is hot-reloaded by core — reload picks
-                    // up any new social-network labels / locale strings.
-                    self?.viewModel?.invalidateAll()
-                }
             }
         }
 

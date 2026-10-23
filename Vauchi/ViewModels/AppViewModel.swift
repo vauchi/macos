@@ -31,6 +31,11 @@ import UniformTypeIdentifiers
         /// argument would compile and silently keep the old cadence.
         private(set) var lastWakeupDelay: TimeInterval?
 
+        /// Registered with `PlatformAppEngine.setEventListener`, which also
+        /// starts Core's content scheduler (private#733, D10). Held so the
+        /// UniFFI callback stays alive as long as the view model.
+        private var eventListener: InvalidationListener?
+
         struct AlertMessage: Identifiable {
             let id = UUID()
             let title: String
@@ -40,6 +45,31 @@ import UniformTypeIdentifiers
         init(appEngine: PlatformAppEngine) {
             self.appEngine = appEngine
             loadInitialPresentation()
+            attachEventListener()
+        }
+
+        private func attachEventListener() {
+            let listener = InvalidationListener { [weak self] in
+                // Core calls this on the thread that did the work; touching
+                // the engine on that stack would deadlock on its mutex.
+                DispatchQueue.main.async {
+                    self?.invalidateAll()
+                }
+            }
+            do {
+                try appEngine.setEventListener(listener: listener)
+                eventListener = listener
+            } catch {
+                NSLog("[Vauchi] Event listener failed: %@", String(describing: type(of: error)))
+            }
+        }
+
+        var hasEventListener: Bool {
+            eventListener != nil
+        }
+
+        var eventListenerForTesting: PlatformEventListener? {
+            eventListener
         }
 
         /// Core owns user-facing copy (ADR-045 Am1), and an error's own
@@ -136,6 +166,8 @@ import UniformTypeIdentifiers
                 loadInitialPresentation()
             case .requestBiometricUnlock:
                 requestBiometricUnlock()
+            case .reloadTheme:
+                ThemeService.shared.reloadThemes()
             case .createUserPresenceSecret, .revealUserPresenceSecret:
                 answerUserPresence(command)
             case .postNotification, .platformEffect:
@@ -552,6 +584,11 @@ import UniformTypeIdentifiers
         /// Send a hardware event to Core as canonical event JSON, execute
         /// its native effects, then refresh presentation state through the
         /// reducer boundary.
+        /// Core holds content downloads back on a metered network (D6).
+        func reportNetworkCost(_ cost: MobileNetworkCost) {
+            sendHardwareEvent(.networkCostChanged(cost: cost))
+        }
+
         private func sendHardwareEvent(_ event: MobileEvent) {
             do {
                 let resultJson = try appEngine.dispatchJson(eventJson: hardwareEventJson(event: event))
@@ -685,5 +722,18 @@ import UniformTypeIdentifiers
 
     private enum PresentationDispatchError: Error {
         case invalidUTF8
+    }
+
+    /// `final class` because the binding protocol requires `AnyObject`.
+    private final class InvalidationListener: PlatformEventListener {
+        private let handler: () -> Void
+
+        init(handler: @escaping () -> Void) {
+            self.handler = handler
+        }
+
+        func onPresentationInvalidated() {
+            handler()
+        }
     }
 #endif
