@@ -7,10 +7,18 @@
 /// menu bar and nothing else (vauchi/private#707). Each test starts from
 /// the scene the app declares instead of from what a previous run left.
 ///
-/// The pair goes first: the argument domain reads `-key value`, so after a
+/// The app follows the system language (vauchi/private#721) and the tests
+/// match English copy, so each launch pins English rather than inheriting
+/// the runner's language.
+///
+/// The pairs go first: the argument domain reads `-key value`, so after a
 /// `--reset-for-testing` it would be taken as that flag's value and ignored.
 enum UITestLaunch {
     static func arguments(_ testing: String...) -> [String] {
-        ["-ApplePersistenceIgnoreState", "YES"] + testing
+        [
+            "-ApplePersistenceIgnoreState", "YES",
+            "-AppleLanguages", "(en)",
+            "-AppleLocale", "en_US",
+        ] + testing
     }
 }
