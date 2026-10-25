@@ -64,6 +64,10 @@ final class DuressUnlockUITests: XCTestCase {
         click(Label.continueButton)
         fillSecureFields(with: duressPin)
         click(Label.continueButton)
+        // Core saves a duress PIN only once the session's password is
+        // entered again (private#777).
+        fillSecureFields(with: appPassword)
+        click(Label.continueButton)
         attachScreen(named: "duress-set")
 
         // No testing flag: both flags wipe the store, password included.
