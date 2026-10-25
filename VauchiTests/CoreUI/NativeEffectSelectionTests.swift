@@ -40,7 +40,7 @@ final class NativeEffectSelectionTests: XCTestCase {
     func testUserPresenceCommandsStayWithThePresentation() throws {
         let variants = try selectedVariants("""
         {"commands":[
-          {"CreateUserPresenceSecret":{"prompt":"p"}},
+          {"CreateUserPresenceSecret":{"prompt":"p","binding":"biometry"}},
           {"RevealUserPresenceSecret":{"prompt":"p"}},
           "BleStopScanning"
         ]}
