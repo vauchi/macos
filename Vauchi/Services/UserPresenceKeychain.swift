@@ -10,17 +10,18 @@ enum UserPresenceKeychainError: Error, Equatable {
     case status(OSStatus)
 }
 
-/// One secret whose every read needs the OS user-presence check (Touch ID
-/// or the login password); `SystemUserPresenceKeychain` in the app, a fake
-/// in tests.
+/// One secret whose every read needs the OS check it was sealed under
+/// (Touch ID or the login password); `SystemUserPresenceKeychain` in the
+/// app, a fake in tests.
 protocol UserPresenceKeychain {
     var canCheckUserPresence: Bool { get }
-    func replaceSecret(_ secret: [UInt8]) throws
+    func replaceSecret(_ secret: [UInt8], binding: UserPresenceBinding) throws
     func revealSecret(prompt: String) throws -> [UInt8]
 }
 
-/// Data-protection keychain item guarded by `.userPresence`, so the ACL
-/// rather than this code demands the check on each read (vauchi/private#712).
+/// Data-protection keychain item guarded by the access control Core's
+/// binding names, so the ACL rather than this code demands the check on
+/// each read (vauchi/private#712, #778).
 /// The file-based login keychain ignores user-presence ACLs, which is why
 /// the item must live in the data-protection keychain.
 final class SystemUserPresenceKeychain: UserPresenceKeychain {
@@ -57,7 +58,17 @@ final class SystemUserPresenceKeychain: UserPresenceKeychain {
         return SecItemDelete(probe as CFDictionary) != errSecMissingEntitlement
     }
 
-    func replaceSecret(_ secret: [UInt8]) throws {
+    /// `.biometryCurrentSet` stops opening when a finger is added or
+    /// removed, which needs only the login password; `.userPresence` would
+    /// let that password open a biometric seal (SAST 415059658).
+    static func accessFlags(for binding: UserPresenceBinding) -> SecAccessControlCreateFlags {
+        switch binding {
+        case .biometry: .biometryCurrentSet
+        case .deviceCredential: .devicePasscode
+        }
+    }
+
+    func replaceSecret(_ secret: [UInt8], binding: UserPresenceBinding) throws {
         let deleted = SecItemDelete(itemQuery as CFDictionary)
         guard deleted == errSecSuccess || deleted == errSecItemNotFound else {
             throw UserPresenceKeychainError.status(deleted)
@@ -65,7 +76,7 @@ final class SystemUserPresenceKeychain: UserPresenceKeychain {
         guard let access = SecAccessControlCreateWithFlags(
             nil,
             kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
-            .userPresence,
+            Self.accessFlags(for: binding),
             nil
         ) else {
             throw UserPresenceKeychainError.status(errSecParam)

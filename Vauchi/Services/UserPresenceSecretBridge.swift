@@ -12,6 +12,8 @@ enum UserPresenceEvent: Equatable, CustomStringConvertible {
     case revealed([UInt8])
     case cancelled
     case unavailable
+    /// The sealed item is gone or no longer opens (vauchi/private#778).
+    case missing
 
     var eventJSON: String {
         hardwareEventJson(event: event)
@@ -27,6 +29,8 @@ enum UserPresenceEvent: Equatable, CustomStringConvertible {
             .userPresenceCheckCancelled
         case .unavailable:
             .hardwareUnavailable(transport: UserPresenceSecretBridge.transport)
+        case .missing:
+            .userPresenceSecretMissing
         }
     }
 
@@ -37,6 +41,7 @@ enum UserPresenceEvent: Equatable, CustomStringConvertible {
         case .revealed: "revealed(<redacted>)"
         case .cancelled: "cancelled"
         case .unavailable: "unavailable"
+        case .missing: "missing"
         }
     }
 }
@@ -57,8 +62,8 @@ enum UserPresenceSecretBridge {
         randomBytes: (Int) throws -> [UInt8] = systemRandomBytes
     ) -> UserPresenceEvent? {
         switch command {
-        case let .createUserPresenceSecret(prompt):
-            create(prompt: prompt, keychain: keychain, randomBytes: randomBytes)
+        case let .createUserPresenceSecret(prompt, binding):
+            create(prompt: prompt, binding: binding, keychain: keychain, randomBytes: randomBytes)
         case let .revealUserPresenceSecret(prompt):
             reveal(prompt: prompt, keychain: keychain)
         default:
@@ -79,15 +84,16 @@ enum UserPresenceSecretBridge {
     /// generated, so the event proves the OS check ran.
     private static func create(
         prompt: String,
+        binding: UserPresenceBinding?,
         keychain: UserPresenceKeychain,
         randomBytes: (Int) throws -> [UInt8]
     ) -> UserPresenceEvent {
-        guard keychain.canCheckUserPresence else { return .unavailable }
+        guard let binding, keychain.canCheckUserPresence else { return .unavailable }
         do {
             var fresh = try randomBytes(secretLength)
             defer { wipe(&fresh) }
             guard fresh.count == secretLength else { return .unavailable }
-            try keychain.replaceSecret(fresh)
+            try keychain.replaceSecret(fresh, binding: binding)
             return try sealedSecret(prompt: prompt, keychain: keychain).map(UserPresenceEvent.created)
                 ?? .unavailable
         } catch {
@@ -100,6 +106,8 @@ enum UserPresenceSecretBridge {
         do {
             return try sealedSecret(prompt: prompt, keychain: keychain).map(UserPresenceEvent.revealed)
                 ?? .unavailable
+        } catch UserPresenceKeychainError.status(errSecItemNotFound) {
+            return .missing
         } catch {
             return outcome(for: error)
         }
@@ -117,9 +125,9 @@ enum UserPresenceSecretBridge {
     }
 
     /// Dismissing the prompt and failing it both leave the user unconfirmed;
-    /// Core ends the request either way. Anything else (missing item, missing
-    /// entitlement, no interaction possible) means this Mac cannot do the
-    /// check, so Core falls back.
+    /// Core ends the request either way. Anything else (missing entitlement,
+    /// no interaction possible, an item gone right after sealing it) means
+    /// this Mac cannot do the check, so Core falls back.
     private static func outcome(for error: Error) -> UserPresenceEvent {
         switch error {
         case UserPresenceKeychainError.status(errSecUserCanceled),

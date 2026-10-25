@@ -143,6 +143,29 @@ private struct PresentationPromptCommandPayload: Decodable {
     let prompt: String
 }
 
+private struct PresentationSealCommandPayload: Decodable {
+    let prompt: String
+    let binding: UserPresenceBinding?
+
+    private enum CodingKeys: String, CodingKey { case prompt, binding }
+
+    /// An unknown binding decodes to `nil` instead of failing the whole
+    /// envelope; the bridge then seals nothing (vauchi/private#778).
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        prompt = try container.decode(String.self, forKey: .prompt)
+        binding = try? container.decode(UserPresenceBinding.self, forKey: .binding)
+    }
+}
+
+/// Which OS check guards a sealed secret (Core 0.88.0, vauchi/private#778).
+enum UserPresenceBinding: String, Decodable, Equatable {
+    /// Only the biometrics enrolled when the secret was sealed.
+    case biometry
+    /// The login password.
+    case deviceCredential = "device_credential"
+}
+
 private struct PresentationFileCommandPayload: Decodable {
     let file: PresentationExportFile
 }
@@ -172,7 +195,7 @@ enum PresentationCommand: Decodable {
     case reloadTheme
     /// Seal a fresh secret behind the OS user-presence check, then run the
     /// check with `prompt` as its reason (vauchi/private#712).
-    case createUserPresenceSecret(prompt: String)
+    case createUserPresenceSecret(prompt: String, binding: UserPresenceBinding?)
     /// Run the OS user-presence check with `prompt` and unseal that secret.
     case revealUserPresenceSecret(prompt: String)
     case postNotification(JSONValue)
@@ -274,9 +297,8 @@ enum PresentationCommand: Decodable {
                 container.decode(PresentationFileCommandPayload.self, forKey: key).file
             )
         case "CreateUserPresenceSecret":
-            return try .createUserPresenceSecret(
-                prompt: container.decode(PresentationPromptCommandPayload.self, forKey: key).prompt
-            )
+            let payload = try container.decode(PresentationSealCommandPayload.self, forKey: key)
+            return .createUserPresenceSecret(prompt: payload.prompt, binding: payload.binding)
         case "RevealUserPresenceSecret":
             return try .revealUserPresenceSecret(
                 prompt: container.decode(PresentationPromptCommandPayload.self, forKey: key).prompt
