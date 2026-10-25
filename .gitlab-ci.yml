@@ -1480,17 +1480,14 @@ test:ui:
   # re-locks at boot), and the suite now runs in ~14s with 4 of 5 passing,
   # so it is worth running unasked — a guard nobody clicks guards nothing.
   #
-  # Still `allow_failure` because `testAccessibilityAudit` fails on a
-  # SwiftUI hosting container that app code cannot name
-  # (`backlog/2026-09-11-macos-a11y-audit-flags-the-window-content-container`).
-  # Drop allow_failure once that is resolved, and this actually gates.
+  # It gates now (private#810). `testAccessibilityAudit`, the reason it
+  # allowed failure, passes; the one test still failing on main, the duress
+  # unlock, lost its PIN to a background invalidation in Core (private#809).
   rules:
     - if: ($CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "pipeline") && $BINDINGS_VERSION
       when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      allow_failure: true
     - if: $CI_COMMIT_BRANCH == "main"
-      allow_failure: true
 
 # Screen catalog render — replays Core's screen catalog fixture (every app
 # screen as the command batch Core emits for it) through the real SwiftUI
