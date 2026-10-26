@@ -2203,13 +2203,18 @@ diag:tart-vm-start:
     - self-hosted
   image: ghcr.io/cirruslabs/macos-tahoe-xcode:26.4
   variables:
-    GUEST_CONSOLE_GATE: |
-      console_owner=$(stat -f '%Su' /dev/console 2>&1)
-      echo "launchd-session=$(launchctl managername 2>&1) uid=$(id -u) user=$(id -un) console-owner=$console_owner"
-      if [ "$console_owner" != "$(id -un)" ]; then
-        echo "ERROR: the guest console belongs to '$console_owner', not '$(id -un)'." >&2
-        exit 1
-      fi
+    # expand: false, or GitLab substitutes $console_owner and friends with
+    # empty strings before the shell runs, and the gate compares nothing
+    # (macos jobs 17472144616 and 17472143550, 2026-10-26).
+    GUEST_CONSOLE_GATE:
+      expand: false
+      value: |
+        console_owner=$(stat -f '%Su' /dev/console 2>&1)
+        echo "launchd-session=$(launchctl managername 2>&1) uid=$(id -u) user=$(id -un) console-owner=$console_owner"
+        if [ "$console_owner" != "$(id -un)" ]; then
+          echo "ERROR: the guest console belongs to '$console_owner', not '$(id -un)'." >&2
+          exit 1
+        fi
 
 diag:tart-executor-rehearsal:
   extends: [.tart-guest]
