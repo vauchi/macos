@@ -1338,8 +1338,12 @@ test:snapshots:record:
   extends: [.macos-job, .spm-cache-readonly]
   stage: test
   needs:
+    # build:debug's Vauchi.xcodeproj carries the Package.resolved that
+    # -disableAutomaticPackageResolution requires. A freshly generated
+    # project has none, and xcodebuild refuses to resolve (job
+    # 17475400901, private#836).
     - job: build:debug
-      artifacts: false  # record job does its own full build
+      artifacts: true
       optional: true
   when: manual
   allow_failure: true
@@ -1347,9 +1351,13 @@ test:snapshots:record:
     VAUCHI_PLATFORM_USE_LOCAL_XCFRAMEWORK: "1"
   script:
     - echo "📸 Recording snapshot baselines..."
-    - command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
-    - rm -rf Vauchi.xcodeproj
-    - xcodegen generate
+    # As in test:unit: keep build:debug's project; regenerate only if the
+    # artifact has expired.
+    - |
+      if [ ! -d Vauchi.xcodeproj ]; then
+        command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
+        xcodegen generate
+      fi
     # SPM state cached from build:debug — don't re-resolve (avoids 401 on binary download)
     - ./scripts/fix-xcframework-symlinks.sh
     # Job-local mirror config, as in test:unit and test:snapshots: the
