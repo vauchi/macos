@@ -1883,9 +1883,35 @@ diag:tart-bake-tools:
         sleep 5
       done
       "$TART" exec "$NEW" /bin/sh -c 'HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_INSTALL_CLEANUP=1 /opt/homebrew/bin/brew install xcodegen a7ex/homebrew-formulae/xcresultparser && /opt/homebrew/bin/xcodegen --version && /opt/homebrew/bin/xcresultparser --version'
+      # Flush before stopping: the first bake (job 17475870596) stopped right
+      # after xcresultparser's install, and the image lacked it while the
+      # earlier xcodegen survived (job 17475870597).
+      "$TART" exec "$NEW" /bin/sync
       "$TART" stop "$NEW"
       "$TART" delete "$BAKE_NAME" >/dev/null 2>&1 || true
       "$TART" clone "$NEW" "$BAKE_NAME"
+      # Prove the saved image, not the VM that built it: boot a fresh clone
+      # and require both tools there.
+      CHECK="${BAKE_NAME}-check-${CI_JOB_ID}"
+      "$TART" clone "$BAKE_NAME" "$CHECK"
+      trap '"$TART" stop "$NEW" >/dev/null 2>&1 || true; "$TART" delete "$NEW" >/dev/null 2>&1 || true; "$TART" stop "$CHECK" >/dev/null 2>&1 || true; "$TART" delete "$CHECK" >/dev/null 2>&1 || true' EXIT
+      "$TART" run --no-graphics "$CHECK" >> "tart-run-${CI_JOB_ID}.log" 2>&1 &
+      "$TART" ip --wait 240 "$CHECK"
+      tries=0
+      until "$TART" exec "$CHECK" /usr/bin/true; do
+        tries=$((tries + 1))
+        if [ "$tries" -ge 24 ]; then
+          echo "ERROR: tart exec did not answer in the check VM within 120 s" >&2
+          exit 1
+        fi
+        sleep 5
+      done
+      if ! "$TART" exec "$CHECK" /bin/sh -c 'ls -l /opt/homebrew/bin/xcodegen /opt/homebrew/bin/xcresultparser && /opt/homebrew/bin/xcresultparser --version'; then
+        echo "ERROR: $BAKE_NAME lacks a tool after a fresh boot; deleting it" >&2
+        "$TART" delete "$BAKE_NAME" || true
+        exit 1
+      fi
+      echo "OK: $BAKE_NAME has both tools after a fresh boot"
       "$TART" list | grep -v '^OCI'
   artifacts:
     when: always
