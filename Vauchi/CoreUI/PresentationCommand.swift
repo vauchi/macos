@@ -174,6 +174,10 @@ private struct PresentationNotificationCommandPayload: Decodable {
     let notification: JSONValue
 }
 
+private struct PresentationStateCommandPayload: Decodable {
+    let state: String
+}
+
 enum PresentationCommand: Decodable {
     case replaceSurface(PresentationSurface)
     case setContextBar(RevisionedContextBar, surfaceID: String)
@@ -190,8 +194,9 @@ enum PresentationCommand: Decodable {
     /// The lock screen's Touch ID button (Core 0.67.1). Answered with a
     /// `BiometricUnlockSucceeded` event once LocalAuthentication agrees.
     case requestBiometricUnlock
-    /// Queued once a content update applied themes (core!1937): apply the
-    /// selected theme again so a CDN theme takes effect (private#733).
+    /// Queued once a content update applied themes (core!1937, private#733).
+    /// Decoded so it stays off the hardware dispatcher; the Mac paints from
+    /// each surface's colours, so there is no theme of its own to re-read.
     case reloadTheme
     /// Keep `state` per device, outside the vault, and hand it back as the
     /// render context's `restorable_state` (Core 0.90.0, vauchi/private#814).
@@ -305,6 +310,10 @@ enum PresentationCommand: Decodable {
         case "RevealUserPresenceSecret":
             return try .revealUserPresenceSecret(
                 prompt: container.decode(PresentationPromptCommandPayload.self, forKey: key).prompt
+            )
+        case "SaveRestorableState":
+            return try .saveRestorableState(
+                container.decode(PresentationStateCommandPayload.self, forKey: key).state
             )
         case "PostNotification":
             return try .postNotification(

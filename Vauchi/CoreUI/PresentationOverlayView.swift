@@ -9,10 +9,13 @@ struct PresentationOverlayView: View {
     let reducedMotion: Bool
     let onAction: (PresentationEvent) -> Void
     let onDismiss: () -> Void
+    @Environment(\.presentationPalette) private var palette
 
     var body: some View {
         ZStack {
-            ThemeService.shared.scrim
+            // The scrim is no theme role Core sends; the dimming stays the
+            // same under every theme.
+            Color(nsColor: .shadowColor).opacity(0.28)
                 .ignoresSafeArea()
                 .onTapGesture(perform: onDismiss)
             if overlay.overlay.kind == .navigation {
@@ -130,7 +133,7 @@ struct PresentationOverlayView: View {
             }
             .buttonStyle(.bordered)
             .disabled(!action.enabled)
-            .foregroundStyle(action.tone.foregroundColor)
+            .foregroundStyle(action.tone.foregroundColor(in: palette))
             .accessibilityLabel(action.accessibilityLabel)
         }
     }

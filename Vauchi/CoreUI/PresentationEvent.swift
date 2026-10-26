@@ -75,12 +75,15 @@ private struct PresentationEnvironmentEventPayload: Encodable {
     let availableHeight: UInt32
     let inputModes: [PresentationInputMode]
     let motion: PresentationMotion
+    /// Left out when unknown, so Core paints its dark default.
+    let colorScheme: PresentationColorScheme?
 
     private enum CodingKeys: String, CodingKey {
         case availableWidth = "available_width"
         case availableHeight = "available_height"
         case inputModes = "input_modes"
         case motion
+        case colorScheme = "color_scheme"
     }
 }
 
@@ -212,13 +215,14 @@ enum PresentationEvent: Encodable {
                 variant: "OverlayDismissed",
                 into: &container
             )
-        case let .environmentChanged(width, height, inputModes, motion, _):
+        case let .environmentChanged(width, height, inputModes, motion, colorScheme):
             try encodePayloadValue(
                 PresentationEnvironmentEventPayload(
                     availableWidth: width,
                     availableHeight: height,
                     inputModes: inputModes,
-                    motion: motion
+                    motion: motion,
+                    colorScheme: colorScheme
                 ),
                 variant: "PresentationEnvironmentChanged",
                 into: &container

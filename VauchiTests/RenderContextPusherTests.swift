@@ -17,32 +17,31 @@ final class RenderContextPusherTests: XCTestCase {
     }
 
     func testFollowingTheSystemSendsTheSystemLanguageAndNoPickedLanguage() throws {
-        let json = try parse(buildRenderContextJson(themeId: nil, locale: nil, systemLocale: "fr-CH"))
+        let json = try parse(buildRenderContextJson(locale: nil, systemLocale: "fr-CH", restorableState: nil))
 
         XCTAssertEqual(json, ["system_locale": "fr-CH"])
     }
 
     func testAPickedLanguageStillTravelsWithTheSystemLanguage() throws {
-        let json = try parse(buildRenderContextJson(themeId: "cyber", locale: "de", systemLocale: "fr-CH"))
+        let json = try parse(buildRenderContextJson(locale: "de", systemLocale: "fr-CH", restorableState: nil))
 
-        XCTAssertEqual(json, ["theme_id": "cyber", "locale": "de", "system_locale": "fr-CH"])
+        XCTAssertEqual(json, ["locale": "de", "system_locale": "fr-CH"])
     }
 
     func testAnUnknownSystemLanguageIsLeftOut() throws {
-        let json = try parse(buildRenderContextJson(themeId: nil, locale: "de", systemLocale: nil))
+        let json = try parse(buildRenderContextJson(locale: "de", systemLocale: nil, restorableState: nil))
 
         XCTAssertEqual(json, ["locale": "de"])
     }
 
     func testAQuoteOrBackslashInTheSystemTagStaysInsideItsString() throws {
-        let json = try parse(buildRenderContextJson(themeId: nil, locale: nil, systemLocale: "x\"\\y"))
+        let json = try parse(buildRenderContextJson(locale: nil, systemLocale: "x\"\\y", restorableState: nil))
 
         XCTAssertEqual(json, ["system_locale": "x\"\\y"])
     }
 
     func testTheKeptRestorableStateTravelsInEveryPush() throws {
         let json = try parse(buildRenderContextJson(
-            themeId: nil,
             locale: nil,
             systemLocale: "fr-CH",
             restorableState: #"{"v":1,"locale":"de"}"#
@@ -53,12 +52,23 @@ final class RenderContextPusherTests: XCTestCase {
 
     func testNoKeptStateSendsNoRestorableStateKey() throws {
         let json = try parse(buildRenderContextJson(
-            themeId: nil,
             locale: nil,
             systemLocale: nil,
             restorableState: nil
         ))
 
         XCTAssertEqual(json, [:])
+    }
+
+    /// Core owns the state's content, so a control character must not break
+    /// the push the shell builds around it.
+    func testAControlCharacterInTheKeptStateStaysInsideItsString() throws {
+        let json = try parse(buildRenderContextJson(
+            locale: nil,
+            systemLocale: nil,
+            restorableState: "a\nb\u{0}c\td"
+        ))
+
+        XCTAssertEqual(json, ["restorable_state": "a\nb\u{0}c\td"])
     }
 }

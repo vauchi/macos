@@ -13,12 +13,13 @@ import SwiftUI
         let message: String
 
         @Environment(\.designTokens) private var tokens
+        @Environment(\.presentationPalette) private var palette
 
         var body: some View {
             VStack(spacing: 16) {
                 Image(systemName: "exclamationmark.triangle")
                     .font(.system(size: 48))
-                    .foregroundColor(ThemeService.shared.warning)
+                    .foregroundColor(palette.warning)
 
                 Text(LocalizationService.shared.t("app.failed_to_start"))
                     .font(.title2.bold())

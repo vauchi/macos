@@ -7,6 +7,9 @@ import SwiftUI
 struct PresentationHostView: View {
     @ObservedObject var viewModel: AppViewModel
     @Environment(\.accessibilityReduceMotion) private var reducedMotion
+    /// The OS appearance: Core paints its default theme for it under
+    /// "follow system" (vauchi/private#814).
+    @Environment(\.colorScheme) private var colorScheme
     /// Last measured window size, kept so `reducedMotion` changes can
     /// re-report the environment without the GeometryReader in scope.
     @State private var viewportSize: CGSize = .zero
@@ -46,6 +49,9 @@ struct PresentationHostView: View {
         .onChange(of: reducedMotion) { _ in
             reportEnvironment(viewportSize)
         }
+        .onChange(of: colorScheme) { _ in
+            reportEnvironment(viewportSize)
+        }
         .onExitCommand {
             guard let surfaceID = viewModel.presentationState.activeSurfaceID else {
                 return
@@ -82,7 +88,8 @@ struct PresentationHostView: View {
                 availableWidth: UInt32(max(0, size.width.rounded())),
                 availableHeight: UInt32(max(0, size.height.rounded())),
                 inputModes: [.pointer, .keyboard],
-                motion: reducedMotion ? .reduced : .full
+                motion: reducedMotion ? .reduced : .full,
+                colorScheme: colorScheme == .dark ? .dark : .light
             )
         )
     }

@@ -22,7 +22,7 @@ import SwiftUI
             VStack(spacing: 16) {
                 Image(systemName: "person.crop.rectangle.stack")
                     .font(.system(size: 48))
-                    .foregroundColor(ThemeService.shared.accent)
+                    .foregroundColor(PresentationPalette.system.accent)
 
                 Text(appName)
                     .font(.largeTitle.bold())

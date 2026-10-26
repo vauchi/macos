@@ -39,7 +39,8 @@ final class PresentationCommandTests: XCTestCase {
     }
 
     /// Core queues this once a content update applies themes (core!1937,
-    /// private#733); the app answers by applying the selected theme again.
+    /// private#733); decoded on its own so it never reaches the hardware
+    /// dispatcher as an unknown command.
     func testReloadThemeDecodesAsItsOwnCommand() throws {
         let commands = try decode(#"{"commands":["ReloadTheme"]}"#)
 

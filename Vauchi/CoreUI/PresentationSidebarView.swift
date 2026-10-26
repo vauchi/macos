@@ -12,6 +12,7 @@ struct PresentationSidebarView: View {
     let model: SidebarModel
     let focusedBinding: FocusState<String?>.Binding
     let onSelect: (String) -> Void
+    @Environment(\.presentationPalette) private var palette
 
     var body: some View {
         List(model.rows) { row in
@@ -41,13 +42,13 @@ struct PresentationSidebarView: View {
         .buttonStyle(.plain)
         .padding(.vertical, 4)
         .listRowBackground(
-            isSelected ? ThemeService.shared.accent.opacity(0.16) : Color.clear
+            isSelected ? palette.accent.opacity(0.16) : Color.clear
         )
         .accessibilityAddTraits(isSelected ? [.isSelected] : [])
         .keyboardFocusRing(
             focusedBinding,
             equals: row.interactionID,
-            color: ThemeService.shared.focusRing
+            color: palette.focusRing
         )
     }
 
@@ -67,7 +68,7 @@ struct PresentationSidebarView: View {
                     .font(.caption2)
                     .padding(.horizontal, 6)
                     .padding(.vertical, 2)
-                    .background(Capsule().fill(ThemeService.shared.accent))
+                    .background(Capsule().fill(palette.accent))
                     .foregroundStyle(.white)
                     .accessibilityHidden(true)
             }

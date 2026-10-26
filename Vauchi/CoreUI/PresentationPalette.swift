@@ -35,19 +35,70 @@ struct PresentationPalette: Equatable {
         accent: .accentColor,
         border: Color(nsColor: .separatorColor),
         focusRing: .accentColor,
-        success: .green,
-        warning: .orange,
-        error: .red
+        success: Color(nsColor: .systemGreen),
+        warning: Color(nsColor: .systemOrange),
+        error: Color(nsColor: .systemRed)
     )
 }
 
 extension PresentationPalette {
-    init(colors _: PresentationColors?) {
-        self = .system
+    /// A role the theme leaves out paints as its nearest required role; a
+    /// damaged required role, or a surface from a Core without colours,
+    /// paints the system's.
+    init(colors: PresentationColors?) {
+        let system = Self.system
+        guard let colors else {
+            self = system
+            return
+        }
+        func paint(_ hex: String?, else fallback: Color) -> Color {
+            hex.flatMap(Self.color(hex:)) ?? fallback
+        }
+        let background = paint(colors.background, else: system.background)
+        let surface = paint(colors.surface, else: system.surface)
+        let accent = paint(colors.accent, else: system.accent)
+        self.init(
+            background: background,
+            surface: surface,
+            surfaceInput: paint(colors.surfaceInput, else: surface),
+            surfaceMuted: paint(colors.surfaceMuted, else: surface),
+            surfaceElevated: paint(colors.surfaceElevated, else: surface),
+            text: paint(colors.text, else: system.text),
+            textMuted: paint(colors.textMuted, else: system.textMuted),
+            textOnAccent: paint(colors.textOnAccent, else: background),
+            accent: accent,
+            border: paint(colors.border, else: system.border),
+            focusRing: paint(colors.focusRing, else: accent),
+            success: paint(colors.success, else: system.success),
+            warning: paint(colors.warning, else: system.warning),
+            error: paint(colors.error, else: system.error)
+        )
     }
 
-    static func color(hex _: String) -> Color? {
-        nil
+    /// `#rrggbb`, the only form Core sends.
+    static func color(hex: String) -> Color? {
+        let digits = hex.utf8.dropFirst()
+        guard hex.utf8.first == UInt8(ascii: "#"), digits.count == 6,
+              digits.allSatisfy({ isHexDigit($0) }),
+              let text = String(bytes: digits, encoding: .utf8),
+              let value = UInt32(text, radix: 16)
+        else { return nil }
+        return Color(
+            red: Double((value >> 16) & 0xFF) / 255,
+            green: Double((value >> 8) & 0xFF) / 255,
+            blue: Double(value & 0xFF) / 255
+        )
+    }
+
+    private static func isHexDigit(_ byte: UInt8) -> Bool {
+        switch byte {
+        case UInt8(ascii: "0") ... UInt8(ascii: "9"),
+             UInt8(ascii: "a") ... UInt8(ascii: "f"),
+             UInt8(ascii: "A") ... UInt8(ascii: "F"):
+            true
+        default:
+            false
+        }
     }
 }
 

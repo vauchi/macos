@@ -39,11 +39,11 @@ enum PresentationActionTone: String, Codable, PresentationTolerantEnum {
     case serious
     case destructive
 
-    var foregroundColor: Color {
+    func foregroundColor(in palette: PresentationPalette) -> Color {
         switch self {
-        case .standard: .primary
-        case .serious: ThemeService.shared.warning
-        case .destructive: ThemeService.shared.error
+        case .standard: palette.text
+        case .serious: palette.warning
+        case .destructive: palette.error
         }
     }
 }

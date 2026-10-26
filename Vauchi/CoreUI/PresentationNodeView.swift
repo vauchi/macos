@@ -11,6 +11,7 @@ struct PresentationNodeView: View {
     let minimumTarget: CGFloat
     let focusedBinding: FocusState<String?>.Binding
     let onEvent: (PresentationEvent) -> Void
+    @Environment(\.presentationPalette) private var palette
     /// Whether this node's field held focus at the last change. Only a
     /// field that had it can report losing it.
     @State private var hadFocus = false
@@ -40,7 +41,7 @@ struct PresentationNodeView: View {
             .keyboardFocusRing(
                 focusedBinding,
                 equals: value.bindingID,
-                color: ThemeService.shared.focusRing
+                color: palette.focusRing
             )
         case let .choice(value):
             choice(value)
@@ -139,7 +140,7 @@ struct PresentationNodeView: View {
             if let error = value.validationError {
                 Text(error)
                     .font(.caption)
-                    .foregroundStyle(ThemeService.shared.error)
+                    .foregroundStyle(palette.error)
             }
         }
         .onSubmit {
@@ -211,7 +212,7 @@ struct PresentationNodeView: View {
             .keyboardFocusRing(
                 focusedBinding,
                 equals: action.interactionID,
-                color: ThemeService.shared.focusRing
+                color: palette.focusRing
             )
         } else {
             content.accessibilityLabel(value.accessibility.label)
@@ -271,7 +272,7 @@ struct PresentationNodeView: View {
                 .keyboardFocusRing(
                     focusedBinding,
                     equals: action.interactionID,
-                    color: ThemeService.shared.focusRing
+                    color: palette.focusRing
                 )
             }
         }
@@ -330,7 +331,7 @@ struct PresentationNodeView: View {
             }
         }
         .padding(8)
-        .background(ThemeService.shared.warning.opacity(0.12))
+        .background(palette.warning.opacity(0.12))
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .accessibilityElement(children: .contain)
         .accessibilityLabel(value.accessibility.label)
@@ -345,7 +346,7 @@ struct PresentationNodeView: View {
         .keyboardFocusRing(
             focusedBinding,
             equals: action.interactionID,
-            color: ThemeService.shared.focusRing
+            color: palette.focusRing
         )
     }
 
@@ -385,11 +386,11 @@ struct PresentationNodeView: View {
 
     private func toneColor(_ tone: PresentationTone) -> Color {
         switch tone {
-        case .neutral: .secondary
-        case .accent: .accentColor
-        case .success: ThemeService.shared.success
-        case .warning: ThemeService.shared.warning
-        case .error: ThemeService.shared.error
+        case .neutral: palette.textMuted
+        case .accent: palette.accent
+        case .success: palette.success
+        case .warning: palette.warning
+        case .error: palette.error
         }
     }
 
@@ -450,6 +451,7 @@ struct PresentationImageContent: View {
     /// The surface's pointer-target floor. Doubles as the fallback avatar's
     /// diameter, matching `PresentationRowView`'s row avatar.
     let minimumTarget: CGFloat
+    @Environment(\.presentationPalette) private var palette
 
     var body: some View {
         if let data = value.data, let image = NSImage(data: Data(data)) {
@@ -466,9 +468,9 @@ struct PresentationImageContent: View {
             // fills its own fallback; only this node was missing it.
             Text(fallback)
                 .font(.title2.weight(.semibold))
-                .foregroundColor(.primary)
+                .foregroundColor(palette.text)
                 .frame(width: fallbackSpec.diameter, height: fallbackSpec.diameter)
-                .background(Color.secondary.opacity(AvatarFallbackSpec.fillOpacity))
+                .background(palette.textMuted.opacity(AvatarFallbackSpec.fillOpacity))
                 .clipShape(clipShape(for: fallbackSpec))
         }
     }
@@ -498,6 +500,7 @@ private struct PresentationRowView: View {
     let minimumTarget: CGFloat
     let focusedBinding: FocusState<String?>.Binding
     let onEvent: (PresentationEvent) -> Void
+    @Environment(\.presentationPalette) private var palette
 
     var body: some View {
         HStack {
@@ -511,7 +514,7 @@ private struct PresentationRowView: View {
             } else if let fallback = row.fallbackText {
                 Text(fallback)
                     .frame(width: minimumTarget, height: minimumTarget)
-                    .background(Color.secondary.opacity(0.15))
+                    .background(palette.textMuted.opacity(0.15))
                     .clipShape(Circle())
             } else if let icon = NavigationIconMap.rowIcon(for: row.iconToken) {
                 // Decorative: the row's accessibility label already names it.
@@ -557,7 +560,7 @@ private struct PresentationRowView: View {
             }
         }
         .padding(8)
-        .background(row.selected ? Color.accentColor.opacity(0.12) : .clear)
+        .background(row.selected ? palette.accent.opacity(0.12) : .clear)
         .contentShape(Rectangle())
         .onTapGesture {
             if let action = row.activation, row.enabled, action.enabled {
@@ -567,7 +570,7 @@ private struct PresentationRowView: View {
         .keyboardFocusRing(
             focusedBinding,
             equals: row.id,
-            color: ThemeService.shared.focusRing
+            color: palette.focusRing
         )
         // Without .contain the row's label replaced its info button's and
         // controls' own labels (vauchi/private#720), as #715 found for lists.

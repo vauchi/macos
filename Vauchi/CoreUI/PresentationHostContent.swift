@@ -16,8 +16,21 @@ struct PresentationHostContent: View {
     @Environment(\.accessibilityReduceMotion) private var reducedMotion
     @FocusState private var focusedBindingID: String?
 
+    /// The active surface's colours. Overlays carry no tokens of their own,
+    /// so they and the window around the surfaces paint with these
+    /// (vauchi/private#814).
+    private var palette: PresentationPalette {
+        PresentationPalette(
+            colors: state.activeSurfaceID.flatMap { state.surfaces[$0] }?.tokens.colors
+        )
+    }
+
     var body: some View {
         chrome
+            .background(palette.background)
+            .foregroundStyle(palette.text)
+            .tint(palette.accent)
+            .environment(\.presentationPalette, palette)
             // WCAG 2.2 SC 2.4.11: a presented overlay visually covers the
             // active surface, so any control focused underneath it must
             // release focus rather than leave its ring drawn beneath a
@@ -130,6 +143,10 @@ struct PresentationHostContent: View {
                     onEvent: { event in
                         onEvent(surfaceID, event)
                     }
+                )
+                .environment(
+                    \.presentationPalette,
+                    PresentationPalette(colors: surface.tokens.colors)
                 )
             }
         }
