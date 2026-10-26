@@ -2247,3 +2247,39 @@ diag:tart-console-gate-fails:
           echo "$out" >&2
           exit 1 ;;
       esac
+
+# Phase 3 step 0 (vauchi/private#309): can a bake script run commands in a
+# guest with `tart exec` (needs a guest agent in the image), or must it use
+# SSH? Runs on the shell runner because Tart needs its console session.
+diag:tart-exec-probe:
+  extends: [.macos-job]
+  stage: test
+  needs: []
+  when: manual
+  timeout: 15m
+  script:
+    - |
+      set -u
+      TART="$HOME/homebrew/bin/tart"
+      VM="probe-${CI_JOB_ID}"
+      "$TART" --version
+      if "$TART" --help 2>&1 | grep -qE '^ +exec '; then echo "tart has exec"; else echo "tart has no exec subcommand"; fi
+      "$TART" clone ghcr.io/cirruslabs/macos-tahoe-xcode:26.4 "$VM"
+      trap '"$TART" stop "$VM" >/dev/null 2>&1 || true; "$TART" delete "$VM" || true' EXIT
+      "$TART" run --no-graphics "$VM" > "tart-run-${CI_JOB_ID}.log" 2>&1 &
+      if ! vm_ip=$("$TART" ip --wait 240 "$VM"); then
+        echo "ERROR: $VM reported no IP within 240 s" >&2
+        exit 1
+      fi
+      echo "VM IP: $vm_ip"
+      if "$TART" exec "$VM" /bin/sh -c 'echo "exec ok: $(id -un) $(sw_vers -productVersion)"'; then
+        echo "RESULT: tart exec works"
+      else
+        echo "RESULT: tart exec failed (exit $?)"
+      fi
+      if nc -z -G 10 "$vm_ip" 22; then echo "RESULT: ssh port open"; else echo "RESULT: ssh port closed"; fi
+  artifacts:
+    when: always
+    paths:
+      - tart-run-*.log
+    expire_in: 1 week
