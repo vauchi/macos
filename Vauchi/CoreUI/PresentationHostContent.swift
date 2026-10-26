@@ -27,7 +27,7 @@ struct PresentationHostContent: View {
 
     var body: some View {
         chrome
-            .background(palette.background)
+            .background(palette.surface)
             .foregroundStyle(palette.text)
             .tint(palette.accent)
             .environment(\.presentationPalette, palette)

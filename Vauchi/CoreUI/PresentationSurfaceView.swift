@@ -25,7 +25,7 @@ struct PresentationSurfaceView: View {
             titleRow
             if let subtitle = surface.subtitle {
                 Text(subtitle)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(palette.textMuted)
             }
             Group {
                 if surface.layout == .scroll {
@@ -43,7 +43,11 @@ struct PresentationSurfaceView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(CGFloat(surface.tokens.spacingLarge))
-        .background(palette.surface)
+        // The card is where muted text sits, so it fills with `background`:
+        // five of the fourteen themes put muted text on `surface` below
+        // WCAG AA's 4.5:1 (catppuccin-latte 4.19), all fourteen clear it on
+        // `background` (vauchi/private#814).
+        .background(palette.background)
         .clipShape(
             RoundedRectangle(cornerRadius: CGFloat(surface.tokens.cornerRadius))
         )

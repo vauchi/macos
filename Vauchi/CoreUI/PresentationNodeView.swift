@@ -22,7 +22,7 @@ struct PresentationNodeView: View {
             let style = textRoleStyle(for: value.style)
             Text(value.content)
                 .font(style.font)
-                .foregroundStyle(style.muted ? AnyShapeStyle(.secondary) : AnyShapeStyle(.primary))
+                .foregroundStyle(style.muted ? palette.textMuted : palette.text)
                 .accessibilityLabel(value.accessibility.label)
         case let .input(value):
             input(value)
@@ -257,7 +257,7 @@ struct PresentationNodeView: View {
             VStack(alignment: .leading) {
                 Text(value.title).font(.headline)
                 if let detail = value.detail {
-                    Text(detail).foregroundStyle(.secondary)
+                    Text(detail).foregroundStyle(palette.textMuted)
                 }
             }
             Spacer()
@@ -524,12 +524,12 @@ private struct PresentationRowView: View {
             VStack(alignment: .leading) {
                 Text(row.title).font(.headline)
                 if let subtitle = row.subtitle {
-                    Text(subtitle).foregroundStyle(.secondary)
+                    Text(subtitle).foregroundStyle(palette.textMuted)
                 }
             }
             Spacer()
             if let detail = row.detail {
-                Text(detail).foregroundStyle(.secondary)
+                Text(detail).foregroundStyle(palette.textMuted)
             }
             if let info = row.info {
                 // Explains this one item (vauchi/private#479); Core names it
