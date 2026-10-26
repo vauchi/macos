@@ -659,14 +659,30 @@ build:release:
 # Test Stage
 # ============================================================
 
+# Runs in a fresh Tart VM on nell (vauchi/private#309): its own console, no
+# shared macos lock, up to two at once. The guest has none of nell's caches,
+# so before_script does what build:debug provides on the host. Image tools
+# come from diag:tart-bake-tools; brew installs them if the image lacks them.
+# Rollback: restore `extends: [.macos-job, .spm-cache-readonly]`, the
+# build:debug need, and the artifact-reuse block, and drop tags/image.
 test:unit:
-  extends: [.macos-job, .spm-cache-readonly]
   stage: test
-  needs:
-    - job: build:debug
-      artifacts: true
-      optional: true
+  needs: []
+  tags:
+    - macos-tart
+    - self-hosted
+  image: vauchi-macos-ci-tools
+  # vci02-ok: no template is extended any more; this prepares the guest.
+  before_script:
+    - command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
+    - command -v xcresultparser >/dev/null 2>&1 || brew install a7ex/homebrew-formulae/xcresultparser
+    - rm -rf Vauchi.xcodeproj && xcodegen generate
+    - ./scripts/ci-spm-prepare.sh
   variables:
+    TART_EXECUTOR_ALWAYS_PULL: "false"
+    COMPILER_INDEX_STORE_ENABLE: "NO"
+    HOMEBREW_NO_AUTO_UPDATE: "1"
+    HOMEBREW_NO_INSTALL_CLEANUP: "1"
     # Mirror build:debug's env var: vauchi-platform-swift's manifest
     # emits `path:` binaryTarget when set (Fix C). Without this,
     # xcodebuild's manifest evaluation during build-for-testing emits
@@ -678,15 +694,9 @@ test:unit:
     # resolution finds the local binary instead of fetching.
     VAUCHI_PLATFORM_USE_LOCAL_XCFRAMEWORK: "1"
   script:
-    # Prefer Vauchi.xcodeproj from build:debug artifact; regen only if missing
-    # (e.g. manual retry after the 1h artifact expiry).
-    - |
-      if [ ! -d Vauchi.xcodeproj ]; then
-        command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
-        xcodegen generate
-      fi
-    # SPM state cached from build:debug — disable automatic resolution to prevent
-    # implicit re-resolve that hangs on binary target download (401 auth failure).
+    # SPM state comes from before_script's ci-spm-prepare.sh — disable automatic
+    # resolution to prevent implicit re-resolve that hangs on binary target
+    # download (401 auth failure).
     - ./scripts/fix-xcframework-symlinks.sh
     # Per-job SPM mirror-config isolation — immune to the shared-config race
     # (problem 2026-06-29-spm-mirror-config-race). Both xcodebuild invocations
@@ -1832,6 +1842,75 @@ diag:tart-exec-probe:
         echo "RESULT: tart exec failed (exit $?)"
       fi
       if nc -z -G 10 "$vm_ip" 22; then echo "RESULT: ssh port open"; else echo "RESULT: ssh port closed"; fi
+  artifacts:
+    when: always
+    paths:
+      - tart-run-*.log
+    expire_in: 1 week
+
+# Tools-only image for the Tart jobs (vauchi/private#309): the unbaked VM
+# test:unit spent 46 s of ~3 min installing these with brew (job
+# 17475514928). Runs on the shell runner because Tart needs its console
+# session. Re-run after an Xcode or base-image change.
+diag:tart-bake-tools:
+  extends: [.macos-job]
+  stage: test
+  needs: []
+  when: manual
+  timeout: 30m
+  variables:
+    BAKE_BASE: ghcr.io/cirruslabs/macos-tahoe-xcode:26.4
+    BAKE_NAME: vauchi-macos-ci-tools
+  script:
+    - |
+      set -eu
+      TART="$HOME/homebrew/bin/tart"
+      NEW="${BAKE_NAME}-${CI_JOB_ID}"
+      "$TART" clone "$BAKE_BASE" "$NEW"
+      trap '"$TART" stop "$NEW" >/dev/null 2>&1 || true; "$TART" delete "$NEW" >/dev/null 2>&1 || true' EXIT
+      "$TART" run --no-graphics "$NEW" > "tart-run-${CI_JOB_ID}.log" 2>&1 &
+      "$TART" ip --wait 240 "$NEW"
+      # The guest agent answers some seconds after the IP (17 s in job 17472957258).
+      tries=0
+      until "$TART" exec "$NEW" /usr/bin/true; do
+        tries=$((tries + 1))
+        if [ "$tries" -ge 24 ]; then
+          echo "ERROR: tart exec did not answer within 120 s" >&2
+          exit 1
+        fi
+        sleep 5
+      done
+      "$TART" exec "$NEW" /bin/sh -c 'HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_INSTALL_CLEANUP=1 /opt/homebrew/bin/brew install xcodegen a7ex/homebrew-formulae/xcresultparser && /opt/homebrew/bin/xcodegen --version && /opt/homebrew/bin/xcresultparser --version'
+      # Flush before stopping: the first bake (job 17475870596) stopped right
+      # after xcresultparser's install, and the image lacked it while the
+      # earlier xcodegen survived (job 17475870597).
+      "$TART" exec "$NEW" /bin/sync
+      "$TART" stop "$NEW"
+      "$TART" delete "$BAKE_NAME" >/dev/null 2>&1 || true
+      "$TART" clone "$NEW" "$BAKE_NAME"
+      # Prove the saved image, not the VM that built it: boot a fresh clone
+      # and require both tools there.
+      CHECK="${BAKE_NAME}-check-${CI_JOB_ID}"
+      "$TART" clone "$BAKE_NAME" "$CHECK"
+      trap '"$TART" stop "$NEW" >/dev/null 2>&1 || true; "$TART" delete "$NEW" >/dev/null 2>&1 || true; "$TART" stop "$CHECK" >/dev/null 2>&1 || true; "$TART" delete "$CHECK" >/dev/null 2>&1 || true' EXIT
+      "$TART" run --no-graphics "$CHECK" >> "tart-run-${CI_JOB_ID}.log" 2>&1 &
+      "$TART" ip --wait 240 "$CHECK"
+      tries=0
+      until "$TART" exec "$CHECK" /usr/bin/true; do
+        tries=$((tries + 1))
+        if [ "$tries" -ge 24 ]; then
+          echo "ERROR: tart exec did not answer in the check VM within 120 s" >&2
+          exit 1
+        fi
+        sleep 5
+      done
+      if ! "$TART" exec "$CHECK" /bin/sh -c 'ls -l /opt/homebrew/bin/xcodegen /opt/homebrew/bin/xcresultparser && /opt/homebrew/bin/xcresultparser --version'; then
+        echo "ERROR: $BAKE_NAME lacks a tool after a fresh boot; deleting it" >&2
+        "$TART" delete "$BAKE_NAME" || true
+        exit 1
+      fi
+      echo "OK: $BAKE_NAME has both tools after a fresh boot"
+      "$TART" list | grep -v '^OCI'
   artifacts:
     when: always
     paths:
