@@ -1849,3 +1849,54 @@ diag:tart-test-unit:
     reports:
       junit: test-results.xml
     expire_in: 7 days
+
+# Tools-only image for the Tart jobs (vauchi/private#309): the unbaked VM
+# test:unit spent 46 s of ~3 min installing these with brew (job
+# 17475514928). Runs on the shell runner because Tart needs its console
+# session. Re-run after an Xcode or base-image change.
+diag:tart-bake-tools:
+  extends: [.macos-job]
+  stage: test
+  needs: []
+  when: manual
+  timeout: 30m
+  variables:
+    BAKE_BASE: ghcr.io/cirruslabs/macos-tahoe-xcode:26.4
+    BAKE_NAME: vauchi-macos-ci-tools
+  script:
+    - |
+      set -eu
+      TART="$HOME/homebrew/bin/tart"
+      NEW="${BAKE_NAME}-${CI_JOB_ID}"
+      "$TART" clone "$BAKE_BASE" "$NEW"
+      trap '"$TART" stop "$NEW" >/dev/null 2>&1 || true; "$TART" delete "$NEW" >/dev/null 2>&1 || true' EXIT
+      "$TART" run --no-graphics "$NEW" > "tart-run-${CI_JOB_ID}.log" 2>&1 &
+      "$TART" ip --wait 240 "$NEW"
+      # The guest agent answers some seconds after the IP (17 s in job 17472957258).
+      tries=0
+      until "$TART" exec "$NEW" /usr/bin/true; do
+        tries=$((tries + 1))
+        if [ "$tries" -ge 24 ]; then
+          echo "ERROR: tart exec did not answer within 120 s" >&2
+          exit 1
+        fi
+        sleep 5
+      done
+      "$TART" exec "$NEW" /bin/sh -c 'HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_INSTALL_CLEANUP=1 /opt/homebrew/bin/brew install xcodegen a7ex/homebrew-formulae/xcresultparser && /opt/homebrew/bin/xcodegen --version && /opt/homebrew/bin/xcresultparser --version'
+      "$TART" stop "$NEW"
+      "$TART" delete "$BAKE_NAME" >/dev/null 2>&1 || true
+      "$TART" clone "$NEW" "$BAKE_NAME"
+      "$TART" list | grep -v '^OCI'
+  artifacts:
+    when: always
+    paths:
+      - tart-run-*.log
+    expire_in: 1 week
+
+# The VM test:unit on the tools image; the brew installs in its
+# before_script find the tools and skip.
+diag:tart-test-unit-baked:
+  extends: [diag:tart-test-unit]
+  image: vauchi-macos-ci-tools
+  variables:
+    TART_EXECUTOR_ALWAYS_PULL: "false"
