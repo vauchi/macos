@@ -1817,3 +1817,35 @@ diag:tart-exec-probe:
     paths:
       - tart-run-*.log
     expire_in: 1 week
+
+# Phase 3 (vauchi/private#309): test:unit in a fresh Tart VM, with no baked
+# image. The guest has none of nell's caches, so the job first does what
+# build:debug provides on the host (tools, project, SPM mirror), then runs
+# test:unit's own script unchanged. Each phase prints its duration so the
+# result can be compared with the shell runner's 17 s test:unit.
+diag:tart-test-unit:
+  extends: [.tart-guest]
+  timeout: 45m
+  variables:
+    VAUCHI_PLATFORM_USE_LOCAL_XCFRAMEWORK: "1"
+    COMPILER_INDEX_STORE_ENABLE: "NO"
+    HOMEBREW_NO_AUTO_UPDATE: "1"
+    HOMEBREW_NO_INSTALL_CLEANUP: "1"
+  # vci02-ok: .tart-guest defines no before_script; this one prepares the guest.
+  before_script:
+    - phase_start=$(date +%s)
+    - command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
+    - command -v xcresultparser >/dev/null 2>&1 || brew install a7ex/homebrew-formulae/xcresultparser
+    - echo "── tools $(( $(date +%s) - phase_start ))s ──"; phase_start=$(date +%s)
+    - rm -rf Vauchi.xcodeproj && xcodegen generate
+    - ./scripts/ci-spm-prepare.sh
+    - echo "── project + SPM $(( $(date +%s) - phase_start ))s ──"
+  script:
+    - !reference [test:unit, script]
+  artifacts:
+    when: always
+    paths:
+      - TestResults
+    reports:
+      junit: test-results.xml
+    expire_in: 7 days
