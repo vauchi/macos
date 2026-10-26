@@ -193,6 +193,9 @@ enum PresentationCommand: Decodable {
     /// Queued once a content update applied themes (core!1937): apply the
     /// selected theme again so a CDN theme takes effect (private#733).
     case reloadTheme
+    /// Keep `state` per device, outside the vault, and hand it back as the
+    /// render context's `restorable_state` (Core 0.90.0, vauchi/private#814).
+    case saveRestorableState(String)
     /// Seal a fresh secret behind the OS user-presence check, then run the
     /// check with `prompt` as its reason (vauchi/private#712).
     case createUserPresenceSecret(prompt: String, binding: UserPresenceBinding?)

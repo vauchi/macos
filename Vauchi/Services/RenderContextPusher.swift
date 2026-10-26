@@ -48,7 +48,12 @@ import Foundation
     /// `systemLocale` is the OS language, sent on every push: on "Follow
     /// system" no `locale` goes out, and core renders the system language
     /// only if it is told what it is (vauchi/private#721).
-    func buildRenderContextJson(themeId: String?, locale: String?, systemLocale: String?) -> String {
+    func buildRenderContextJson(
+        themeId: String?,
+        locale: String?,
+        systemLocale: String?,
+        restorableState _: String? = nil
+    ) -> String {
         var parts: [String] = []
         if let themeId {
             parts.append("\"theme_id\":\(jsonString(themeId))")

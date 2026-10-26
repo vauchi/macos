@@ -19,7 +19,8 @@ final class PresentationTokensPointerTargetTests: XCTestCase {
             spacingMedium: 8,
             spacingLarge: 16,
             cornerRadius: 8,
-            minimumTargetSize: minimumTargetSize
+            minimumTargetSize: minimumTargetSize,
+            colors: nil
         )
     }
 

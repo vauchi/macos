@@ -109,7 +109,8 @@ enum PresentationEvent: Encodable {
         availableWidth: UInt32,
         availableHeight: UInt32,
         inputModes: [PresentationInputMode],
-        motion: PresentationMotion
+        motion: PresentationMotion,
+        colorScheme: PresentationColorScheme? = nil
     )
     case deepLinkOpened(uri: String)
     case appBackgrounded
@@ -211,7 +212,7 @@ enum PresentationEvent: Encodable {
                 variant: "OverlayDismissed",
                 into: &container
             )
-        case let .environmentChanged(width, height, inputModes, motion):
+        case let .environmentChanged(width, height, inputModes, motion, _):
             try encodePayloadValue(
                 PresentationEnvironmentEventPayload(
                     availableWidth: width,

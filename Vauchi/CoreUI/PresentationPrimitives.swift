@@ -173,6 +173,13 @@ enum PresentationMotion: String, Codable {
     case reduced
 }
 
+/// The OS light/dark appearance, reported so "follow system" paints Core's
+/// default theme for it (Core 0.90.0, vauchi/private#814).
+enum PresentationColorScheme: String, Codable {
+    case light
+    case dark
+}
+
 enum PresentationWindowClass: String, Codable, PresentationTolerantEnum {
     static let decodingFallback = Self.compact
 
@@ -218,6 +225,9 @@ struct PresentationTokens: Codable, Equatable {
     let spacingLarge: UInt16
     let cornerRadius: UInt16
     let minimumTargetSize: UInt16
+    /// The active theme's colours (Core 0.90.0, vauchi/private#814).
+    /// Optional so a surface from an older Core still decodes.
+    let colors: PresentationColors?
 
     private enum CodingKeys: String, CodingKey {
         case spacingSmall = "spacing_small"
@@ -225,5 +235,35 @@ struct PresentationTokens: Codable, Equatable {
         case spacingLarge = "spacing_large"
         case cornerRadius = "corner_radius"
         case minimumTargetSize = "minimum_target_size"
+        case colors
+    }
+}
+
+/// The active theme's colours by role, as `#rrggbb`. A `nil` role is one the
+/// theme leaves out; `PresentationPalette` paints its nearest required role.
+struct PresentationColors: Codable, Equatable {
+    let background: String
+    let surface: String
+    let text: String
+    let textMuted: String
+    let accent: String
+    let border: String
+    let success: String
+    let warning: String
+    let error: String
+    let surfaceInput: String?
+    let surfaceMuted: String?
+    let surfaceElevated: String?
+    let textOnAccent: String?
+    let focusRing: String?
+
+    private enum CodingKeys: String, CodingKey {
+        case background, surface, text, accent, border, success, warning, error
+        case textMuted = "text_muted"
+        case surfaceInput = "surface_input"
+        case surfaceMuted = "surface_muted"
+        case surfaceElevated = "surface_elevated"
+        case textOnAccent = "text_on_accent"
+        case focusRing = "focus_ring"
     }
 }

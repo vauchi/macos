@@ -39,4 +39,26 @@ final class RenderContextPusherTests: XCTestCase {
 
         XCTAssertEqual(json, ["system_locale": "x\"\\y"])
     }
+
+    func testTheKeptRestorableStateTravelsInEveryPush() throws {
+        let json = try parse(buildRenderContextJson(
+            themeId: nil,
+            locale: nil,
+            systemLocale: "fr-CH",
+            restorableState: #"{"v":1,"locale":"de"}"#
+        ))
+
+        XCTAssertEqual(json, ["system_locale": "fr-CH", "restorable_state": #"{"v":1,"locale":"de"}"#])
+    }
+
+    func testNoKeptStateSendsNoRestorableStateKey() throws {
+        let json = try parse(buildRenderContextJson(
+            themeId: nil,
+            locale: nil,
+            systemLocale: nil,
+            restorableState: nil
+        ))
+
+        XCTAssertEqual(json, [:])
+    }
 }

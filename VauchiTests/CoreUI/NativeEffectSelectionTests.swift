@@ -49,6 +49,14 @@ final class NativeEffectSelectionTests: XCTestCase {
         XCTAssertEqual(variants, ["BleStopScanning"])
     }
 
+    func testSaveRestorableStateStaysWithThePresentation() throws {
+        let variants = try selectedVariants(
+            #"{"commands":[{"SaveRestorableState":{"state":"x"}},"BleStopScanning"]}"#
+        )
+
+        XCTAssertEqual(variants, ["BleStopScanning"])
+    }
+
     func testReloadThemeStaysWithThePresentation() throws {
         let variants = try selectedVariants(#"{"commands":["ReloadTheme","BleStopScanning"]}"#)
 
