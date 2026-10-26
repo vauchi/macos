@@ -1385,7 +1385,15 @@ test:snapshots:record:
       fi
       echo "✅ Tests executed (exit code ${XCODE_EXIT} is expected in record mode)"
     # Preserve recorded snapshots across git checkout
-    - cp -r VauchiSnapshotTests/__Snapshots__/ /tmp/__Snapshots__-${CI_JOB_ID}/
+    # No snapshot-baseline test has existed since 7a2647b (2026-07-31), so a
+    # run may record nothing. BSD cp then fails naming the *target* (job
+    # 17478859936, private#836); report it and stop instead.
+    - |
+      if [ ! -d VauchiSnapshotTests/__Snapshots__ ]; then
+        echo "✅ No __Snapshots__ recorded — no snapshot-baseline tests to commit"
+        exit 0
+      fi
+      cp -r VauchiSnapshotTests/__Snapshots__/ /tmp/__Snapshots__-${CI_JOB_ID}/
     # Switch from detached merge-ref HEAD to the actual branch.
     # CI_JOB_TOKEN auth is auto-configured by GitLab (insteadOf rewrite).
     # Push permissions enabled via project setting (ci_push_repository_for_job_token_allowed).
