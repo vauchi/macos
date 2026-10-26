@@ -2149,3 +2149,41 @@ check:pictogram-copies-current:
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: $CI_PIPELINE_SOURCE == "schedule"
+
+# Can Tart start a macOS VM from the runner's own console session? From
+# a Background session it cannot: VZErrorDomain -9 "Failed to create new
+# HostKey" (vauchi/private#309, 2026-10-26). This answers that before any
+# job moves to a Tart executor. Manual: it boots a 4-vCPU guest on the
+# shared host.
+diag:tart-vm-start:
+  extends: [.macos-job]
+  stage: test
+  needs: []
+  when: manual
+  timeout: 15m
+  script:
+    - |
+      set -eu
+      echo "launchd-session=$(launchctl managername) uid=$(id -u) console-owner=$(stat -f '%Su' /dev/console)"
+      TART="$HOME/homebrew/bin/tart"
+      "$TART" --version
+      "$HOME/bin/gitlab-tart-executor" --version
+      "$TART" list
+      "$TART" run --no-graphics vauchi-gui > "tart-run-${CI_JOB_ID}.log" 2>&1 &
+      run_pid=$!
+      status=0
+      if vm_ip=$("$TART" ip --wait 240 vauchi-gui); then
+        echo "VM IP: $vm_ip"
+      else
+        echo "ERROR: vauchi-gui reported no IP within 240 s" >&2
+        status=1
+      fi
+      "$TART" stop vauchi-gui || true
+      wait "$run_pid" || true
+      cat "tart-run-${CI_JOB_ID}.log"
+      exit "$status"
+  artifacts:
+    when: always
+    paths:
+      - tart-run-*.log
+    expire_in: 1 week
