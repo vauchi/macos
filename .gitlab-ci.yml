@@ -2203,19 +2203,9 @@ diag:tart-vm-start:
     - self-hosted
   image: ghcr.io/cirruslabs/macos-tahoe-xcode:26.4
   variables:
-    # SSH answers before the guest's auto-login has finished: on
-    # 2026-10-26 two guests had no console owner 28 s after cloning
-    # (macos jobs 17471443937, 17471443938). Wait for a login before
-    # judging, and print how long it took.
     GUEST_CONSOLE_GATE: |
-      waited=0
       console_owner=$(stat -f '%Su' /dev/console 2>&1)
-      while { [ -z "$console_owner" ] || [ "$console_owner" = root ]; } && [ "$waited" -lt 180 ]; do
-        sleep 5
-        waited=$((waited + 5))
-        console_owner=$(stat -f '%Su' /dev/console 2>&1)
-      done
-      echo "launchd-session=$(launchctl managername 2>&1) uid=$(id -u) user=$(id -un) console-owner=$console_owner waited=${waited}s"
+      echo "launchd-session=$(launchctl managername 2>&1) uid=$(id -u) user=$(id -un) console-owner=$console_owner"
       if [ "$console_owner" != "$(id -un)" ]; then
         echo "ERROR: the guest console belongs to '$console_owner', not '$(id -un)'." >&2
         exit 1
