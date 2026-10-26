@@ -21,7 +21,6 @@ struct VauchiApp: App {
 
     #if canImport(VauchiPlatform)
         @StateObject private var appState = AppState()
-        @StateObject private var themeService = ThemeService.shared
     #endif
 
     var body: some Scene {
@@ -29,7 +28,6 @@ struct VauchiApp: App {
             #if canImport(VauchiPlatform)
                 ContentView()
                     .environmentObject(appState)
-                    .environmentObject(themeService)
                     // A vauchi:// link goes to Core, which owns the
                     // destination (vauchi/private#650). Without the
                     // external-events preference SwiftUI opens a new window

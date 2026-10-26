@@ -28,7 +28,6 @@
 		26EDE59053AA4925CD66C445 /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = E3FE6A79522017C971205541 /* Fonts */; };
 		273975EC388CFE5D5B02731F /* RenderContextPusherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB04A9F8F1DEF697349D20A3 /* RenderContextPusherTests.swift */; };
 		28ABEAE77D5BC15063202DCC /* PresentationEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F0B112148ABCC1933D659A4 /* PresentationEvent.swift */; };
-		2D0728F99D4DBB3C8491C25B /* ThemeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CF989EA84DBE8A9F43E05D /* ThemeService.swift */; };
 		2F7D817E60BDE6223F5E0484 /* VauchiApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71E5FB136BF29B1F9D9B7F04 /* VauchiApp.swift */; };
 		3202529BECD6DFEEB2B2BECF /* ScreenCaptureProtection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40B52514F7B6CC866BDD778D /* ScreenCaptureProtection.swift */; };
 		372704301C13BD3953C05111 /* TextRoleStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF7B59DC1F3F21EAE1966C19 /* TextRoleStyle.swift */; };
@@ -55,7 +54,6 @@
 		5DA017D592A1A9672DC64A91 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E17FD049E1582776B08D1899 /* Assets.xcassets */; };
 		5E3F03217A562741885A95B1 /* BiometricUnlockBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5EC393CDE3EB022DA19E3D3 /* BiometricUnlockBridgeTests.swift */; };
 		5E688F30D19C48A1083D7DBE /* ScreenCatalogEntryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EA2277D925095A67547D8E9 /* ScreenCatalogEntryTests.swift */; };
-		60D8E07B9EFB1F102D7518A0 /* ThemeServiceSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BF7BC594414EE931756CE54 /* ThemeServiceSettingsTests.swift */; };
 		62599578493FDDEC0B2996CA /* FakeKeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1710F96007D89158A39B53E /* FakeKeychainStore.swift */; };
 		62F4C21108066CA3CFD47F8D /* legacy-before.db in Resources */ = {isa = PBXBuildFile; fileRef = 0179C0B17649A2FB9929EF1F /* legacy-before.db */; };
 		6E92A916EC67234553ED4D85 /* LocalizationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C859B6215BADD6A45480D9F /* LocalizationService.swift */; };
@@ -176,7 +174,6 @@
 		49509AE0DF70B880F977B015 /* AudioProximityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioProximityService.swift; sourceTree = "<group>"; };
 		49B374973D50CCCC7F0EF6DA /* PresentationSurfaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationSurfaceView.swift; sourceTree = "<group>"; };
 		4BBE7769F241AC83AF919601 /* NavigationIconMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationIconMap.swift; sourceTree = "<group>"; };
-		4BF7BC594414EE931756CE54 /* ThemeServiceSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeServiceSettingsTests.swift; sourceTree = "<group>"; };
 		5438036805D34A0588FAE1C3 /* SystemTrayManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemTrayManager.swift; sourceTree = "<group>"; };
 		5482743CA87B21CE18C8C3B9 /* NavigationIconMapTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationIconMapTests.swift; sourceTree = "<group>"; };
 		554291CB7224022A54BC954F /* AppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewModel.swift; sourceTree = "<group>"; };
@@ -202,7 +199,6 @@
 		7ECC96545C3966B83B1D1AC7 /* VauchiTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VauchiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		812EEE5AF140DB98855AF442 /* LocalizationServiceSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationServiceSettingsTests.swift; sourceTree = "<group>"; };
 		83EEDE9AC18C43B517008161 /* FocusRingModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusRingModifier.swift; sourceTree = "<group>"; };
-		84CF989EA84DBE8A9F43E05D /* ThemeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeService.swift; sourceTree = "<group>"; };
 		8691393CE57A5898A62A9B08 /* ScreenCatalogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenCatalogTests.swift; sourceTree = "<group>"; };
 		8809B70A6BEDF6B35461415B /* PlatformAppEngine+DomainDispatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PlatformAppEngine+DomainDispatch.swift"; sourceTree = "<group>"; };
 		8A6BB9A87C49A6D79E266DFD /* PresentationCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationCommand.swift; sourceTree = "<group>"; };
@@ -351,7 +347,6 @@
 				EB04A9F8F1DEF697349D20A3 /* RenderContextPusherTests.swift */,
 				29B4CD244575F9B9BB150C01 /* RestorableStateStoreTests.swift */,
 				B8EAE3B508A02A2BDEF3207F /* StorageKeyUpgradeTests.swift */,
-				4BF7BC594414EE931756CE54 /* ThemeServiceSettingsTests.swift */,
 				671E9917D8FFFC5AE5B1E443 /* URLSchemeContractTests.swift */,
 				74B09E17987EC3275EACCF99 /* UserPresenceSecretBridgeTests.swift */,
 				D9DDC142AE1FF7267B32DD39 /* VauchiKeychainBridgeHandoverTests.swift */,
@@ -487,7 +482,6 @@
 				0A594A2A3929ED3F36E46FBD /* RenderContextPusher.swift */,
 				3520D93863E0F8F5950766A0 /* RestorableStateStore.swift */,
 				40B52514F7B6CC866BDD778D /* ScreenCaptureProtection.swift */,
-				84CF989EA84DBE8A9F43E05D /* ThemeService.swift */,
 				E48863E2512C96F56E1A3A1C /* UserPresenceKeychain.swift */,
 				3ED7930E1937E9D55A0BBAE2 /* UserPresenceSecretBridge.swift */,
 				95373D9E6440FED4B532EBDD /* VauchiRepository.swift */,
@@ -679,7 +673,6 @@
 				771A40C3FF4D73DACC5C67D0 /* SidebarModelTests.swift in Sources */,
 				89FE20C8AD2D3DCBAF13F8CB /* StorageKeyUpgradeTests.swift in Sources */,
 				4EE9B40358253BE51C825BF7 /* TextRoleStyleTests.swift in Sources */,
-				60D8E07B9EFB1F102D7518A0 /* ThemeServiceSettingsTests.swift in Sources */,
 				A71CDB4A24300D1DCA8CAA60 /* URLSchemeContractTests.swift in Sources */,
 				DBAC58EF5FBF9FAACB6C8AEE /* UserPresenceSecretBridgeTests.swift in Sources */,
 				CDD9B39CBE0D8354161D2E71 /* VauchiKeychainBridgeHandoverTests.swift in Sources */,
@@ -764,7 +757,6 @@
 				10D1448B9D41C32DDB95835C /* StateViews.swift in Sources */,
 				C48401965743DD70C01F2F95 /* SystemTrayManager.swift in Sources */,
 				372704301C13BD3953C05111 /* TextRoleStyle.swift in Sources */,
-				2D0728F99D4DBB3C8491C25B /* ThemeService.swift in Sources */,
 				CF0A4436E8B24423459F9242 /* UserPresenceKeychain.swift in Sources */,
 				FBEC5B957FA1C3E0B319D45D /* UserPresenceSecretBridge.swift in Sources */,
 				2F7D817E60BDE6223F5E0484 /* VauchiApp.swift in Sources */,
