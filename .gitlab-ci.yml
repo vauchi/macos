@@ -2187,3 +2187,27 @@ diag:tart-vm-start:
     paths:
       - tart-run-*.log
     expire_in: 1 week
+
+# Phase 2 rehearsal (vauchi/private#309): the same checks inside an
+# ephemeral Tart VM on the `nell-tart` registration. The guest must own its
+# own console, or UI tests hang there as they did on nell on 2026-09-07.
+diag:tart-executor-rehearsal:
+  stage: test
+  needs: []
+  when: manual
+  timeout: 20m
+  tags:
+    - macos-tart
+    - self-hosted
+  image: ghcr.io/cirruslabs/macos-tahoe-xcode:26.4
+  script:
+    - |
+      set -eu
+      sw_vers
+      xcodebuild -version
+      console_owner=$(stat -f '%Su' /dev/console 2>&1)
+      echo "launchd-session=$(launchctl managername 2>&1) uid=$(id -u) user=$(id -un) console-owner=$console_owner"
+      if [ "$console_owner" != "$(id -un)" ]; then
+        echo "ERROR: the guest console belongs to '$console_owner', not '$(id -un)'." >&2
+        exit 1
+      fi
