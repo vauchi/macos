@@ -25,7 +25,7 @@ struct PresentationSurfaceView: View {
             titleRow
             if let subtitle = surface.subtitle {
                 Text(subtitle)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(palette.textMuted)
             }
             Group {
                 if surface.layout == .scroll {
