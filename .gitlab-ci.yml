@@ -1062,6 +1062,9 @@ test:ui:
 # host from a hosted unit test, no UI automation, and publishes one PNG
 # per screen and appearance. Advisory like the walk: a changed screen is
 # news, not a gate.
+# A changed screen is approved in the VRT UI on its MR; VRT's
+# autoApproveFeature then makes the matching main upload the baseline
+# (vauchi/private#836).
 test:screen-catalog:
   extends: [.macos-job, .spm-cache-readonly, .timeout-long]
   stage: test
@@ -1341,36 +1344,6 @@ test:snapshots:
       when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == "main"
-
-# Manual job on main: records the current macOS screens as VRT's baseline
-# (vauchi/private#836). Snapshot comparison moved from in-repo baselines to
-# VRT: test:screen-catalog uploads this pipeline's screens, and this job
-# approves that build. Approval needs a VRT user with the editor role, not
-# the upload's API key, so its credentials are protected variables, and
-# protected variables only reach main.
-test:snapshots:record:
-  stage: test
-  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/alpine:3.21
-  tags: [docker]
-  needs:
-    - job: test:screen-catalog
-      artifacts: false
-  allow_failure: true
-  variables:
-    VRT_PLATFORM: macos
-    # vrt-approve.sh is newer than the ci-templates tag the rest of this
-    # file pins; drop this override once that tag includes it.
-    VAUCHI_SCRIPTS_REF: "56b69274f15fa00a1718ce2fb9c90e0be228d54f"
-  script:
-    - apk add --no-cache curl jq >/dev/null
-    - |
-      curl --silent --show-error --fail-with-body \
-        "${CI_API_V4_URL}/projects/vauchi%2Fscripts/repository/files/scripts%2Fci%2Fvrt-approve.sh/raw?ref=${VAUCHI_SCRIPTS_REF}" \
-        -o vrt-approve.sh
-    - sh vrt-approve.sh
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE != "schedule"
-      when: manual
 
 # ============================================================
 # Security Stage
