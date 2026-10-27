@@ -166,8 +166,6 @@ import UniformTypeIdentifiers
                 loadInitialPresentation()
             case .requestBiometricUnlock:
                 requestBiometricUnlock()
-            case let .saveRestorableState(state):
-                RestorableStateStore.standard.keep(state)
             case .reloadTheme:
                 // The Mac keeps no theme of its own to re-read: the next
                 // surface carries the updated colours (vauchi/private#814).

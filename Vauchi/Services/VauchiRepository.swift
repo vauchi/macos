@@ -51,7 +51,7 @@ import Foundation
             }
 
             // S4 — wire `LocalizationService` to the live engine so locale
-            // changes and the kept restorable state reach core via
+            // changes reach core via
             // `setRenderContextJson`. No vault → OS-native migration
             // is needed: the 2026-05-16 audit confirmed zero hand-written
             // `appPreferences()` callers on macOS, so the legacy vault

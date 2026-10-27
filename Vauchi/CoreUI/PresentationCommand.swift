@@ -174,10 +174,6 @@ private struct PresentationNotificationCommandPayload: Decodable {
     let notification: JSONValue
 }
 
-private struct PresentationStateCommandPayload: Decodable {
-    let state: String
-}
-
 enum PresentationCommand: Decodable {
     case replaceSurface(PresentationSurface)
     case setContextBar(RevisionedContextBar, surfaceID: String)
@@ -198,9 +194,6 @@ enum PresentationCommand: Decodable {
     /// Decoded so it stays off the hardware dispatcher; the Mac paints from
     /// each surface's colours, so there is no theme of its own to re-read.
     case reloadTheme
-    /// Keep `state` per device, outside the vault, and hand it back as the
-    /// render context's `restorable_state` (Core 0.90.0, vauchi/private#814).
-    case saveRestorableState(String)
     /// Seal a fresh secret behind the OS user-presence check, then run the
     /// check with `prompt` as its reason (vauchi/private#712).
     case createUserPresenceSecret(prompt: String, binding: UserPresenceBinding?)
@@ -310,10 +303,6 @@ enum PresentationCommand: Decodable {
         case "RevealUserPresenceSecret":
             return try .revealUserPresenceSecret(
                 prompt: container.decode(PresentationPromptCommandPayload.self, forKey: key).prompt
-            )
-        case "SaveRestorableState":
-            return try .saveRestorableState(
-                container.decode(PresentationStateCommandPayload.self, forKey: key).state
             )
         case "PostNotification":
             return try .postNotification(

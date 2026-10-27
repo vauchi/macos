@@ -25,19 +25,6 @@ final class PresentationCommandTests: XCTestCase {
         }
     }
 
-    /// Core 0.90.0 asks the shell to keep this value for it
-    /// (vauchi/private#814); as a platform effect it would reach the
-    /// hardware dispatcher and never be kept.
-    func testSaveRestorableStateDecodesWithItsValue() throws {
-        let commands = try decode(#"{"commands":[{"SaveRestorableState":{"state":"{\"v\":1}"}}]}"#)
-
-        XCTAssertEqual(commands.count, 1)
-        guard case let .saveRestorableState(state) = commands[0] else {
-            return XCTFail("expected .saveRestorableState, got \(commands[0])")
-        }
-        XCTAssertEqual(state, #"{"v":1}"#)
-    }
-
     /// Core queues this once a content update applies themes (core!1937,
     /// private#733); decoded on its own so it never reaches the hardware
     /// dispatcher as an unknown command.

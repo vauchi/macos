@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// Pushes `LocalizationService`'s locale and Core's kept restorable state to
+// Pushes `LocalizationService`'s locale and the OS language to
 // core's `RenderContext` via `setRenderContextJson`. Mirrors Android's
 // `RenderContextPusher.kt`. S4 of `2026-05-16-settings-storage-by-sensitivity`.
 
@@ -14,16 +14,14 @@ import Foundation
     /// Push the render context to core via `setRenderContextJson`.
     ///
     /// A JSON push replaces the whole context, so every push carries every
-    /// field: the picked locale, the OS language and the restorable state
-    /// Core asked the shell to keep (vauchi/private#814). The theme travels
-    /// only inside that state; Core owns the pick.
+    /// field. Core keeps the theme pick itself, in its data directory
+    /// (Core 0.91.0, vauchi/private#814).
     func pushRenderContext(engine: PlatformAppEngine?) {
         guard let engine else { return }
         let locale = LocalizationService.shared
         let json = buildRenderContextJson(
             locale: locale.followSystem ? nil : locale.selectedLocaleCode,
-            systemLocale: Locale.preferredLanguages.first,
-            restorableState: RestorableStateStore.standard.state
+            systemLocale: Locale.preferredLanguages.first
         )
         do {
             try engine.setRenderContextJson(json: json)
@@ -37,11 +35,7 @@ import Foundation
     /// `systemLocale` is the OS language, sent on every push: on "Follow
     /// system" no `locale` goes out, and core renders the system language
     /// only if it is told what it is (vauchi/private#721).
-    func buildRenderContextJson(
-        locale: String?,
-        systemLocale: String?,
-        restorableState: String?
-    ) -> String {
+    func buildRenderContextJson(locale: String?, systemLocale: String?) -> String {
         var parts: [String] = []
         if let locale {
             parts.append("\"locale\":\(jsonString(locale))")
@@ -49,19 +43,14 @@ import Foundation
         if let systemLocale {
             parts.append("\"system_locale\":\(jsonString(systemLocale))")
         }
-        if let restorableState {
-            parts.append("\"restorable_state\":\(jsonString(restorableState))")
-        }
         return "{" + parts.joined(separator: ",") + "}"
     }
 
-    /// A JSON string literal; JSONEncoder escapes control characters too,
-    /// which the restorable state may carry since Core owns its content.
     private func jsonString(_ value: String) -> String {
-        guard let data = try? JSONEncoder().encode(value),
-              let literal = String(data: data, encoding: .utf8)
-        else { return "\"\"" }
-        return literal
+        let escaped = value
+            .replacingOccurrences(of: "\\", with: "\\\\")
+            .replacingOccurrences(of: "\"", with: "\\\"")
+        return "\"\(escaped)\""
     }
 
 #endif
