@@ -167,9 +167,12 @@ import UniformTypeIdentifiers
             case .requestBiometricUnlock:
                 requestBiometricUnlock()
             case .reloadTheme:
-                // The Mac keeps no theme of its own to re-read: the next
-                // surface carries the updated colours (vauchi/private#814).
-                break
+                // Core sends no new surface after a theme download; the
+                // re-presented one carries the new colours, asked for after
+                // this envelope is applied (vauchi/private#814).
+                DispatchQueue.main.async { [weak self] in
+                    self?.dispatchPresentation(.presentationInvalidated)
+                }
             case .createUserPresenceSecret, .revealUserPresenceSecret:
                 answerUserPresence(command)
             case .postNotification, .platformEffect:
