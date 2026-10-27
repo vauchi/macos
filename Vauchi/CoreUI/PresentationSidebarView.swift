@@ -69,7 +69,7 @@ struct PresentationSidebarView: View {
                     .padding(.horizontal, 6)
                     .padding(.vertical, 2)
                     .background(Capsule().fill(palette.accent))
-                    .foregroundStyle(palette.textOnAccent)
+                    .foregroundStyle(.white)
                     .accessibilityHidden(true)
             }
         }
