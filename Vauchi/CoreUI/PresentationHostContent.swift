@@ -19,6 +19,12 @@ struct PresentationHostContent: View {
     /// The active surface's colours. Overlays carry no tokens of their own,
     /// so they and the window around the surfaces paint with these
     /// (vauchi/private#814).
+    @Environment(\.colorScheme) private var inheritedColorScheme
+
+    private var themeColorScheme: ColorScheme? {
+        palette.appearance.map { $0 == .dark ? .dark : .light }
+    }
+
     private var palette: PresentationPalette {
         PresentationPalette(
             colors: state.activeSurfaceID.flatMap { state.surfaces[$0] }?.tokens.colors
@@ -31,6 +37,13 @@ struct PresentationHostContent: View {
             .foregroundStyle(palette.text)
             .tint(palette.accent)
             .environment(\.presentationPalette, palette)
+            // The sidebar and native controls follow the colour scheme, and
+            // the window's chrome follows the preference: a dark theme on a
+            // light Mac drew a black segmented control with dark labels
+            // (vauchi/private#814). The environment carries it into an
+            // offscreen render too, where the window preference is not read.
+            .environment(\.colorScheme, themeColorScheme ?? inheritedColorScheme)
+            .preferredColorScheme(themeColorScheme)
             // WCAG 2.2 SC 2.4.11: a presented overlay visually covers the
             // active surface, so any control focused underneath it must
             // release focus rather than leave its ring drawn beneath a

@@ -7,9 +7,9 @@ import SwiftUI
 struct PresentationHostView: View {
     @ObservedObject var viewModel: AppViewModel
     @Environment(\.accessibilityReduceMotion) private var reducedMotion
-    /// The OS appearance: Core paints its default theme for it under
-    /// "follow system" (vauchi/private#814).
-    @Environment(\.colorScheme) private var colorScheme
+    /// Core paints its default theme for the OS appearance under "follow
+    /// system" (vauchi/private#814).
+    @StateObject private var systemAppearance = SystemAppearance()
     /// Last measured window size, kept so `reducedMotion` changes can
     /// re-report the environment without the GeometryReader in scope.
     @State private var viewportSize: CGSize = .zero
@@ -46,10 +46,12 @@ struct PresentationHostView: View {
             }
             .accessibilityHidden(true)
         }
-        .onChange(of: reducedMotion) { _ in
-            reportEnvironment(viewportSize)
+        // `self` still holds the value from before the change, so the
+        // report takes the new one from the closure (vauchi/private#814).
+        .onChange(of: reducedMotion) { reduced in
+            reportEnvironment(viewportSize, reducedMotion: reduced)
         }
-        .onChange(of: colorScheme) { _ in
+        .onChange(of: systemAppearance.colorScheme) { _ in
             reportEnvironment(viewportSize)
         }
         .onExitCommand {
@@ -82,14 +84,15 @@ struct PresentationHostView: View {
         }
     }
 
-    private func reportEnvironment(_ size: CGSize) {
+    private func reportEnvironment(_ size: CGSize, reducedMotion: Bool? = nil) {
+        let reducedMotion = reducedMotion ?? self.reducedMotion
         viewModel.dispatchPresentation(
             .environmentChanged(
                 availableWidth: UInt32(max(0, size.width.rounded())),
                 availableHeight: UInt32(max(0, size.height.rounded())),
                 inputModes: [.pointer, .keyboard],
                 motion: reducedMotion ? .reduced : .full,
-                colorScheme: colorScheme == .dark ? .dark : .light
+                colorScheme: systemAppearance.colorScheme
             )
         )
     }
