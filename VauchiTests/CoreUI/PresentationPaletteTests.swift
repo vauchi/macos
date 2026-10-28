@@ -78,6 +78,23 @@ final class PresentationPaletteTests: XCTestCase {
         }
     }
 
+    /// Native controls and the sidebar follow the window's style, so a
+    /// dark theme on a light-mode Mac drew a black segmented control with
+    /// dark labels (screen catalog `my_info.png`, vauchi/private#814).
+    /// @internal
+    func testTheWindowTakesTheLightnessOfTheThemesBackground() throws {
+        let latte = dracula.replacingOccurrences(of: "#282a36", with: "#eff1f5")
+
+        XCTAssertEqual(try PresentationPalette(colors: tokens(dracula).colors).appearance, .dark)
+        XCTAssertEqual(try PresentationPalette(colors: tokens(latte).colors).appearance, .light)
+        XCTAssertNil(PresentationPalette(colors: nil).appearance)
+        XCTAssertNil(
+            try PresentationPalette(
+                colors: tokens(dracula.replacingOccurrences(of: "#282a36", with: "red")).colors
+            ).appearance
+        )
+    }
+
     func testADamagedRequiredRoleFallsBackToTheSystemColourForIt() throws {
         let palette = try PresentationPalette(
             colors: tokens(dracula.replacingOccurrences(of: "#282a36", with: "red")).colors
