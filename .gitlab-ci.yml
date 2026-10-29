@@ -1783,6 +1783,13 @@ diag:tart-bake-tools:
   variables:
     BAKE_BASE: ghcr.io/cirruslabs/macos-tahoe-xcode:26.4
     BAKE_NAME: vauchi-macos-ci-tools
+    # The guest's gitlab-runner archives the cache, and nell-tart's runner
+    # passes it the flags of its own version: the base image's 18.10.0
+    # refused 19.4.1's `--alternate-file` and saved nothing (job
+    # 17561260396). Keep this equal to nell's runner (`gitlab-runner
+    # --version` as gitlab-runner) and re-bake when that one changes.
+    GUEST_RUNNER_VERSION: "19.4.1"
+    GUEST_RUNNER_SHA256: df0da2de25fca11de53d9d2ea0007b235e0e923bdfd4ffd9da1f7d70e26f2cf3
   script:
     - |
       set -eu
@@ -1803,6 +1810,16 @@ diag:tart-bake-tools:
         sleep 5
       done
       "$TART" exec "$NEW" /bin/sh -c 'HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_INSTALL_CLEANUP=1 /opt/homebrew/bin/brew install xcodegen a7ex/homebrew-formulae/xcresultparser && /opt/homebrew/bin/xcodegen --version && /opt/homebrew/bin/xcresultparser --version'
+      # Replace the gitlab-runner the job's login shell finds, in place.
+      "$TART" exec "$NEW" /bin/zsh -lc "set -eu
+        dest=\$(command -v gitlab-runner)
+        echo \"guest gitlab-runner: \$dest (\$(gitlab-runner --version | sed -n 's/^Version: *//p'))\"
+        curl -fsSL --retry 3 -o /tmp/gitlab-runner https://gitlab-runner-downloads.s3.amazonaws.com/v${GUEST_RUNNER_VERSION}/binaries/gitlab-runner-darwin-arm64
+        echo '${GUEST_RUNNER_SHA256}  /tmp/gitlab-runner' | shasum -a 256 -c -
+        chmod 755 /tmp/gitlab-runner
+        sudo rm -f \"\$dest\"
+        sudo mv /tmp/gitlab-runner \"\$dest\"
+        gitlab-runner --version | grep -q '^Version: *${GUEST_RUNNER_VERSION}\$'"
       # Flush before stopping: the first bake (job 17475870596) stopped right
       # after xcresultparser's install, and the image lacked it while the
       # earlier xcodegen survived (job 17475870597).
@@ -1826,12 +1843,13 @@ diag:tart-bake-tools:
         fi
         sleep 5
       done
-      if ! "$TART" exec "$CHECK" /bin/sh -c 'ls -l /opt/homebrew/bin/xcodegen /opt/homebrew/bin/xcresultparser && /opt/homebrew/bin/xcresultparser --version'; then
-        echo "ERROR: $BAKE_NAME lacks a tool after a fresh boot; deleting it" >&2
+      if ! "$TART" exec "$CHECK" /bin/sh -c 'ls -l /opt/homebrew/bin/xcodegen /opt/homebrew/bin/xcresultparser && /opt/homebrew/bin/xcresultparser --version' \
+        || ! "$TART" exec "$CHECK" /bin/zsh -lc "gitlab-runner --version | grep '^Version: *${GUEST_RUNNER_VERSION}\$'"; then
+        echo "ERROR: $BAKE_NAME lacks a tool or gitlab-runner ${GUEST_RUNNER_VERSION} after a fresh boot; deleting it" >&2
         "$TART" delete "$BAKE_NAME" || true
         exit 1
       fi
-      echo "OK: $BAKE_NAME has both tools after a fresh boot"
+      echo "OK: $BAKE_NAME has both tools and gitlab-runner ${GUEST_RUNNER_VERSION} after a fresh boot"
       "$TART" list | grep -v '^OCI'
   artifacts:
     when: always
