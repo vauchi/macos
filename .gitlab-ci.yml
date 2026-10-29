@@ -678,7 +678,20 @@ test:unit:
     - command -v xcresultparser >/dev/null 2>&1 || brew install a7ex/homebrew-formulae/xcresultparser
     - rm -rf Vauchi.xcodeproj && xcodegen generate
     - ./scripts/ci-spm-prepare.sh
+  # The VM dies with the job, so the platform zip and the file:// mirror
+  # ci-spm-prepare.sh builds (~40 s of the job) live in a GitLab cache;
+  # nell-tart's `--cache-dir` keeps it on the host. Keyed on project.yml,
+  # which pins the platform version; no fallback, as for .spm-cache.
+  cache:
+    - key:
+        prefix: macos-tart-spm-mirror
+        files:
+          - project.yml
+      paths:
+        - .vauchi-spm-cache/
+      policy: pull-push
   variables:
+    VAUCHI_SPM_CACHE_ROOT: "$CI_PROJECT_DIR/.vauchi-spm-cache"
     TART_EXECUTOR_ALWAYS_PULL: "false"
     COMPILER_INDEX_STORE_ENABLE: "NO"
     HOMEBREW_NO_AUTO_UPDATE: "1"
