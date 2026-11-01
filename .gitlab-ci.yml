@@ -1674,6 +1674,49 @@ diag:tart-vm-start:
       - tart-run-*.log
     expire_in: 1 week
 
+# Phase 4 (vauchi/private#309): the interactive GUI VM must outlive the
+# job that starts it, so the start job hands it to launchd in the runner's
+# Aqua session instead of backgrounding it. These two probes answer whether
+# that survives a job's end, with a harmless `sleep` instead of a VM, and
+# what the runner's Tart offers (`tart exec` to install an SSH key, the
+# VMs already running against the two-VM limit). Manual; neither boots a VM.
+diag:tart-gui-probe-start:
+  extends: [.macos-job]
+  stage: test
+  needs: []
+  when: manual
+  timeout: 5m
+  script:
+    - |
+      set -eu
+      TART="$HOME/homebrew/bin/tart"
+      echo "launchd-session=$(launchctl managername) uid=$(id -u) console-owner=$(stat -f '%Su' /dev/console)"
+      "$TART" --version
+      "$TART" list
+      if "$TART" exec --help > /dev/null 2>&1; then echo "tart exec: available"; else echo "tart exec: not available"; fi
+      launchctl remove app.vauchi.gui-vm-probe 2>/dev/null || true
+      launchctl submit -l app.vauchi.gui-vm-probe -- /bin/sleep 600
+      launchctl list | grep app.vauchi.gui-vm-probe
+
+diag:tart-gui-probe-check:
+  extends: [.macos-job]
+  stage: test
+  needs: []
+  when: manual
+  timeout: 5m
+  script:
+    - |
+      set -u
+      if launchctl list | grep app.vauchi.gui-vm-probe; then
+        echo "PROBE: the launchd job outlived the job that submitted it"
+        status=0
+      else
+        echo "PROBE: the launchd job is gone" >&2
+        status=1
+      fi
+      launchctl remove app.vauchi.gui-vm-probe 2>/dev/null || true
+      exit "$status"
+
 # Phase 2 rehearsal (vauchi/private#309): the same checks inside an
 # ephemeral Tart VM on the `nell-tart` registration. The guest must own its
 # own console, or UI tests hang there as they did on nell on 2026-09-07.
