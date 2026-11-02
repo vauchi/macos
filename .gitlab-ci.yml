@@ -1723,6 +1723,33 @@ vm:gui-start:
         exit 1
       fi
       echo "GUI VM IP: $vm_ip"
+      # GUI_VM_AUTHORIZED_KEY (project CI variable): the public key the
+      # `agents` account uses to SSH into the guest. Installed on every
+      # start, so the VM's disk holds no hand-made state.
+      key="${GUI_VM_AUTHORIZED_KEY:-}"
+      if [ -z "$key" ]; then
+        echo "GUI_VM_AUTHORIZED_KEY is unset; no SSH key installed"
+        exit 0
+      fi
+      if [ "$(printf '%s' "$key" | wc -l)" -ne 0 ]; then
+        echo "ERROR: GUI_VM_AUTHORIZED_KEY must be one line" >&2
+        exit 1
+      fi
+      case "$key" in
+        ssh-ed25519\ *|ecdsa-sha2-*\ *|ssh-rsa\ *) ;;
+        *) echo "ERROR: GUI_VM_AUTHORIZED_KEY is not an SSH public key" >&2; exit 1 ;;
+      esac
+      install='mkdir -p ~/.ssh && chmod 700 ~/.ssh && touch ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys && { grep -qxF "$1" ~/.ssh/authorized_keys || printf "%s\n" "$1" >> ~/.ssh/authorized_keys; } && echo "guest user: $(id -un), console owner: $(stat -f %Su /dev/console)"'
+      # The guest agent that serves `tart exec` starts after the network.
+      for attempt in $(seq 1 12); do
+        if "$TART" exec "$GUI_VM" /bin/sh -c "$install" sh "$key"; then
+          exit 0
+        fi
+        echo "tart exec not ready (attempt $attempt/12)"
+        sleep 10
+      done
+      echo "ERROR: could not install the SSH key with tart exec" >&2
+      exit 1
 
 vm:gui-stop:
   extends: [.gui-vm]
