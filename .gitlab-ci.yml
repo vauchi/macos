@@ -1071,23 +1071,6 @@ test:ui:
     UI_TEST_SELECTOR: VauchiUITests
   script:
     - sudo -n automationmodetool enable-automationmode-without-authentication
-    # diag (private#309): in the guest every launch ends "does not have a
-    # process ID" after ~70 s. Capture what the console shows and where the
-    # app waits, 30 s into the first launch; the runner is the clock because
-    # the app may never start.
-    - |
-      mkdir -p ui-hang
-      (
-        while ! pgrep -f VauchiUITests-Runner >/dev/null 2>&1; do sleep 2; done
-        sleep 30
-        screencapture -x ui-hang/console.png 2>ui-hang/screencapture.err
-        ps -axo pid,ppid,user,stat,etime,command > ui-hang/ps.txt
-        for pid in $(pgrep -f 'Vauchi.app/Contents/MacOS/'); do sample "$pid" 3 -file "ui-hang/sample-$pid.txt" >/dev/null 2>&1; done
-        security list-keychains -d user > ui-hang/keychains.txt 2>&1
-        security show-keychain-info "$CI_JOB_KEYCHAIN" >> ui-hang/keychains.txt 2>&1
-        log show --last 1m --style compact --predicate 'process == "Vauchi" OR process == "securityd" OR process == "SecurityAgent"' > ui-hang/log.txt 2>&1
-        echo "ui-hang: captured $(ls ui-hang | tr '\n' ' ')"
-      ) &
     - !reference [.macos-ui-test, script]
   after_script:
     - !reference [.macos-ui-test, after_script]
@@ -1096,7 +1079,6 @@ test:ui:
     paths:
       - UITestResults.xcresult
       - ui-build.log
-      - ui-hang/
     reports:
       junit: ui-test-results.xml
     expire_in: 7 days
