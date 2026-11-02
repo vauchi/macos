@@ -1054,11 +1054,10 @@ test:unit:
         exit 1
       fi
 
-# In a Tart guest (vauchi/private#309), so the automation-mode grant below
-# changes a throwaway VM, not nell. The shared body runs unchanged and its
-# gate checks the grant took.
-# Rollback: `extends: .macos-ui-test` and drop everything up to artifacts.
-test:ui:
+# .macos-ui-test in a Tart guest (vauchi/private#309), so the
+# automation-mode grant below changes a throwaway VM, not nell. The shared
+# body runs unchanged and its gate checks the grant took.
+.tart-ui-test:
   extends: [.tart-spm-guest, .timeout-long]
   variables:
     VAUCHI_PLATFORM_USE_LOCAL_XCFRAMEWORK: "1"
@@ -1074,6 +1073,10 @@ test:ui:
     - !reference [.macos-ui-test, script]
   after_script:
     - !reference [.macos-ui-test, after_script]
+
+# Rollback: `extends: .macos-ui-test`.
+test:ui:
+  extends: [.tart-ui-test]
   artifacts:
     when: always
     paths:
