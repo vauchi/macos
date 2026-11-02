@@ -1197,8 +1197,10 @@ test:screen-catalog:
 # flow as job artifacts on every MR and on main, and to the VRT service
 # when a key is configured. Advisory: a screen that moved is news, not a
 # gate — `test:ui` owns the structural assertions.
+# In a Tart guest like test:ui (vauchi/private#309). Rollback:
+# `extends: .macos-ui-test` and `.macos-ui-test` in after_script.
 test:screenshots:
-  extends: .macos-ui-test
+  extends: [.tart-ui-test]
   allow_failure: true
   variables:
     UI_TEST_SELECTOR: VauchiUITests/ScreenshotWalkUITests
@@ -1209,7 +1211,7 @@ test:screenshots:
     TEST_RUNNER_VAUCHI_SCREENSHOT_DIR: $CI_PROJECT_DIR/build/screenshots
   after_script:
     - !reference [.vrt-upload-script, script]
-    - !reference [.macos-ui-test, after_script]
+    - !reference [.tart-ui-test, after_script]
   artifacts:
     when: always
     paths:
