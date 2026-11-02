@@ -1672,48 +1672,68 @@ diag:tart-vm-start:
       - tart-run-*.log
     expire_in: 1 week
 
-# Phase 4 (vauchi/private#309): the interactive GUI VM must outlive the
-# job that starts it, so the start job hands it to launchd in the runner's
-# Aqua session instead of backgrounding it. These two probes answer whether
-# that survives a job's end, with a harmless `sleep` instead of a VM, and
-# what the runner's Tart offers (`tart exec` to install an SSH key, the
-# VMs already running against the two-VM limit). Manual; neither boots a VM.
-diag:tart-gui-probe-start:
+# Phase 4 (vauchi/private#309): the interactive GUI VM outlives the job
+# that starts it because the job hands `tart run` to launchd in the
+# runner's Aqua session; a backgrounded child dies with the job. A
+# launchd-submitted process survived its job's end on nell (macos jobs
+# 17651510709 and 17651510710, 2026-11-02). The VM counts against the
+# host's two-VM limit, so start waits while two VMs run. Its own resource
+# group: waiting must not hold .macos-job's SPM lock and stall the builds.
+.gui-vm:
   extends: [.macos-job]
   stage: test
   needs: []
   when: manual
-  timeout: 5m
+  resource_group: macos-gui-vm
+  variables:
+    GUI_VM: vauchi-gui
+    GUI_VM_LABEL: app.vauchi.gui-vm
+
+vm:gui-start:
+  extends: [.gui-vm]
+  timeout: 30m
   script:
     - |
       set -eu
       TART="$HOME/homebrew/bin/tart"
-      echo "launchd-session=$(launchctl managername) uid=$(id -u) console-owner=$(stat -f '%Su' /dev/console)"
-      "$TART" --version
-      "$TART" list
-      if "$TART" exec --help > /dev/null 2>&1; then echo "tart exec: available"; else echo "tart exec: not available"; fi
-      launchctl remove app.vauchi.gui-vm-probe 2>/dev/null || true
-      launchctl submit -l app.vauchi.gui-vm-probe -- /bin/sleep 600
-      launchctl list | grep app.vauchi.gui-vm-probe
+      # `tart list` columns: Source Name Disk Size Accessed State.
+      running() { "$TART" list | awk 'NR > 1 && $NF == "running" { print $2 }'; }
+      if running | tr ' ' '\n' | grep -qx "$GUI_VM"; then
+        echo "$GUI_VM is already running"
+      else
+        for attempt in $(seq 1 50); do
+          set -- $(running)
+          [ "$#" -lt 2 ] && break
+          echo "two VMs running ($*), waiting for one to stop (attempt $attempt/50)"
+          sleep 30
+        done
+        set -- $(running)
+        if [ "$#" -ge 2 ]; then
+          echo "ERROR: still two VMs running after 25 min ($*)" >&2
+          exit 1
+        fi
+        launchctl remove "$GUI_VM_LABEL" 2>/dev/null || true
+        launchctl submit -l "$GUI_VM_LABEL" \
+          -o "$HOME/Library/Logs/$GUI_VM_LABEL.log" -e "$HOME/Library/Logs/$GUI_VM_LABEL.log" \
+          -- "$TART" run --no-graphics "$GUI_VM"
+      fi
+      if ! vm_ip=$("$TART" ip --wait 240 "$GUI_VM"); then
+        echo "ERROR: $GUI_VM reported no IP within 240 s" >&2
+        tail -50 "$HOME/Library/Logs/$GUI_VM_LABEL.log" >&2 || true
+        exit 1
+      fi
+      echo "GUI VM IP: $vm_ip"
 
-diag:tart-gui-probe-check:
-  extends: [.macos-job]
-  stage: test
-  needs: []
-  when: manual
+vm:gui-stop:
+  extends: [.gui-vm]
   timeout: 5m
   script:
     - |
       set -u
-      if launchctl list | grep app.vauchi.gui-vm-probe; then
-        echo "PROBE: the launchd job outlived the job that submitted it"
-        status=0
-      else
-        echo "PROBE: the launchd job is gone" >&2
-        status=1
-      fi
-      launchctl remove app.vauchi.gui-vm-probe 2>/dev/null || true
-      exit "$status"
+      TART="$HOME/homebrew/bin/tart"
+      "$TART" stop "$GUI_VM" || echo "$GUI_VM was not running"
+      launchctl remove "$GUI_VM_LABEL" 2>/dev/null || true
+      "$TART" list
 
 # Phase 2 rehearsal (vauchi/private#309): the same checks inside an
 # ephemeral Tart VM on the `nell-tart` registration. The guest must own its
