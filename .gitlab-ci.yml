@@ -197,8 +197,10 @@ default:
 
 update:bindings-version:
   stage: update
+  # Runs only when Core releases, pushing a bump branch with a bot
+  # token, so no MR can rehearse it: it stays on the host (private#309).
   tags:
-    - macos
+    - macos-host
     - self-hosted
   resource_group: bindings-version-update
   rules:
@@ -331,10 +333,11 @@ update:bindings-version:
 lint:swiftlint:
   stage: lint
   script:
+    # Not in the image; brew's current release, not nell's pinned one.
+    - command -v swiftlint >/dev/null 2>&1 || brew install swiftlint
+    - swiftlint --version
     - swiftlint lint --strict
-  tags:
-    - macos
-    - self-hosted
+  extends: [.tart-guest-quick]
   # Skip when no Swift source / config changed — swiftlint only inspects
   # .swift files, so a docs/CI-only MR shouldn't take a nell macOS slot.
   # Mirrors ios/.gitlab-ci.yml's lint:swiftlint filter. Part of T3.1 nell
@@ -370,11 +373,9 @@ lint:swiftlint:
 # Source records:
 #   - 2026-05-02-macos-humble-ui-retirement (G4, G6)
 #   - 2026-04-16-frontend-pure-renderer-violations (umbrella)
-check:humble-ui-ratchets:
+check:humble-ui-ratchets: # vci02-ok: .tart-guest-quick has no before_script to keep
   stage: lint
-  tags:
-    - macos
-    - self-hosted
+  extends: [.tart-guest-quick]
   needs: []
   before_script:
     - mkdir -p .ratchet-scripts
@@ -407,11 +408,9 @@ check:humble-ui-ratchets:
 # Humble-UI ratchet: block new domain logic / domain vocabulary leaks
 # into the view layer (ADR-043 Amendment 6). Snapshot counts are
 # tracked in vauchi/scripts; the ratchet may only drop.
-lint:humble:
+lint:humble: # vci02-ok: .tart-guest-quick has no before_script to keep
   stage: lint
-  tags:
-    - macos
-    - self-hosted
+  extends: [.tart-guest-quick]
   needs: []
   before_script:
     - mkdir -p .ratchet-scripts
@@ -469,9 +468,7 @@ release:verify:
 
 check:snapshot-recording:
   stage: lint
-  tags:
-    - macos
-    - self-hosted
+  extends: [.tart-guest-quick]
   script:
     - |
       MISSING=""
@@ -495,7 +492,7 @@ check:snapshot-recording:
 # ============================================================
 
 build:debug:
-  extends: [.macos-job, .spm-cache, .timeout-extended]
+  extends: [.tart-spm-guest, .timeout-extended]
   stage: build
   # Don't gate on the lint stage — build:debug has no dependency on
   # swiftlint/swiftformat/reuse output, only on the source tree itself.
@@ -514,14 +511,6 @@ build:debug:
     # incremental compile per Bitrise/Flutter benchmarks.
     COMPILER_INDEX_STORE_ENABLE: "NO"
   script:
-    - command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
-    - echo "── [$(date +%H:%M:%S)] xcodegen ──"
-    - rm -rf Vauchi.xcodeproj
-    - xcodegen generate
-    # SPM artifact provisioning (file:// mirror + env-var-aware Package.swift):
-    # scripts/ci-spm-prepare.sh, shared with the Tart image bake (private#309).
-    - echo "── [$(date +%H:%M:%S)] SPM resolve (file:// mirror + env var) ──"
-    - ./scripts/ci-spm-prepare.sh
     # Pre-compile diagnostic: confirm the xcframework Xcode will
     # consume actually matches the checked-out Swift bindings. If the
     # header at $CHECKOUT is stale (earlier binding version), compile
@@ -629,15 +618,28 @@ build:debug:
     - if: $CI_COMMIT_BRANCH == "main"
 
 build:release:
-  extends: [.macos-job, .spm-cache-readonly, .timeout-extended]
+  # Signs on the host for good (maintainer, 2026-11-02): only a release
+  # tag exercises it. build:debug's host cache is gone, so it prepares
+  # its own SPM state; an MR can play it to rehearse that, unsigned.
+  extends: [.macos-host-job, .timeout-extended]
+  variables:
+    VAUCHI_PLATFORM_USE_LOCAL_XCFRAMEWORK: "1"
   stage: build
-  needs: [release:verify]
+  # Optional so the manual MR rehearsal can run; on a tag release:verify
+  # exists and is still waited for.
+  needs:
+    - job: release:verify
+      optional: true
   rules:
     - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: manual
+      allow_failure: true
   script:
     - command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
     - rm -rf Vauchi.xcodeproj
     - xcodegen generate
+    - ./scripts/ci-spm-prepare.sh
     - ./scripts/fix-xcframework-symlinks.sh
     - |
       xcodebuild archive \
@@ -658,6 +660,20 @@ build:release:
 # ============================================================
 # Test Stage
 # ============================================================
+
+# A Tart guest for jobs that need macOS but no Xcode project or SPM state:
+# lints and security scans (vauchi/private#309). Each boot costs ~30 s and
+# one of nell's two VM slots.
+.tart-guest-quick:
+  needs: []
+  tags:
+    - macos-tart
+    - self-hosted
+  image: vauchi-macos-ci-tools
+  variables:
+    TART_EXECUTOR_ALWAYS_PULL: "false"
+    HOMEBREW_NO_AUTO_UPDATE: "1"
+    HOMEBREW_NO_INSTALL_CLEANUP: "1"
 
 # A fresh Tart VM on nell (vauchi/private#309): its own console, no shared
 # macos lock, up to two at once. The guest has none of nell's caches, so
@@ -1288,12 +1304,7 @@ coverage:unit:
 
 
 test:snapshots:
-  extends: [.macos-job, .spm-cache-readonly]
-  stage: test
-  needs:
-    - job: build:debug
-      artifacts: true
-      optional: true
+  extends: [.tart-spm-guest]
   variables:
     VRT_PLATFORM: macos
     VRT_SCREENSHOT_DIR: VauchiSnapshotTests/__Snapshots__/VisualRegressionTests
@@ -1376,7 +1387,6 @@ test:snapshots:
         command -v xcparse >/dev/null 2>&1 || brew install chargepoint/xcparse/xcparse || true
         xcparse attachments "$XCR" snapshot-diffs || true
       fi
-    - !reference [.macos-job, after_script]
   artifacts:
     when: always
     paths:
@@ -1421,11 +1431,8 @@ secret_detection:
 
 # Swift-specific security analysis (mirrors ios/ security:swift-analysis)
 security:swift-analysis:
-  extends: .timeout-quick
+  extends: [.tart-guest-quick, .timeout-quick]
   stage: security
-  tags:
-    - macos
-    - self-hosted
   script:
     # Check for common macOS security issues. Fail on forbidden patterns unless the
     # matching file is listed in .swift-security-exemptions (one path per line).
@@ -1465,11 +1472,8 @@ security:swift-analysis:
 
 # Dependency check for SPM (runs on dependency changes)
 security:dependencies:
-  extends: .timeout-quick
+  extends: [.tart-guest-quick, .timeout-quick]
   stage: security
-  tags:
-    - macos
-    - self-hosted
   script:
     - |
       set -euo pipefail
@@ -1614,7 +1618,7 @@ check:design-tokens:
 # ============================================================
 
 package:dmg:
-  extends: [.macos-job, .timeout-extended]
+  extends: [.macos-host-job, .timeout-extended]
   stage: deploy
   needs: ["build:release", "release:ratchet-zero"]
   rules:
