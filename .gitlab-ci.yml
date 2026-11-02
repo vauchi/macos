@@ -1224,29 +1224,19 @@ test:screenshots:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
+# In a Tart guest like test:unit (vauchi/private#309), whose SPM steps it
+# now shares. Rollback: `extends: [.macos-job, .spm-cache-readonly,
+# .timeout-long]`, the optional build:debug need, the before_script that
+# references .macos-job, the xcodegen fallback, and the plain xcodebuild.
 coverage:unit:
-  extends: [.macos-job, .spm-cache-readonly, .timeout-long]
-  stage: test
-  needs:
-    - job: build:debug
-      artifacts: true
-      optional: true
+  extends: [.tart-spm-guest, .timeout-long]
   variables:
     VAUCHI_PLATFORM_USE_LOCAL_XCFRAMEWORK: "1"
-  before_script:
-    - !reference [.macos-job, before_script]
-    - command -v xcresultparser >/dev/null 2>&1 || brew install a7ex/homebrew-formulae/xcresultparser
   script:
-    # Prefer Vauchi.xcodeproj from build:debug artifact; regen only if missing
-    # (e.g. scheduled pipelines where build:debug doesn't run).
-    - |
-      if [ ! -d Vauchi.xcodeproj ]; then
-        command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
-        xcodegen generate
-      fi
     - ./scripts/fix-xcframework-symlinks.sh
+    - ./scripts/ci-spm-isolate-config.sh
     - |
-      xcodebuild -project Vauchi.xcodeproj -scheme Vauchi \
+      HOME="$CI_PROJECT_DIR/.spm-home" xcodebuild -project Vauchi.xcodeproj -scheme Vauchi \
         -destination "platform=macOS" \
         -clonedSourcePackagesDirPath .spm-packages \
         -derivedDataPath .derived-data \
@@ -1264,7 +1254,13 @@ coverage:unit:
         "${CI_API_V4_URL}/projects/vauchi%2Fscripts/repository/files/scripts%2Fci%2Fpush-coverage.sh/raw?ref=${VAUCHI_SCRIPTS_REF}" \
         -o push-coverage.sh
       chmod +x push-coverage.sh
-    - ./push-coverage.sh cobertura.xml macos || true
+    # The pushed series carries no branch, so only main may write it.
+    - |
+      if [ "$CI_COMMIT_BRANCH" = "$CI_DEFAULT_BRANCH" ]; then
+        ./push-coverage.sh cobertura.xml macos || true
+      else
+        ./push-coverage.sh cobertura.xml macos --dry-run || true
+      fi
   coverage: '/Line Coverage:\s+(\d+(?:\.\d+)?%)/'
   artifacts:
     reports:
@@ -1279,6 +1275,11 @@ coverage:unit:
       when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: $CI_PIPELINE_SOURCE == "schedule"
+    # Playable on an MR that changes this job, which could otherwise only
+    # be checked after merging.
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: manual
+      allow_failure: true
 
 
 test:snapshots:
