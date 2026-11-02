@@ -1935,6 +1935,11 @@ diag:tart-bake-tools:
         sudo rm -f \"\$dest\"
         sudo mv /tmp/gitlab-runner \"\$dest\"
         gitlab-runner --version | grep -q '^Version: *${GUEST_RUNNER_VERSION}\$'"
+      # Dark, as nell's console: the base image is light, where test:ui's
+      # audit fails contrast (vauchi/private#1035). Written here because a
+      # job's write over SSH never reached the logged-in console (job
+      # 17661612415); a guest booted from the image logs in with it.
+      "$TART" exec "$NEW" /usr/bin/defaults write -g AppleInterfaceStyle Dark
       # Flush before stopping: the first bake (job 17475870596) stopped right
       # after xcresultparser's install, and the image lacked it while the
       # earlier xcodegen survived (job 17475870597).
@@ -1959,12 +1964,13 @@ diag:tart-bake-tools:
         sleep 5
       done
       if ! "$TART" exec "$CHECK" /bin/sh -c 'ls -l /opt/homebrew/bin/xcodegen /opt/homebrew/bin/xcresultparser && /opt/homebrew/bin/xcresultparser --version' \
-        || ! "$TART" exec "$CHECK" /bin/zsh -lc "gitlab-runner --version | grep '^Version: *${GUEST_RUNNER_VERSION}\$'"; then
-        echo "ERROR: $BAKE_NAME lacks a tool or gitlab-runner ${GUEST_RUNNER_VERSION} after a fresh boot; deleting it" >&2
+        || ! "$TART" exec "$CHECK" /bin/zsh -lc "gitlab-runner --version | grep '^Version: *${GUEST_RUNNER_VERSION}\$'" \
+        || ! "$TART" exec "$CHECK" /bin/sh -c '[ "$(defaults read -g AppleInterfaceStyle)" = Dark ]'; then
+        echo "ERROR: $BAKE_NAME lacks a tool, gitlab-runner ${GUEST_RUNNER_VERSION} or dark appearance after a fresh boot; deleting it" >&2
         "$TART" delete "$BAKE_NAME" || true
         exit 1
       fi
-      echo "OK: $BAKE_NAME has both tools and gitlab-runner ${GUEST_RUNNER_VERSION} after a fresh boot"
+      echo "OK: $BAKE_NAME has both tools, gitlab-runner ${GUEST_RUNNER_VERSION} and dark appearance after a fresh boot"
       "$TART" list | grep -v '^OCI'
   artifacts:
     when: always
