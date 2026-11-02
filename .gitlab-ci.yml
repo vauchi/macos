@@ -659,20 +659,17 @@ build:release:
 # Test Stage
 # ============================================================
 
-# Runs in a fresh Tart VM on nell (vauchi/private#309): its own console, no
-# shared macos lock, up to two at once. The guest has none of nell's caches,
-# so before_script does what build:debug provides on the host. Image tools
+# A fresh Tart VM on nell (vauchi/private#309): its own console, no shared
+# macos lock, up to two at once. The guest has none of nell's caches, so
+# before_script does what build:debug provides on the host. Image tools
 # come from diag:tart-bake-tools; brew installs them if the image lacks them.
-# Rollback: restore `extends: [.macos-job, .spm-cache-readonly]`, the
-# build:debug need, and the artifact-reuse block, and drop tags/image.
-test:unit:
+.tart-spm-guest:
   stage: test
   needs: []
   tags:
     - macos-tart
     - self-hosted
   image: vauchi-macos-ci-tools
-  # vci02-ok: no template is extended any more; this prepares the guest.
   before_script:
     - command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
     - command -v xcresultparser >/dev/null 2>&1 || brew install a7ex/homebrew-formulae/xcresultparser
@@ -696,6 +693,12 @@ test:unit:
     COMPILER_INDEX_STORE_ENABLE: "NO"
     HOMEBREW_NO_AUTO_UPDATE: "1"
     HOMEBREW_NO_INSTALL_CLEANUP: "1"
+
+# Rollback: restore `extends: [.macos-job, .spm-cache-readonly]`, the
+# build:debug need, and the artifact-reuse block.
+test:unit:
+  extends: [.tart-spm-guest]
+  variables:
     # Mirror build:debug's env var: vauchi-platform-swift's manifest
     # emits `path:` binaryTarget when set (Fix C). Without this,
     # xcodebuild's manifest evaluation during build-for-testing emits
