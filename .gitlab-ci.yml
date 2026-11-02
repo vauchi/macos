@@ -1048,8 +1048,21 @@ test:unit:
         exit 1
       fi
 
+# In a Tart guest (vauchi/private#309), so the automation-mode grant below
+# changes a throwaway VM, not nell. The shared body runs unchanged and its
+# gate checks the grant took.
+# Rollback: `extends: .macos-ui-test` and drop everything up to artifacts.
 test:ui:
-  extends: .macos-ui-test
+  extends: [.tart-spm-guest, .timeout-long]
+  variables:
+    VAUCHI_PLATFORM_USE_LOCAL_XCFRAMEWORK: "1"
+    CI_JOB_KEYCHAIN: ci-macos-ui-${CI_JOB_ID}.keychain-db
+    UI_TEST_SELECTOR: VauchiUITests
+  script:
+    - sudo -n automationmodetool enable-automationmode-without-authentication
+    - !reference [.macos-ui-test, script]
+  after_script:
+    - !reference [.macos-ui-test, after_script]
   artifacts:
     when: always
     paths:
