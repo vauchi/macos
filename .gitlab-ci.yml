@@ -1910,6 +1910,17 @@ diag:tart-bake-tools:
       set -eu
       TART="$HOME/homebrew/bin/tart"
       NEW="${BAKE_NAME}-${CI_JOB_ID}"
+      # An uncached base is pulled whole (68 GB compressed, ~87 GB on disk).
+      # Job 17662081321 started that pull with ~82 GiB free and filled the
+      # disk at 49%, stopping every job on nell; refuse instead.
+      if ! "$TART" list --source oci | awk -v base="$BAKE_BASE" '$2 == base { found = 1 } END { exit !found }'; then
+        free_gib=$(df -k "$HOME/.tart" | awk 'NR == 2 { print int($4 / 1048576) }')
+        echo "$BAKE_BASE is not cached; ${free_gib} GiB free"
+        if [ "$free_gib" -lt 110 ]; then
+          echo "ERROR: pulling $BAKE_BASE needs about 90 GiB plus room for the bake VMs; free space first" >&2
+          exit 1
+        fi
+      fi
       "$TART" clone "$BAKE_BASE" "$NEW"
       trap '"$TART" stop "$NEW" >/dev/null 2>&1 || true; "$TART" delete "$NEW" >/dev/null 2>&1 || true' EXIT
       "$TART" run --no-graphics "$NEW" > "tart-run-${CI_JOB_ID}.log" 2>&1 &
