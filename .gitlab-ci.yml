@@ -1675,7 +1675,7 @@ check:pictogram-copies-current:
 # job moves to a Tart executor. Manual: it boots a 4-vCPU guest on the
 # shared host.
 diag:tart-vm-start:
-  extends: [.macos-job]
+  extends: [.macos-host-job]
   stage: test
   needs: []
   when: manual
@@ -1707,6 +1707,17 @@ diag:tart-vm-start:
       - tart-run-*.log
     expire_in: 1 week
 
+# Jobs that run `tart` on nell itself, which a guest cannot, from the
+# runner's Aqua session (vauchi/private#309). Their own tag lets the shell
+# registration narrow to them once every other macOS job has moved; the
+# shell runner must carry `macos-host` before this merges, or they wait
+# for a runner forever.
+.macos-host-job:
+  extends: [.macos-job]
+  tags:
+    - macos-host
+    - self-hosted
+
 # Phase 4 (vauchi/private#309): the interactive GUI VM outlives the job
 # that starts it because the job hands `tart run` to launchd in the
 # runner's Aqua session; a backgrounded child dies with the job. A
@@ -1715,7 +1726,7 @@ diag:tart-vm-start:
 # host's two-VM limit, so start waits while two VMs run. Its own resource
 # group: waiting must not hold .macos-job's SPM lock and stall the builds.
 .gui-vm:
-  extends: [.macos-job]
+  extends: [.macos-host-job]
   stage: test
   needs: []
   when: manual
@@ -1861,7 +1872,7 @@ diag:tart-console-gate-fails:
 # guest with `tart exec` (needs a guest agent in the image), or must it use
 # SSH? Runs on the shell runner because Tart needs its console session.
 diag:tart-exec-probe:
-  extends: [.macos-job]
+  extends: [.macos-host-job]
   stage: test
   needs: []
   when: manual
@@ -1898,7 +1909,7 @@ diag:tart-exec-probe:
 # 17475514928). Runs on the shell runner because Tart needs its console
 # session. Re-run after an Xcode or base-image change.
 diag:tart-bake-tools:
-  extends: [.macos-job]
+  extends: [.macos-host-job]
   stage: test
   needs: []
   when: manual
