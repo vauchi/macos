@@ -1108,13 +1108,11 @@ test:ui:
 # A changed screen is approved in the VRT UI on its MR; VRT's
 # autoApproveFeature then makes the matching main upload the baseline
 # (vauchi/private#836).
+# In a Tart guest like test:unit (vauchi/private#309). Rollback:
+# `extends: [.macos-job, .spm-cache-readonly, .timeout-long]`, the
+# optional build:debug need, and `.macos-job` in after_script.
 test:screen-catalog:
-  extends: [.macos-job, .spm-cache-readonly, .timeout-long]
-  stage: test
-  needs:
-    - job: build:debug
-      artifacts: true
-      optional: true
+  extends: [.tart-spm-guest, .timeout-long]
   allow_failure: true
   variables:
     VAUCHI_PLATFORM_USE_LOCAL_XCFRAMEWORK: "1"
@@ -1178,7 +1176,6 @@ test:screen-catalog:
       fi
   after_script:
     - !reference [.vrt-upload-script, script]
-    - !reference [.macos-job, after_script]
   artifacts:
     when: always
     paths:
