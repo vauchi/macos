@@ -11,6 +11,10 @@
 /// match English copy, so each launch pins English rather than inheriting
 /// the runner's language.
 ///
+/// Appearance is pinned to dark the same way: nell's console runs dark and
+/// the Tart guest's light, and in light the accessibility audit fails
+/// contrast (vauchi/private#1035). Drop the pin once light passes.
+///
 /// The pairs go first: the argument domain reads `-key value`, so after a
 /// `--reset-for-testing` it would be taken as that flag's value and ignored.
 enum UITestLaunch {
@@ -19,6 +23,7 @@ enum UITestLaunch {
             "-ApplePersistenceIgnoreState", "YES",
             "-AppleLanguages", "(en)",
             "-AppleLocale", "en_US",
+            "-AppleInterfaceStyle", "Dark",
         ] + testing
     }
 }
