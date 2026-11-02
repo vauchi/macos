@@ -1071,6 +1071,11 @@ test:ui:
     UI_TEST_SELECTOR: VauchiUITests
   script:
     - sudo -n automationmodetool enable-automationmode-without-authentication
+    # nell's console runs dark and the guest image light. In light, the
+    # accessibility audit fails contrast on My Card's empty-state hint (job
+    # 17661290650), which no job has tested yet; until that is fixed the
+    # guest matches nell.
+    - defaults write -g AppleInterfaceStyle Dark
     - !reference [.macos-ui-test, script]
   after_script:
     - !reference [.macos-ui-test, after_script]
