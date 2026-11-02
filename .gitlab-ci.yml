@@ -852,7 +852,7 @@ test:unit:
         # rather than leaving it aimed at the keychain we delete below.
         security default-keychain -d user -s "$HOME/Library/Keychains/login.keychain-db" || true
       fi
-      security delete-keychain "$CI_JOB_KEYCHAIN" 2>/dev/null || true
+      [ -z "${CI_JOB_KEYCHAIN:-}" ] || security delete-keychain "$CI_JOB_KEYCHAIN" 2>/dev/null || true
     - !reference [.macos-job, after_script]
   script:
     - |
@@ -886,32 +886,38 @@ test:unit:
     # there instead. Same shape as the per-job keychain in ios/, and it
     # makes the run hermetic rather than dependent on host keychain state.
     # after_script restores the search list and deletes the keychain.
+    # An empty CI_JOB_KEYCHAIN skips this, for a guest whose login keychain
+    # is fresh: see test:ui.
     - |
-      security list-keychains -d user | tr -d '"' | tr '\n' ' ' \
-        > "/tmp/keychain-restore-${CI_JOB_ID}"
-      # `default-keychain -d user` exits 1 when no user default is set
-      # (the common case — the system then falls back to login.keychain).
-      # Under set -e that alone fails the job, so record it conditionally.
-      if prior_default=$(security default-keychain -d user 2>/dev/null); then
-        printf '%s\n' "$prior_default" | tr -d '"' | tr -d ' ' \
-          > "/tmp/keychain-default-restore-${CI_JOB_ID}"
+      if [ -z "${CI_JOB_KEYCHAIN:-}" ]; then
+        echo "no per-job keychain: the default keychain is used as it is"
+      else
+        security list-keychains -d user | tr -d '"' | tr '\n' ' ' \
+          > "/tmp/keychain-restore-${CI_JOB_ID}"
+        # `default-keychain -d user` exits 1 when no user default is set
+        # (the common case — the system then falls back to login.keychain).
+        # Under set -e that alone fails the job, so record it conditionally.
+        if prior_default=$(security default-keychain -d user 2>/dev/null); then
+          printf '%s\n' "$prior_default" | tr -d '"' | tr -d ' ' \
+            > "/tmp/keychain-default-restore-${CI_JOB_ID}"
+        fi
+        security create-keychain -p "" "$CI_JOB_KEYCHAIN"
+        # No -l/-u: this keychain must not re-lock while the tests run.
+        security set-keychain-settings "$CI_JOB_KEYCHAIN"
+        security unlock-keychain -p "" "$CI_JOB_KEYCHAIN"
+        # Keep System.keychain (trust material) but drop the login keychain,
+        # or SecItemCopyMatching finds the undecryptable item there first.
+        # `|| true`: when the login keychain is the only entry, grep matches
+        # nothing and exits 1, which under set -eo pipefail kills the job
+        # with no message. An empty $keep is the normal, correct result.
+        keep=$(security list-keychains -d user | tr -d '"' \
+          | grep -v "login.keychain" | tr '\n' ' ' || true)
+        # shellcheck disable=SC2086
+        security list-keychains -d user -s "$CI_JOB_KEYCHAIN" $keep
+        security default-keychain -d user -s "$CI_JOB_KEYCHAIN"
+        echo "keychain search list is now:"
+        security list-keychains -d user
       fi
-      security create-keychain -p "" "$CI_JOB_KEYCHAIN"
-      # No -l/-u: this keychain must not re-lock while the tests run.
-      security set-keychain-settings "$CI_JOB_KEYCHAIN"
-      security unlock-keychain -p "" "$CI_JOB_KEYCHAIN"
-      # Keep System.keychain (trust material) but drop the login keychain,
-      # or SecItemCopyMatching finds the undecryptable item there first.
-      # `|| true`: when the login keychain is the only entry, grep matches
-      # nothing and exits 1, which under set -eo pipefail kills the job
-      # with no message. An empty $keep is the normal, correct result.
-      keep=$(security list-keychains -d user | tr -d '"' \
-        | grep -v "login.keychain" | tr '\n' ' ' || true)
-      # shellcheck disable=SC2086
-      security list-keychains -d user -s "$CI_JOB_KEYCHAIN" $keep
-      security default-keychain -d user -s "$CI_JOB_KEYCHAIN"
-      echo "keychain search list is now:"
-      security list-keychains -d user
     # macOS 12+ gate XCUITest behind an authenticated "Enable UI Automation".
     # Unsatisfied, the runner does not prompt and does not fail — it waits,
     # and xcodebuild reports Code=1000 "Timed out while enabling automation
@@ -1056,7 +1062,12 @@ test:ui:
   extends: [.tart-spm-guest, .timeout-long]
   variables:
     VAUCHI_PLATFORM_USE_LOCAL_XCFRAMEWORK: "1"
-    CI_JOB_KEYCHAIN: ci-macos-ui-${CI_JOB_ID}.keychain-db
+    # No per-job keychain. The job unlocks keychains in its SSH session, but
+    # the app runs in admin's console session, where that keychain stayed
+    # locked: the app waited on a password dialog (job 17660521689's
+    # screenshot). Each guest is a fresh clone, so its login keychain holds
+    # nothing stale, which is what the per-job keychain guards against on nell.
+    CI_JOB_KEYCHAIN: ""
     UI_TEST_SELECTOR: VauchiUITests
   script:
     - sudo -n automationmodetool enable-automationmode-without-authentication
