@@ -2031,7 +2031,8 @@ diag:test-ui-light:
   image: vauchi-macos-ci-tools-light
   allow_failure: true
   variables:
-    UI_TEST_SELECTOR: VauchiUITests/VauchiUITests/testAccessibilityAudit
+    # One full-suite run in light before the job settles on the audit.
+    UI_TEST_SELECTOR: VauchiUITests
   artifacts:
     when: always
     paths:
