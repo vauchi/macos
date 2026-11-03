@@ -53,6 +53,21 @@ import XCTest
             XCTAssertNotNil(viewModel.lastWakeupDelay)
         }
 
+        func testFiredWakeupRetainsTheNextCoreTimerForCancellation() async {
+            viewModel.armWakeupTimer(delayMillis: 0)
+            let rescheduled = expectation(
+                for: NSPredicate { [weak viewModel] _, _ in
+                    (viewModel?.lastWakeupDelay ?? 0) > 0
+                },
+                evaluatedWith: nil
+            )
+            await fulfillment(of: [rescheduled], timeout: 2)
+
+            XCTAssertTrue(viewModel.hasActiveWakeupTimer)
+            viewModel.cancelWakeupTimer()
+            XCTAssertFalse(viewModel.hasActiveWakeupTimer)
+        }
+
         /// Scenario: starting the timer twice does not create a second timer.
         func testArmWakeupTimerIsIdempotent() {
             viewModel.cancelWakeupTimer()

@@ -232,10 +232,8 @@ import UniformTypeIdentifiers
             lastWakeupDelay = fireDelay
             let timer = Timer(timeInterval: fireDelay, repeats: false) { [weak self] _ in
                 Task { @MainActor [weak self] in
-                    self?.onWakeup()
-                    // Honour min interval: if another schedule hasn't arrived,
-                    // leave the timer nil so the next command re-arms cleanly.
                     self?.wakeupTimer = nil
+                    self?.onWakeup()
                 }
             }
             RunLoop.main.add(timer, forMode: .common)
