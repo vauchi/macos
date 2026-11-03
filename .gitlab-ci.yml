@@ -1739,6 +1739,10 @@ diag:tart-vm-start:
 # 17651510709 and 17651510710, 2026-11-02). The VM counts against the
 # host's two-VM limit, so start waits while two VMs run. Its own resource
 # group: waiting must not hold .macos-job's SPM lock and stall the builds.
+# Start lowers nell-tart to one guest before it waits, and both jobs
+# reconcile the limit on the way out, so guest jobs queue in GitLab
+# instead of timing out in prepare (vauchi/private#1064; the script is
+# _private's infra/runners/macos-local/tart-ci-limit.sh, installed in ~/bin).
 .gui-vm:
   extends: [.macos-host-job]
   stage: test
@@ -1756,6 +1760,10 @@ vm:gui-start:
     - |
       set -eu
       TART="$HOME/homebrew/bin/tart"
+      LIMIT="$HOME/bin/tart-ci-limit.sh"
+      # On any exit: 1 if the GUI VM came up, back to 2 if it did not.
+      trap 'TART="$TART" "$LIMIT" reconcile || true' EXIT
+      TART="$TART" "$LIMIT" set 1
       # `tart list` columns: Source Name Disk Size Accessed State.
       running() { "$TART" list | awk 'NR > 1 && $NF == "running" { print $2 }'; }
       if running | tr ' ' '\n' | grep -qx "$GUI_VM"; then
@@ -1821,6 +1829,7 @@ vm:gui-stop:
       "$TART" stop "$GUI_VM" || echo "$GUI_VM was not running"
       launchctl remove "$GUI_VM_LABEL" 2>/dev/null || true
       "$TART" list
+      TART="$TART" "$HOME/bin/tart-ci-limit.sh" reconcile
 
 # Phase 2 rehearsal (vauchi/private#309): the same checks inside an
 # ephemeral Tart VM on the `nell-tart` registration. The guest must own its
