@@ -1129,7 +1129,7 @@ test:ui:
 # optional build:debug need, and `.macos-job` in after_script.
 test:screen-catalog:
   extends: [.tart-spm-guest, .timeout-long]
-  allow_failure: true
+  allow_failure: false
   variables:
     VAUCHI_PLATFORM_USE_LOCAL_XCFRAMEWORK: "1"
     VRT_PLATFORM: macos
@@ -1151,9 +1151,7 @@ test:screen-catalog:
     # (problem 2026-06-29-spm-mirror-config-race).
     - ./scripts/ci-spm-isolate-config.sh
     - mkdir -p build/screen-catalog
-    # Core main's catalog, or the contract fixture folded into one until
-    # the catalog lands there; the script prints which one it used.
-    - ./scripts/fetch-screen-catalog.sh build/screen_catalog_v1.json main
+    - ./scripts/fetch-screen-catalog.sh build/screen_catalog_v1.json
     - HOME="$CI_PROJECT_DIR/.spm-home" xcodebuild -project Vauchi.xcodeproj -scheme Vauchi -destination "platform=macOS" -clonedSourcePackagesDirPath .spm-packages -derivedDataPath .derived-data -disableAutomaticPackageResolution CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ENABLE_HARDENED_RUNTIME=NO build-for-testing
     - |
       set +e
@@ -1195,8 +1193,9 @@ test:screen-catalog:
   artifacts:
     when: always
     paths:
-      - build/screen-catalog/
       - build/screen_catalog_v1.json
+      - build/screen_catalog_v1.provenance.json
+      - build/screen-catalog/
       - build/screen_catalog.xcresult
       - screen-catalog.log
     expire_in: 1 week
