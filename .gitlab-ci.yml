@@ -1921,8 +1921,9 @@ diag:tart-bake-tools:
   variables:
     BAKE_BASE: ghcr.io/cirruslabs/macos-tahoe-xcode:26.4
     BAKE_NAME: vauchi-macos-ci-tools
-    # dark for the CI image; light bakes a second image for the #1035
-    # experiment (play with BAKE_NAME=vauchi-macos-ci-tools-light).
+    # dark, as nell's console; light bakes a light image under another
+    # BAKE_NAME. The light audit was tried and dropped (vauchi/private#1035):
+    # Apple's audit flags My Card's caption in light without saying why.
     BAKE_APPEARANCE: dark
     # The guest's gitlab-runner archives the cache, and nell-tart's runner
     # passes it the flags of its own version: the base image's 18.10.0
@@ -2019,26 +2020,3 @@ diag:tart-bake-tools:
     paths:
       - tart-run-*.log
     expire_in: 1 week
-
-# diag (vauchi/private#1035): the accessibility audit on a light guest.
-# Light-mode theme colours pass WCAG (catppuccin-latte 6.5-7.6:1), yet the
-# audit failed My Card's 10 pt caption there; the theory is thin small text
-# rendering dark-on-light. Run once as the caption is and once with it
-# larger. Needs the light image: diag:tart-bake-tools played with
-# BAKE_NAME=vauchi-macos-ci-tools-light and BAKE_APPEARANCE=light.
-diag:test-ui-light:
-  extends: [.tart-ui-test]
-  image: vauchi-macos-ci-tools-light
-  allow_failure: true
-  variables:
-    # One full-suite run in light before the job settles on the audit.
-    UI_TEST_SELECTOR: VauchiUITests
-  artifacts:
-    when: always
-    paths:
-      - UITestResults.xcresult
-      - ui-build.log
-    expire_in: 7 days
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: manual
