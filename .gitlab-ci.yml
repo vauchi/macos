@@ -1921,6 +1921,9 @@ diag:tart-bake-tools:
   variables:
     BAKE_BASE: ghcr.io/cirruslabs/macos-tahoe-xcode:26.4
     BAKE_NAME: vauchi-macos-ci-tools
+    # dark for the CI image; light bakes a second image for the #1035
+    # experiment (play with BAKE_NAME=vauchi-macos-ci-tools-light).
+    BAKE_APPEARANCE: dark
     # The guest's gitlab-runner archives the cache, and nell-tart's runner
     # passes it the flags of its own version: the base image's 18.10.0
     # refused 19.4.1's `--alternate-file` and saved nothing (job
@@ -1973,7 +1976,12 @@ diag:tart-bake-tools:
       # audit fails contrast (vauchi/private#1035). Written here because a
       # job's write over SSH never reached the logged-in console (job
       # 17661612415); a guest booted from the image logs in with it.
-      "$TART" exec "$NEW" /usr/bin/defaults write -g AppleInterfaceStyle Dark
+      case "$BAKE_APPEARANCE" in
+        dark) EXPECTED_STYLE=Dark
+              "$TART" exec "$NEW" /usr/bin/defaults write -g AppleInterfaceStyle Dark ;;
+        light) EXPECTED_STYLE=Light ;;
+        *) echo "ERROR: BAKE_APPEARANCE must be dark or light, not '$BAKE_APPEARANCE'" >&2; exit 1 ;;
+      esac
       # Flush before stopping: the first bake (job 17475870596) stopped right
       # after xcresultparser's install, and the image lacked it while the
       # earlier xcodegen survived (job 17475870597).
@@ -1999,15 +2007,37 @@ diag:tart-bake-tools:
       done
       if ! "$TART" exec "$CHECK" /bin/sh -c 'ls -l /opt/homebrew/bin/xcodegen /opt/homebrew/bin/xcresultparser && /opt/homebrew/bin/xcresultparser --version' \
         || ! "$TART" exec "$CHECK" /bin/zsh -lc "gitlab-runner --version | grep '^Version: *${GUEST_RUNNER_VERSION}\$'" \
-        || ! "$TART" exec "$CHECK" /bin/sh -c '[ "$(defaults read -g AppleInterfaceStyle)" = Dark ]'; then
-        echo "ERROR: $BAKE_NAME lacks a tool, gitlab-runner ${GUEST_RUNNER_VERSION} or dark appearance after a fresh boot; deleting it" >&2
+        || ! "$TART" exec "$CHECK" /bin/sh -c "style=\$(defaults read -g AppleInterfaceStyle 2>/dev/null || echo Light); [ \"\$style\" = $EXPECTED_STYLE ]"; then
+        echo "ERROR: $BAKE_NAME lacks a tool, gitlab-runner ${GUEST_RUNNER_VERSION} or $BAKE_APPEARANCE appearance after a fresh boot; deleting it" >&2
         "$TART" delete "$BAKE_NAME" || true
         exit 1
       fi
-      echo "OK: $BAKE_NAME has both tools, gitlab-runner ${GUEST_RUNNER_VERSION} and dark appearance after a fresh boot"
+      echo "OK: $BAKE_NAME has both tools, gitlab-runner ${GUEST_RUNNER_VERSION} and $BAKE_APPEARANCE appearance after a fresh boot"
       "$TART" list | grep -v '^OCI'
   artifacts:
     when: always
     paths:
       - tart-run-*.log
     expire_in: 1 week
+
+# diag (vauchi/private#1035): the accessibility audit on a light guest.
+# Light-mode theme colours pass WCAG (catppuccin-latte 6.5-7.6:1), yet the
+# audit failed My Card's 10 pt caption there; the theory is thin small text
+# rendering dark-on-light. Run once as the caption is and once with it
+# larger. Needs the light image: diag:tart-bake-tools played with
+# BAKE_NAME=vauchi-macos-ci-tools-light and BAKE_APPEARANCE=light.
+diag:test-ui-light:
+  extends: [.tart-ui-test]
+  image: vauchi-macos-ci-tools-light
+  allow_failure: true
+  variables:
+    UI_TEST_SELECTOR: VauchiUITests/VauchiUITests/testAccessibilityAudit
+  artifacts:
+    when: always
+    paths:
+      - UITestResults.xcresult
+      - ui-build.log
+    expire_in: 7 days
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: manual
