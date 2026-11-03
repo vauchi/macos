@@ -48,5 +48,5 @@ private let headingFont = Font.custom(
     "BricolageGrotesque-96ptExtraBold_Bold", size: 17, relativeTo: .title2
 )
 private let bodyFont = Font.custom("HankenGrotesk-Regular", size: 13, relativeTo: .body)
-private let captionFont = Font.custom("HankenGrotesk-Regular", size: 11, relativeTo: .caption)
+private let captionFont = Font.custom("HankenGrotesk-Regular", size: 10, relativeTo: .caption)
 private let monospaceFont = Font.custom("JetBrainsMono-Regular", size: 13, relativeTo: .body)
