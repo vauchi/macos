@@ -46,6 +46,7 @@ import UniformTypeIdentifiers
             self.appEngine = appEngine
             loadInitialPresentation()
             attachEventListener()
+            onWakeup()
         }
 
         private func attachEventListener() {
@@ -175,7 +176,9 @@ import UniformTypeIdentifiers
                 }
             case .createUserPresenceSecret, .revealUserPresenceSecret:
                 answerUserPresence(command)
-            case .postNotification, .platformEffect:
+            case let .postNotification(notification):
+                NotificationService.shared.showNotification(notification)
+            case .platformEffect:
                 break
             default:
                 break

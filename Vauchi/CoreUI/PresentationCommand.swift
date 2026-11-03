@@ -170,8 +170,25 @@ private struct PresentationFileCommandPayload: Decodable {
     let file: PresentationExportFile
 }
 
+struct PresentationNotification: Decodable {
+    let notificationID: String?
+    let title: String
+    let body: String
+    let deepLinkURI: String?
+    let categoryID: String
+    let categoryOptions: [String]?
+
+    private enum CodingKeys: String, CodingKey {
+        case notificationID = "notification_id"
+        case title, body
+        case deepLinkURI = "deep_link_uri"
+        case categoryID = "category_id"
+        case categoryOptions = "category_options"
+    }
+}
+
 private struct PresentationNotificationCommandPayload: Decodable {
-    let notification: JSONValue
+    let notification: PresentationNotification
 }
 
 enum PresentationCommand: Decodable {
@@ -199,7 +216,7 @@ enum PresentationCommand: Decodable {
     case createUserPresenceSecret(prompt: String, binding: UserPresenceBinding?)
     /// Run the OS user-presence check with `prompt` and unseal that secret.
     case revealUserPresenceSecret(prompt: String)
-    case postNotification(JSONValue)
+    case postNotification(PresentationNotification)
     case platformEffect(variant: String, payload: JSONValue?)
 
     private struct DynamicKey: CodingKey {

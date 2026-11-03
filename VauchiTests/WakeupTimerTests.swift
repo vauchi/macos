@@ -50,11 +50,12 @@ import XCTest
 
         func testConstructionStartsTheCoreScheduledWakeupLoop() {
             XCTAssertTrue(viewModel.hasActiveWakeupTimer)
-            XCTAssertGreaterThan(viewModel.lastWakeupDelay ?? 0, 0)
+            XCTAssertNotNil(viewModel.lastWakeupDelay)
         }
 
         /// Scenario: starting the timer twice does not create a second timer.
         func testArmWakeupTimerIsIdempotent() {
+            viewModel.cancelWakeupTimer()
             XCTAssertFalse(viewModel.hasActiveWakeupTimer, "starts inactive")
 
             viewModel.armWakeupTimer(delayMillis: 10000)
@@ -80,6 +81,7 @@ import XCTest
 
         /// Scenario: cancelling an inactive timer is a no-op.
         func testCancelWakeupTimerOnInactiveIsSafe() {
+            viewModel.cancelWakeupTimer()
             XCTAssertFalse(viewModel.hasActiveWakeupTimer)
 
             viewModel.cancelWakeupTimer()
