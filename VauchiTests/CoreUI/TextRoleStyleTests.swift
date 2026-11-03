@@ -64,7 +64,7 @@ final class TextRoleStyleTests: XCTestCase {
 
         XCTAssertEqual(
             style.font,
-            .custom("HankenGrotesk-Regular", size: 10, relativeTo: .caption)
+            .custom("HankenGrotesk-Regular", size: 11, relativeTo: .caption)
         )
         XCTAssertFalse(style.muted)
     }
