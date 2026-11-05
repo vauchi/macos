@@ -66,10 +66,11 @@ class AudioProximityService {
     }
 
     /// Emit ultrasonic signal with given samples.
-    func emitSignal(samples: [Float], sampleRate: UInt32) -> String {
+    func emitSignal(samples: [Float], sampleRate: UInt32, request: AudioOperationSlot.Request? = nil) -> String {
         guard !samples.isEmpty else {
             return "No samples to emit"
         }
+        let request = request ?? playback.reserve()
 
         do {
             guard let format = AVAudioFormat(standardFormatWithSampleRate: Double(sampleRate), channels: 1) else {
@@ -91,7 +92,7 @@ class AudioProximityService {
             let player = AVAudioPlayerNode()
             var attached = false
             let duration = Double(samples.count) / Double(sampleRate)
-            try playback.run(for: duration + 0.1, start: {
+            try playback.run(for: duration + 0.1, request: request, start: {
                 playbackEngine.attach(player)
                 attached = true
                 playbackEngine.connect(player, to: playbackEngine.mainMixerNode, format: format)
@@ -117,8 +118,33 @@ class AudioProximityService {
         }
     }
 
+    func emitSignal(samples: [Float], sampleRate: UInt32, completion: @escaping (String) -> Void) {
+        let request = playback.reserve()
+        DispatchQueue.global(qos: .userInitiated).async { [self] in
+            let result = emitSignal(samples: samples, sampleRate: sampleRate, request: request)
+            DispatchQueue.main.async { [self] in
+                playback.deliver(request) { completion(result) }
+            }
+        }
+    }
+
+    func receiveSignal(timeoutMs: UInt64, sampleRate: UInt32, completion: @escaping ([Float]) -> Void) {
+        let request = capture.reserve()
+        DispatchQueue.global(qos: .userInitiated).async { [self] in
+            let result = recordSamples(timeoutMs: timeoutMs, sampleRate: sampleRate, request: request)
+            DispatchQueue.main.async { [self] in
+                capture.deliver(request) { completion(result) }
+            }
+        }
+    }
+
     /// Record audio and return samples.
     func receiveSignal(timeoutMs: UInt64, sampleRate: UInt32) -> [Float] {
+        recordSamples(timeoutMs: timeoutMs, sampleRate: sampleRate, request: nil)
+    }
+
+    private func recordSamples(timeoutMs: UInt64, sampleRate: UInt32, request: AudioOperationSlot.Request?) -> [Float] {
+        let request = request ?? capture.reserve()
         let sampleLock = NSLock()
         var recordedSamples: [Float] = []
         var acceptingSamples = true
@@ -126,7 +152,7 @@ class AudioProximityService {
         var inputNode: AVAudioInputNode?
         var tapInstalled = false
         do {
-            try capture.run(for: Double(timeoutMs) / 1000, start: {
+            try capture.run(for: Double(timeoutMs) / 1000, request: request, start: {
                 let node = captureEngine.inputNode
                 inputNode = node
                 let inputFormat = node.outputFormat(forBus: 0)
