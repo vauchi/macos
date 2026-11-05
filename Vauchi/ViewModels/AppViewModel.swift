@@ -488,7 +488,9 @@ import UniformTypeIdentifiers
         }
 
         private func dispatchAudioListen(timeoutMs: UInt64, sampleRate: UInt32) {
-            AudioProximityService.shared.receiveSignal(timeoutMs: timeoutMs, sampleRate: sampleRate) { [weak self] samples in
+            AudioProximityService.shared.receiveSignal(
+                timeoutMs: timeoutMs, sampleRate: sampleRate
+            ) { [weak self] samples in
                 if samples.isEmpty {
                     self?.sendHardwareUnavailable(transport: "Audio")
                 } else {
