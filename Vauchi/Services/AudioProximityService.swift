@@ -17,12 +17,10 @@ import AVFoundation
 class AudioProximityService {
     // MARK: - Audio Engine
 
-    private let audioEngine = AVAudioEngine()
-    private var playerNode: AVAudioPlayerNode?
-    private var isRecording = false
-    private var isPlaying = false
-    private var recordedSamples: [Float] = []
-    private let sampleLock = NSLock()
+    private let playbackEngine = AVAudioEngine()
+    private let captureEngine = AVAudioEngine()
+    private let playback = AudioOperationSlot()
+    private let capture = AudioOperationSlot()
 
     // MARK: - Configuration
 
@@ -38,10 +36,10 @@ class AudioProximityService {
 
     /// Check device capability for ultrasonic audio.
     func checkCapability() -> String {
-        let inputFormat = audioEngine.inputNode.inputFormat(forBus: 0)
+        let inputFormat = captureEngine.inputNode.inputFormat(forBus: 0)
         let hasInput = inputFormat.channelCount > 0
 
-        let outputFormat = audioEngine.outputNode.outputFormat(forBus: 0)
+        let outputFormat = playbackEngine.outputNode.outputFormat(forBus: 0)
         let hasOutput = outputFormat.channelCount > 0
 
         // Check if sample rate supports ultrasonic frequencies
@@ -91,103 +89,94 @@ class AudioProximityService {
             }
 
             let player = AVAudioPlayerNode()
-            audioEngine.attach(player)
-            audioEngine.connect(player, to: audioEngine.mainMixerNode, format: format)
-
-            try audioEngine.start()
-
-            isPlaying = true
-            playerNode = player
-
-            player.scheduleBuffer(buffer, at: nil, options: []) { [weak self] in
-                DispatchQueue.main.async {
-                    self?.isPlaying = false
-                }
-            }
-            player.play()
-
+            var attached = false
             let duration = Double(samples.count) / Double(sampleRate)
-            Thread.sleep(forTimeInterval: duration + 0.1)
-
-            player.stop()
-            audioEngine.stop()
-            audioEngine.detach(player)
-            playerNode = nil
-            isPlaying = false
+            try playback.run(for: duration + 0.1, start: {
+                playbackEngine.attach(player)
+                attached = true
+                playbackEngine.connect(player, to: playbackEngine.mainMixerNode, format: format)
+                try playbackEngine.start()
+                guard playbackEngine.isRunning else {
+                    throw NSError(domain: "AudioProximity", code: 1,
+                                  userInfo: [NSLocalizedDescriptionKey: "Audio engine did not start"])
+                }
+                player.scheduleBuffer(buffer, at: nil, options: [])
+                player.play()
+            }, stop: { [self] in
+                if attached {
+                    player.stop()
+                    playbackEngine.stop()
+                    playbackEngine.detach(player)
+                }
+            })
 
             return "" // Success
 
         } catch {
-            isPlaying = false
             return "Emit failed: \(error.localizedDescription)"
         }
     }
 
     /// Record audio and return samples.
     func receiveSignal(timeoutMs: UInt64, sampleRate: UInt32) -> [Float] {
+        let sampleLock = NSLock()
+        var recordedSamples: [Float] = []
+        var acceptingSamples = true
+        var recordedRate: Double = 0
+        var inputNode: AVAudioInputNode?
+        var tapInstalled = false
         do {
-            let inputNode = audioEngine.inputNode
-            let inputFormat = inputNode.outputFormat(forBus: 0)
-
-            sampleLock.lock()
-            recordedSamples = []
-            sampleLock.unlock()
-
-            isRecording = true
-
-            inputNode.installTap(onBus: 0, bufferSize: 4096, format: inputFormat) { [weak self] buffer, _ in
-                guard let self, isRecording else { return }
-
-                let samples = extractSamples(from: buffer)
-
+            try capture.run(for: Double(timeoutMs) / 1000, start: {
+                let node = captureEngine.inputNode
+                inputNode = node
+                let inputFormat = node.outputFormat(forBus: 0)
+                recordedRate = inputFormat.sampleRate
+                node.installTap(onBus: 0, bufferSize: 4096, format: inputFormat) { [weak self] buffer, _ in
+                    guard let self else { return }
+                    let samples = extractSamples(from: buffer)
+                    sampleLock.lock()
+                    if acceptingSamples {
+                        recordedSamples.append(contentsOf: samples)
+                    }
+                    sampleLock.unlock()
+                }
+                tapInstalled = true
+                try captureEngine.start()
+            }, stop: { [self] in
                 sampleLock.lock()
-                recordedSamples.append(contentsOf: samples)
+                acceptingSamples = false
                 sampleLock.unlock()
-            }
-
-            try audioEngine.start()
-
-            Thread.sleep(forTimeInterval: Double(timeoutMs) / 1000.0)
-
-            isRecording = false
-            inputNode.removeTap(onBus: 0)
-            audioEngine.stop()
+                if tapInstalled {
+                    inputNode?.removeTap(onBus: 0)
+                }
+                captureEngine.stop()
+            })
 
             sampleLock.lock()
             let result = recordedSamples
-            recordedSamples = []
             sampleLock.unlock()
 
             // Resample if needed
-            if inputFormat.sampleRate != Double(sampleRate) {
-                return resample(result, from: Float(inputFormat.sampleRate), to: Float(sampleRate))
+            if recordedRate != Double(sampleRate) {
+                return resample(result, from: Float(recordedRate), to: Float(sampleRate))
             }
 
             return result
 
         } catch {
-            isRecording = false
             return []
         }
     }
 
     /// Check if audio is currently active.
     func isActive() -> Bool {
-        isRecording || isPlaying
+        capture.isActive || playback.isActive
     }
 
     /// Stop any ongoing audio operation.
     func stop() {
-        isRecording = false
-        isPlaying = false
-
-        playerNode?.stop()
-        playerNode = nil
-
-        if audioEngine.isRunning {
-            audioEngine.inputNode.removeTap(onBus: 0)
-            audioEngine.stop()
-        }
+        playback.stop()
+        capture.stop()
     }
 
     // MARK: - Helper Methods
