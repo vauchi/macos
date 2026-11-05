@@ -15,6 +15,9 @@ settings:
   MACOSX_DEPLOYMENT_TARGET: "14.0"
 
 packages:
+  AppleDisplay:
+    url: https://gitlab.com/vauchi/apple-display.git
+    revision: "9a25d5ac8b07d8e1a6e4b34ff7cf9a3d22c557db"
   VauchiPlatform:
     url: https://gitlab.com/vauchi/vauchi-platform-swift.git
     version: "0.99.1"
@@ -43,6 +46,8 @@ targets:
       - path: Vauchi/Resources/Fonts
         type: folder
     dependencies:
+      - package: AppleDisplay
+        product: AppleDisplay
       - package: VauchiPlatform
         product: VauchiPlatform
       - package: VauchiPlatform
@@ -82,6 +87,8 @@ targets:
     sources:
       - path: VauchiTests
     dependencies:
+      - package: AppleDisplay
+        product: AppleDisplay
       - target: Vauchi
     settings:
       base:

@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+import AppleDisplay
 import SwiftUI
 
 /// The persistent desktop sidebar for Core's `SetNavigation` destinations —

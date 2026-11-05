@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import AppKit
+import AppleDisplay
 
 /// Resolves the platform-neutral `icon_token` Core attaches to a
 /// `PresentationAction` into an SF Symbol name.
@@ -14,11 +15,6 @@ import AppKit
 /// token this OS does not ship.
 /// What a Core `icon_token` draws as: an SF Symbol, or one of Vauchi's own
 /// pictograms bundled in the asset catalog under the token's own name.
-enum NavigationIcon: Equatable {
-    case symbol(String)
-    case asset(String)
-}
-
 enum NavigationIconMap {
     /// Shown when Core sends a token this build does not know, so a new
     /// screen arrives with a marker instead of a hole in the row. An
