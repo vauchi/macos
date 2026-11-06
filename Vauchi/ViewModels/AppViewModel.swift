@@ -339,7 +339,7 @@ import UniformTypeIdentifiers
                 // BLE — delegate to CoreBluetooth service via helper
                 // (`dispatchBleCommand` does the typed re-switch).
                 case .bleStartScanning, .bleStopScanning, .bleStartAdvertising,
-                     .bleConnect, .bleWriteCharacteristic, .bleReadCharacteristic,
+                     .bleStopAdvertising, .bleConnect, .bleWriteCharacteristic, .bleReadCharacteristic,
                      .bleDisconnect:
                     dispatchBleCommand(command)
                 // Audio — delegate to helper (runs on background queue)
@@ -396,6 +396,8 @@ import UniformTypeIdentifiers
                 bleService.stopScanning()
             case let .bleStartAdvertising(serviceUuid, payload):
                 bleService.startAdvertising(serviceUuid: serviceUuid, payload: Data(payload))
+            case .bleStopAdvertising:
+                bleService.stopAdvertising()
             case let .bleConnect(deviceId):
                 bleService.connect(deviceId: deviceId)
             case let .bleWriteCharacteristic(uuid, data):
