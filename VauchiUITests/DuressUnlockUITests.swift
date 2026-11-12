@@ -3,12 +3,15 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 // With an app password and a duress PIN set, the next launch stops on
-// Core's lock screen, refuses a wrong PIN and opens on the duress PIN
+// Core's lock screen, refuses a wrong password and opens on the duress one
 // (vauchi/private#591: macOS used to drop Core's app-password requirement).
 //
 // The typed path only. The CI runner has no Touch ID, and XCUITest cannot
 // fake a biometric success on macOS, so "Touch ID still asks for the PIN"
-// stays a check on a Mac with a sensor.
+// stays a check on a Mac with a sensor. Without biometric unlock Core sets
+// duress up under the password branch (ADR-032, amended 2026-11-10): the
+// app password and the duress credential are both real passwords under the
+// backup rule, and the setup asks for the app password first.
 //
 // Finds Core's controls by their English labels, as EmergencyWipeUITests
 // does, for the same reason: the shell gives Core's rows no identifiers.
@@ -29,9 +32,9 @@ final class DuressUnlockUITests: XCTestCase {
         static let unlock = "Unlock"
     }
 
-    private let appPassword = "correct horse 591"
-    private let duressPin = "246813"
-    private let wrongPin = "135792"
+    private let appPassword = "correct-horse-battery-staple-app"
+    private let duressPassword = "plum-violin-orbit-meadow-duress"
+    private let wrongPassword = "lantern-quarry-velvet-thunder"
 
     override func setUpWithError() throws {
         continueAfterFailure = false
@@ -45,7 +48,7 @@ final class DuressUnlockUITests: XCTestCase {
         app = nil
     }
 
-    func testTheNextLaunchAsksForThePasswordAndOpensOnTheDuressPin() {
+    func testTheNextLaunchAsksForThePasswordAndOpensOnTheDuressPassword() {
         XCTAssertTrue(destinations.firstMatch.waitForExistence(timeout: 15),
                       "--reset-for-testing should seed an identity and show the destinations")
 
@@ -60,13 +63,11 @@ final class DuressUnlockUITests: XCTestCase {
         click(Label.advanced)
         click(Label.duressPin)
         click(Label.setUpPin)
-        fillSecureFields(with: duressPin)
-        click(Label.continueButton)
-        fillSecureFields(with: duressPin)
-        click(Label.continueButton)
-        // Core saves a duress PIN only once the session's password is
-        // entered again (private#777).
         fillSecureFields(with: appPassword)
+        click(Label.continueButton)
+        fillSecureFields(with: duressPassword)
+        click(Label.continueButton)
+        fillSecureFields(with: duressPassword)
         click(Label.continueButton)
         attachScreen(named: "duress-set")
 
@@ -82,18 +83,18 @@ final class DuressUnlockUITests: XCTestCase {
         XCTAssertFalse(destinations.firstMatch.exists, "Locked, the app must not show its destinations")
         attachScreen(named: "locked")
 
-        fillSecureFields(with: wrongPin)
+        fillSecureFields(with: wrongPassword)
         click(Label.unlock)
         XCTAssertTrue(app.secureTextFields.firstMatch.waitForExistence(timeout: 5),
-                      "A wrong PIN should leave the lock screen up. On screen: \(labelsOnScreen())")
+                      "A wrong password should leave the lock screen up. On screen: \(labelsOnScreen())")
         XCTAssertFalse(destinations.firstMatch.waitForExistence(timeout: 3),
-                       "A wrong PIN must not open the app")
+                       "A wrong password must not open the app")
 
-        fillSecureFields(with: duressPin)
+        fillSecureFields(with: duressPassword)
         click(Label.unlock)
         let opened = destinations.firstMatch.waitForExistence(timeout: 15)
         attachScreen(named: "after-duress-pin")
-        XCTAssertTrue(opened, "The duress PIN should open the app. On screen: \(labelsOnScreen())")
+        XCTAssertTrue(opened, "The duress password should open the app. On screen: \(labelsOnScreen())")
     }
 
     // MARK: - Driving
