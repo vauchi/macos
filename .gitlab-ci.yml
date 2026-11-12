@@ -1546,6 +1546,10 @@ lint:cross-cutting-blocking:
     # pin (#434) is not applied to macOS yet.
     CORE_PIN_FILE: ""
     CORE_PIN_KIND: ""
+    # Referenced by the included .design-drift-job script under set -u since
+    # ci-templates-v2026.11.17; macos pins no vauchi-contract, so the check
+    # stays off, mirroring the template job's own default.
+    CONTRACT_PIN_FILE: ""
     DESIGN_DRIFT_REPO_LABEL: ""
     # check:removed-symbols
     SEARCH_DIRS: "Vauchi/"
