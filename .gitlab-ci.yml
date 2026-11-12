@@ -1559,9 +1559,9 @@ lint:cross-cutting-blocking:
   # before_scripts of the jobs this one !references, kept inline on purpose.
   before_script:
     # Merged installs from the original per-job before_scripts:
-    #   - design-drift: curl openssh-client bash grep git
+    #   - design-drift: curl openssh-client bash grep git python3
     #   - orphan-baselines: bash findutils grep curl
-    - apk add --no-cache bash curl findutils git grep openssh-client
+    - apk add --no-cache bash curl findutils git grep openssh-client python3
     # Shared helper used by orphan-baselines and design-drift metrics push.
     - |
       fetch_vauchi_script() {
