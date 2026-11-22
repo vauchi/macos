@@ -137,6 +137,7 @@ struct PresentationSurfaceView: View {
         }
         .buttonStyle(.bordered)
         .controlSize(.large)
+        .frame(minHeight: CGFloat(surface.tokens.minimumTargetSize))
         .disabled(!action.enabled)
         .accessibilityLabel(action.accessibilityLabel)
         .accessibilityIdentifier("command.pinned.\(index)")
