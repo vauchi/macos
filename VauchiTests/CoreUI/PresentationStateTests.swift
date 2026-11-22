@@ -554,6 +554,7 @@ final class PresentationStateTests: XCTestCase {
                     "available_height": 900,
                     "input_modes": ["touch", "keyboard"],
                     "motion": "reduced",
+                    "pinned_actions": true,
                 ],
             ] as NSDictionary
         )
@@ -590,9 +591,25 @@ final class PresentationStateTests: XCTestCase {
                     "input_modes": ["pointer"],
                     "motion": "full",
                     "color_scheme": "dark",
+                    "pinned_actions": true,
                 ],
             ] as NSDictionary
         )
+    }
+
+    /// This shell keeps `ContextBar.pinned` in view, and says so in every
+    /// environment report; Core pins nothing for a shell that does not
+    /// (vauchi/private#1304).
+    func testEnvironmentSaysTheShellKeepsPinnedActionsInView() throws {
+        let report = try jsonObject(PresentationEvent.environmentChanged(
+            availableWidth: 900,
+            availableHeight: 600,
+            inputModes: [.pointer, .keyboard],
+            motion: .full
+        ))
+        let payload = try XCTUnwrap(report["PresentationEnvironmentChanged"] as? NSDictionary)
+
+        XCTAssertEqual(payload["pinned_actions"] as? Bool, true)
     }
 
     func testNodeIdentityKeepsBindingAndFocusStableAcrossLayoutChanges() throws {
