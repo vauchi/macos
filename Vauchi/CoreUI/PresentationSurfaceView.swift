@@ -37,6 +37,7 @@ struct PresentationSurfaceView: View {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            pinnedActions
             if let primary = bar?.primary {
                 primaryButton(primary)
             }
@@ -108,6 +109,42 @@ struct PresentationSurfaceView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    /// Core's pinned group under the content area and outside its scroll:
+    /// a decision that must not scroll away, one action under the other in
+    /// Core's order (vauchi/private#1304).
+    @ViewBuilder private var pinnedActions: some View {
+        if let actions = bar?.pinnedActions, !actions.isEmpty {
+            VStack(spacing: CGFloat(surface.tokens.spacingSmall)) {
+                ForEach(Array(actions.enumerated()), id: \.element.interactionID) { index, action in
+                    pinnedButton(action, index: index)
+                }
+            }
+        }
+    }
+
+    /// Full width and no filled style, so no answer reads as the
+    /// suggested one; the label wraps instead of being cut.
+    private func pinnedButton(_ action: PresentationAction, index: Int) -> some View {
+        Button {
+            activate(action)
+        } label: {
+            Text(action.label)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.bordered)
+        .controlSize(.large)
+        .disabled(!action.enabled)
+        .accessibilityLabel(action.accessibilityLabel)
+        .accessibilityIdentifier("command.pinned.\(index)")
+        .keyboardFocusRing(
+            focusedBinding,
+            equals: action.interactionID,
+            color: palette.focusRing
+        )
     }
 
     private func primaryButton(_ primary: PresentationAction) -> some View {
