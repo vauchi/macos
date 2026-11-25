@@ -10,7 +10,6 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 #if canImport(VauchiPlatform)
-    import VauchiHardware
     import VauchiPlatform
 
     @MainActor
@@ -315,17 +314,22 @@ import UniformTypeIdentifiers
             return service
         }()
 
-        /// One-shot location capture for the exchange "where we met"
-        /// annotation (ADR-051).
-        private lazy var locationService = LocationService()
-
-        /// Start a one-shot location fix and report the resulting
-        /// `MobileEvent` back to core.
-        private func dispatchLocationRequest(timeoutMs: UInt32) {
-            locationService.requestOneShot(timeoutMs: timeoutMs) { [weak self] event in
-                DispatchQueue.main.async {
-                    self?.sendHardwareEvent(event)
+        private lazy var locationHardwareBridge = LocationHardwareBridge { [weak self] outcome in
+            DispatchQueue.main.async {
+                switch outcome {
+                case let .success(eventJson):
+                    self?.sendHardwareEventJson(eventJson)
+                case let .failure(error):
+                    self?.alertMessage = Self.presentationFailureAlert(for: error)
                 }
+            }
+        }
+
+        private func dispatchLocationRequest(timeoutMs: UInt32) {
+            do {
+                try locationHardwareBridge.request(timeoutMs: timeoutMs)
+            } catch {
+                alertMessage = Self.presentationFailureAlert(for: error)
             }
         }
 
@@ -594,8 +598,12 @@ import UniformTypeIdentifiers
         }
 
         private func sendHardwareEvent(_ event: MobileEvent) {
+            sendHardwareEventJson(hardwareEventJson(event: event))
+        }
+
+        private func sendHardwareEventJson(_ eventJson: String) {
             do {
-                let resultJson = try appEngine.dispatchJson(eventJson: hardwareEventJson(event: event))
+                let resultJson = try appEngine.dispatchJson(eventJson: eventJson)
                 try applyPresentationEnvelope(resultJson)
             } catch {
                 print("AppViewModel: hardware event failed: \(error)")

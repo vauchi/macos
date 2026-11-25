@@ -63,8 +63,6 @@ targets:
       - package: Contract
         product: EventContract
       - package: VauchiPlatform
-        product: VauchiHardware
-      - package: VauchiPlatform
         product: CoreUIModels
     settings:
       base:
