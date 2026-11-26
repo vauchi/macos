@@ -30,6 +30,7 @@
 		273975EC388CFE5D5B02731F /* RenderContextPusherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB04A9F8F1DEF697349D20A3 /* RenderContextPusherTests.swift */; };
 		28ABEAE77D5BC15063202DCC /* PresentationEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F0B112148ABCC1933D659A4 /* PresentationEvent.swift */; };
 		2F7D817E60BDE6223F5E0484 /* VauchiApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71E5FB136BF29B1F9D9B7F04 /* VauchiApp.swift */; };
+		2FC9B621C8AC57AD0815FCF2 /* XCUIElement+Visibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 412CBEEDC4F8E730441031C0 /* XCUIElement+Visibility.swift */; };
 		3202529BECD6DFEEB2B2BECF /* ScreenCaptureProtection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40B52514F7B6CC866BDD778D /* ScreenCaptureProtection.swift */; };
 		372704301C13BD3953C05111 /* TextRoleStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF7B59DC1F3F21EAE1966C19 /* TextRoleStyle.swift */; };
 		37B0045C32255AE32005F23B /* PresentationNodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7944347EE6E209E80A5CF30 /* PresentationNodeView.swift */; };
@@ -174,6 +175,7 @@
 		3B183C71862EEB94A1A20C7D /* PresentationFailureAlertTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationFailureAlertTests.swift; sourceTree = "<group>"; };
 		3ED7930E1937E9D55A0BBAE2 /* UserPresenceSecretBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPresenceSecretBridge.swift; sourceTree = "<group>"; };
 		40B52514F7B6CC866BDD778D /* ScreenCaptureProtection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenCaptureProtection.swift; sourceTree = "<group>"; };
+		412CBEEDC4F8E730441031C0 /* XCUIElement+Visibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCUIElement+Visibility.swift"; sourceTree = "<group>"; };
 		418F950D6541F912A27DA57D /* BleExchangeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BleExchangeService.swift; sourceTree = "<group>"; };
 		458ECA778929B29F48389729 /* AvatarFallbackSpecTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarFallbackSpecTests.swift; sourceTree = "<group>"; };
 		49509AE0DF70B880F977B015 /* AudioProximityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioProximityService.swift; sourceTree = "<group>"; };
@@ -456,6 +458,7 @@
 				67B69481786D9E06CC1F32D9 /* ScreenshotWalkUITests+Helpers.swift */,
 				987937A7D2D776722B2CA106 /* UITestLaunch.swift */,
 				773C796EDEEFF9B928C04229 /* VauchiUITests.swift */,
+				412CBEEDC4F8E730441031C0 /* XCUIElement+Visibility.swift */,
 			);
 			path = VauchiUITests;
 			sourceTree = "<group>";
@@ -735,6 +738,7 @@
 				A11583580003772B4514642B /* ScreenshotWalkUITests.swift in Sources */,
 				D6CC7232BB791C94AACA3CCA /* UITestLaunch.swift in Sources */,
 				DA673F09635BBBF9871092A8 /* VauchiUITests.swift in Sources */,
+				2FC9B621C8AC57AD0815FCF2 /* XCUIElement+Visibility.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

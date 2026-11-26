@@ -175,7 +175,7 @@ final class DuressUnlockUITests: XCTestCase {
             let buttons = matches.matching(NSPredicate(format: "elementType == %d",
                                                        XCUIElement.ElementType.button.rawValue))
             if let hit = (buttons.allElementsBoundByIndex + matches.allElementsBoundByIndex)
-                .first(where: \.isHittable)
+                .first(where: { $0.isHittable(in: scrollView) })
             {
                 return hit
             }
