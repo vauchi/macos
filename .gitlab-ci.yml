@@ -1964,8 +1964,8 @@ diag:tart-bake-tools:
     # refused 19.4.1's `--alternate-file` and saved nothing (job
     # 17561260396). Keep this equal to nell's runner (`gitlab-runner
     # --version` as gitlab-runner) and re-bake when that one changes.
-    GUEST_RUNNER_VERSION: "19.4.1"
-    GUEST_RUNNER_SHA256: df0da2de25fca11de53d9d2ea0007b235e0e923bdfd4ffd9da1f7d70e26f2cf3
+    GUEST_RUNNER_VERSION: "19.6.1"
+    GUEST_RUNNER_SHA256: b1bea0df4947fd5080946c05b8d7402d5b4a7eb2a6cc3d62d83e1302b95d978b
   script:
     - |
       set -eu
