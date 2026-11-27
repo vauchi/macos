@@ -1966,7 +1966,10 @@ diag:tart-bake-tools:
     # --version` as gitlab-runner) and re-bake when that one changes.
     GUEST_RUNNER_VERSION: "19.6.1"
     GUEST_RUNNER_SHA256: b1bea0df4947fd5080946c05b8d7402d5b4a7eb2a6cc3d62d83e1302b95d978b
+    XCRESULTPARSER_VERSION: "3.0.0"
+    XCRESULTPARSER_SHA256: 83f60f088f316e3f02019264b291b2d945892fe350e1b04d0623428e31cde9fa
   script:
+    - python3 ci/test_install_xcresultparser.py
     - |
       set -eu
       TART="$HOME/homebrew/bin/tart"
@@ -1996,7 +1999,9 @@ diag:tart-bake-tools:
         fi
         sleep 5
       done
-      "$TART" exec "$NEW" /bin/sh -c 'HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_INSTALL_CLEANUP=1 /opt/homebrew/bin/brew install xcodegen a7ex/homebrew-formulae/xcresultparser && /opt/homebrew/bin/xcodegen --version && /opt/homebrew/bin/xcresultparser --version'
+      "$TART" exec "$NEW" /bin/sh -c 'HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_INSTALL_CLEANUP=1 /opt/homebrew/bin/brew install xcodegen && /opt/homebrew/bin/xcodegen --version'
+      installer=$(cat ci/install-xcresultparser.sh)
+      "$TART" exec "$NEW" /bin/bash -c "$installer" installer "$XCRESULTPARSER_VERSION" "$XCRESULTPARSER_SHA256"
       # Replace the gitlab-runner the job's login shell finds, in place.
       "$TART" exec "$NEW" /bin/zsh -lc "set -eu
         dest=\$(command -v gitlab-runner)
@@ -2041,6 +2046,7 @@ diag:tart-bake-tools:
         sleep 5
       done
       if ! "$TART" exec "$CHECK" /bin/sh -c 'ls -l /opt/homebrew/bin/xcodegen /opt/homebrew/bin/xcresultparser && /opt/homebrew/bin/xcresultparser --version' \
+        || ! "$TART" exec "$CHECK" /bin/sh -c "printf '%s  %s\\n' '$XCRESULTPARSER_SHA256' /opt/homebrew/bin/xcresultparser | shasum -a 256 -c -" \
         || ! "$TART" exec "$CHECK" /bin/zsh -lc "gitlab-runner --version | grep '^Version: *${GUEST_RUNNER_VERSION}\$'" \
         || ! "$TART" exec "$CHECK" /bin/sh -c "style=\$(defaults read -g AppleInterfaceStyle 2>/dev/null || echo Light); [ \"\$style\" = $EXPECTED_STYLE ]"; then
         echo "ERROR: $BAKE_NAME lacks a tool, gitlab-runner ${GUEST_RUNNER_VERSION} or $BAKE_APPEARANCE appearance after a fresh boot; deleting it" >&2
